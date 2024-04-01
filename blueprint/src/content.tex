@@ -5,29 +5,47 @@
 % If you want to split the blueprint content into several files then
 % the current file can be a simple sequence of \input. Otherwise It
 % can start with a \section or \chapter for instance.
-\section{et voila}
-ceci est une phrase sans point
+
+
+\chapter{Presheaves and sheaves}
+
+Let $X$ be a locally compact Hausdorf space.
 
 \begin{definition}
-    definition
+    \label{def:pre_sheaves}
+    A presheave on $X$ is a contravariant functor from the category of open sets of $X$ to abélian groups.
+\end{definition}
+
+\begin{definition}
+    \label{def:K_pre_sheaves}
+    A $\mathcal{K}$-presheave on $X$ is a contravariant functor from the category of compact sets of $X$ to abélian groups.
+\end{definition}
+
+\begin{definition}
+    \label{def:sheaves}
+    \uses{def:pre_sheaves}
+    sheaves
 \end{definition}
 
 \begin{theorem}
-    theoreme
+    \uses{def:sheaves}
+    test
 
 \end{theorem}
 
-\begin{proof}
-    preuve
-    %\label{def:loop}
-    %\lean{Loop, Loop.average, Loop.support}
-    %\leanok
-    %A loop is a map defined on the circle $𝕊^1 = ℝ/ℤ$ with values in a
-    %finite-dimensional vector space.
-    %It can also freely be seen as $1$-periodic maps defined on $ℝ$.
-  
-    %The average of a loop $γ$ is $\bar γ := \int_{𝕊^1} γ(s)\, ds$.
-  
-    %The \emph{support} of a family $γ$ of loops in $F$ parametrized by $E$ is
-    %the closure of the set of $x$ in $E$ such that $γ_x$ is not a constant loop.
-  \end{proof}
+
+\chapter{Homotopy sheaves}
+
+\chapter{Pushforward, exceptional pushforward, and pullback}
+
+\chapter{\v{C}echcohomology}
+
+\chapter{Purehomotopy $\mathcal{K}$-sheaves}
+
+\chapter{Poincaré–Lefschetz duality}
+
+\chapter{Homotopy colimits}
+
+\chapter{Homotopy colimits of pure homotopy $\mathcal{K}$-sheaves}
+
+\chapter{Steenrod homology}
