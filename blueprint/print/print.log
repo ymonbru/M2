@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.9.20)  1 APR 2024 16:26
+This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.9.20)  2 APR 2024 13:09
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -716,64 +716,29 @@ LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
 (Font)              scaled to size 6.99925pt on input line 12.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
 (Font)              scaled to size 4.99947pt on input line 12.
-! Limit controls must follow a math operator.
-\limind ->\underrightarrow {\lim }\limits 
-                                          
-l.24 ... the abelian group $\mathcal{F}_p:=\limind
-                                                  _{p\in U\text{ open}}\math...
-
-? 
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 14.40152pt on input line 36.
+(Font)              scaled to size 14.40152pt on input line 37.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 14.39845pt on input line 36.
+(Font)              scaled to size 14.39845pt on input line 37.
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 36.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\symcal' on input line 36.
+(hyperref)                removing `math shift' on input line 37.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 36.
+(hyperref)                removing `\symcal' on input line 37.
 
-! Limit controls must follow a math operator.
-\limind ->\underrightarrow {\lim }\limits 
-                                          
-l.46 ... the abelian group $\mathcal{F}_p:=\limind
-                                                  _{p\in K\text{ compact}}\m...
 
-? 
-! Limit controls must follow a math operator.
-\limind ->\underrightarrow {\lim }\limits 
-                                          
-l.60         \limind
-                    _{K\subset U\text{ open relatively compact}}\mathcal{F}(...
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 37.
 
-? 
 [1
 
 ]
 
-! Package amsmath Error: \tag not allowed here.
+LaTeX Warning: Reference `def:K_pre_sheaves nh' on page 2 undefined on input li
+ne 89.
 
-See the amsmath package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.88 ...$ a $\mathcal{K}$-presheaf satisfying \tag
-                                                  {\ref{axiom:Ksh_3}}, then ...
-
-? 
-! Limit controls must follow a math operator.
-\limind ->\underrightarrow {\lim }\limits 
-                                          
-l.88 ...ng \tag{\ref{axiom:Ksh_3}}, then \[\limind
-                                                  _{a\in A}\mathcal{F}(K_a)\...
-
-? 
 [2]
 Chapter 2.
 [3
@@ -790,28 +755,28 @@ Chapter 4.
 Chapter 5.
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 121.
+(hyperref)                removing `math shift' on input line 157.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\symcal' on input line 121.
+(hyperref)                removing `\symcal' on input line 157.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 121.
+(hyperref)                removing `math shift' on input line 157.
 
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 24.88266pt on input line 121.
+(Font)              scaled to size 24.88266pt on input line 157.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 20.74222pt on input line 121.
+(Font)              scaled to size 20.74222pt on input line 157.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 17.28183pt on input line 121.
+(Font)              scaled to size 17.28183pt on input line 157.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 24.87733pt on input line 121.
+(Font)              scaled to size 24.87733pt on input line 157.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 20.73778pt on input line 121.
+(Font)              scaled to size 20.73778pt on input line 157.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 17.27815pt on input line 121.
+(Font)              scaled to size 17.27815pt on input line 157.
 [6
 
 ]
@@ -826,15 +791,15 @@ Chapter 7.
 Chapter 8.
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 127.
+(hyperref)                removing `math shift' on input line 163.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\symcal' on input line 127.
+(hyperref)                removing `\symcal' on input line 163.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 127.
+(hyperref)                removing `math shift' on input line 163.
 
 [9
 
@@ -843,14 +808,17 @@ Chapter 9.
 ) [10
 
 ] (/Users/yannismonbru/M2/blueprint/print/print.aux)
+
+LaTeX Warning: There were undefined references.
+
 Package rerunfilecheck Info: File `print.out' has not changed.
 (rerunfilecheck)             Checksum: 5CA4578CC147E9F0F139EC8AFDB2CA32;2096.
  ) 
 Here is how much of TeX's memory you used:
- 16572 strings out of 476179
- 309585 string characters out of 5809544
- 809226 words of memory out of 5000000
- 37101 multiletter control sequences out of 15000+600000
+ 16577 strings out of 476179
+ 309672 string characters out of 5809544
+ 810226 words of memory out of 5000000
+ 37106 multiletter control sequences out of 15000+600000
  478498 words of font info for 104 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  86i,6n,115p,455b,464s stack positions out of 10000i,1000n,20000p,200000b,200000s

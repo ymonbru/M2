@@ -13,6 +13,7 @@ Let $X$ be a locally compact Hausdorf space.
 
 \section{Sheaves}
 
+
 \begin{definition}
     \label{def:pre_sheaves}
     A presheave on $X$ is a contravariant functor from the category of open sets of $X$ to abélian groups.
@@ -58,7 +59,6 @@ Let $X$ be a locally compact Hausdorf space.
     \end{equation}
     \item Pour tout compact $K$ de $X$, le morphisme naturel suivant est un isomorphisme \begin{equation}\label{axiom:Ksh3}
         \limind_{K\subset U\text{ open relatively compact}}\mathcal{F}(\overline{U})\to \mathcal{F}(K)
-        
         %Dans un espace localement compact tout compact admet un voisinage ouvert relativemrnnt compact
     \end{equation}
 \end{itemize}
@@ -99,7 +99,7 @@ Let $X$ be a locally compact Hausdorf space.
     \label{def:adj_kprshv_and_prshv}
     \uses{def:K_pre_sheaves ,def:pre_sheaves}
     \begin{itemize}
-        \item If $\mathcal{F}$ is a presheaf then let $\alpha^*\mathcal{F}$ ne the $\mathcal{K}$-presheaf :\[K\mapsto \limind_{K\subset U \text{ open}}\mathcal{F}(U)\]
+        \item If $\mathcal{F}$ is a presheaf then let $\alpha^*\mathcal{F}$ ne the $\mathcal{K}$-presheaf :\[K\mapsto \limind{K\subset U \text{ open}}\mathcal{F}(U)\]
         \item If $\mathcal{G}$ is a $\mathcal{K}$-presheaf then let $\alpha_*\mathcal{G}$ ne the presheaf :\[ U\mapsto \limproj_{U\supset K \text{ compact}}\mathcal{F}(K)\]
     \end{itemize}
 \end{definition}
