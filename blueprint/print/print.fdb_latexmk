@@ -1,12 +1,14 @@
 # Fdb version 3
-["pdflatex"] 1711960986 "print.tex" "/Users/yannismonbru/M2/blueprint/print/print.pdf" "print" 1711960987
-  "/Users/yannismonbru/M2/blueprint/print/print.aux" 1711960987 839 6df5fc701af21a8b54102f1b5fd19907 "pdflatex"
-  "/Users/yannismonbru/M2/blueprint/print/print.out" 1711960987 88 3e364ca929255c69641129005bd704d6 "pdflatex"
+["pdflatex"] 1711981613 "print.tex" "/Users/yannismonbru/M2/blueprint/print/print.pdf" "print" 1711981613
+  "/Users/yannismonbru/M2/blueprint/print/print.aux" 1711981552 3737 511d6a08d79f191b55f629a86ba0e672 "pdflatex"
+  "/Users/yannismonbru/M2/blueprint/print/print.out" 1711981552 2096 5ca4578cc147e9f0f139ec8afdb2ca32 "pdflatex"
   "/usr/local/texlive/2022/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2022/texmf-dist/fonts/tfm/adobe/zapfding/pzdr.tfm" 1136768653 1528 f853c4d1b4e0550255e02831fdc8496f ""
   "/usr/local/texlive/2022/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam10.tfm" 1246382020 916 f87d7c45f9c908e672703b83b72241a3 ""
+  "/usr/local/texlive/2022/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam5.tfm" 1246382020 924 9904cf1d39e9767e7a3622f2a125a565 ""
   "/usr/local/texlive/2022/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam7.tfm" 1246382020 928 2dc8d444221b7a635bb58038579b861a ""
   "/usr/local/texlive/2022/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm" 1246382020 908 2921f8a10601f252058503cc6570e581 ""
+  "/usr/local/texlive/2022/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm5.tfm" 1246382020 940 75ac932a52f80982a9f8ea75d03a34cf ""
   "/usr/local/texlive/2022/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm7.tfm" 1246382020 940 228d6584342e91276bf566bcf9716b83 ""
   "/usr/local/texlive/2022/texmf-dist/fonts/tfm/public/cm/cmmi12.tfm" 1136768653 1524 4414a8315f39513458b80dfc63bff03a ""
   "/usr/local/texlive/2022/texmf-dist/fonts/tfm/public/cm/cmmi6.tfm" 1136768653 1512 f21f83efb36853c0b70002322c1ab3ad ""
@@ -83,10 +85,10 @@
   "/usr/local/texlive/2022/texmf-dist/web2c/texmf.cnf" 1646502317 40171 cdab547de63d26590bebb3baff566530 ""
   "/usr/local/texlive/2022/texmf-var/web2c/xetex/xelatex.fmt" 1663708212 5419892 9efcaaec2a58ad6718ebd69e74ac1448 ""
   "/usr/local/texlive/2022/texmf.cnf" 1647878952 577 209b46be99c9075fd74d4c0369380e8c ""
-  "content.tex" 1711960981 1060 55b395f8f3ae30d0a8acfb2106e0737a ""
+  "content.tex" 1711981534 4807 793c3c557fb949fda672b7d73ef10a8c ""
   "macros/common.tex" 1711029490 142 10e8f81f8b8dcf47997f6d1d7aa55e98 ""
-  "macros/print.tex" 1711032460 1348 8872e4b9f30aaa51a091001a1d1676d3 ""
-  "print.tex" 1711029490 1097 f4175e5a1b01cad1208274d0513df296 ""
+  "macros/print.tex" 1711976681 1435 a703ccd983496d5389c6c5d3b5355d24 ""
+  "print.tex" 1711961121 1097 f4175e5a1b01cad1208274d0513df296 ""
   (generated)
   "/Users/yannismonbru/M2/blueprint/print/print.aux"
   "/Users/yannismonbru/M2/blueprint/print/print.log"

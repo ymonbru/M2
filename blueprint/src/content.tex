@@ -11,10 +11,29 @@
 
 Let $X$ be a locally compact Hausdorf space.
 
+\section{Sheaves}
+
 \begin{definition}
     \label{def:pre_sheaves}
     A presheave on $X$ is a contravariant functor from the category of open sets of $X$ to abélian groups.
 \end{definition}
+
+\begin{definition}
+    \label{def:stalk}
+    \uses{def:pre_sheaves}
+    If $\mathcal{F}$ is a presheaf on $X$ and $p\in X$ then the stalk of $\mathcal{F}$ at $p$ is the abelian group $\mathcal{F}_p:=\limind_{p\in U\text{ open}}\mathcal{F}(U)$.
+\end{definition}
+
+\begin{definition}
+    \label{def:sheaves}
+    \uses{def:pre_sheaves}
+    If $\mathcal{F}$ is a presheaf on $X$, it is said to be a sheaf if for any $U\subset X$ open and any covering family of $U$ $(U_a)_{a\in A}$ one has the exact sequence:
+    \begin{equation}\label{axiom:Sh}
+        0\to \mathcal{F}(U)\to \prod\limits_{a\in A}\mathcal{F}(U_a)\to \prod\limits_{a,b\in A}F(U_a\cap U_b)
+    \end{equation}
+\end{definition}
+
+\section{$\mathcal{K}$-sheaves}
 
 \begin{definition}
     \label{def:K_pre_sheaves}
@@ -22,23 +41,118 @@ Let $X$ be a locally compact Hausdorf space.
 \end{definition}
 
 \begin{definition}
-    \label{def:sheaves}
-    \uses{def:pre_sheaves}
-    sheaves
+    \label{def:K_stalk}
+    \uses{def:K_pre_sheaves}
+    If $\mathcal{F}$ is a $\mathcal{K}$-presheaf on $X$ and $p\in X$ then the stalk of $\mathcal{F}$ at $p$ is the abelian group $\mathcal{F}_p:=\limind_{p\in K\text{ compact}}\mathcal{F}(K)=\mathcal{F}(\{p\})$.  
 \end{definition}
 
-\begin{theorem}
-    \uses{def:sheaves}
-    test
+\begin{definition}
+    \label{def:K_sheaves}
+    \uses{def:K_pre_sheaves}
+    If $\mathcal{F}$ is a $\mathcal{K}$-presheaf on $X$, it is said to be a $\mathcal{K}$-sheaf if the folowing conditions are satisfied:\begin{itemize}
+    \item\begin{equation}\label{axiom:Ksh1}
+        \mathcal{F}(\varnothing)=0
+    \end{equation}
+    \item For $K_1$ and $K_2$ two comapcts of $X$ the folowing sequence is exact:\begin{equation}\label{axiom:Ksh2}
+         0\to\mathcal{F}(K_1\cup K_2)\to \mathcal{F}(K_1)\bigoplus\mathcal{F}(K_2)\to \mathcal{F}(K_1\cap K_2) 
+    \end{equation}
+    \item Pour tout compact $K$ de $X$, le morphisme naturel suivant est un isomorphisme \begin{equation}\label{axiom:Ksh3}
+        \limind_{K\subset U\text{ open relatively compact}}\mathcal{F}(\overline{U})\to \mathcal{F}(K)
+        
+        %Dans un espace localement compact tout compact admet un voisinage ouvert relativemrnnt compact
+    \end{equation}
+\end{itemize}
+\end{definition}
 
-\end{theorem}
+\section{Technical lemmas}
+
+\begin{lemma}
+    \label{lem:cofinal_syst_of_inter_compact}
+    If $K_1,\ldots K_n$ are comapcts of $X$ then $\{U_1\cap\ldots\cap U_n\}_{U_i\supset K_i\text{ open in }X}$ is a cofinale systeme of neighborhoods of $K_1\cap \ldots K_n$.
+\end{lemma}
+
+\begin{proof}
+    TODO
+\end{proof}
+
+\begin{lemma}
+    \label{lem:equiv_of_adj}
+    If $\mathcal{C}$ and $\mathcal{D}$ are two categories, $F:\mathcal{C}\to \mathcal{D}$ and $G:\mathcal{D}\to \mathcal{C}$ two functors such that $(F,G)$ is an adjoint pair. Then for $(F,G)$ to be an equivalence of category, it's enough to have that thes canonical naturals transformations $\text{id}_{\mathcal{D}}\Rightarrow F\circ G$ and $G\circ F\Rightarrow \text{id}_{\mathcal{D}}$ are isomorphisms.
+\end{lemma}
+
+\begin{proof}
+    TODO%surement dans mathlib
+\end{proof}
+
+\begin{lemma}
+    \label{lem:a_nommer}
+    \uses{def:K_pre_sheaves nh}
+    If $(K_a)_{a\in A}$ is a filtered directed system of comapcts substes of $X$, and $\mathcal{F}$ a $\mathcal{K}$-presheaf satisfying \eqref{axiom:Ksh3}, then \[\limind_{a\in A}\mathcal{F}(K_a)\to \mathcal{F}(\bigcap\limits_{a\in A}K_a)\] is an isomorphism.
+\end{lemma}
+\begin{proof}
+    TODO
+\end{proof}
+
+\section{Equivalence of category}
+
+\begin{definition}
+    \label{def:adj_kprshv_and_prshv}
+    \uses{def:K_pre_sheaves ,def:pre_sheaves}
+    \begin{itemize}
+        \item If $\mathcal{F}$ is a presheaf then let $\alpha^*\mathcal{F}$ ne the $\mathcal{K}$-presheaf :\[K\mapsto \limind_{K\subset U \text{ open}}\mathcal{F}(U)\]
+        \item If $\mathcal{G}$ is a $\mathcal{K}$-presheaf then let $\alpha_*\mathcal{G}$ ne the presheaf :\[ U\mapsto \limproj_{U\supset K \text{ compact}}\mathcal{F}(K)\]
+    \end{itemize}
+\end{definition}
+
+\begin{proposition}
+    \label{pro:adj_kprshv_and_prshv}
+    \uses{def:adj_kprshv_and_prshv}
+    The pair $(\alpha^*,\alpha_*)$ is an adjonit pair.
+\end{proposition}
+
+\begin{proof}
+    TODO
+\end{proof}
+
+\begin{lemma}
+    \label{lem:adj_kshv_and_shv}
+    \uses{def:adj_kprshv_and_prshv}
+    \begin{itemize}
+        \item $\alpha^*$ send sheaves to $\mathcal{K}$-sheaves
+        \item $\alpha^*$ send $\mathcal{K}$-sheaves to sheaves
+        \item The reistrictions obtained still form an adjoint pair.
+    \end{itemize}
+    The previous adjoint pair give rise to an adjoint pair between shaeves and $\mathcal{K}$-sheaves
+\end{lemma}
+
+\begin{proof}
+    \uses{def:K_sheaves, def:sheaves, lem:cofinal_syst_of_inter_compact}
+    TODO
+\end{proof}
+
+\begin{lemma}
+    \label{lem:kshv_equiv_shv}
+    \uses{def:K_sheaves, def:sheaves, lem:adj_kshv_and_shv}
+    The previous adjoint pair give rise to an equivalence of category between shaeves and $\mathcal{K}$-sheaves
+\end{lemma}
+
+\begin{proof}
+    \uses{def:K_sheaves, def:sheaves, lem:adj_kshv_and_shv, lem:equiv_of_adj}
+
+\end{proof}
+
+
+
+
+
+
 
 
 \chapter{Homotopy sheaves}
 
 \chapter{Pushforward, exceptional pushforward, and pullback}
 
-\chapter{\v{C}echcohomology}
+\chapter{\v{C}ech cohomology}
 
 \chapter{Purehomotopy $\mathcal{K}$-sheaves}
 

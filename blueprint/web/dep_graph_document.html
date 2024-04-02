@@ -61,22 +61,34 @@
 <div id="statements">
 
     
-    <div class="dep-modal-container" id="a0000000011_modal">
+    <div class="dep-modal-container" id="def:adj_kprshv_and_prshv_modal">
       <div class="dep-modal-content">
           <button class="dep-closebtn">
 <svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
 </button>
         
-  <div class="thm" id="a0000000011" style="display: none">
+  <div class="thm" id="def:adj_kprshv_and_prshv" style="display: none">
     <div class="thm_thmheading">
-      <span class="theorem_thmcaption">
-      Theorem
+      <span class="definition_thmcaption">
+      Definition
       </span>
-      <span class="theorem_thmlabel">1.4</span></div>
-    <div class="thm_thmcontent"><p> test </p>
+      <span class="definition_thmlabel">1.10</span></div>
+    <div class="thm_thmcontent">
+<ul class="itemize">
+  <li><p>If \(\mathcal{F}\) is a presheaf then let \(\alpha ^*\mathcal{F}\) ne the \(\mathcal{K}\)-presheaf :</p>
+<div class="displaymath" id="a0000000019">
+  \[ K\mapsto \underrightarrow {\lim }\limits _{K\subset U \text{ open}}\mathcal{F}(U) \]
+</div>
+</li>
+  <li><p>If \(\mathcal{G}\) is a \(\mathcal{K}\)-presheaf then let \(\alpha _*\mathcal{G}\) ne the presheaf :</p>
+<div class="displaymath" id="a0000000020">
+  \[  U\mapsto \underleftarrow {\lim }\limits _{U\supset K \text{ compact}}\mathcal{F}(K) \]
+</div>
+</li>
+</ul>
 </div>
 
-    <a class="latex_link" href="sect0001.html#a0000000011">LaTeX</a>
+    <a class="latex_link" href="sect0001.html#def:adj_kprshv_and_prshv">LaTeX</a>
     
     
   
@@ -102,11 +114,104 @@
       <span class="definition_thmcaption">
       Definition
       </span>
-      <span class="definition_thmlabel">1.2</span></div>
+      <span class="definition_thmlabel">1.4</span></div>
     <div class="thm_thmcontent"><p> A \(\mathcal{K}\)-presheave on \(X\) is a contravariant functor from the category of compact sets of \(X\) to abélian groups. </p>
 </div>
 
     <a class="latex_link" href="sect0001.html#def:K_pre_sheaves">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="def:K_sheaves_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="def:K_sheaves" style="display: none">
+    <div class="thm_thmheading">
+      <span class="definition_thmcaption">
+      Definition
+      </span>
+      <span class="definition_thmlabel">1.6</span></div>
+    <div class="thm_thmcontent"><p>  If \(\mathcal{F}\) is a \(\mathcal{K}\)-presheaf on \(X\), it is said to be a \(\mathcal{K}\)-sheaf if the folowing conditions are satisfied:</p>
+<ul class="itemize">
+  <li><div class="equation" id="axiom:Ksh1">
+<p>
+  <div class="equation_content">
+    \begin{equation} \label{axiom:Ksh1} \mathcal{F}(\varnothing )=0 \end{equation}
+  </div>
+  <span class="equation_label">2</span>
+</p>
+</div>
+</li>
+  <li><p>For \(K_1\) and \(K_2\) two comapcts of \(X\) the folowing sequence is exact:</p>
+<div class="equation" id="axiom:Ksh2">
+<p>
+  <div class="equation_content">
+    \begin{equation} \label{axiom:Ksh2} 0\to \mathcal{F}(K_1\cup K_2)\to \mathcal{F}(K_1)\bigoplus \mathcal{F}(K_2)\to \mathcal{F}(K_1\cap K_2) \end{equation}
+  </div>
+  <span class="equation_label">3</span>
+</p>
+</div>
+</li>
+  <li><p>Pour tout compact \(K\) de \(X\), le morphisme naturel suivant est un isomorphisme </p>
+<div class="equation" id="axiom:Ksh3">
+<p>
+  <div class="equation_content">
+    \begin{equation} \label{axiom:Ksh3} \underrightarrow {\lim }\limits _{K\subset U\text{ open relatively compact}}\mathcal{F}(\overline{U})\to \mathcal{F}(K) 
+
+\end{equation}
+  </div>
+  <span class="equation_label">4</span>
+</p>
+</div>
+</li>
+</ul>
+</div>
+
+    <a class="latex_link" href="sect0001.html#def:K_sheaves">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="def:K_stalk_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="def:K_stalk" style="display: none">
+    <div class="thm_thmheading">
+      <span class="definition_thmcaption">
+      Definition
+      </span>
+      <span class="definition_thmlabel">1.5</span></div>
+    <div class="thm_thmcontent"><p>  If \(\mathcal{F}\) is a \(\mathcal{K}\)-presheaf on \(X\) and \(p\in X\) then the stalk of \(\mathcal{F}\) at \(p\) is the abelian group \(\mathcal{F}_p:=\underrightarrow {\lim }\limits _{p\in K\text{ compact}}\mathcal{F}(K)=\mathcal{F}(\{ p\} )\). </p>
+</div>
+
+    <a class="latex_link" href="sect0001.html#def:K_stalk">LaTeX</a>
     
     
   
@@ -163,10 +268,241 @@
       Definition
       </span>
       <span class="definition_thmlabel">1.3</span></div>
-    <div class="thm_thmcontent"><p>  sheaves </p>
+    <div class="thm_thmcontent"><p>  If \(\mathcal{F}\) is a presheaf on \(X\), it is said to be a sheaf if for any \(U\subset X\) open and any covering family of \(U\) \((U_a)_{a\in A}\) one has the exact sequence: </p>
+<div class="equation" id="axiom:Sh">
+<p>
+  <div class="equation_content">
+    \begin{equation} \label{axiom:Sh} 0\to \mathcal{F}(U)\to \prod \limits _{a\in A}\mathcal{F}(U_a)\to \prod \limits _{a,b\in A}F(U_a\cap U_b) \end{equation}
+  </div>
+  <span class="equation_label">1</span>
+</p>
+</div>
 </div>
 
     <a class="latex_link" href="sect0001.html#def:sheaves">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="def:stalk_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="def:stalk" style="display: none">
+    <div class="thm_thmheading">
+      <span class="definition_thmcaption">
+      Definition
+      </span>
+      <span class="definition_thmlabel">1.2</span></div>
+    <div class="thm_thmcontent"><p>  If \(\mathcal{F}\) is a presheaf on \(X\) and \(p\in X\) then the stalk of \(\mathcal{F}\) at \(p\) is the abelian group \(\mathcal{F}_p:=\underrightarrow {\lim }\limits _{p\in U\text{ open}}\mathcal{F}(U)\). </p>
+</div>
+
+    <a class="latex_link" href="sect0001.html#def:stalk">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="lem:a_nommer_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="lem:a_nommer" style="display: none">
+    <div class="thm_thmheading">
+      <span class="lemma_thmcaption">
+      Lemma
+      </span>
+      <span class="lemma_thmlabel">1.9</span></div>
+    <div class="thm_thmcontent"><p>  If \((K_a)_{a\in A}\) is a filtered directed system of comapcts substes of \(X\), and \(\mathcal{F}\) a \(\mathcal{K}\)-presheaf satisfying <a href="sect0001.html#axiom:Ksh3" class="eqref">4</a>, then </p>
+<div class="displaymath" id="a0000000017">
+  \[ \underrightarrow {\lim }\limits _{a\in A}\mathcal{F}(K_a)\to \mathcal{F}(\bigcap \limits _{a\in A}K_a) \]
+</div>
+<p> is an isomorphism. </p>
+</div>
+
+    <a class="latex_link" href="sect0001.html#lem:a_nommer">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="lem:adj_kshv_and_shv_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="lem:adj_kshv_and_shv" style="display: none">
+    <div class="thm_thmheading">
+      <span class="lemma_thmcaption">
+      Lemma
+      </span>
+      <span class="lemma_thmlabel">1.12</span></div>
+    <div class="thm_thmcontent">
+<ul class="itemize">
+  <li><p>\(\alpha ^*\) send sheaves to \(\mathcal{K}\)-sheaves </p>
+</li>
+  <li><p>\(\alpha ^*\) send \(\mathcal{K}\)-sheaves to sheaves </p>
+</li>
+  <li><p>The reistrictions obtained still form an adjoint pair. </p>
+</li>
+</ul>
+<p> The previous adjoint pair give rise to an adjoint pair between shaeves and \(\mathcal{K}\)-sheaves </p>
+</div>
+
+    <a class="latex_link" href="sect0001.html#lem:adj_kshv_and_shv">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="lem:cofinal_syst_of_inter_compact_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="lem:cofinal_syst_of_inter_compact" style="display: none">
+    <div class="thm_thmheading">
+      <span class="lemma_thmcaption">
+      Lemma
+      </span>
+      <span class="lemma_thmlabel">1.7</span></div>
+    <div class="thm_thmcontent"><p> If \(K_1,\ldots K_n\) are comapcts of \(X\) then \(\{ U_1\cap \ldots \cap U_n\} _{U_i\supset K_i\text{ open in }X}\) is a cofinale systeme of neighborhoods of \(K_1\cap \ldots K_n\). </p>
+</div>
+
+    <a class="latex_link" href="sect0001.html#lem:cofinal_syst_of_inter_compact">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="lem:equiv_of_adj_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="lem:equiv_of_adj" style="display: none">
+    <div class="thm_thmheading">
+      <span class="lemma_thmcaption">
+      Lemma
+      </span>
+      <span class="lemma_thmlabel">1.8</span></div>
+    <div class="thm_thmcontent"><p> If \(\mathcal{C}\) and \(\mathcal{D}\) are two categories, \(F:\mathcal{C}\to \mathcal{D}\) and \(G:\mathcal{D}\to \mathcal{C}\) two functors such that \((F,G)\) is an adjoint pair. Then for \((F,G)\) to be an equivalence of category, it’s enough to have that thes canonical naturals transformations \(\text{id}_{\mathcal{D}}\Rightarrow F\circ G\) and \(G\circ F\Rightarrow \text{id}_{\mathcal{D}}\) are isomorphisms. </p>
+</div>
+
+    <a class="latex_link" href="sect0001.html#lem:equiv_of_adj">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="lem:kshv_equiv_shv_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="lem:kshv_equiv_shv" style="display: none">
+    <div class="thm_thmheading">
+      <span class="lemma_thmcaption">
+      Lemma
+      </span>
+      <span class="lemma_thmlabel">1.13</span></div>
+    <div class="thm_thmcontent"><p>  The previous adjoint pair give rise to an equivalence of category between shaeves and \(\mathcal{K}\)-sheaves </p>
+</div>
+
+    <a class="latex_link" href="sect0001.html#lem:kshv_equiv_shv">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="pro:adj_kprshv_and_prshv_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="pro:adj_kprshv_and_prshv" style="display: none">
+    <div class="thm_thmheading">
+      <span class="proposition_thmcaption">
+      Proposition
+      </span>
+      <span class="proposition_thmlabel">1.11</span></div>
+    <div class="thm_thmcontent"><p>  The pair \((\alpha ^*,\alpha _*)\) is an adjonit pair. </p>
+</div>
+
+    <a class="latex_link" href="sect0001.html#pro:adj_kprshv_and_prshv">LaTeX</a>
     
     
   
@@ -197,7 +533,7 @@ graphContainer.graphviz({useWorker: true})
     .width(width)
     .height(height)
     .fit(true)
-    .renderDot(`strict digraph "" {	graph [bgcolor=transparent];	node [label="\N",		penwidth=1.8	];	edge [arrowhead=vee];	"def:pre_sheaves"	[color=blue,		fillcolor=blue,		label=pre_sheaves,		shape=box,		style=filled];	"def:sheaves"	[label=sheaves,		shape=box];	"def:pre_sheaves" -> "def:sheaves"	[style=dashed];	a0000000011	[label=a0000000011,		shape=ellipse];	"def:sheaves" -> a0000000011	[style=dashed];	"def:K_pre_sheaves"	[color=blue,		fillcolor=blue,		label=K_pre_sheaves,		shape=box,		style=filled];}`)
+    .renderDot(`strict digraph "" {	graph [bgcolor=transparent];	node [label="\N",		penwidth=1.8	];	edge [arrowhead=vee];	"def:sheaves"	[label=sheaves,		shape=box];	"lem:adj_kshv_and_shv"	[label=adj_kshv_and_shv,		shape=ellipse];	"def:sheaves" -> "lem:adj_kshv_and_shv";	"lem:kshv_equiv_shv"	[label=kshv_equiv_shv,		shape=ellipse];	"lem:adj_kshv_and_shv" -> "lem:kshv_equiv_shv"	[style=dashed];	"def:K_sheaves"	[label=K_sheaves,		shape=box];	"def:K_sheaves" -> "lem:adj_kshv_and_shv";	"lem:a_nommer"	[color=blue,		fillcolor="#A3D6FF",		label=a_nommer,		shape=ellipse,		style=filled];	"pro:adj_kprshv_and_prshv"	[label=adj_kprshv_and_prshv,		shape=ellipse];	"def:pre_sheaves"	[color=blue,		fillcolor=blue,		label=pre_sheaves,		shape=box,		style=filled];	"def:pre_sheaves" -> "def:sheaves"	[style=dashed];	"def:stalk"	[label=stalk,		shape=box];	"def:pre_sheaves" -> "def:stalk"	[style=dashed];	"def:adj_kprshv_and_prshv"	[label=adj_kprshv_and_prshv,		shape=box];	"def:pre_sheaves" -> "def:adj_kprshv_and_prshv"	[style=dashed];	"def:adj_kprshv_and_prshv" -> "lem:adj_kshv_and_shv"	[style=dashed];	"def:adj_kprshv_and_prshv" -> "pro:adj_kprshv_and_prshv"	[style=dashed];	"def:K_pre_sheaves"	[color=blue,		fillcolor=blue,		label=K_pre_sheaves,		shape=box,		style=filled];	"def:K_pre_sheaves" -> "def:K_sheaves"	[style=dashed];	"def:K_pre_sheaves" -> "def:adj_kprshv_and_prshv"	[style=dashed];	"def:K_stalk"	[label=K_stalk,		shape=box];	"def:K_pre_sheaves" -> "def:K_stalk"	[style=dashed];	"lem:cofinal_syst_of_inter_compact"	[color=blue,		fillcolor="#A3D6FF",		label=cofinal_syst_of_inter_compact,		shape=ellipse,		style=filled];	"lem:cofinal_syst_of_inter_compact" -> "lem:adj_kshv_and_shv";	"lem:equiv_of_adj"	[color=blue,		fillcolor="#A3D6FF",		label=equiv_of_adj,		shape=ellipse,		style=filled];	"lem:equiv_of_adj" -> "lem:kshv_equiv_shv";}`)
     .on("end", interactive);
 
 clickNode = function() {
