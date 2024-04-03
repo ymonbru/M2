@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.9.20)  2 APR 2024 16:47
+This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.9.20)  3 APR 2024 15:20
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -735,10 +735,6 @@ Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 [1
 
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 80--81
-
- []
-
 
 LaTeX Warning: Reference `def:K_pre_sheaves nh' on page 2 undefined on input li
 ne 101.
@@ -821,10 +817,10 @@ Package rerunfilecheck Info: File `print.out' has not changed.
 Here is how much of TeX's memory you used:
  16575 strings out of 476179
  309659 string characters out of 5809544
- 814226 words of memory out of 5000000
+ 813226 words of memory out of 5000000
  37104 multiletter control sequences out of 15000+600000
  478498 words of font info for 104 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 86i,15n,115p,530b,494s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 86i,15n,115p,530b,481s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
 Output written on /Users/yannismonbru/M2/blueprint/print/print.pdf (12 pages).

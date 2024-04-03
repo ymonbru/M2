@@ -76,12 +76,12 @@
     <div class="thm_thmcontent">
 <ul class="itemize">
   <li><p>If \(\mathcal{F}\) is a presheaf then let \(\alpha ^*\mathcal{F}\) ne the \(\mathcal{K}\)-presheaf :</p>
-<div class="displaymath" id="a0000000021">
+<div class="displaymath" id="a0000000020">
   \[ K\mapsto \varinjlim \limits _{K\subset U \text{ open}}\mathcal{F}(U) \]
 </div>
 </li>
   <li><p>If \(\mathcal{G}\) is a \(\mathcal{K}\)-presheaf then let \(\alpha _*\mathcal{G}\) ne the presheaf :</p>
-<div class="displaymath" id="a0000000022">
+<div class="displaymath" id="a0000000021">
   \[  U\mapsto \varprojlim \limits _{U\supset K \text{ compact}}\mathcal{F}(K) \]
 </div>
 </li>
@@ -335,7 +335,7 @@
       </span>
       <span class="lemma_thmlabel">1.10</span></div>
     <div class="thm_thmcontent"><p>  If \((K_a)_{a\in A}\) is a filtered directed system of comapcts substes of \(X\), and \(\mathcal{F}\) a \(\mathcal{K}\)-presheaf satisfying <a href="sect0001.html#axiom:Ksh3" class="eqref">4</a>, then </p>
-<div class="displaymath" id="a0000000019">
+<div class="displaymath" id="a0000000018">
   \[ \varinjlim \limits _{a\in A}\mathcal{F}(K_a)\to \mathcal{F}(\bigcap \limits _{a\in A}K_a) \]
 </div>
 <p> is an isomorphism. </p>
@@ -437,13 +437,13 @@
       Lemma
       </span>
       <span class="lemma_thmlabel">1.9</span></div>
-    <div class="thm_thmcontent"><p>  If \(\mathcal{C}\) and \(\mathcal{D}\) are two categories, \(F:\mathcal{C}\to \mathcal{D}\) and \(G:\mathcal{D}\to \mathcal{C}\) two functors such that \((F,G)\) is an adjoint pair. Then for \((F,G)\) to be an equivalence of category, it’s enough to have that thes canonical naturals transformations \(\text{id}_{\mathcal{D}}\Rightarrow F\circ G\) and \(G\circ F\Rightarrow \text{id}_{\mathcal{D}}\) are isomorphisms. </p>
+    <div class="thm_thmcontent"><p> If \(\mathcal{C}\) and \(\mathcal{D}\) are two categories, \(F:\mathcal{C}\to \mathcal{D}\) and \(G:\mathcal{D}\to \mathcal{C}\) two functors such that \((F,G)\) is an adjoint pair. Then for \((F,G)\) to be an equivalence of category, it’s enough to have that thes canonical naturals transformations \(\text{id}_{\mathcal{D}}\Rightarrow F\circ G\) and \(G\circ F\Rightarrow \text{id}_{\mathcal{D}}\) are isomorphisms. </p>
 </div>
 
     <a class="latex_link" href="sect0001.html#lem:equiv_of_adj">LaTeX</a>
     
     
-  <a class="lean_link lean_decl" href="https://ymonbru.github.io/M2/docs/find/#doc/CategoryTheory.Adjunction.toEquivalence">Lean</a>
+  
     
     
   
@@ -531,7 +531,7 @@ graphContainer.graphviz({useWorker: true})
     .width(width)
     .height(height)
     .fit(true)
-    .renderDot(`strict digraph "" {	graph [bgcolor=transparent];	node [label="\N",		penwidth=1.8	];	edge [arrowhead=vee];	"def:K_stalk"	[label=K_stalk,		shape=box];	"def:sheaves"	[label=sheaves,		shape=box];	"lem:adj_kshv_and_shv"	[label=adj_kshv_and_shv,		shape=ellipse];	"def:sheaves" -> "lem:adj_kshv_and_shv";	"lem:kshv_equiv_shv"	[label=kshv_equiv_shv,		shape=ellipse];	"lem:adj_kshv_and_shv" -> "lem:kshv_equiv_shv"	[style=dashed];	"def:K_pre_sheaves"	[color=blue,		fillcolor=blue,		label=K_pre_sheaves,		shape=box,		style=filled];	"def:K_pre_sheaves" -> "def:K_stalk"	[style=dashed];	"def:K_sheaves"	[label=K_sheaves,		shape=box];	"def:K_pre_sheaves" -> "def:K_sheaves"	[style=dashed];	"def:adj_kprshv_and_prshv"	[label=adj_kprshv_and_prshv,		shape=box];	"def:K_pre_sheaves" -> "def:adj_kprshv_and_prshv"	[style=dashed];	"def:K_sheaves" -> "lem:adj_kshv_and_shv";	"def:adj_kprshv_and_prshv" -> "lem:adj_kshv_and_shv"	[style=dashed];	"pro:adj_kprshv_and_prshv"	[label=adj_kprshv_and_prshv,		shape=ellipse];	"def:adj_kprshv_and_prshv" -> "pro:adj_kprshv_and_prshv"	[style=dashed];	"def:stalk"	[label=stalk,		shape=box];	"lem:cofinal_syst_of_inter_compact"	[color=blue,		fillcolor="#A3D6FF",		label=cofinal_syst_of_inter_compact,		shape=ellipse,		style=filled];	"lem:cofinal_syst_of_inter_compact" -> "lem:adj_kshv_and_shv";	"def:pre_sheaves"	[color=blue,		fillcolor=blue,		label=pre_sheaves,		shape=box,		style=filled];	"def:pre_sheaves" -> "def:sheaves"	[style=dashed];	"def:pre_sheaves" -> "def:adj_kprshv_and_prshv"	[style=dashed];	"def:pre_sheaves" -> "def:stalk"	[style=dashed];	"lem:equiv_of_adj"	[color=green,		fillcolor="#A3D6FF",		label=equiv_of_adj,		shape=ellipse,		style=filled];	"lem:equiv_of_adj" -> "lem:kshv_equiv_shv";	"lem:a_nommer"	[color=blue,		fillcolor="#A3D6FF",		label=a_nommer,		shape=ellipse,		style=filled];}`)
+    .renderDot(`strict digraph "" {	graph [bgcolor=transparent];	node [label="\N",		penwidth=1.8	];	edge [arrowhead=vee];	"def:sheaves"	[label=sheaves,		shape=box];	"lem:adj_kshv_and_shv"	[label=adj_kshv_and_shv,		shape=ellipse];	"def:sheaves" -> "lem:adj_kshv_and_shv";	"lem:kshv_equiv_shv"	[label=kshv_equiv_shv,		shape=ellipse];	"lem:adj_kshv_and_shv" -> "lem:kshv_equiv_shv"	[style=dashed];	"def:stalk"	[label=stalk,		shape=box];	"def:K_stalk"	[label=K_stalk,		shape=box];	"def:K_pre_sheaves"	[color=blue,		fillcolor=blue,		label=K_pre_sheaves,		shape=box,		style=filled];	"def:K_pre_sheaves" -> "def:K_stalk"	[style=dashed];	"def:K_sheaves"	[label=K_sheaves,		shape=box];	"def:K_pre_sheaves" -> "def:K_sheaves"	[style=dashed];	"def:adj_kprshv_and_prshv"	[label=adj_kprshv_and_prshv,		shape=box];	"def:K_pre_sheaves" -> "def:adj_kprshv_and_prshv"	[style=dashed];	"def:K_sheaves" -> "lem:adj_kshv_and_shv";	"def:adj_kprshv_and_prshv" -> "lem:adj_kshv_and_shv"	[style=dashed];	"pro:adj_kprshv_and_prshv"	[label=adj_kprshv_and_prshv,		shape=ellipse];	"def:adj_kprshv_and_prshv" -> "pro:adj_kprshv_and_prshv"	[style=dashed];	"lem:a_nommer"	[color=blue,		fillcolor="#A3D6FF",		label=a_nommer,		shape=ellipse,		style=filled];	"def:pre_sheaves"	[color=blue,		fillcolor=blue,		label=pre_sheaves,		shape=box,		style=filled];	"def:pre_sheaves" -> "def:sheaves"	[style=dashed];	"def:pre_sheaves" -> "def:stalk"	[style=dashed];	"def:pre_sheaves" -> "def:adj_kprshv_and_prshv"	[style=dashed];	"lem:cofinal_syst_of_inter_compact"	[color=blue,		label=cofinal_syst_of_inter_compact,		shape=ellipse];	"lem:cofinal_syst_of_inter_compact" -> "lem:adj_kshv_and_shv";	"lem:equiv_of_adj"	[color=green,		fillcolor="#1CAC78",		label=equiv_of_adj,		shape=ellipse,		style=filled];	"lem:equiv_of_adj" -> "lem:kshv_equiv_shv";}`)
     .on("end", interactive);
 
 clickNode = function() {

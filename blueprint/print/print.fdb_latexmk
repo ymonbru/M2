@@ -1,7 +1,7 @@
 # Fdb version 3
-["pdflatex"] 1712069254 "print.tex" "/Users/yannismonbru/M2/blueprint/print/print.pdf" "print" 1712069255
-  "/Users/yannismonbru/M2/blueprint/print/print.aux" 1712069255 3913 5481709147fd1c46b737db1839576568 "pdflatex"
-  "/Users/yannismonbru/M2/blueprint/print/print.out" 1712069255 2096 5ca4578cc147e9f0f139ec8afdb2ca32 "pdflatex"
+["pdflatex"] 1712150426 "print.tex" "/Users/yannismonbru/M2/blueprint/print/print.pdf" "print" 1712150428
+  "/Users/yannismonbru/M2/blueprint/print/print.aux" 1712150427 3913 70a4639565d3fdfdd2b85c5a0bd7784e "pdflatex"
+  "/Users/yannismonbru/M2/blueprint/print/print.out" 1712150427 2096 5ca4578cc147e9f0f139ec8afdb2ca32 "pdflatex"
   "/usr/local/texlive/2022/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2022/texmf-dist/fonts/tfm/adobe/zapfding/pzdr.tfm" 1136768653 1528 f853c4d1b4e0550255e02831fdc8496f ""
   "/usr/local/texlive/2022/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam10.tfm" 1246382020 916 f87d7c45f9c908e672703b83b72241a3 ""
@@ -85,7 +85,7 @@
   "/usr/local/texlive/2022/texmf-dist/web2c/texmf.cnf" 1646502317 40171 cdab547de63d26590bebb3baff566530 ""
   "/usr/local/texlive/2022/texmf-var/web2c/xetex/xelatex.fmt" 1663708212 5419892 9efcaaec2a58ad6718ebd69e74ac1448 ""
   "/usr/local/texlive/2022/texmf.cnf" 1647878952 577 209b46be99c9075fd74d4c0369380e8c ""
-  "content.tex" 1712069249 6851 e2a4377310c4ac9f49108e88ce348eae ""
+  "content.tex" 1712150395 6915 06e5e09d553416507001b5e2262c6661 ""
   "macros/common.tex" 1711029490 142 10e8f81f8b8dcf47997f6d1d7aa55e98 ""
   "macros/print.tex" 1712060229 1383 74eca880ff48b6ea58d1afa011a9ff12 ""
   "print.tex" 1711961121 1097 f4175e5a1b01cad1208274d0513df296 ""

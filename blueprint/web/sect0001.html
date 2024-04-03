@@ -43,10 +43,10 @@
   <a href="sect0001.html#a0000000012"><span class="toc_ref">1.2</span> <span class="toc_entry">\(\mathcal{K}\)-sheaves</span></a>
  </li>
 <li class="">
-  <a href="sect0001.html#a0000000015"><span class="toc_ref">1.3</span> <span class="toc_entry">Technical lemmas</span></a>
+  <a href="sect0001.html#a0000000014"><span class="toc_ref">1.3</span> <span class="toc_entry">Technical lemmas</span></a>
  </li>
 <li class="">
-  <a href="sect0001.html#a0000000020"><span class="toc_ref">1.4</span> <span class="toc_entry">Equivalence of category</span></a>
+  <a href="sect0001.html#a0000000019"><span class="toc_ref">1.4</span> <span class="toc_entry">Equivalence of category</span></a>
  </li>
 
   </ul>
@@ -357,32 +357,11 @@
         </div>
   </div>
   <div class="remark_thmcontent">
-  <p><a href="sect0001.html#axiom:Ksh3" class="eqref">4</a> is well defined because if \(K\) is a compact subset of \(X\), then for \(x\in K\) let \(U_x\) be an open neighborhood relatively compact (wich exists by local compactness), the family \((u_x)_{x\in K}\) covers \(K\) then one can extract a finite cover of it : \(U_1,\ldots U_n\) and then \(\cup _{i=1}^n U_i\) is an open neighborhood, and a finite union of relatively comapct, then it’s relatively compact. (\(\)</p>
+  <p><a href="sect0001.html#axiom:Ksh3" class="eqref">4</a> is well defined because if \(K\) is a compact subset of \(X\), then for \(x\in K\) let \(U_x\) be an open neighborhood relatively compact (wich exists by local compactness), the family \((u_x)_{x\in K}\) covers \(K\) then one can extract a finite cover of it : \(U_1,\ldots U_n\) and then \(\cup _{i=1}^n U_i\) is an open neighborhood, and a finite union of relatively comapct, then it’s relatively compact. (\(\overline{\cup _{i=1}^n U_i}=\cup _{i=1}^n \overline{U_i}\)) </p>
 
   </div>
 </div>
-<p>\(\)∪_i=1^n U_i=\(\cup _{i=1}^n \overline{U_i}\)) </p>
-<div class="remark_thmwrapper theorem-style-plain" id="a0000000014">
-  <div class="remark_thmheading">
-    <span class="remark_thmcaption">
-    Remark
-    </span>
-    <div class="thm_header_extras">
-
-        </div>
-    <div class="thm_header_hidden_extras">
-
-    <a class="icon proof" href="sect0001.html#a0000000014">#</a>
-    
-    
-    
-        </div>
-  </div>
-  <div class="remark_thmcontent">
-  
-  </div>
-</div>
-<h1 id="a0000000015">1.3 Technical lemmas</h1>
+<h1 id="a0000000014">1.3 Technical lemmas</h1>
 <div class="lemma_thmwrapper theorem-style-plain" id="lem:cofinal_syst_of_inter_compact">
   <div class="lemma_thmheading">
     <span class="lemma_thmcaption">
@@ -396,9 +375,6 @@
 
     <a class="icon proof" href="sect0001.html#lem:cofinal_syst_of_inter_compact">#</a>
     
-    <a class="icon proof" href="sect0001.html#a0000000016"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
-</a>
-    
     
     
         </div>
@@ -408,7 +384,7 @@
 
   </div>
 </div>
-<div class="proof_wrapper" id="a0000000016">
+<div class="proof_wrapper" id="a0000000015">
   <div class="proof_heading">
     <span class="proof_caption">
     Proof
@@ -416,10 +392,7 @@
     <span class="expand-proof">▶</span>
   </div>
   <div class="proof_content">
-  <p>Let \(U_i\) be a relatively comapct open neighborhood of \(K_i\) and \(U=\cup _{i=1}^nU_i\). Then \(\overline{U}\) is compact <br /></p>
-<p>If \(n=2\), let \(V\) be a neighborhood of \(K_1\cap K_2\) </p>
-<p>If the result is true for \(n-1\), </p>
-
+  
   </div>
 </div>
 <div class="lemma_thmwrapper theorem-style-plain" id="lem:equiv_of_adj">
@@ -430,43 +403,26 @@
     <span class="lemma_thmlabel">1.9</span>
     <div class="thm_header_extras">
 
+    
+    ✓
         </div>
     <div class="thm_header_hidden_extras">
 
     <a class="icon proof" href="sect0001.html#lem:equiv_of_adj">#</a>
     
-    <a class="icon proof" href="sect0001.html#a0000000017"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
+    <a class="icon proof" href="sect0001.html#a0000000016"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
 </a>
     
     
     
-    <button class="modal lean">L∃∀N</button>
-        <div class="modal-container">
-      <div class="modal-content">
-        <header>
-          <h1>Lean declarations</h1>
-          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
-</button>
-        </header>
-        
-        <ul class="uses">
-          
-          <li><a href="https://ymonbru.github.io/M2/docs/find/#doc/CategoryTheory.Adjunction.toEquivalence" class="lean_decl">CategoryTheory.Adjunction.toEquivalence</a></li>
-          
-        </ul>
-    
-      </div>
-    </div>
-
-    
         </div>
   </div>
   <div class="lemma_thmcontent">
-  <p>  If \(\mathcal{C}\) and \(\mathcal{D}\) are two categories, \(F:\mathcal{C}\to \mathcal{D}\) and \(G:\mathcal{D}\to \mathcal{C}\) two functors such that \((F,G)\) is an adjoint pair. Then for \((F,G)\) to be an equivalence of category, it’s enough to have that thes canonical naturals transformations \(\text{id}_{\mathcal{D}}\Rightarrow F\circ G\) and \(G\circ F\Rightarrow \text{id}_{\mathcal{D}}\) are isomorphisms. </p>
+  <p> If \(\mathcal{C}\) and \(\mathcal{D}\) are two categories, \(F:\mathcal{C}\to \mathcal{D}\) and \(G:\mathcal{D}\to \mathcal{C}\) two functors such that \((F,G)\) is an adjoint pair. Then for \((F,G)\) to be an equivalence of category, it’s enough to have that thes canonical naturals transformations \(\text{id}_{\mathcal{D}}\Rightarrow F\circ G\) and \(G\circ F\Rightarrow \text{id}_{\mathcal{D}}\) are isomorphisms. </p>
 
   </div>
 </div>
-<div class="proof_wrapper" id="a0000000017">
+<div class="proof_wrapper" id="a0000000016">
   <div class="proof_heading">
     <span class="proof_caption">
     Proof
@@ -491,7 +447,7 @@
 
     <a class="icon proof" href="sect0001.html#lem:a_nommer">#</a>
     
-    <a class="icon proof" href="sect0001.html#a0000000018"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
+    <a class="icon proof" href="sect0001.html#a0000000017"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
 </a>
     
     
@@ -500,14 +456,14 @@
   </div>
   <div class="lemma_thmcontent">
   <p>  If \((K_a)_{a\in A}\) is a filtered directed system of comapcts substes of \(X\), and \(\mathcal{F}\) a \(\mathcal{K}\)-presheaf satisfying <a href="sect0001.html#axiom:Ksh3" class="eqref">4</a>, then </p>
-<div class="displaymath" id="a0000000019">
+<div class="displaymath" id="a0000000018">
   \[ \varinjlim \limits _{a\in A}\mathcal{F}(K_a)\to \mathcal{F}(\bigcap \limits _{a\in A}K_a) \]
 </div>
 <p> is an isomorphism. </p>
 
   </div>
 </div>
-<div class="proof_wrapper" id="a0000000018">
+<div class="proof_wrapper" id="a0000000017">
   <div class="proof_heading">
     <span class="proof_caption">
     Proof
@@ -519,7 +475,7 @@
 
   </div>
 </div>
-<h1 id="a0000000020">1.4 Equivalence of category</h1>
+<h1 id="a0000000019">1.4 Equivalence of category</h1>
 <div class="definition_thmwrapper theorem-style-plain" id="def:adj_kprshv_and_prshv">
   <div class="definition_thmheading">
     <span class="definition_thmcaption">
@@ -563,12 +519,12 @@
   
 <ul class="itemize">
   <li><p>If \(\mathcal{F}\) is a presheaf then let \(\alpha ^*\mathcal{F}\) ne the \(\mathcal{K}\)-presheaf :</p>
-<div class="displaymath" id="a0000000021">
+<div class="displaymath" id="a0000000020">
   \[ K\mapsto \varinjlim \limits _{K\subset U \text{ open}}\mathcal{F}(U) \]
 </div>
 </li>
   <li><p>If \(\mathcal{G}\) is a \(\mathcal{K}\)-presheaf then let \(\alpha _*\mathcal{G}\) ne the presheaf :</p>
-<div class="displaymath" id="a0000000022">
+<div class="displaymath" id="a0000000021">
   \[  U\mapsto \varprojlim \limits _{U\supset K \text{ compact}}\mathcal{F}(K) \]
 </div>
 </li>
@@ -589,7 +545,7 @@
 
     <a class="icon proof" href="sect0001.html#pro:adj_kprshv_and_prshv">#</a>
     
-    <a class="icon proof" href="sect0001.html#a0000000023"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
+    <a class="icon proof" href="sect0001.html#a0000000022"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
 </a>
     
     
@@ -621,7 +577,7 @@
 
   </div>
 </div>
-<div class="proof_wrapper" id="a0000000023">
+<div class="proof_wrapper" id="a0000000022">
   <div class="proof_heading">
     <span class="proof_caption">
     Proof
@@ -646,7 +602,7 @@
 
     <a class="icon proof" href="sect0001.html#lem:adj_kshv_and_shv">#</a>
     
-    <a class="icon proof" href="sect0001.html#a0000000024"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
+    <a class="icon proof" href="sect0001.html#a0000000023"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
 </a>
     
     
@@ -693,7 +649,7 @@
 
   </div>
 </div>
-<div class="proof_wrapper" id="a0000000024">
+<div class="proof_wrapper" id="a0000000023">
   <div class="proof_heading">
     <span class="proof_caption">
     Proof
@@ -718,7 +674,7 @@
 
     <a class="icon proof" href="sect0001.html#lem:kshv_equiv_shv">#</a>
     
-    <a class="icon proof" href="sect0001.html#a0000000025"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
+    <a class="icon proof" href="sect0001.html#a0000000024"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
 </a>
     
     
@@ -762,7 +718,7 @@
 
   </div>
 </div>
-<div class="proof_wrapper" id="a0000000025">
+<div class="proof_wrapper" id="a0000000024">
   <div class="proof_heading">
     <span class="proof_caption">
     Proof
