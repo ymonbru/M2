@@ -1,0 +1,34 @@
+
+
+\begin{definition}\label{def:pure_homotopy_k_sheaf}
+    A homotopy $\mathcal{K}$-sheaf $\mathcal{F}^{\bullet}$ is said to be pure on $X$ if: \begin{itemize}
+        \item
+        \item
+    \end{itemize}
+\end{definition}
+
+\begin{lemma}\label{lem:csq_of_pure_homotopy_k_sheaf}
+    Let $\mathcal{F}^{\bullet}$ be a pure-homotopy $\mathcal{K}$-sheaf. Then: \begin{itemize}
+        \item For $i<0$ $H^i\mathcal{F}^{\bullet}=0$
+        \item $H^0\mathcal{F}^{\bullet}$ is a $\mathcal{K}$-sheaf.
+    \end{itemize}
+\end{lemma}
+
+\begin{proof}
+    \uses{lem:chech_preserve_quasi_iso}
+    %hSh_k_2
+    TODO
+\end{proof}
+
+\begin{proposition}\label{prop:cech_of_pure_homotopy_k_sheaf}
+    \uses{def:pure_homotopy_k_sheaf}
+    Let $\mathcal{F}^{\bullet}$ be a pure-homotopy $\mathcal{K}$-sheaf. Then there is a canonical isomorphism:
+    \[H^{\bullet}\mathcal{F}^{\bullet}(X)=\check{H}^{\bullet}(X;H^0\mathcal{F}^{\bullet})\].
+
+    More generaly: TODO
+\end{proposition}
+
+\begin{proof}
+    \uses{lem:homotpy_k_sheaves_stable_by_extension,lem:csq_of_pure_homotopy_k_sheaf, prop:chech_is_determined_by_stalks_3,lem:first_non_zero_homology_of_homotopy_k_sheaf_is_k_sheaf,lem:chech_preserve_quasi_iso,prop:homotopy_k_sheaf_compute_chech}
+    TODO
+\end{proof}
