@@ -1,14 +1,35 @@
-\begin{definition}\label{def:homotopy_k_sheaf}
+\begin{definition}\label{def:cohomology_of_k-prsh}
     \uses{def:K_pre_sheaves}
+    Let $\mathcal{F}^{\bullet}$ be complex of $\mathcal{K}$-presheaves then taking the cohomology defines a $\mathcal{K}$-presheaf denoted $H^{\bullet}\mathcal{F}^{\bullet}$.
+\end{definition}
+
+\begin{definition}\label{def:quasi_iso_of_complex_of_k-prsh}
+    \uses{def:cohomology_of_k-prsh}
+    A morphisme of complex of $\mathcal{K}$-presheave $\mathcal{F}^{\bullet}\to\mathcal{G}^{\bullet}$ if it induces isomorphisms $H^i\mathcal{F}^{\bullet}\to H^i\mathcal{G}^{\bullet}$ for all $i$.
+\end{definition}
+
+\begin{definition}\label{def:homotopy_k_sheaf}
+    \uses{def:K_pre_sheaves, def:total_complex}
+    A complex of $\mathcal{K}$-presheaves $\mathcal{F}^{\bullet}$ is said to be a Homotopy-$\mathcal{K}$-sheave if the folowing conditions are satisfied:\begin{itemize}
+        \item\begin{equation}\label{axiom:hKsh1}
+            \mathcal{F}^{\bullet}(\varnothing) \text{ is an acyclic complex}
+        \end{equation}
+        \item For $K_1$ and $K_2$ two comapcts of $X$ the folowing complex is acyclic:\begin{equation}\label{axiom:hKsh2}
+             [\mathcal{F}^{\bullet}(K_1\cup K_2)\to \mathcal{F}^{\bullet-1}(K_1)\bigoplus\mathcal{F}^{\bullet-1}(K_2)\to \mathcal{F}^{\bullet-2}(K_1\cap K_2) ]
+        \end{equation}
+        \item For any compact $K$ of $X$, the following natural morphism is a quasi-isomorphism \begin{equation}\label{axiom:hKsh3}
+            \varinjlim\limits_{K\subset U\text{ open relatively compact}}\mathcal{F}^{\bullet}(\overline{U})\to \mathcal{F}^{\bullet}(K)
+        \end{equation}
+    \end{itemize}
 \end{definition}
 
 \begin{lemma}\label{lem:homotpy_k_sheaves_stable_by_extension}
-    \uses{def:K_pre_sheaves}
+    \uses{def:K_pre_sheaves,def:homotopy_k_sheaf}
+    Let $\mathcal{F}^{\bullet}$ be a complex of $\mathcal{K}$-presheaves. If $\mathcal{F}^{\bullet}$ has a finite filtration whose associated graded is a Homotopy-$\mathcal{K}$-sheaf, then $\mathcal{F}^{\bullet}$ is a Homotopy-$\mathcal{K}$-sheaf.
 \end{lemma}
 
 \begin{proof}
-
-
+    TODO
 \end{proof}
 
 \begin{lemma}\label{lem:first_non_zero_homology_of_homotopy_k_sheaf_is_k_sheaf}
@@ -17,8 +38,7 @@
 \end{lemma}
 
 \begin{proof}
-
-
+    TODO
 \end{proof}
 
 

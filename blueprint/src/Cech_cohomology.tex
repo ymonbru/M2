@@ -1,8 +1,17 @@
 
 \section{}
 
+\begin{definition}\label{def:chech_of_compelx_of_k_prsh}
+    Let $\mathcal{F}^{\bullet}$ be a complex of $\mathcal{K}$-presheaves on a compact space $X$ then we define the \v{C}ech cohomology $\check{H}(X;\mathcal{F}^{\bullet})$ by TODO
+\end{definition}
+
+\begin{remark}\label{def:chech_of_k_prsh}
+    By using the inclusion of $\mathcal{K}$-presheaves into complexes of $\mathcal{K}$-presheave, one get's a definition of \v{C}ech cohomology for $\mathcal{K}$-presheave.
+\end{remark}
+
 \begin{lemma}\label{lem:chech_preserve_quasi_iso}
-    TODO
+    \uses{def:quasi_iso_of_complex_of_k-prsh}
+    If $\mathcal{F}^{\bullet}\to\mathcal{G}^{\bullet}$ is a quasi-isomorphism then the induced maps $\check{H}^i\mathcal{F}^{\bullet}\to \check{H}^i\mathcal{G}^{\bullet}$ are isomorphims.
 \end{lemma}
 
 \begin{proof}
@@ -10,7 +19,8 @@
 \end{proof}
 
 \begin{proposition}\label{prop:homotopy_k_sheaf_compute_chech}
-
+    \uses{def:homotopy_k_sheaf,def:chech_of_compelx_of_k_prsh}
+    If $\mathcal{F}^{\bullet}$ be a complex of $\mathcal{K}$-presheaves that verify \ref{axiom:kHsh1} and \ref{axiom:kHsh2} then the canonical map $H^{\bullet}\mathcal{F}^{\bullet}\to \check{H}^{\bullet}(X;\mathcal{F}^{\bullet})$ is an isomorphism.
 \end{proposition}
 
 \begin{proof}
@@ -21,7 +31,7 @@
 \section{\v{C}ech cohomology is determined by stalks}
 
 \begin{lemma}\label{lem:chech_is_determined_by_stalks_1}
-    \uses{def:K_pre_sheaves}
+    \uses{def:cohomology_of_k-prsh, def:chech_of_compelx_of_k_prsh}
     %use la def de la cohomologie de chech
     TODO
 \end{lemma}

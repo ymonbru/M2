@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.9.20)  8 APR 2024 16:55
+This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.9.20)  9 APR 2024 17:54
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -703,20 +703,21 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 
 ]
 (./content.tex
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
+(Font)              scaled to size 10.00107pt on input line 10.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
+(Font)              scaled to size 7.00075pt on input line 10.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
+(Font)              scaled to size 5.00053pt on input line 10.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
+(Font)              scaled to size 9.99893pt on input line 10.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
+(Font)              scaled to size 6.99925pt on input line 10.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
+(Font)              scaled to size 4.99947pt on input line 10.
+ [1]
 Chapter 1.
 (./Presheaves_and_sheaves.tex
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 10.00107pt on input line 2.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 7.00075pt on input line 2.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 5.00053pt on input line 2.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 9.99893pt on input line 2.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 6.99925pt on input line 2.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 4.99947pt on input line 2.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
 (Font)              scaled to size 14.40152pt on input line 24.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
@@ -734,56 +735,63 @@ Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 (hyperref)                removing `math shift' on input line 24.
 
-[1
+[2
 
 ]
 
-LaTeX Warning: Reference `def:K_pre_sheaves nh' on page 2 undefined on input li
-ne 86.
+LaTeX Warning: Reference `def:K_pre_sheaves nh' on page 3 undefined on input li
+ne 85.
 
-[2]) [3]
+[3]) [4]
 Chapter 2.
-(./Homotopy_sheaves.tex) [4
+(./Homotopy_sheaves.tex) [5
 
 ]
 Chapter 3.
-(./Pushforward_and_pullback.tex) [5
+(./Pushforward_and_pullback.tex) [6
 
 ]
 Chapter 4.
-(./Cech_cohomology.tex) [6
+(./Cech_cohomology.tex
+
+LaTeX Warning: Reference `axiom:kHsh1' on page 7 undefined on input line 23.
+
+
+LaTeX Warning: Reference `axiom:kHsh2' on page 7 undefined on input line 23.
+
+) [7
 
 ]
 Chapter 5.
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 26.
+(hyperref)                removing `math shift' on input line 29.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\symcal' on input line 26.
+(hyperref)                removing `\symcal' on input line 29.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 26.
+(hyperref)                removing `math shift' on input line 29.
 
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 24.88266pt on input line 26.
+(Font)              scaled to size 24.88266pt on input line 29.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 20.74222pt on input line 26.
+(Font)              scaled to size 20.74222pt on input line 29.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 17.28183pt on input line 26.
+(Font)              scaled to size 17.28183pt on input line 29.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 24.87733pt on input line 26.
+(Font)              scaled to size 24.87733pt on input line 29.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 20.73778pt on input line 26.
+(Font)              scaled to size 20.73778pt on input line 29.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 17.27815pt on input line 26.
-(./Purehomotopy_K-sheaves.tex) [7
+(Font)              scaled to size 17.27815pt on input line 29.
+(./Purehomotopy_K-sheaves.tex) [8
 
 ]
 Chapter 6.
-(./Poincare–Lefschetz_duality.tex) [8
+(./Poincare–Lefschetz_duality.tex) [9
 
 ]
 Chapter 7.
@@ -800,11 +808,11 @@ Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 (hyperref)                removing `math shift' on input line 11.
 
-) [9
+) [10
 
 ]
 Chapter 8.
-(./Steenrod_homology.tex)) [10
+(./Steenrod_homology.tex)) [11
 
 ]
 (/Users/yannismonbru/M2/blueprint/print/print.aux)
@@ -815,12 +823,12 @@ Package rerunfilecheck Info: File `print.out' has not changed.
 (rerunfilecheck)             Checksum: 73EB906BF5274FC9CA3366919892E97E;2565.
  ) 
 Here is how much of TeX's memory you used:
- 16643 strings out of 476179
- 311611 string characters out of 5809544
+ 16653 strings out of 476179
+ 311810 string characters out of 5809544
  813226 words of memory out of 5000000
- 37148 multiletter control sequences out of 15000+600000
+ 37158 multiletter control sequences out of 15000+600000
  478498 words of font info for 104 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 86i,15n,115p,561b,481s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 86i,15n,115p,561b,483s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on /Users/yannismonbru/M2/blueprint/print/print.pdf (11 pages).
+Output written on /Users/yannismonbru/M2/blueprint/print/print.pdf (12 pages).

@@ -102,7 +102,7 @@
 
 <div class="main-text">
 <h1 id="a0000000003">2 Homotopy sheaves</h1>
-<div class="definition_thmwrapper theorem-style-plain" id="def:homotopy_k_sheaf">
+<div class="definition_thmwrapper theorem-style-plain" id="def:cohomology_of_k-prsh">
   <div class="definition_thmheading">
     <span class="definition_thmcaption">
     Definition
@@ -113,7 +113,7 @@
         </div>
     <div class="thm_header_hidden_extras">
 
-    <a class="icon proof" href="sect0002.html#def:homotopy_k_sheaf">#</a>
+    <a class="icon proof" href="sect0002.html#def:cohomology_of_k-prsh">#</a>
     
     
     <button class="modal"><svg  class="icon icon-mindmap "><use xlink:href="symbol-defs.svg#icon-mindmap"></use></svg>
@@ -140,22 +140,64 @@
         </div>
   </div>
   <div class="definition_thmcontent">
-  
+  <p>  Let \(\mathcal{F}^{\bullet }\) be complex of \(\mathcal{K}\)-presheaves then taking the cohomology defines a \(\mathcal{K}\)-presheaf denoted \(H^{\bullet }\mathcal{F}^{\bullet }\). </p>
 
   </div>
 </div>
-<div class="lemma_thmwrapper theorem-style-plain" id="lem:homotpy_k_sheaves_stable_by_extension">
-  <div class="lemma_thmheading">
-    <span class="lemma_thmcaption">
-    Lemma
+<div class="definition_thmwrapper theorem-style-plain" id="def:quasi_iso_of_complex_of_k-prsh">
+  <div class="definition_thmheading">
+    <span class="definition_thmcaption">
+    Definition
     </span>
-    <span class="lemma_thmlabel">2.2</span>
+    <span class="definition_thmlabel">2.2</span>
     <div class="thm_header_extras">
 
         </div>
     <div class="thm_header_hidden_extras">
 
-    <a class="icon proof" href="sect0002.html#lem:homotpy_k_sheaves_stable_by_extension">#</a>
+    <a class="icon proof" href="sect0002.html#def:quasi_iso_of_complex_of_k-prsh">#</a>
+    
+    
+    <button class="modal"><svg  class="icon icon-mindmap "><use xlink:href="symbol-defs.svg#icon-mindmap"></use></svg>
+</button>
+        <div class="modal-container">
+      <div class="modal-content">
+        <header>
+          <h1>Uses</h1>
+          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        </header>
+        
+        <ul class="uses">
+          
+          <li><a href="sect0002.html#def:cohomology_of_k-prsh">Definition 2.1</a></li>
+          
+        </ul>
+    
+      </div>
+    </div>
+
+    
+    
+        </div>
+  </div>
+  <div class="definition_thmcontent">
+  <p>  A morphisme of complex of \(\mathcal{K}\)-presheave \(\mathcal{F}^{\bullet }\to \mathcal{G}^{\bullet }\) if it induces isomorphisms \(H^i\mathcal{F}^{\bullet }\to H^i\mathcal{G}^{\bullet }\) for all \(i\). </p>
+
+  </div>
+</div>
+<div class="definition_thmwrapper theorem-style-plain" id="def:homotopy_k_sheaf">
+  <div class="definition_thmheading">
+    <span class="definition_thmcaption">
+    Definition
+    </span>
+    <span class="definition_thmlabel">2.3</span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0002.html#def:homotopy_k_sheaf">#</a>
     
     
     <button class="modal"><svg  class="icon icon-mindmap "><use xlink:href="symbol-defs.svg#icon-mindmap"></use></svg>
@@ -172,6 +214,86 @@
           
           <li><a href="sect0001.html#def:K_pre_sheaves">Definition 1.4</a></li>
           
+          <li><a href="index.html#def:total_complex">Definition 0.1</a></li>
+          
+        </ul>
+    
+      </div>
+    </div>
+
+    
+    
+        </div>
+  </div>
+  <div class="definition_thmcontent">
+  <p>  A complex of \(\mathcal{K}\)-presheaves \(\mathcal{F}^{\bullet }\) is said to be a Homotopy-\(\mathcal{K}\)-sheave if the folowing conditions are satisfied:</p>
+<ul class="itemize">
+  <li><div class="equation" id="axiom:hKsh1">
+<p>
+  <div class="equation_content">
+    \begin{equation} \label{axiom:hKsh1} \mathcal{F}^{\bullet }(\varnothing ) \text{ is an acyclic complex} \end{equation}
+  </div>
+  <span class="equation_label">1</span>
+</p>
+</div>
+</li>
+  <li><p>For \(K_1\) and \(K_2\) two comapcts of \(X\) the folowing complex is acyclic:</p>
+<div class="equation" id="axiom:hKsh2">
+<p>
+  <div class="equation_content">
+    \begin{equation} \label{axiom:hKsh2} [\mathcal{F}^{\bullet }(K_1\cup K_2)\to \mathcal{F}^{\bullet -1}(K_1)\bigoplus \mathcal{F}^{\bullet -1}(K_2)\to \mathcal{F}^{\bullet -2}(K_1\cap K_2) ] \end{equation}
+  </div>
+  <span class="equation_label">2</span>
+</p>
+</div>
+</li>
+  <li><p>For any compact \(K\) of \(X\), the following natural morphism is a quasi-isomorphism </p>
+<div class="equation" id="axiom:hKsh3">
+<p>
+  <div class="equation_content">
+    \begin{equation} \label{axiom:hKsh3} \varinjlim \limits _{K\subset U\text{ open relatively compact}}\mathcal{F}^{\bullet }(\overline{U})\to \mathcal{F}^{\bullet }(K) \end{equation}
+  </div>
+  <span class="equation_label">3</span>
+</p>
+</div>
+</li>
+</ul>
+
+  </div>
+</div>
+<div class="lemma_thmwrapper theorem-style-plain" id="lem:homotpy_k_sheaves_stable_by_extension">
+  <div class="lemma_thmheading">
+    <span class="lemma_thmcaption">
+    Lemma
+    </span>
+    <span class="lemma_thmlabel">2.4</span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0002.html#lem:homotpy_k_sheaves_stable_by_extension">#</a>
+    
+    <a class="icon proof" href="sect0002.html#a0000000028"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
+</a>
+    
+    
+    <button class="modal"><svg  class="icon icon-mindmap "><use xlink:href="symbol-defs.svg#icon-mindmap"></use></svg>
+</button>
+        <div class="modal-container">
+      <div class="modal-content">
+        <header>
+          <h1>Uses</h1>
+          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        </header>
+        
+        <ul class="uses">
+          
+          <li><a href="sect0001.html#def:K_pre_sheaves">Definition 1.4</a></li>
+          
+          <li><a href="sect0002.html#def:homotopy_k_sheaf">Definition 2.3</a></li>
+          
         </ul>
     
       </div>
@@ -182,7 +304,7 @@
         </div>
   </div>
   <div class="lemma_thmcontent">
-  
+  <p>  Let \(\mathcal{F}^{\bullet }\) be a complex of \(\mathcal{K}\)-presheaves. If \(\mathcal{F}^{\bullet }\) has a finite filtration whose associated graded is a Homotopy-\(\mathcal{K}\)-sheaf, then \(\mathcal{F}^{\bullet }\) is a Homotopy-\(\mathcal{K}\)-sheaf. </p>
 
   </div>
 </div>
@@ -194,7 +316,8 @@
     <span class="expand-proof">▶</span>
   </div>
   <div class="proof_content">
-  
+  <p>TODO </p>
+
   </div>
 </div>
 <div class="lemma_thmwrapper theorem-style-plain" id="lem:first_non_zero_homology_of_homotopy_k_sheaf_is_k_sheaf">
@@ -202,13 +325,16 @@
     <span class="lemma_thmcaption">
     Lemma
     </span>
-    <span class="lemma_thmlabel">2.3</span>
+    <span class="lemma_thmlabel">2.5</span>
     <div class="thm_header_extras">
 
         </div>
     <div class="thm_header_hidden_extras">
 
     <a class="icon proof" href="sect0002.html#lem:first_non_zero_homology_of_homotopy_k_sheaf_is_k_sheaf">#</a>
+    
+    <a class="icon proof" href="sect0002.html#a0000000029"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
+</a>
     
     
     <button class="modal"><svg  class="icon icon-mindmap "><use xlink:href="symbol-defs.svg#icon-mindmap"></use></svg>
@@ -225,7 +351,7 @@
           
           <li><a href="sect0001.html#def:K_sheaves">Definition 1.6</a></li>
           
-          <li><a href="sect0002.html#def:homotopy_k_sheaf">Definition 2.1</a></li>
+          <li><a href="sect0002.html#def:homotopy_k_sheaf">Definition 2.3</a></li>
           
         </ul>
     
@@ -249,7 +375,8 @@
     <span class="expand-proof">▶</span>
   </div>
   <div class="proof_content">
-  
+  <p>TODO </p>
+
   </div>
 </div>
 
