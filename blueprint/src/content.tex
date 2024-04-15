@@ -7,8 +7,33 @@
 % can start with a \section or \chapter for instance.
 
 \begin{definition}\label{def:total_complex}
-    If $A_0^{\bullet}\to\ldots \to A_n^{\bullet}$ is a sequence of maps of complex such that the composition of two consecutive maps is $0$, then let's denote $[A_0^{\bullet}\to\ldots \to A_n^{\bullet-n}]$ the total complex of this double complex, defined by: TODO
+    If $A_0^{\bullet}\to\ldots \to A_n^{\bullet}$ is a sequence of maps (with $f_i:A_i\to A_{i+1}$ )of complex such that the composition of two consecutive maps is $0$, then let's denote $[A_0^{\bullet}\to\ldots \to A_n^{\bullet-n}]$ the total complex of this double complex, defined by the following data:\begin{itemize}
+        \item The object in degré $k$ is $\bigoplus\limits_{i=0}^nA_i[-i]^n$
+        \item The diferential is given by the matrix $\begin{pmatrix}
+            d_{A_0} & 0 & \ldots & \ldots & 0\\
+            f_0 & -d_{A_1} & \ldots & \ldots & 0\\
+            0 & f_1 & \ldots & \ldots & 0\\
+            \vdots & \vdots & \ddots &  & \vdots\\
+            \vdots & \vdots & & (-1)^{n-1}d_{A_{n-1}} & 0\\
+            0 & 0 & \ldots & f_{n-1} & (-1)^nd_{A_n}\\
+            \end{pmatrix}$
+    \end{itemize}
 \end{definition}
+
+\begin{proof}
+    One needs to check that the matrix square is $0$. Let $M$ be this matrix and $(i,j)$ be integers.
+
+    $$M^2[i,j]=\sum\limits_{k=1}^nM[i,k]M[k,j]=+ M[i,i] M[i,j]+M[i,i+1]M[i+1,j]$$
+
+    One can distinguish four cases:\begin{itemize}
+
+        \item If $j$ is not in $\{i,i+1,i+2\}$ then the two terms are $0$. 
+        \item If $j=i$, then $M^2[i,j]=((-1)^id_{A_i})^2=0$. 
+        \item If $j=i+1$ then $M^2[i,j]=(-1)^id_{A_i}\times f_i+ (-1)^{i+1}d_{A_{i+1}}\times f_i=f_i\circ (-1)^id_{A_i}+ f_i\circ (-1)^{i+1}d_{A_{i+1}}=0$ because $f_i$ is a morphism of complex.
+        \item If $j=i+2$ then $M^2[i,j]=f_i\times f_{i+1}=f_{i+1}\circ f_i=0$.
+    \end{itemize}
+
+\end{proof}
 
 \chapter{Presheaves and sheaves}
 

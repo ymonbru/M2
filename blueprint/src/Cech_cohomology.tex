@@ -20,7 +20,7 @@
 
 \begin{proposition}\label{prop:homotopy_k_sheaf_compute_chech}
     \uses{def:homotopy_k_sheaf,def:chech_of_compelx_of_k_prsh}
-    If $\mathcal{F}^{\bullet}$ be a complex of $\mathcal{K}$-presheaves that verify \ref{axiom:kHsh1} and \ref{axiom:kHsh2} then the canonical map $H^{\bullet}\mathcal{F}^{\bullet}\to \check{H}^{\bullet}(X;\mathcal{F}^{\bullet})$ is an isomorphism.
+    Let $\mathcal{F}^{\bullet}$ be a complex of $\mathcal{K}$-presheaves that verify \eqref{axiom:hKsh1} and \eqref{axiom:hKsh2} then the canonical map $H^{\bullet}\mathcal{F}^{\bullet}\to \check{H}^{\bullet}(X;\mathcal{F}^{\bullet})$ is an isomorphism.
 \end{proposition}
 
 \begin{proof}
@@ -30,10 +30,10 @@
 
 \section{\v{C}ech cohomology is determined by stalks}
 
-\begin{lemma}\label{lem:chech_is_determined_by_stalks_1}
+\begin{lemma}\label{lem:chech_is_determined_by_stalks_1,K_stalk}
     \uses{def:cohomology_of_k-prsh, def:chech_of_compelx_of_k_prsh}
-    %use la def de la cohomologie de chech
-    TODO
+    Let $\mathcal{F}^{\bullet}$ be a complex of $\mathcal{K}$-presheaves that verify \eqref{axiom:Ksh3} and such that all the stalks are $0$ then $\check{H}^{\bullet}(X;\mathcal{F})=0$
+    
 \end{lemma}
 
 \begin{proof}
@@ -41,21 +41,24 @@
 \end{proof}
 
 \begin{lemma}\label{lem:chech_is_determined_by_stalks_2}
-    %uses hshk3
-    %use la def de la cohomologie de chech
-    TODO
+    \uses{def:chech_of_compelx_of_k_prsh,def:homotopy_k_sheaf}
+    Let $\mathcal{F}^{\bullet}$ be a complex of $\mathcal{K}$-presheaves that verify \eqref{axiom:hKsh3} and $H^i\mathcal{F}^{\bullet}=0$ for $i<<0$.
+    
+    Then if the stalks of $\mathcal{F}^{\bullet}$ are acyclics, $\check{H}^{\bullet}(X;\mathcal{F}^{\bullet})=0$
+
 \end{lemma}
 
 \begin{proof}
     \uses{lem:chech_is_determined_by_stalks_1,lem:chech_preserve_quasi_iso}
-
+    TODO
 \end{proof}
 
 
 \begin{proposition}\label{prop:chech_is_determined_by_stalks_3}
-    %uses hshk3
-    %use la def de la cohomologie de chech
-    TODO
+    \uses{def:chech_of_compelx_of_k_prsh,def:homotopy_k_sheaf}
+    Let $\mathcal{F}^{\bullet}$ and $\mathcal{G}^{\bullet}$ be complexes of $\mathcal{K}$-presheaves that verify \eqref{axiom:hKsh3} and $H^i\mathcal{F}^{\bullet}=H^i\mathcal{G}^{\bullet}=0$ for $i$ small enough.
+    
+    Then if a morphism $\mathcal{F}^{\bullet}\to \mathcal{G}^{\bullet}$ induces a quasi-isomorphism on stalks, $\check{H}^{\bullet}(X;\mathcal{F}^{\bullet})=\check{H}^{\bullet}(X;\mathcal{G}^{\bullet})$
 \end{proposition}
 
 \begin{proof}

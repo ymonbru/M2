@@ -2,8 +2,8 @@
 
 \begin{definition}\label{def:pure_homotopy_k_sheaf}
     A homotopy $\mathcal{K}$-sheaf $\mathcal{F}^{\bullet}$ is said to be pure on $X$ if: \begin{itemize}
-        \item
-        \item
+        \item For $p\in X$ and $i\neq 0$, $(H^i\mathcal{F}^{\bullet})_p=0$
+        \item $H^i\mathcal{F}^{\bullet}=0$ for $i<<0$blocally on $X$: ie for all $p\in X$ there is an open neighbourhoud $U$ of $p$ and an integer $N$ such that for $i\leq N$ and $K\subset U$: $H^i\mathcal{F}^{\bullet}(K)=0$
     \end{itemize}
 \end{definition}
 
@@ -25,7 +25,9 @@
     Let $\mathcal{F}^{\bullet}$ be a pure-homotopy $\mathcal{K}$-sheaf. Then there is a canonical isomorphism:
     \[H^{\bullet}\mathcal{F}^{\bullet}(X)=\check{H}^{\bullet}(X;H^0\mathcal{F}^{\bullet})\].
 
-    More generaly: TODO
+    More generaly: Let $[\mathcal{F}_0^{\bullet}\to \ldots\mathcal{F}_n^{\bullet-n}]$  be a complex of pure-homotopy $\mathcal{K}$-sheaves, then there is a canonical isomorphism:
+
+    \[H^{\bullet}[\mathcal{F}_0^{\bullet}(X)\to \ldots\mathcal{F}_n^{\bullet-n}(X)]=\check{H}^{\bullet}(X;[H^0\mathcal{F}_0^{\bullet}\to\ldots\to (H^0\mathcal{F}_n^{\bullet})[n]])\]
 \end{proposition}
 
 \begin{proof}

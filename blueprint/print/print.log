@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.9.20)  9 APR 2024 17:54
+This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.9.20)  15 APR 2024 15:19
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -178,6 +178,13 @@ LaTeX Info: Redefining \] on input line 2939.
 \l_MT_below_shortintertext_sep=\dimen164
 \xmathstrut@box=\box53
 \xmathstrut@dim=\dimen165
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/bbm-macros/bbm.sty
+Package: bbm 1999/03/15 V 1.2 provides fonts for set symbols - TH
+LaTeX Font Info:    Overwriting math alphabet `\mathbbm' in version `bold'
+(Font)                  U/bbm/m/n --> U/bbm/bx/n on input line 33.
+LaTeX Font Info:    Overwriting math alphabet `\mathbbmss' in version `bold'
+(Font)                  U/bbmss/m/n --> U/bbmss/bx/n on input line 35.
 )
 (/usr/local/texlive/2022/texmf-dist/tex/latex/hyperref/hyperref.sty
 Package: hyperref 2022-02-21 v7.00n Hypertext links for LaTeX
@@ -360,9 +367,9 @@ LaTeX Font Info:    Redeclaring font encoding TS1 on input line 47.
 \g__um_primekern_muskip=\muskip18
 
 (/usr/local/texlive/2022/texmf-dist/tex/latex/unicode-math/unicode-math-table.t
-ex))) (./macros/common.tex) (./macros/print.tex
+ex))) (./macros/common.tex
 \c@theorem=\count308
-)
+) (./macros/print.tex)
 (/Users/yannismonbru/M2/blueprint/print/print.aux)
 \openout1 = `print.aux'.
 
@@ -754,10 +761,8 @@ Chapter 3.
 Chapter 4.
 (./Cech_cohomology.tex
 
-LaTeX Warning: Reference `axiom:kHsh1' on page 7 undefined on input line 23.
-
-
-LaTeX Warning: Reference `axiom:kHsh2' on page 7 undefined on input line 23.
+LaTeX Warning: Reference `lem:chech_is_determined_by_stalks_1' on page 7 undefi
+ned on input line 52.
 
 ) [7
 
@@ -765,33 +770,38 @@ LaTeX Warning: Reference `axiom:kHsh2' on page 7 undefined on input line 23.
 Chapter 5.
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 29.
+(hyperref)                removing `math shift' on input line 54.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\symcal' on input line 29.
+(hyperref)                removing `\symcal' on input line 54.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 29.
+(hyperref)                removing `math shift' on input line 54.
 
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 24.88266pt on input line 29.
+(Font)              scaled to size 24.88266pt on input line 54.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 20.74222pt on input line 29.
+(Font)              scaled to size 20.74222pt on input line 54.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 17.28183pt on input line 29.
+(Font)              scaled to size 17.28183pt on input line 54.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 24.87733pt on input line 29.
+(Font)              scaled to size 24.87733pt on input line 54.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 20.73778pt on input line 29.
+(Font)              scaled to size 20.73778pt on input line 54.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 17.27815pt on input line 29.
+(Font)              scaled to size 17.27815pt on input line 54.
 (./Purehomotopy_K-sheaves.tex) [8
 
 ]
 Chapter 6.
-(./Poincare–Lefschetz_duality.tex) [9
+(./Poincare–Lefschetz_duality.tex
+Underfull \hbox (badness 10000) in paragraph at lines 4--6
+
+ []
+
+) [9
 
 ]
 Chapter 7.
@@ -823,10 +833,10 @@ Package rerunfilecheck Info: File `print.out' has not changed.
 (rerunfilecheck)             Checksum: 73EB906BF5274FC9CA3366919892E97E;2565.
  ) 
 Here is how much of TeX's memory you used:
- 16653 strings out of 476179
- 311810 string characters out of 5809544
- 813226 words of memory out of 5000000
- 37158 multiletter control sequences out of 15000+600000
+ 16690 strings out of 476179
+ 312665 string characters out of 5809544
+ 814405 words of memory out of 5000000
+ 37191 multiletter control sequences out of 15000+600000
  478498 words of font info for 104 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  86i,15n,115p,561b,483s stack positions out of 10000i,1000n,20000p,200000b,200000s

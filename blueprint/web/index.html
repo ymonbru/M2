@@ -34,16 +34,16 @@
   <span class="expand-toc">▶</span>
   <ul class="sub-toc-1">
      <li class="">
-  <a href="sect0001.html#a0000000010"><span class="toc_ref">1.1</span> <span class="toc_entry">Sheaves</span></a>
+  <a href="sect0001.html#a0000000012"><span class="toc_ref">1.1</span> <span class="toc_entry">Sheaves</span></a>
  </li>
 <li class="">
-  <a href="sect0001.html#a0000000011"><span class="toc_ref">1.2</span> <span class="toc_entry">\(\mathcal{K}\)-sheaves</span></a>
+  <a href="sect0001.html#a0000000013"><span class="toc_ref">1.2</span> <span class="toc_entry">\(\mathcal{K}\)-sheaves</span></a>
  </li>
 <li class="">
-  <a href="sect0001.html#a0000000013"><span class="toc_ref">1.3</span> <span class="toc_entry">Technical lemmas</span></a>
+  <a href="sect0001.html#a0000000015"><span class="toc_ref">1.3</span> <span class="toc_entry">Technical lemmas</span></a>
  </li>
 <li class="">
-  <a href="sect0001.html#a0000000018"><span class="toc_ref">1.4</span> <span class="toc_entry">Equivalence of category</span></a>
+  <a href="sect0001.html#a0000000020"><span class="toc_ref">1.4</span> <span class="toc_entry">Equivalence of category</span></a>
  </li>
 
   </ul>
@@ -59,10 +59,10 @@
   <span class="expand-toc">▶</span>
   <ul class="sub-toc-1">
      <li class="">
-  <a href="sect0004.html#a0000000024"><span class="toc_ref">4.1</span> <span class="toc_entry"></span></a>
+  <a href="sect0004.html#a0000000026"><span class="toc_ref">4.1</span> <span class="toc_entry"></span></a>
  </li>
 <li class="">
-  <a href="sect0004.html#a0000000025"><span class="toc_ref">4.2</span> <span class="toc_entry">Čech cohomology is determined by stalks</span></a>
+  <a href="sect0004.html#a0000000027"><span class="toc_ref">4.2</span> <span class="toc_entry">Čech cohomology is determined by stalks</span></a>
  </li>
 
   </ul>
@@ -78,10 +78,10 @@
   <span class="expand-toc">▶</span>
   <ul class="sub-toc-1">
      <li class="">
-  <a href="sect0007.html#a0000000026"><span class="toc_ref">7.1</span> <span class="toc_entry">Homotopy colimits</span></a>
+  <a href="sect0007.html#a0000000028"><span class="toc_ref">7.1</span> <span class="toc_entry">Homotopy colimits</span></a>
  </li>
 <li class="">
-  <a href="sect0007.html#a0000000027"><span class="toc_ref">7.2</span> <span class="toc_entry">Homotopy colimits of pure homotopy \(\mathcal{K}\)-sheaves</span></a>
+  <a href="sect0007.html#a0000000029"><span class="toc_ref">7.2</span> <span class="toc_entry">Homotopy colimits of pure homotopy \(\mathcal{K}\)-sheaves</span></a>
  </li>
 
   </ul>
@@ -117,12 +117,103 @@
 
     <a class="icon proof" href="index.html#def:total_complex">#</a>
     
+    <a class="icon proof" href="index.html#a0000000010"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
+</a>
+    
     
     
         </div>
   </div>
   <div class="definition_thmcontent">
-  <p> If \(A_0^{\bullet }\to \ldots \to A_n^{\bullet }\) is a sequence of maps of complex such that the composition of two consecutive maps is \(0\), then let’s denote \([A_0^{\bullet }\to \ldots \to A_n^{\bullet -n}]\) the total complex of this double complex, defined by: TODO </p>
+  <p> If \(A_0^{\bullet }\to \ldots \to A_n^{\bullet }\) is a sequence of maps (with \(f_i:A_i\to A_{i+1}\) )of complex such that the composition of two consecutive maps is \(0\), then let’s denote \([A_0^{\bullet }\to \ldots \to A_n^{\bullet -n}]\) the total complex of this double complex, defined by the following data:</p>
+<ul class="itemize">
+  <li><p>The object in degré \(k\) is \(\bigoplus \limits _{i=0}^nA_i[-i]^n\) </p>
+</li>
+  <li><p>The diferential is given by the matrix \(\begin{pmatrix}  d_{A_0} 
+
+&  0 
+
+&  \ldots 
+
+&  \ldots 
+
+&  0
+
+\\ f_0 
+
+&  -d_{A_1} 
+
+&  \ldots 
+
+&  \ldots 
+
+&  0
+
+\\ 0 
+
+&  f_1 
+
+&  \ldots 
+
+&  \ldots 
+
+&  0
+
+\\ \vdots 
+
+&  \vdots 
+
+&  \ddots 
+
+& &  \vdots 
+
+\\ \vdots 
+
+&  \vdots 
+
+& &  (-1)^{n-1}d_{A_{n-1}} 
+
+&  0
+
+\\ 0 
+
+&  0 
+
+&  \ldots 
+
+&  f_{n-1} 
+
+&  (-1)^nd_{A_n}
+
+\\ \end{pmatrix}\) </p>
+</li>
+</ul>
+
+  </div>
+</div>
+<div class="proof_wrapper" id="a0000000010">
+  <div class="proof_heading">
+    <span class="proof_caption">
+    Proof
+    </span>
+    <span class="expand-proof">▶</span>
+  </div>
+  <div class="proof_content">
+  <p>One needs to check that the matrix square is \(0\). Let \(M\) be this matrix and \((i,j)\) be integers. </p>
+<div class="displaymath" id="a0000000011">
+  \[ M^2[i,j]=\sum \limits _{k=1}^nM[i,k]M[k,j]=+ M[i,i] M[i,j]+M[i,i+1]M[i+1,j] \]
+</div>
+<p>One can distinguish four cases:</p>
+<ul class="itemize">
+  <li><p>If \(j\) is not in \(\{ i,i+1,i+2\} \) then the two terms are \(0\). </p>
+</li>
+  <li><p>If \(j=i\), then \(M^2[i,j]=((-1)^id_{A_i})^2=0\). </p>
+</li>
+  <li><p>If \(j=i+1\) then \(M^2[i,j]=(-1)^id_{A_i}\times f_i+ (-1)^{i+1}d_{A_{i+1}}\times f_i=f_i\circ (-1)^id_{A_i}+ f_i\circ (-1)^{i+1}d_{A_{i+1}}=0\) because \(f_i\) is a morphism of complex. </p>
+</li>
+  <li><p>If \(j=i+2\) then \(M^2[i,j]=f_i\times f_{i+1}=f_{i+1}\circ f_i=0\). </p>
+</li>
+</ul>
 
   </div>
 </div>
@@ -134,16 +225,16 @@
   <a href="sect0001.html"><span class="toc_ref">1</span> <span class="toc_entry">Presheaves and sheaves</span></a>
 	<ul>
 		   <li>	
-  <a href="sect0001.html#a0000000010"><span class="toc_ref">1.1</span> <span class="toc_entry">Sheaves</span></a>
+  <a href="sect0001.html#a0000000012"><span class="toc_ref">1.1</span> <span class="toc_entry">Sheaves</span></a>
   </li>
   <li>	
-  <a href="sect0001.html#a0000000011"><span class="toc_ref">1.2</span> <span class="toc_entry">\(\mathcal{K}\)-sheaves</span></a>
+  <a href="sect0001.html#a0000000013"><span class="toc_ref">1.2</span> <span class="toc_entry">\(\mathcal{K}\)-sheaves</span></a>
   </li>
   <li>	
-  <a href="sect0001.html#a0000000013"><span class="toc_ref">1.3</span> <span class="toc_entry">Technical lemmas</span></a>
+  <a href="sect0001.html#a0000000015"><span class="toc_ref">1.3</span> <span class="toc_entry">Technical lemmas</span></a>
   </li>
   <li>	
-  <a href="sect0001.html#a0000000018"><span class="toc_ref">1.4</span> <span class="toc_entry">Equivalence of category</span></a>
+  <a href="sect0001.html#a0000000020"><span class="toc_ref">1.4</span> <span class="toc_entry">Equivalence of category</span></a>
   </li>
 
 	</ul>
@@ -158,10 +249,10 @@
   <a href="sect0004.html"><span class="toc_ref">4</span> <span class="toc_entry">Čech cohomology</span></a>
 	<ul>
 		   <li>	
-  <a href="sect0004.html#a0000000024"><span class="toc_ref">4.1</span> <span class="toc_entry"></span></a>
+  <a href="sect0004.html#a0000000026"><span class="toc_ref">4.1</span> <span class="toc_entry"></span></a>
   </li>
   <li>	
-  <a href="sect0004.html#a0000000025"><span class="toc_ref">4.2</span> <span class="toc_entry">Čech cohomology is determined by stalks</span></a>
+  <a href="sect0004.html#a0000000027"><span class="toc_ref">4.2</span> <span class="toc_entry">Čech cohomology is determined by stalks</span></a>
   </li>
 
 	</ul>
@@ -176,10 +267,10 @@
   <a href="sect0007.html"><span class="toc_ref">7</span> <span class="toc_entry">Homotopy colimits</span></a>
 	<ul>
 		   <li>	
-  <a href="sect0007.html#a0000000026"><span class="toc_ref">7.1</span> <span class="toc_entry">Homotopy colimits</span></a>
+  <a href="sect0007.html#a0000000028"><span class="toc_ref">7.1</span> <span class="toc_entry">Homotopy colimits</span></a>
   </li>
   <li>	
-  <a href="sect0007.html#a0000000027"><span class="toc_ref">7.2</span> <span class="toc_entry">Homotopy colimits of pure homotopy \(\mathcal{K}\)-sheaves</span></a>
+  <a href="sect0007.html#a0000000029"><span class="toc_ref">7.2</span> <span class="toc_entry">Homotopy colimits of pure homotopy \(\mathcal{K}\)-sheaves</span></a>
   </li>
 
 	</ul>

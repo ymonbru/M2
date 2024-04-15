@@ -1,16 +1,34 @@
+Uses chech cohomology with compact supports for sheaves 
+
 \begin{definition}\label{def:orientation_sheaf_of_a_manifold}
+    \uses{def:pushforward_of_K-Sheaf, def:exceptional_pushforward_of_K-Sheaf}
+    Let $M$ be a topological manifold, the rule $\mathfrak{o}_M:K\mapsto H_{\dim M}(M,M\backslash K)$ defines a $\mathcal{K}-$sheaf, called the orientation $\mathcal{K}-$sheaf of $M$.\\
+
+    If $M$ is a manifold with boundary, let $j:M\backslash \partial M\to M$ denote the canonical inclusion. The the orientation shaeves of $M$ are defined as follows:\begin{itemize}
+        \item $\mathfrak{o}_M:= j_*\mathfrak{o}_{M\backslash \partial M}$
+        \item $\mathfrak{o}_{M\quad rel \partial}:= j_!\mathfrak{o}_{M\backslash \partial M}$
+    \end{itemize}
 
 \end{definition}
 
 \begin{lemma}\label{lem:Homotopy_k-sheaf_axioms_for_singular_chain}
+    Let $X$ be a topological manifold, then we have: \begin{itemize}
+    \item $C_{\bullet}(X,X)$ is an acyclic complex
+    \item For $A$ and $B$ two closed subsets of $X$ the folowing complex is acyclic: \[ [C_{\bullet}(X,X\backslash (A\cup B))\to C_{\bullet+1}(X,X\backslash A)\bigoplus C_{\bullet+1}(X,X\backslash B)\to C_{\bullet+2}(X,X\backslash (A\cap B)) ]\]
+    \item For a family $(K_a)_{a\in A}$ of closed subsets of $X$ wich is filtered ( for any $a,b\in A$ there is $c\in A$ such that $K_c\subset K_a\cap K_b$)any compact $K$ of $X$, the following natural morphism is a quasi-isomorphism \[\varinjlim\limits_{a\in A} C_{\bullet}(X,X\backslash K_a)\to C_{\bullet}(X,X\backslash (\bigcap\limits_{a\in A}K_a))\]
+    \end{itemize}
 
 \end{lemma}
 
 \begin{proof}
-
+    TODO
 \end{proof}
 
 \begin{lemma}\label{lem:poincare-lefschetz_duality}
+    \uses{def:pushforward_of_K-Sheaf, def:pullback_of_K-Sheaf, def:exceptional_pushforward_of_K-Sheaf}
+    Let $M$ be a topological manifold of dimension $n$ with boundary, $i:X\to M$ a closed subset, and $N\subset \partial M$ a closed subset that locally looks like $\varnothing\subset \mathbb{R}^{n-1}, \mathbb{R}_{>0}\times R^{n-2}\subset \mathbb{R}^{n-1}$ or $\mathbb{R}^{n-1}$. Let $j:\overset{\circ}{M}\cup \overset{\circ}{N}\to M$ be the canonical inclusion. Then there is a canonical isomorphism:
+        \[ H^{\bullet}[C_{n-1-\bullet}(N,N\backslash X)\to C_{n-1-\bullet}(M,M\backslash X)]=\check{H}_c^{\bullet}(X;i^*j_!j^*\mathfrak{o}_M)\]
+
 
 \end{lemma}
 
