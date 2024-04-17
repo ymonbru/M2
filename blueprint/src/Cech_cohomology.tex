@@ -1,5 +1,31 @@
+\section{\v{C}ech cohomology of sheaves}
 
-\section{}
+\begin{definition}\label{def:chech_of_sh}
+    If $X$ is a topological space, and $\mathcal{F}$ a sheaf over $X$, then let $\check{H}^{\bullet}(X;\mathcal{F}))$ be the \v{C}ech cohomology of $X$ with coeficient in $\mathcal{F}$
+\end{definition}
+
+\begin{definition}\label{def:chech_of_compact_sup_of_sh}
+    If $X$ is a topological space, $K$ a comapct subset of $X$ and $\mathcal{F}$ a sheaf over $X$, then let $\check{H}_K^{\bullet}(X;\mathcal{F}))$ be the \v{C}ech cohomology of $X$ with support in $K$ with coeficient in $\mathcal{F}$
+\end{definition}
+
+\begin{definition}\label{def:pullback_for_chech}
+    \uses{def:chech_of_compact_sup_of_sh, def:chech_of_sh}
+    Let $f:X\to Y$ be a continuous map between topological spaces, and $\mathcal{F}$ a sheaf over $X$. $f$ induces a natural map $\check{H}^{\bullet}(Y;f_*\mathcal{F})\to \check{H}^{\bullet}(X;\mathcal{F})$.\\
+
+    Moreover if $f$ is proper, one gets a natural map $\check{H}_c^{\bullet}(Y;f_*\mathcal{F})\to \check{H}_c^{\bullet}(X;\mathcal{F})$
+
+\end{definition}
+
+\begin{lemma}\label{lem:chech_comm_with_exceptional}
+    \uses{def:exceptional_pushforward_of_sheaf}
+    Let $f:X\to Y$ be an inclusion of open subset, then there is a natural isomorphism $f_!:\check{H}_c^{\bullet}(X;\mathcal{F})\to \check{H}^{\bullet}(Y;f_!\mathcal{F})$
+\end{lemma}
+
+\begin{proof}
+
+\end{proof}
+
+\section{\v{C}ech cohomology of complex of $\mathcal{K}$-sheaves}
 
 \begin{definition}\label{def:chech_of_compelx_of_k_prsh}
     Let $\mathcal{F}^{\bullet}$ be a complex of $\mathcal{K}$-presheaves on a compact space $X$ then we define the \v{C}ech cohomology $\check{H}(X;\mathcal{F}^{\bullet})$ by TODO
@@ -30,8 +56,8 @@
 
 \section{\v{C}ech cohomology is determined by stalks}
 
-\begin{lemma}\label{lem:chech_is_determined_by_stalks_1,K_stalk}
-    \uses{def:cohomology_of_k-prsh, def:chech_of_compelx_of_k_prsh}
+\begin{lemma}\label{lem:chech_is_determined_by_stalks_1}
+    \uses{def:cohomology_of_k-prsh, def:chech_of_compelx_of_k_prsh, def:K_stalk}
     Let $\mathcal{F}^{\bullet}$ be a complex of $\mathcal{K}$-presheaves that verify \eqref{axiom:Ksh3} and such that all the stalks are $0$ then $\check{H}^{\bullet}(X;\mathcal{F})=0$
     
 \end{lemma}

@@ -23,6 +23,11 @@
     \end{itemize}
 \end{definition}
 
+\begin{remark}\label{lem:Mayer_Vietoris}
+    \uses{lem:complex_total_of_three_is_acyclic}
+    By using \ref{lem:complex_total_of_three_is_acyclic}, \eqref{axiom:hKsh3} give rise to a "Mayer-Vietoris" long exact sequence: \[\ldots \to H^k \mathcal{F}^{\bullet}(K_1\cup K_2)\to H^k \mathcal{F}^{\bullet}(K_1)\bigoplus H^k\mathcal{F}^{\bullet}(K_2)\to H^k \mathcal{F}^{\bullet}(K_1\cap K_2)\to \ldots\]
+\end{remark}
+
 \begin{lemma}\label{lem:homotpy_k_sheaves_stable_by_extension}
     \uses{def:K_pre_sheaves,def:homotopy_k_sheaf}
     Let $\mathcal{F}^{\bullet}$ be a complex of $\mathcal{K}$-presheaves. If $\mathcal{F}^{\bullet}$ has a finite filtration whose associated graded is a Homotopy-$\mathcal{K}$-sheaf, then $\mathcal{F}^{\bullet}$ is a Homotopy-$\mathcal{K}$-sheaf.
@@ -38,7 +43,12 @@
 \end{lemma}
 
 \begin{proof}
-    TODO
+    \uses{lem:Mayer_Vietoris}
+    \begin{itemize}
+        \item $\mathcal{F}^{\bullet}(\varnothing)$ is acyclic then in particular it's cohomology in degre $0$ is $0$, then one gets \eqref{axiom:Ksh1}
+        \item $H^{-1}\mathcal{F}^{\bullet}(K_1\cap K_2)=0$ then the first terms \ref{lem:Mayer_Vietoris} gives the exact sequence of \eqref{axiom:Ksh2}
+        \item TODO
+    \end{itemize}
 \end{proof}
 
 

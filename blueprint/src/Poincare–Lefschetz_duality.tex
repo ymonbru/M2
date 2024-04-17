@@ -11,7 +11,12 @@ Uses chech cohomology with compact supports for sheaves
 
 \end{definition}
 
+\begin{definition}\label{def:singular_chain}
+    Singular chains
+\end{definition}
+
 \begin{lemma}\label{lem:Homotopy_k-sheaf_axioms_for_singular_chain}
+    \uses{def:singular_chain}
     Let $X$ be a topological manifold, then we have: \begin{itemize}
     \item $C_{\bullet}(X,X)$ is an acyclic complex
     \item For $A$ and $B$ two closed subsets of $X$ the folowing complex is acyclic: \[ [C_{\bullet}(X,X\backslash (A\cup B))\to C_{\bullet+1}(X,X\backslash A)\bigoplus C_{\bullet+1}(X,X\backslash B)\to C_{\bullet+2}(X,X\backslash (A\cap B)) ]\]
@@ -25,7 +30,7 @@ Uses chech cohomology with compact supports for sheaves
 \end{proof}
 
 \begin{lemma}\label{lem:poincare-lefschetz_duality}
-    \uses{def:pushforward_of_K-Sheaf, def:pullback_of_K-Sheaf, def:exceptional_pushforward_of_K-Sheaf}
+    \uses{def:pushforward_of_K-sheaf, def:pullback_of_K-sheaf, def:exceptional_pushforward_of_K-sheaf,lem:Homotopy_k-sheaf_axioms_for_singular_chain,lem:chech_comm_with_exceptional, def:chech_of_compact_sup_of_sh}
     Let $M$ be a topological manifold of dimension $n$ with boundary, $i:X\to M$ a closed subset, and $N\subset \partial M$ a closed subset that locally looks like $\varnothing\subset \mathbb{R}^{n-1}, \mathbb{R}_{>0}\times R^{n-2}\subset \mathbb{R}^{n-1}$ or $\mathbb{R}^{n-1}$. Let $j:\overset{\circ}{M}\cup \overset{\circ}{N}\to M$ be the canonical inclusion. Then there is a canonical isomorphism:
         \[ H^{\bullet}[C_{n-1-\bullet}(N,N\backslash X)\to C_{n-1-\bullet}(M,M\backslash X)]=\check{H}_c^{\bullet}(X;i^*j_!j^*\mathfrak{o}_M)\]
 
