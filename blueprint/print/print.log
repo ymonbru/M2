@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.9.20)  17 APR 2024 17:54
+This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.9.20)  23 APR 2024 17:10
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -753,19 +753,19 @@ Chapter 3.
 (./Pushforward_and_pullback.tex
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 15.
+(hyperref)                removing `math shift' on input line 40.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\symcal' on input line 15.
+(hyperref)                removing `\symcal' on input line 40.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 15.
+(hyperref)                removing `math shift' on input line 40.
 
-) [7
+[7
 
-]
+]) [8]
 Chapter 4.
 (./Cech_cohomology.tex
 Underfull \hbox (badness 10000) in paragraph at lines 12--14
@@ -784,9 +784,9 @@ Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 (hyperref)                removing `math shift' on input line 28.
 
-[8
+[9
 
-]) [9]
+]) [10]
 Chapter 5.
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
@@ -812,17 +812,17 @@ LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
 (Font)              scaled to size 20.73778pt on input line 83.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
 (Font)              scaled to size 17.27815pt on input line 83.
-(./Purehomotopy_K-sheaves.tex) [10
+(./Purehomotopy_K-sheaves.tex) [11
 
 ]
 Chapter 6.
 (./Poincare–Lefschetz_duality.tex
 
-LaTeX Warning: Reference `def:pushforward_of_K-Sheaf' on page 11 undefined on i
+LaTeX Warning: Reference `def:pushforward_of_K-Sheaf' on page 12 undefined on i
 nput line 4.
 
 
-LaTeX Warning: Reference `def:exceptional_pushforward_of_K-Sheaf' on page 11 un
+LaTeX Warning: Reference `def:exceptional_pushforward_of_K-Sheaf' on page 12 un
 defined on input line 4.
 
 
@@ -830,7 +830,15 @@ Underfull \hbox (badness 10000) in paragraph at lines 4--6
 
  []
 
-) [11
+
+LaTeX Warning: Reference `def:pullback_of_K-sheaf' on page 12 undefined on inpu
+t line 33.
+
+
+LaTeX Warning: Reference `def:exceptional_pushforward_of_K-sheaf' on page 12 un
+defined on input line 33.
+
+) [12
 
 ]
 Chapter 7.
@@ -847,11 +855,11 @@ Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 (hyperref)                removing `math shift' on input line 11.
 
-) [12
+) [13
 
 ]
 Chapter 8.
-(./Steenrod_homology.tex)) [13
+(./Steenrod_homology.tex)) [14
 
 ]
 (/Users/yannismonbru/M2/blueprint/print/print.aux)
@@ -862,12 +870,12 @@ Package rerunfilecheck Info: File `print.out' has not changed.
 (rerunfilecheck)             Checksum: 5AD8495A1E9196AE90861FD7DFB064EA;3219.
  ) 
 Here is how much of TeX's memory you used:
- 16701 strings out of 476179
- 312963 string characters out of 5809544
+ 16703 strings out of 476179
+ 313024 string characters out of 5809544
  818405 words of memory out of 5000000
- 37202 multiletter control sequences out of 15000+600000
+ 37204 multiletter control sequences out of 15000+600000
  478498 words of font info for 104 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  86i,15n,115p,561b,483s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on /Users/yannismonbru/M2/blueprint/print/print.pdf (14 pages).
+Output written on /Users/yannismonbru/M2/blueprint/print/print.pdf (15 pages).

@@ -35,13 +35,37 @@
     By using the inclusion of $\mathcal{K}$-presheaves into complexes of $\mathcal{K}$-presheave, one get's a definition of \v{C}ech cohomology for $\mathcal{K}$-presheave.
 \end{remark}
 
+\begin{lemma}\label{lem:chech_of_acyclic_is_zero}
+    Let $mathcal{F}^{\bullet}$ be an acyclic complex of $\mathcal{K}$-presheaves, then $\check{H}^k(X;mathcal{F}^{\bullet})=0$
+
+\end{lemma}
+
+\begin{proof}
+    TODO
+\end{proof}
+
+\begin{lemma}\label{lem:chech_long_exact_sequence}
+    \uses{def:chech_of_compelx_of_k_prsh}
+    Let $0\to \mathcal{F}^{\bullet}\to \mathcal{G}^{\bullet}\to \mathcal{H}^{\bullet}\to 0$ be a short exact sequence of complex of $\mathcal{K}$-presheaves. Then there is a long exact seuquence in \v{c}ech cohomology: 
+
+    \[\ldots\to \check{H}^k(X;\mathcal{F}^{\bullet})\to \check{H}^k(X;\mathcal{G}^{\bullet})\to \check{H}^k(X;\mathcal{H}^{\bullet})\to 0\]
+
+\end{lemma}
+
+\begin{proof}
+    TODO
+\end{proof}
+
 \begin{lemma}\label{lem:chech_preserve_quasi_iso}
     \uses{def:quasi_iso_of_complex_of_k-prsh}
     If $\mathcal{F}^{\bullet}\to\mathcal{G}^{\bullet}$ is a quasi-isomorphism then the induced maps $\check{H}^i\mathcal{F}^{\bullet}\to \check{H}^i\mathcal{G}^{\bullet}$ are isomorphims.
 \end{lemma}
 
 \begin{proof}
-    TODO
+    \uses{lem:q-iso_iff_cone_acyclic,lem:chech_long_exact_sequence,lem:chech_of_acyclic_is_zero}
+    By \ref{lem:q-iso_iff_cone_acyclic}, the complex $[\mathcal{F}^{\bullet}\to \mathcal{G}^{\bullet-1}]$ is acyclic then by \ref{lem:chech_of_acyclic_is_zero}, it's \v{c}ech cohomology is zero.
+
+    But there is a short exact sequence $0\to \mathcal{G}^{\bullet}[-1]\to [\mathcal{F}^{\bullet}\to \mathcal{G}^{\bullet-1}]\to \mathcal{F}^{\bullet} \to 0$, then the long exact sequence induced by \ref{lem:chech_long_exact_sequence} gives the claimed isomorphisms.
 \end{proof}
 
 \begin{proposition}\label{prop:homotopy_k_sheaf_compute_chech}
@@ -50,6 +74,7 @@
 \end{proposition}
 
 \begin{proof}
+    TODO
     %use chech-cohomology and hshk (1 et 2)
 
 \end{proof}

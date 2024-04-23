@@ -1,27 +1,61 @@
+Let $X$ and $Y$ be two loccaly compacts hausdorf spaces and $f:X\to Y$ be a continuous map.
+
 \section{For Sheaves}
 
 \begin{definition}\label{def:pushforward_of_sheaf}
+    \uses{def:sheaves}
+    If $\mathcal{F}$ is a pre-sheaf over $X$, then the rule $U\mapsto \mathcal{F}(f^{-1}(U))$ defines a pre-shaef over $Y$.
 
+    The functor obtained is denoted $f_*$ and named the pushforward by $f$.
+
+    $f_*$ send sheaves over $X$ into sheaves over $Y$.
 \end{definition}
+
+\begin{proof}
+    TODO
+\end{proof}
 
 \begin{definition}\label{def:pullback_of_sheaf}
+    \uses{def:sheaves}
+    If $\mathcal{F}$ is a pre-sheaf over $Y$, then the rule $U\mapsto \varinjlim\limits_{f(U)\subset V}\mathcal{F}(V)$ defines a pre-sheaf over $Y$.
+
+    If $\mathcal{F}$ is a sheaf, the sheafification of the previous pre-sheaf is a denoted $f^*\mathcal{F}$ and called the pullback by $f$.
 
 \end{definition}
+
+\begin{proof}
+    TODO
+\end{proof}
 
 \begin{definition}\label{def:exceptional_pushforward_of_sheaf}
+    If $f:X\to Y$ is the inclusion of an open subset, the exceptional pushforward by $f$: $f_!$ is defined by $f_!\mathcal{F}(U)$ being the subset of $f_*\mathcal{F}(U)$ of sections that vanish over a neighborhood of $Y-X$.
 
+    It send the sheaves over $X$ into the sheaves over $Y$
 \end{definition}
+
+\begin{proof}
+    TODO
+\end{proof}
 
 \section{For $\mathcal{K}$-sheaves}
 
+Let's assume that $f$ is proper.
+
 \begin{definition}\label{def:pushforward_of_K-sheaf}
+    \uses{def:K_sheaves}
+    If $\mathcal{F}$ is a pre-$\mathcal{K}$-sheaf over $X$, then the rule $K\mapsto \mathcal{F}(f^{-1}(K))$ defines a pre-$\mathcal{K}$-sheaf over $Y$.
 
+    The functor obtained is denoted $f_*$ and named the pushforward by $f$.
+
+    $f_*$ send $\mathcal{K}$-sheaves over $X$ into $\mathcal{K}$-sheaves over $Y$.
 \end{definition}
 
-\begin{definition}\label{def:pullback_of_K-sheaf}
+\begin{proof}
+    TODO
+\end{proof}
 
-\end{definition}
+%\begin{definition}\label{def:pullback_of_Homotopy-K-sheaf}
+%    If $f$ is injective, and $\mathcal{F}^{\bullet}$ a Homotopy-$\mathcal{K}$-sheaf over $Y$, then the rule $K\mapsto \mathcal{F}^{\bullet}(f(K))$ defines a Homotopy-$\mathcal{K}$-sheaf over $X$
+%\end{definition}
 
-\begin{definition}\label{def:exceptional_pushforward_of_K-sheaf}
-
-\end{definition}
+% j'en ai vraiment besoin?

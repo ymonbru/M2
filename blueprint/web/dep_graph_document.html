@@ -223,36 +223,6 @@
 
 
     
-    <div class="dep-modal-container" id="def:exceptional_pushforward_of_K-sheaf_modal">
-      <div class="dep-modal-content">
-          <button class="dep-closebtn">
-<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
-</button>
-        
-  <div class="thm" id="def:exceptional_pushforward_of_K-sheaf" style="display: none">
-    <div class="thm_thmheading">
-      <span class="definition_thmcaption">
-      Definition
-      </span>
-      <span class="definition_thmlabel">3.6</span></div>
-    <div class="thm_thmcontent">
-</div>
-
-    <a class="latex_link" href="sect0003.html#def:exceptional_pushforward_of_K-sheaf">LaTeX</a>
-    
-    
-  
-    
-    
-  
-    
-  </div>
-    
-      </div>
-    </div>
-
-
-    
     <div class="dep-modal-container" id="def:exceptional_pushforward_of_sheaf_modal">
       <div class="dep-modal-content">
           <button class="dep-closebtn">
@@ -265,7 +235,8 @@
       Definition
       </span>
       <span class="definition_thmlabel">3.3</span></div>
-    <div class="thm_thmcontent">
+    <div class="thm_thmcontent"><p> If \(f:X\to Y\) is the inclusion of an open subset, the exceptional pushforward by \(f\): \(f_!\) is defined by \(f_!\mathcal{F}(U)\) being the subset of \(f_*\mathcal{F}(U)\) of sections that vanish over a neighborhood of \(Y-X\). </p>
+<p>It send the sheaves over \(X\) into the sheaves over \(Y\) </p>
 </div>
 
     <a class="latex_link" href="sect0003.html#def:exceptional_pushforward_of_sheaf">LaTeX</a>
@@ -623,36 +594,6 @@
 
 
     
-    <div class="dep-modal-container" id="def:pullback_of_K-sheaf_modal">
-      <div class="dep-modal-content">
-          <button class="dep-closebtn">
-<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
-</button>
-        
-  <div class="thm" id="def:pullback_of_K-sheaf" style="display: none">
-    <div class="thm_thmheading">
-      <span class="definition_thmcaption">
-      Definition
-      </span>
-      <span class="definition_thmlabel">3.5</span></div>
-    <div class="thm_thmcontent">
-</div>
-
-    <a class="latex_link" href="sect0003.html#def:pullback_of_K-sheaf">LaTeX</a>
-    
-    
-  
-    
-    
-  
-    
-  </div>
-    
-      </div>
-    </div>
-
-
-    
     <div class="dep-modal-container" id="def:pullback_of_sheaf_modal">
       <div class="dep-modal-content">
           <button class="dep-closebtn">
@@ -665,7 +606,8 @@
       Definition
       </span>
       <span class="definition_thmlabel">3.2</span></div>
-    <div class="thm_thmcontent">
+    <div class="thm_thmcontent"><p>  If \(\mathcal{F}\) is a pre-sheaf over \(Y\), then the rule \(U\mapsto \varinjlim \limits _{f(U)\subset V}\mathcal{F}(V)\) defines a pre-sheaf over \(Y\). </p>
+<p>If \(\mathcal{F}\) is a sheaf, the sheafification of the previous pre-sheaf is a denoted \(f^*\mathcal{F}\) and called the pullback by \(f\). </p>
 </div>
 
     <a class="latex_link" href="sect0003.html#def:pullback_of_sheaf">LaTeX</a>
@@ -731,7 +673,9 @@
       Definition
       </span>
       <span class="definition_thmlabel">3.4</span></div>
-    <div class="thm_thmcontent">
+    <div class="thm_thmcontent"><p>  If \(\mathcal{F}\) is a pre-\(\mathcal{K}\)-sheaf over \(X\), then the rule \(K\mapsto \mathcal{F}(f^{-1}(K))\) defines a pre-\(\mathcal{K}\)-sheaf over \(Y\). </p>
+<p>The functor obtained is denoted \(f_*\) and named the pushforward by \(f\). </p>
+<p>\(f_*\) send \(\mathcal{K}\)-sheaves over \(X\) into \(\mathcal{K}\)-sheaves over \(Y\). </p>
 </div>
 
     <a class="latex_link" href="sect0003.html#def:pushforward_of_K-sheaf">LaTeX</a>
@@ -761,7 +705,9 @@
       Definition
       </span>
       <span class="definition_thmlabel">3.1</span></div>
-    <div class="thm_thmcontent">
+    <div class="thm_thmcontent"><p>  If \(\mathcal{F}\) is a pre-sheaf over \(X\), then the rule \(U\mapsto \mathcal{F}(f^{-1}(U))\) defines a pre-shaef over \(Y\). </p>
+<p>The functor obtained is denoted \(f_*\) and named the pushforward by \(f\). </p>
+<p>\(f_*\) send sheaves over \(X\) into sheaves over \(Y\). </p>
 </div>
 
     <a class="latex_link" href="sect0003.html#def:pushforward_of_sheaf">LaTeX</a>
@@ -1079,7 +1025,7 @@
       <span class="lemma_thmcaption">
       Lemma
       </span>
-      <span class="lemma_thmlabel">4.9</span></div>
+      <span class="lemma_thmlabel">4.11</span></div>
     <div class="thm_thmcontent"><p>  Let \(\mathcal{F}^{\bullet }\) be a complex of \(\mathcal{K}\)-presheaves that verify <a href="sect0001.html#axiom:Ksh3" class="eqref">4</a> and such that all the stalks are \(0\) then \(\check{H}^{\bullet }(X;\mathcal{F})=0\) </p>
 </div>
 
@@ -1109,12 +1055,75 @@
       <span class="lemma_thmcaption">
       Lemma
       </span>
-      <span class="lemma_thmlabel">4.10</span></div>
+      <span class="lemma_thmlabel">4.12</span></div>
     <div class="thm_thmcontent"><p>  Let \(\mathcal{F}^{\bullet }\) be a complex of \(\mathcal{K}\)-presheaves that verify <a href="sect0002.html#axiom:hKsh3" class="eqref">3</a> and \(H^i\mathcal{F}^{\bullet }=0\) for \(i{\lt}{\lt}0\). </p>
 <p>Then if the stalks of \(\mathcal{F}^{\bullet }\) are acyclics, \(\check{H}^{\bullet }(X;\mathcal{F}^{\bullet })=0\) </p>
 </div>
 
     <a class="latex_link" href="sect0004.html#lem:chech_is_determined_by_stalks_2">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="lem:chech_long_exact_sequence_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="lem:chech_long_exact_sequence" style="display: none">
+    <div class="thm_thmheading">
+      <span class="lemma_thmcaption">
+      Lemma
+      </span>
+      <span class="lemma_thmlabel">4.8</span></div>
+    <div class="thm_thmcontent"><p>  Let \(0\to \mathcal{F}^{\bullet }\to \mathcal{G}^{\bullet }\to \mathcal{H}^{\bullet }\to 0\) be a short exact sequence of complex of \(\mathcal{K}\)-presheaves. Then there is a long exact seuquence in čech cohomology: </p>
+<div class="displaymath" id="a0000000049">
+  \[ \ldots \to \check{H}^k(X;\mathcal{F}^{\bullet })\to \check{H}^k(X;\mathcal{G}^{\bullet })\to \check{H}^k(X;\mathcal{H}^{\bullet })\to 0 \]
+</div>
+</div>
+
+    <a class="latex_link" href="sect0004.html#lem:chech_long_exact_sequence">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="lem:chech_of_acyclic_is_zero_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="lem:chech_of_acyclic_is_zero" style="display: none">
+    <div class="thm_thmheading">
+      <span class="lemma_thmcaption">
+      Lemma
+      </span>
+      <span class="lemma_thmlabel">4.7</span></div>
+    <div class="thm_thmcontent"><p> Let \(mathcal{F}^{\bullet }\) be an acyclic complex of \(\mathcal{K}\)-presheaves, then \(\check{H}^k(X;mathcal{F}^{\bullet })=0\) </p>
+</div>
+
+    <a class="latex_link" href="sect0004.html#lem:chech_of_acyclic_is_zero">LaTeX</a>
     
     
   
@@ -1140,7 +1149,7 @@
       <span class="lemma_thmcaption">
       Lemma
       </span>
-      <span class="lemma_thmlabel">4.7</span></div>
+      <span class="lemma_thmlabel">4.9</span></div>
     <div class="thm_thmcontent"><p>  If \(\mathcal{F}^{\bullet }\to \mathcal{G}^{\bullet }\) is a quasi-isomorphism then the induced maps \(\check{H}^i\mathcal{F}^{\bullet }\to \check{H}^i\mathcal{G}^{\bullet }\) are isomorphims. </p>
 </div>
 
@@ -1395,12 +1404,12 @@
   <li><p>\(C_{\bullet }(X,X)\) is an acyclic complex </p>
 </li>
   <li><p>For \(A\) and \(B\) two closed subsets of \(X\) the folowing complex is acyclic: </p>
-<div class="displaymath" id="a0000000053">
+<div class="displaymath" id="a0000000060">
   \[  [C_{\bullet }(X,X\backslash (A\cup B))\to C_{\bullet +1}(X,X\backslash A)\bigoplus C_{\bullet +1}(X,X\backslash B)\to C_{\bullet +2}(X,X\backslash (A\cap B)) ] \]
 </div>
 </li>
   <li><p>For a family \((K_a)_{a\in A}\) of closed subsets of \(X\) wich is filtered ( for any \(a,b\in A\) there is \(c\in A\) such that \(K_c\subset K_a\cap K_b\))any compact \(K\) of \(X\), the following natural morphism is a quasi-isomorphism </p>
-<div class="displaymath" id="a0000000054">
+<div class="displaymath" id="a0000000061">
   \[ \varinjlim \limits _{a\in A} C_{\bullet }(X,X\backslash K_a)\to C_{\bullet }(X,X\backslash (\bigcap \limits _{a\in A}K_a)) \]
 </div>
 </li>
@@ -1482,6 +1491,39 @@
 
 
     
+    <div class="dep-modal-container" id="lem:Mayer_Vietoris_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="lem:Mayer_Vietoris" style="display: none">
+    <div class="thm_thmheading">
+      <span class="lemma_thmcaption">
+      Lemma
+      </span>
+      <span class="lemma_thmlabel">2.4</span></div>
+    <div class="thm_thmcontent"><p>  By using <a href="index.html#lem:complex_total_of_three_is_acyclic">0.4</a>, <a href="sect0002.html#axiom:hKsh3" class="eqref">3</a> give rise to a "Mayer-Vietoris" long exact sequence: </p>
+<div class="displaymath" id="a0000000039">
+  \[ \ldots \to H^k \mathcal{F}^{\bullet }(K_1\cup K_2)\to H^k \mathcal{F}^{\bullet }(K_1)\bigoplus H^k\mathcal{F}^{\bullet }(K_2)\to H^k \mathcal{F}^{\bullet }(K_1\cap K_2)\to \ldots  \]
+</div>
+</div>
+
+    <a class="latex_link" href="sect0002.html#lem:Mayer_Vietoris">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
     <div class="dep-modal-container" id="lem:poincare-lefschetz_duality_modal">
       <div class="dep-modal-content">
           <button class="dep-closebtn">
@@ -1495,7 +1537,7 @@
       </span>
       <span class="lemma_thmlabel">6.4</span></div>
     <div class="thm_thmcontent"><p>  Let \(M\) be a topological manifold of dimension \(n\) with boundary, \(i:X\to M\) a closed subset, and \(N\subset \partial M\) a closed subset that locally looks like \(\varnothing \subset \mathbb {R}^{n-1}, \mathbb {R}_{{\gt}0}\times R^{n-2}\subset \mathbb {R}^{n-1}\) or \(\mathbb {R}^{n-1}\). Let \(j:\overset {\circ }{M}\cup \overset {\circ }{N}\to M\) be the canonical inclusion. Then there is a canonical isomorphism: </p>
-<div class="displaymath" id="a0000000056">
+<div class="displaymath" id="a0000000063">
   \[  H^{\bullet }[C_{n-1-\bullet }(N,N\backslash X)\to C_{n-1-\bullet }(M,M\backslash X)]=\check{H}_c^{\bullet }(X;i^*j_!j^*\mathfrak {o}_M) \]
 </div>
 </div>
@@ -1588,12 +1630,12 @@
       </span>
       <span class="proposition_thmlabel">5.3</span></div>
     <div class="thm_thmcontent"><p>  Let \(\mathcal{F}^{\bullet }\) be a pure-homotopy \(\mathcal{K}\)-sheaf. Then there is a canonical isomorphism: </p>
-<div class="displaymath" id="a0000000050">
+<div class="displaymath" id="a0000000057">
   \[ H^{\bullet }\mathcal{F}^{\bullet }(X)=\check{H}^{\bullet }(X;H^0\mathcal{F}^{\bullet }) \]
 </div>
 <p>. </p>
 <p>More generaly: Let \([\mathcal{F}_0^{\bullet }\to \ldots \mathcal{F}_n^{\bullet -n}]\) be a complex of pure-homotopy \(\mathcal{K}\)-sheaves, then there is a canonical isomorphism: </p>
-<div class="displaymath" id="a0000000051">
+<div class="displaymath" id="a0000000058">
   \[ H^{\bullet }[\mathcal{F}_0^{\bullet }(X)\to \ldots \mathcal{F}_n^{\bullet -n}(X)]=\check{H}^{\bullet }(X;[H^0\mathcal{F}_0^{\bullet }\to \ldots \to (H^0\mathcal{F}_n^{\bullet })[n]]) \]
 </div>
 </div>
@@ -1624,7 +1666,7 @@
       <span class="proposition_thmcaption">
       Proposition
       </span>
-      <span class="proposition_thmlabel">4.11</span></div>
+      <span class="proposition_thmlabel">4.13</span></div>
     <div class="thm_thmcontent"><p>  Let \(\mathcal{F}^{\bullet }\) and \(\mathcal{G}^{\bullet }\) be complexes of \(\mathcal{K}\)-presheaves that verify <a href="sect0002.html#axiom:hKsh3" class="eqref">3</a> and \(H^i\mathcal{F}^{\bullet }=H^i\mathcal{G}^{\bullet }=0\) for \(i\) small enough. </p>
 <p>Then if a morphism \(\mathcal{F}^{\bullet }\to \mathcal{G}^{\bullet }\) induces a quasi-isomorphism on stalks, \(\check{H}^{\bullet }(X;\mathcal{F}^{\bullet })=\check{H}^{\bullet }(X;\mathcal{G}^{\bullet })\) </p>
 </div>
@@ -1655,7 +1697,7 @@
       <span class="proposition_thmcaption">
       Proposition
       </span>
-      <span class="proposition_thmlabel">4.8</span></div>
+      <span class="proposition_thmlabel">4.10</span></div>
     <div class="thm_thmcontent"><p>  Let \(\mathcal{F}^{\bullet }\) be a complex of \(\mathcal{K}\)-presheaves that verify <a href="sect0002.html#axiom:hKsh1" class="eqref">1</a> and <a href="sect0002.html#axiom:hKsh2" class="eqref">2</a> then the canonical map \(H^{\bullet }\mathcal{F}^{\bullet }\to \check{H}^{\bullet }(X;\mathcal{F}^{\bullet })\) is an isomorphism. </p>
 </div>
 
@@ -1690,7 +1732,7 @@ graphContainer.graphviz({useWorker: true})
     .width(width)
     .height(height)
     .fit(true)
-    .renderDot(`strict digraph "" {	graph [bgcolor=transparent];	node [label="\N",		penwidth=1.8	];	edge [arrowhead=vee];	"def:pre_sheaves"	[color=blue,		fillcolor=blue,		label=pre_sheaves,		shape=box,		style=filled];	"def:stalk"	[label=stalk,		shape=box];	"def:pre_sheaves" -> "def:stalk"	[style=dashed];	"def:sheaves"	[label=sheaves,		shape=box];	"def:pre_sheaves" -> "def:sheaves"	[style=dashed];	"def:adj_kprshv_and_prshv"	[label=adj_kprshv_and_prshv,		shape=box];	"def:pre_sheaves" -> "def:adj_kprshv_and_prshv"	[style=dashed];	"lem:adj_kshv_and_shv"	[label=adj_kshv_and_shv,		shape=ellipse];	"def:sheaves" -> "lem:adj_kshv_and_shv";	"def:adj_kprshv_and_prshv" -> "lem:adj_kshv_and_shv"	[style=dashed];	"pro:adj_kprshv_and_prshv"	[label=adj_kprshv_and_prshv,		shape=ellipse];	"def:adj_kprshv_and_prshv" -> "pro:adj_kprshv_and_prshv"	[style=dashed];	"lem:kshv_equiv_shv"	[label=kshv_equiv_shv,		shape=ellipse];	"lem:adj_kshv_and_shv" -> "lem:kshv_equiv_shv"	[style=dashed];	"def:K_sheaves"	[label=K_sheaves,		shape=box];	"def:K_sheaves" -> "lem:adj_kshv_and_shv";	"lem:first_non_zero_homology_of_homotopy_k_sheaf_is_k_sheaf"	[label=first_non_zero_homology_of_homotopy_k_sheaf_is_k_sheaf,		shape=ellipse];	"def:K_sheaves" -> "lem:first_non_zero_homology_of_homotopy_k_sheaf_is_k_sheaf"	[style=dashed];	"prop:cech_of_pure_homotopy_k_sheaf"	[label=cech_of_pure_homotopy_k_sheaf,		shape=ellipse];	"lem:first_non_zero_homology_of_homotopy_k_sheaf_is_k_sheaf" -> "prop:cech_of_pure_homotopy_k_sheaf";	"lem:poincare-lefschetz_duality"	[label="poincare-lefschetz_duality",		shape=ellipse];	"prop:cech_of_pure_homotopy_k_sheaf" -> "lem:poincare-lefschetz_duality";	"def:quasi_iso_of_complex_of_k-prsh"	[label="quasi_iso_of_complex_of_k-prsh",		shape=box];	"lem:chech_preserve_quasi_iso"	[label=chech_preserve_quasi_iso,		shape=ellipse];	"def:quasi_iso_of_complex_of_k-prsh" -> "lem:chech_preserve_quasi_iso"	[style=dashed];	"lem:chech_is_determined_by_stalks_2"	[label=chech_is_determined_by_stalks_2,		shape=ellipse];	"lem:chech_preserve_quasi_iso" -> "lem:chech_is_determined_by_stalks_2";	"lem:csq_of_pure_homotopy_k_sheaf"	[color=blue,		label=csq_of_pure_homotopy_k_sheaf,		shape=ellipse];	"lem:chech_preserve_quasi_iso" -> "lem:csq_of_pure_homotopy_k_sheaf";	"prop:chech_is_determined_by_stalks_3"	[label=chech_is_determined_by_stalks_3,		shape=ellipse];	"lem:chech_is_determined_by_stalks_2" -> "prop:chech_is_determined_by_stalks_3";	"lem:csq_of_pure_homotopy_k_sheaf" -> "prop:cech_of_pure_homotopy_k_sheaf";	"def:exceptional_pushforward_of_sheaf"	[color=blue,		fillcolor=blue,		label=exceptional_pushforward_of_sheaf,		shape=box,		style=filled];	"lem:chech_comm_with_exceptional"	[label=chech_comm_with_exceptional,		shape=ellipse];	"def:exceptional_pushforward_of_sheaf" -> "lem:chech_comm_with_exceptional"	[style=dashed];	"lem:chech_comm_with_exceptional" -> "lem:poincare-lefschetz_duality"	[style=dashed];	"lem:cofinal_syst_of_inter_compact"	[color=blue,		label=cofinal_syst_of_inter_compact,		shape=ellipse];	"lem:cofinal_syst_of_inter_compact" -> "lem:adj_kshv_and_shv";	"prop:chech_is_determined_by_stalks_3" -> "prop:cech_of_pure_homotopy_k_sheaf";	"def:pullback_of_sheaf"	[color=blue,		fillcolor=blue,		label=pullback_of_sheaf,		shape=box,		style=filled];	"def:pushforward_of_K-sheaf"	[color=blue,		fillcolor=blue,		label="pushforward_of_K-sheaf",		shape=box,		style=filled];	"def:pushforward_of_K-sheaf" -> "lem:poincare-lefschetz_duality"	[style=dashed];	"def:orientation_sheaf_of_a_manifold"	[color=blue,		fillcolor=blue,		label=orientation_sheaf_of_a_manifold,		shape=box,		style=filled];	"def:orientation_sheaf_of_a_manifold" -> "lem:poincare-lefschetz_duality";	"lem:chech_is_determined_by_stalks_1"	[label=chech_is_determined_by_stalks_1,		shape=ellipse];	"lem:chech_is_determined_by_stalks_1" -> "lem:chech_is_determined_by_stalks_2";	"prop:homotopy_k_sheaf_compute_chech"	[label=homotopy_k_sheaf_compute_chech,		shape=ellipse];	"prop:homotopy_k_sheaf_compute_chech" -> "prop:cech_of_pure_homotopy_k_sheaf";	"def:total_complex"	[color=blue,		fillcolor=blue,		label=total_complex,		shape=box,		style=filled];	"def:homotopy_k_sheaf"	[label=homotopy_k_sheaf,		shape=box];	"def:total_complex" -> "def:homotopy_k_sheaf"	[style=dashed];	"def:homotopy_k_sheaf" -> "lem:first_non_zero_homology_of_homotopy_k_sheaf_is_k_sheaf"	[style=dashed];	"def:homotopy_k_sheaf" -> "lem:chech_is_determined_by_stalks_2"	[style=dashed];	"def:homotopy_k_sheaf" -> "prop:homotopy_k_sheaf_compute_chech"	[style=dashed];	"lem:homotpy_k_sheaves_stable_by_extension"	[label=homotpy_k_sheaves_stable_by_extension,		shape=ellipse];	"def:homotopy_k_sheaf" -> "lem:homotpy_k_sheaves_stable_by_extension"	[style=dashed];	"lem:homotpy_k_sheaves_stable_by_extension" -> "prop:cech_of_pure_homotopy_k_sheaf";	"lem:hocolim_preserves_homotopy_k_sheaves"	[label=hocolim_preserves_homotopy_k_sheaves,		shape=ellipse];	"lem:homotpy_k_sheaves_stable_by_extension" -> "lem:hocolim_preserves_homotopy_k_sheaves";	"def:K_pre_sheaves"	[color=blue,		fillcolor=blue,		label=K_pre_sheaves,		shape=box,		style=filled];	"def:K_pre_sheaves" -> "def:adj_kprshv_and_prshv"	[style=dashed];	"def:K_pre_sheaves" -> "def:K_sheaves"	[style=dashed];	"def:K_pre_sheaves" -> "def:homotopy_k_sheaf"	[style=dashed];	"def:K_stalk"	[label=K_stalk,		shape=box];	"def:K_pre_sheaves" -> "def:K_stalk"	[style=dashed];	"def:cohomology_of_k-prsh"	[label="cohomology_of_k-prsh",		shape=box];	"def:K_pre_sheaves" -> "def:cohomology_of_k-prsh"	[style=dashed];	"def:K_stalk" -> "lem:chech_is_determined_by_stalks_1"	[style=dashed];	"def:cohomology_of_k-prsh" -> "def:quasi_iso_of_complex_of_k-prsh"	[style=dashed];	"def:cohomology_of_k-prsh" -> "lem:chech_is_determined_by_stalks_1"	[style=dashed];	"lem:gluing_pure_homotopy_k_sheaves"	[label=gluing_pure_homotopy_k_sheaves,		shape=ellipse];	"lem:hocolim_preserves_homotopy_k_sheaves" -> "lem:gluing_pure_homotopy_k_sheaves"	[style=dashed];	"def:chech_of_compact_sup_of_sh"	[color=blue,		fillcolor=blue,		label=chech_of_compact_sup_of_sh,		shape=box,		style=filled];	"def:chech_of_compact_sup_of_sh" -> "lem:poincare-lefschetz_duality"	[style=dashed];	"def:pullback_for_chech"	[label=pullback_for_chech,		shape=box];	"def:chech_of_compact_sup_of_sh" -> "def:pullback_for_chech"	[style=dashed];	"lem:equiv_of_adj"	[color=blue,		fillcolor="#A3D6FF",		label=equiv_of_adj,		shape=ellipse,		style=filled];	"lem:equiv_of_adj" -> "lem:kshv_equiv_shv";	"lem:Homotopy_k-sheaf_axioms_for_singular_chain"	[label="Homotopy_k-sheaf_axioms_for_singular_chain",		shape=ellipse];	"lem:Homotopy_k-sheaf_axioms_for_singular_chain" -> "lem:poincare-lefschetz_duality"	[style=dashed];	"def:chech_of_compelx_of_k_prsh"	[color=blue,		fillcolor=blue,		label=chech_of_compelx_of_k_prsh,		shape=box,		style=filled];	"def:chech_of_compelx_of_k_prsh" -> "lem:chech_is_determined_by_stalks_1"	[style=dashed];	"def:chech_of_compelx_of_k_prsh" -> "prop:homotopy_k_sheaf_compute_chech"	[style=dashed];	"def:homotopy_diagram"	[color=blue,		fillcolor=blue,		label=homotopy_diagram,		shape=box,		style=filled];	"def:homotopy_colimit"	[label=homotopy_colimit,		shape=box];	"def:homotopy_diagram" -> "def:homotopy_colimit"	[style=dashed];	"def:homotopy_colimit" -> "lem:hocolim_preserves_homotopy_k_sheaves"	[style=dashed];	"lem:q-iso_iff_cone_acyclic"	[color=blue,		fillcolor="#A3D6FF",		label="q-iso_iff_cone_acyclic",		shape=ellipse,		style=filled];	"lem:complex_total_of_three_is_acyclic"	[color=blue,		label=complex_total_of_three_is_acyclic,		shape=ellipse];	"lem:q-iso_iff_cone_acyclic" -> "lem:complex_total_of_three_is_acyclic";	"def:pushforward_of_sheaf"	[color=blue,		fillcolor=blue,		label=pushforward_of_sheaf,		shape=box,		style=filled];	"def:chech_of_sh"	[color=blue,		fillcolor=blue,		label=chech_of_sh,		shape=box,		style=filled];	"def:chech_of_sh" -> "def:pullback_for_chech"	[style=dashed];	"def:singular_chain"	[color=blue,		fillcolor=blue,		label=singular_chain,		shape=box,		style=filled];	"def:singular_chain" -> "lem:Homotopy_k-sheaf_axioms_for_singular_chain"	[style=dashed];	"def:pure_homotopy_k_sheaf"	[color=blue,		fillcolor=blue,		label=pure_homotopy_k_sheaf,		shape=box,		style=filled];	"def:pure_homotopy_k_sheaf" -> "prop:cech_of_pure_homotopy_k_sheaf"	[style=dashed];	"def:pure_homotopy_k_sheaf" -> "lem:gluing_pure_homotopy_k_sheaves"	[style=dashed];	"def:pullback_of_K-sheaf"	[color=blue,		fillcolor=blue,		label="pullback_of_K-sheaf",		shape=box,		style=filled];	"def:pullback_of_K-sheaf" -> "lem:poincare-lefschetz_duality"	[style=dashed];	"def:exceptional_pushforward_of_K-sheaf"	[color=blue,		fillcolor=blue,		label="exceptional_pushforward_of_K-sheaf",		shape=box,		style=filled];	"def:exceptional_pushforward_of_K-sheaf" -> "lem:poincare-lefschetz_duality"	[style=dashed];}`)
+    .renderDot(`strict digraph "" {	graph [bgcolor=transparent];	node [label="\N",		penwidth=1.8	];	edge [arrowhead=vee];	"def:pre_sheaves"	[color=blue,		fillcolor=blue,		label=pre_sheaves,		shape=box,		style=filled];	"def:stalk"	[label=stalk,		shape=box];	"def:pre_sheaves" -> "def:stalk"	[style=dashed];	"def:adj_kprshv_and_prshv"	[label=adj_kprshv_and_prshv,		shape=box];	"def:pre_sheaves" -> "def:adj_kprshv_and_prshv"	[style=dashed];	"def:sheaves"	[label=sheaves,		shape=box];	"def:pre_sheaves" -> "def:sheaves"	[style=dashed];	"lem:adj_kshv_and_shv"	[label=adj_kshv_and_shv,		shape=ellipse];	"def:adj_kprshv_and_prshv" -> "lem:adj_kshv_and_shv"	[style=dashed];	"pro:adj_kprshv_and_prshv"	[label=adj_kprshv_and_prshv,		shape=ellipse];	"def:adj_kprshv_and_prshv" -> "pro:adj_kprshv_and_prshv"	[style=dashed];	"def:sheaves" -> "lem:adj_kshv_and_shv";	"def:pullback_of_sheaf"	[label=pullback_of_sheaf,		shape=box];	"def:sheaves" -> "def:pullback_of_sheaf"	[style=dashed];	"def:pushforward_of_sheaf"	[label=pushforward_of_sheaf,		shape=box];	"def:sheaves" -> "def:pushforward_of_sheaf"	[style=dashed];	"lem:kshv_equiv_shv"	[label=kshv_equiv_shv,		shape=ellipse];	"lem:adj_kshv_and_shv" -> "lem:kshv_equiv_shv"	[style=dashed];	"def:K_sheaves"	[label=K_sheaves,		shape=box];	"def:K_sheaves" -> "lem:adj_kshv_and_shv";	"def:pushforward_of_K-sheaf"	[label="pushforward_of_K-sheaf",		shape=box];	"def:K_sheaves" -> "def:pushforward_of_K-sheaf"	[style=dashed];	"lem:first_non_zero_homology_of_homotopy_k_sheaf_is_k_sheaf"	[label=first_non_zero_homology_of_homotopy_k_sheaf_is_k_sheaf,		shape=ellipse];	"def:K_sheaves" -> "lem:first_non_zero_homology_of_homotopy_k_sheaf_is_k_sheaf"	[style=dashed];	"lem:poincare-lefschetz_duality"	[label="poincare-lefschetz_duality",		shape=ellipse];	"def:pushforward_of_K-sheaf" -> "lem:poincare-lefschetz_duality"	[style=dashed];	"prop:cech_of_pure_homotopy_k_sheaf"	[label=cech_of_pure_homotopy_k_sheaf,		shape=ellipse];	"lem:first_non_zero_homology_of_homotopy_k_sheaf_is_k_sheaf" -> "prop:cech_of_pure_homotopy_k_sheaf";	"prop:cech_of_pure_homotopy_k_sheaf" -> "lem:poincare-lefschetz_duality";	"def:orientation_sheaf_of_a_manifold"	[color=blue,		fillcolor=blue,		label=orientation_sheaf_of_a_manifold,		shape=box,		style=filled];	"def:orientation_sheaf_of_a_manifold" -> "lem:poincare-lefschetz_duality";	"lem:cofinal_syst_of_inter_compact"	[color=blue,		label=cofinal_syst_of_inter_compact,		shape=ellipse];	"lem:cofinal_syst_of_inter_compact" -> "lem:adj_kshv_and_shv";	"lem:hocolim_preserves_homotopy_k_sheaves"	[label=hocolim_preserves_homotopy_k_sheaves,		shape=ellipse];	"lem:gluing_pure_homotopy_k_sheaves"	[label=gluing_pure_homotopy_k_sheaves,		shape=ellipse];	"lem:hocolim_preserves_homotopy_k_sheaves" -> "lem:gluing_pure_homotopy_k_sheaves"	[style=dashed];	"def:cohomology_of_k-prsh"	[label="cohomology_of_k-prsh",		shape=box];	"def:quasi_iso_of_complex_of_k-prsh"	[label="quasi_iso_of_complex_of_k-prsh",		shape=box];	"def:cohomology_of_k-prsh" -> "def:quasi_iso_of_complex_of_k-prsh"	[style=dashed];	"lem:chech_is_determined_by_stalks_1"	[label=chech_is_determined_by_stalks_1,		shape=ellipse];	"def:cohomology_of_k-prsh" -> "lem:chech_is_determined_by_stalks_1"	[style=dashed];	"lem:chech_preserve_quasi_iso"	[label=chech_preserve_quasi_iso,		shape=ellipse];	"def:quasi_iso_of_complex_of_k-prsh" -> "lem:chech_preserve_quasi_iso"	[style=dashed];	"lem:chech_is_determined_by_stalks_2"	[label=chech_is_determined_by_stalks_2,		shape=ellipse];	"lem:chech_is_determined_by_stalks_1" -> "lem:chech_is_determined_by_stalks_2";	"lem:chech_preserve_quasi_iso" -> "lem:chech_is_determined_by_stalks_2";	"lem:csq_of_pure_homotopy_k_sheaf"	[color=blue,		label=csq_of_pure_homotopy_k_sheaf,		shape=ellipse];	"lem:chech_preserve_quasi_iso" -> "lem:csq_of_pure_homotopy_k_sheaf";	"prop:chech_is_determined_by_stalks_3"	[label=chech_is_determined_by_stalks_3,		shape=ellipse];	"lem:chech_is_determined_by_stalks_2" -> "prop:chech_is_determined_by_stalks_3";	"lem:homotpy_k_sheaves_stable_by_extension"	[label=homotpy_k_sheaves_stable_by_extension,		shape=ellipse];	"lem:homotpy_k_sheaves_stable_by_extension" -> "prop:cech_of_pure_homotopy_k_sheaf";	"lem:homotpy_k_sheaves_stable_by_extension" -> "lem:hocolim_preserves_homotopy_k_sheaves";	"lem:csq_of_pure_homotopy_k_sheaf" -> "prop:cech_of_pure_homotopy_k_sheaf";	"prop:chech_is_determined_by_stalks_3" -> "prop:cech_of_pure_homotopy_k_sheaf";	"def:total_complex"	[color=blue,		fillcolor=blue,		label=total_complex,		shape=box,		style=filled];	"def:homotopy_k_sheaf"	[label=homotopy_k_sheaf,		shape=box];	"def:total_complex" -> "def:homotopy_k_sheaf"	[style=dashed];	"def:homotopy_k_sheaf" -> "lem:first_non_zero_homology_of_homotopy_k_sheaf_is_k_sheaf"	[style=dashed];	"def:homotopy_k_sheaf" -> "lem:chech_is_determined_by_stalks_2"	[style=dashed];	"def:homotopy_k_sheaf" -> "lem:homotpy_k_sheaves_stable_by_extension"	[style=dashed];	"prop:homotopy_k_sheaf_compute_chech"	[label=homotopy_k_sheaf_compute_chech,		shape=ellipse];	"def:homotopy_k_sheaf" -> "prop:homotopy_k_sheaf_compute_chech"	[style=dashed];	"prop:homotopy_k_sheaf_compute_chech" -> "prop:cech_of_pure_homotopy_k_sheaf";	"def:K_pre_sheaves"	[color=blue,		fillcolor=blue,		label=K_pre_sheaves,		shape=box,		style=filled];	"def:K_pre_sheaves" -> "def:adj_kprshv_and_prshv"	[style=dashed];	"def:K_pre_sheaves" -> "def:K_sheaves"	[style=dashed];	"def:K_pre_sheaves" -> "def:cohomology_of_k-prsh"	[style=dashed];	"def:K_pre_sheaves" -> "def:homotopy_k_sheaf"	[style=dashed];	"def:K_stalk"	[label=K_stalk,		shape=box];	"def:K_pre_sheaves" -> "def:K_stalk"	[style=dashed];	"def:K_stalk" -> "lem:chech_is_determined_by_stalks_1"	[style=dashed];	"lem:equiv_of_adj"	[color=blue,		fillcolor="#A3D6FF",		label=equiv_of_adj,		shape=ellipse,		style=filled];	"lem:equiv_of_adj" -> "lem:kshv_equiv_shv";	"lem:Homotopy_k-sheaf_axioms_for_singular_chain"	[label="Homotopy_k-sheaf_axioms_for_singular_chain",		shape=ellipse];	"lem:Homotopy_k-sheaf_axioms_for_singular_chain" -> "lem:poincare-lefschetz_duality"	[style=dashed];	"lem:chech_comm_with_exceptional"	[label=chech_comm_with_exceptional,		shape=ellipse];	"lem:chech_comm_with_exceptional" -> "lem:poincare-lefschetz_duality"	[style=dashed];	"def:chech_of_compact_sup_of_sh"	[color=blue,		fillcolor=blue,		label=chech_of_compact_sup_of_sh,		shape=box,		style=filled];	"def:chech_of_compact_sup_of_sh" -> "lem:poincare-lefschetz_duality"	[style=dashed];	"def:pullback_for_chech"	[label=pullback_for_chech,		shape=box];	"def:chech_of_compact_sup_of_sh" -> "def:pullback_for_chech"	[style=dashed];	"def:singular_chain"	[color=blue,		fillcolor=blue,		label=singular_chain,		shape=box,		style=filled];	"def:singular_chain" -> "lem:Homotopy_k-sheaf_axioms_for_singular_chain"	[style=dashed];	"lem:q-iso_iff_cone_acyclic"	[color=blue,		fillcolor="#A3D6FF",		label="q-iso_iff_cone_acyclic",		shape=ellipse,		style=filled];	"lem:q-iso_iff_cone_acyclic" -> "lem:chech_preserve_quasi_iso";	"lem:complex_total_of_three_is_acyclic"	[color=blue,		label=complex_total_of_three_is_acyclic,		shape=ellipse];	"lem:q-iso_iff_cone_acyclic" -> "lem:complex_total_of_three_is_acyclic";	"lem:Mayer_Vietoris"	[label=Mayer_Vietoris,		shape=ellipse];	"lem:complex_total_of_three_is_acyclic" -> "lem:Mayer_Vietoris"	[style=dashed];	"lem:Mayer_Vietoris" -> "lem:first_non_zero_homology_of_homotopy_k_sheaf_is_k_sheaf";	"def:chech_of_sh"	[color=blue,		fillcolor=blue,		label=chech_of_sh,		shape=box,		style=filled];	"def:chech_of_sh" -> "def:pullback_for_chech"	[style=dashed];	"def:exceptional_pushforward_of_sheaf"	[color=blue,		fillcolor=blue,		label=exceptional_pushforward_of_sheaf,		shape=box,		style=filled];	"def:exceptional_pushforward_of_sheaf" -> "lem:chech_comm_with_exceptional"	[style=dashed];	"def:chech_of_compelx_of_k_prsh"	[color=blue,		fillcolor=blue,		label=chech_of_compelx_of_k_prsh,		shape=box,		style=filled];	"def:chech_of_compelx_of_k_prsh" -> "lem:chech_is_determined_by_stalks_1"	[style=dashed];	"def:chech_of_compelx_of_k_prsh" -> "prop:homotopy_k_sheaf_compute_chech"	[style=dashed];	"lem:chech_long_exact_sequence"	[label=chech_long_exact_sequence,		shape=ellipse];	"def:chech_of_compelx_of_k_prsh" -> "lem:chech_long_exact_sequence"	[style=dashed];	"lem:chech_long_exact_sequence" -> "lem:chech_preserve_quasi_iso";	"def:pure_homotopy_k_sheaf"	[color=blue,		fillcolor=blue,		label=pure_homotopy_k_sheaf,		shape=box,		style=filled];	"def:pure_homotopy_k_sheaf" -> "prop:cech_of_pure_homotopy_k_sheaf"	[style=dashed];	"def:pure_homotopy_k_sheaf" -> "lem:gluing_pure_homotopy_k_sheaves"	[style=dashed];	"def:homotopy_diagram"	[color=blue,		fillcolor=blue,		label=homotopy_diagram,		shape=box,		style=filled];	"def:homotopy_colimit"	[label=homotopy_colimit,		shape=box];	"def:homotopy_diagram" -> "def:homotopy_colimit"	[style=dashed];	"def:homotopy_colimit" -> "lem:hocolim_preserves_homotopy_k_sheaves"	[style=dashed];	"lem:chech_of_acyclic_is_zero"	[color=blue,		fillcolor="#A3D6FF",		label=chech_of_acyclic_is_zero,		shape=ellipse,		style=filled];	"lem:chech_of_acyclic_is_zero" -> "lem:chech_preserve_quasi_iso";}`)
     .on("end", interactive);
 
 clickNode = function() {
