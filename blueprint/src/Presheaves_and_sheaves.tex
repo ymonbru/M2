@@ -17,7 +17,7 @@ Let $X$ be a locally compact Hausdorf space.
     \uses{def:pre_sheaves}
     If $\mathcal{F}$ is a presheaf on $X$, it is said to be a sheaf if for any $U\subset X$ open and any covering family of $U$ $(U_a)_{a\in A}$ one has the exact sequence:
     \begin{equation}\label{axiom:Sh}
-        0\to \mathcal{F}(U)\to \prod\limits_{a\in A}\mathcal{F}(U_a)\to \prod\limits_{a,b\in A}F(U_a\cap U_b)
+        0\to \mathcal{F}(U)\to \prod\limits_{a\in A}\mathcal{F}(U_a)\to \prod\limits_{a,b\in A}\mathcal{F}(U_a\cap U_b)
     \end{equation}
 \end{definition}
 
@@ -48,20 +48,18 @@ Let $X$ be a locally compact Hausdorf space.
 \end{definition}
 
 \begin{remark}
-    \eqref{axiom:Ksh3} is well defined because if $K$ is a compact subset of $X$, then for $x\in K$ let $U_x$ be an open neighborhood relatively compact (wich exists by local compactness), the family $(u_x)\ind{x}{K}$ covers $K$ then one can extract a finite cover of it : $U_1,\ldots U_n$ and then $\cup_{i=1}^n U_i$ is an open neighborhood, and a finite union of relatively comapct, then it's relatively compact. ($\overline{\cup_{i=1}^n U_i}=\cup_{i=1}^n \overline{U_i}$)
+    \eqref{axiom:Ksh3} is well defined because if $K$ is a compact subset of $X$, then for $x\in K$ let $U_x$ be an open neighborhood relatively compact (wich exists by local compactness), the family $(U_x)\ind{x}{K}$ covers $K$ then one can extract a finite cover of it : $U_1,\ldots U_n$ and then $\cup_{i=1}^n U_i$ is an open neighborhood, and a finite union of relatively comapct, then it's relatively compact. ($\overline{\cup_{i=1}^n U_i}=\cup_{i=1}^n \overline{U_i}$)
 \end{remark}
 
 
 \section{Technical lemmas}
 
 \begin{lemma}\label{lem:cofinal_syst_of_inter_compact}
-    If $K_1,\ldots K_n$ are comapcts of $X$ then $\{U_1\cap\ldots\cap U_n\}_{U_i\supset K_i\text{ open in }X}$ is a cofinal system of neighborhoods of $K_1\cap \ldots K_n$.
+    If $K_1,\ldots K_n$ are comapcts of $X$ then $\{U_1\cap\ldots\cap U_n\}_{U_i\supset K_i\text{ open in }X}$ is a cofinal system of neighborhoods of $K_1\cap \ldots \cap K_n$.
 \end{lemma}
 
 \begin{proof}
-    %IsCompact.nhdsSet_inter_eq  dans 
-    %Mathlib/Topology/Separation.lean
-    %avec Filter.HasBasis.inf dans Mathlib.Order.Filter.Bases
+    It's the theorem \text{IsCompact.nhdsSet\_inter\_eq}  in the File Mathlib/Topology/Separation.lean and the use of Filter.HasBasis.inf in the file  Mathlib.Order.Filter.Bases
 
    %Let $U_i$ be a relatively comapct open neighborhood of $K_i$ and $U=\cup_{i=1}^nU_i$. Then $\overline{U}$ is compact \\
 
@@ -75,7 +73,7 @@ Let $X$ be a locally compact Hausdorf space.
 \end{lemma}
 
 \begin{proof}
-    CategoryTheory.Adjunction.toEquivalence dans mathlib
+    CategoryTheory.Adjunction.toEquivalence in mathlib
 \end{proof}
 
 %\begin{lemma}\label{lem:a_nommer}
@@ -91,8 +89,8 @@ Let $X$ be a locally compact Hausdorf space.
 \begin{definition}\label{def:adj_kprshv_and_prshv}
     \uses{def:K_pre_sheaves,def:pre_sheaves}
     \begin{itemize}
-        \item If $\mathcal{F}$ is a presheaf then let $\alpha^*\mathcal{F}$ ne the $\mathcal{K}$-presheaf:\[K\mapsto \varinjlim\limits_{K\subset U \text{ open}}\mathcal{F}(U)\]
-        \item If $\mathcal{G}$ is a $\mathcal{K}$-presheaf then let $\alpha_*\mathcal{G}$ ne the presheaf:\[ U\mapsto \varprojlim\limits_{U\supset K \text{ compact}}\mathcal{F}(K)\]
+        \item If $\mathcal{F}$ is a presheaf then let $\alpha^*\mathcal{F}$ be the $\mathcal{K}$-presheaf:\[K\mapsto \varinjlim\limits_{K\subset U \text{ open}}\mathcal{F}(U)\]
+        \item If $\mathcal{G}$ is a $\mathcal{K}$-presheaf then let $\alpha_*\mathcal{G}$ be the presheaf:\[ U\mapsto \varprojlim\limits_{U\supset K \text{ compact}}\mathcal{G}(K)\]
     \end{itemize}
 \end{definition}
 
@@ -102,7 +100,50 @@ Let $X$ be a locally compact Hausdorf space.
 \end{proposition}
 
 \begin{proof}
-    TODO
+    \begin{itemize}
+        \item Let $\tau$ be an element of $\hom(\alpha^*\mathcal{F},\mathcal{G})$. It's the data of morphism $\tau_K$ for $K$ a compact of $X$ such that for any $K$ and $K'$ compacts 
+        % https://q.uiver.app/#q=WzAsNCxbMCwwLCJcXHZhcmluamxpbVxcbGltaXRzX3tLXFxzdWJzZXQgVX1cXG1hdGhjYWx7Rn0oVSkiXSxbMCwyLCJcXHZhcmluamxpbVxcbGltaXRzX3tLJ1xcc3Vic2V0IFV9XFxtYXRoY2Fse0Z9KFUpIl0sWzIsMCwiXFxtYXRoY2Fse0d9KEspIl0sWzIsMiwiXFxtYXRoY2Fse0d9KEsnKSJdLFswLDFdLFswLDIsIlxcdGF1X0siXSxbMSwzLCJcXHRhdV97Syd9Il0sWzIsM11d
+\begin{equation}\label{nat_trans_afg}\begin{tikzcd}
+	{\varinjlim\limits_{K\subset U}\mathcal{F}(U)} && {\mathcal{G}(K)} \\
+	\\
+	{\varinjlim\limits_{K'\subset U}\mathcal{F}(U)} && {\mathcal{G}(K')}
+	\arrow["{\tau_K}", from=1-1, to=1-3]
+	\arrow[from=1-1, to=3-1]
+	\arrow[from=1-3, to=3-3]
+	\arrow["{\tau_{K'}}", from=3-1, to=3-3]
+\end{tikzcd}\end{equation} is a commutative square. Then for any $U$ and $V$ opens,  by composing with the commutative square % https://q.uiver.app/#q=WzAsNCxbMiwwLCJcXHZhcmluamxpbVxcbGltaXRzX3tLXFxzdWJzZXQgVX1cXG1hdGhjYWx7Rn0oVSkiXSxbMiwyLCJcXHZhcmluamxpbVxcbGltaXRzX3tLJ1xcc3Vic2V0IFV9XFxtYXRoY2Fse0Z9KFUpIl0sWzAsMCwiXFxtYXRoY2Fse0Z9KFUpIl0sWzAsMiwiXFxtYXRoY2Fse0Z9KFYpIl0sWzAsMV0sWzIsMF0sWzIsM10sWzMsMV1d
+$$\begin{tikzcd}
+	{\mathcal{F}(U)} && {\varinjlim\limits_{K\subset U}\mathcal{F}(U)} \\
+	\\
+	{\mathcal{F}(V)} && {\varinjlim\limits_{K'\subset U}\mathcal{F}(U)}
+	\arrow[from=1-1, to=1-3]
+	\arrow[from=1-1, to=3-1]
+	\arrow[from=1-3, to=3-3]
+	\arrow[from=3-1, to=3-3]
+\end{tikzcd}$$ one get's a commutative square :% https://q.uiver.app/#q=WzAsNCxbMCwwLCJcXG1hdGhjYWx7Rn0oVSkiXSxbMCwyLCJcXG1hdGhjYWx7Rn0oVikiXSxbMiwwLCJcXG1hdGhjYWx7R30oSykiXSxbMiwyLCJcXG1hdGhjYWx7R30oSycpIl0sWzAsMV0sWzIsM10sWzEsM10sWzAsMl1d
+\begin{equation}\label{data_adj}\begin{tikzcd}
+	{\mathcal{F}(U)} && {\mathcal{G}(K)} \\
+	\\
+	{\mathcal{F}(V)} && {\mathcal{G}(K')}
+	\arrow[from=1-1, to=1-3]
+	\arrow[from=1-1, to=3-1]
+	\arrow[from=1-3, to=3-3]
+	\arrow[from=3-1, to=3-3]
+\end{tikzcd}\end{equation}. Conversely such data give rise (by taking the limit over $U$ and $V$) to a commutative square such as in \eqref{nat_trans_afg}
+
+    \item On the other hand if one takes the limit over $K$ and $K'$ one get's a commutative square 
+    % https://q.uiver.app/#q=WzAsNCxbMCwwLCJcXG1hdGhjYWx7Rn0oVSkiXSxbMCwyLCJcXG1hdGhjYWx7Rn0oVikiXSxbMiwwLCJcXHZhcnByb2psaW1cXGxpbWl0c197S1xcc3Vic2V0IFV9XFxtYXRoY2Fse0d9KEspIl0sWzIsMiwiXFx2YXJwcm9qbGltXFxsaW1pdHNfe0tcXHN1YnNldCBWfVxcbWF0aGNhbHtHfShLKSJdLFswLDFdLFsyLDNdLFsxLDNdLFswLDJdXQ==
+$$\begin{tikzcd}
+	{\mathcal{F}(U)} && {\varprojlim\limits_{K\subset U}\mathcal{G}(K)} \\
+	\\
+	{\mathcal{F}(V)} && {\varprojlim\limits_{K\subset V}\mathcal{G}(K)}
+	\arrow[from=1-1, to=1-3]
+	\arrow[from=1-1, to=3-1]
+	\arrow[from=1-3, to=3-3]
+	\arrow[from=3-1, to=3-3]
+\end{tikzcd}$$ (that allow to recover the previous one in the same as before) wich is the data of an element of $\hom(\mathcal{F},\alpha_*\mathcal{G})$.
+\end{itemize}
+    Then the elements of $\hom(\alpha^*\mathcal{F},\mathcal{G})$ and $\hom(\mathcal{F},\alpha_*\mathcal{G})$ are both obtained by a natural construction (in $\mathcal{F}$ and $\mathcal{G}$) aplied to \eqref{data_adj}.
 \end{proof}
 
 \begin{lemma}\label{lem:adj_kshv_and_shv}
@@ -110,14 +151,37 @@ Let $X$ be a locally compact Hausdorf space.
     \begin{itemize}
         \item $\alpha^*$ send sheaves to $\mathcal{K}$-sheaves
         \item $\alpha^*$ send $\mathcal{K}$-sheaves to sheaves
-        \item The reistrictions obtained still form an adjoint pair.
+        \item The reistrictions obtained still form an adjoint pair between shaeves and $\mathcal{K}$-sheaves.
     \end{itemize}
-    The previous adjoint pair give rise to an adjoint pair between shaeves and $\mathcal{K}$-sheaves
 \end{lemma}
 
 \begin{proof}
     \uses{def:K_sheaves, def:sheaves, lem:cofinal_syst_of_inter_compact}
-    TODO
+    \begin{itemize}
+        \item Let $\mathcal{F}$ be a sheaf. The condition $\varnothing \subset U$ is always satisfied and $\varnothing$ is minimal among open subset for the inclusion then $(\alpha^*)(\mathcal{F})(\varnothing)=\mathcal{F}(\varnothing)$. One can apply the sheaf condition to the empty family and obtain the exact sequence $0\to \mathcal{F}(\varnothing)\to \Pi_{\varnothing}=0$, and then \eqref{axiom:Ksh1}.\\
+
+        Let $K_1,K_2$ be two of compacts of $X$, let $U_1,U_2$ be a two opens such that $K_i\subset U_i$ for all $i$. Then the sheaf condition gives an exact sequence (because for abelian groups the product is the direct sum) $0\to \mathcal{F}(U_1\cup U_2)\to \mathcal{F}(U_1)\bigoplus\mathcal{F}(U_2)\to \mathcal{F}(U_1\cap U_2)$. The injective limits are exacts then taking the limits over those opens gives an exact sequence: 
+        \begin{equation}\label{lim_of_sheaf_cond}
+            0\to \varinjlim\limits_{K_i\subset U_i}\mathcal{F}(U_1\cup U_2)\to \varinjlim\limits_{K_i\subset U_i}\mathcal{F}(U_1)\bigoplus\mathcal{F}(U_2)\to \varinjlim\limits_{K_i\subset U_i}\mathcal{F}(U_1\cap U_2)
+        \end{equation}
+
+        An open $U$ contains $K_1\cup K_2$ if and only if it's of the form $U_1\cup U_2$ with $K_i\subset U_i$ (one can take $U_1=U_2=U$ for the direct implication), then by definition $\varinjlim\limits_{K_i\subset U_i}\mathcal{F}(U_1\cup U_2)=\alpha^*\mathcal{F}(K_1\cup K_2)$.\\
+        
+        The injective limit commute with the direct product, then: $$\varinjlim\limits_{K_i\subset U_i}\mathcal{F}(U_1)\bigoplus\mathcal{F}(U_2)=(\varinjlim\limits_{K_i\subset U_i}\mathcal{F}(U_1))\bigoplus(\varinjlim\limits_{K_i\subset U_i}\mathcal{F}(U_2))=\alpha^*\mathcal{F}(K_1)\bigoplus\alpha^*\mathcal{F}(K_2)$$.\\
+        
+        By the lemma \ref{lem:cofinal_syst_of_inter_compact} the limit $\varinjlim\limits_{K_i\subset U_i}\mathcal{F}(U_1\cap U_2)$ compute the same thing as $\varinjlim\limits_{K_1\cap K_2\subset U}\mathcal{F}(U)=\alpha^*\mathcal{F}(K_1\cap K_2)$.\\
+
+        Then the exact sequence \eqref{lim_of_shaef_cond} is in fact \eqref{axiom:Ksh2}.\\ \\
+
+
+        Let $K$ be a compact, $U$ a relatively comapct open such that $K\subset U$ and $V$ an open suche that $\bar{U}\subset V$ then $K\subset V$. Conversely if $V$ is an open containing $K$, then $K$ is a comapct of $V$ (locally compact as $X$ is) and then admits an open neighborhood $U$ relatively compact (in $V$).Thus (because the two limits are over the same set) one has the equality \[\varinjlim\limits_{K\subset U \text{open relatively compact}}\varinjlim\limits_{\bar{U}\subset V\text{ open}}\mathcal{F}(V)=\varinjlim\limits_{K\subset U\ \text{open}}\mathcal{F}(V)\]. Wich rewrite by definition as $\varinjlim\limits_{K\subset U\ \text{open relatively compact}}\alpha^*\mathcal{F}(\bar{U})=\alpha^*\mathcal{F}(V)$ i.e. \eqref{axiom:Ksh3}
+
+
+
+
+        \item
+        \item A morphisme between two ($\mathcal{K}$-)sheaves is by definition is by definition a morphisme between the two underling ($\mathcal{K}$-)presheaves then, the natural equality $\hom_{\text{Sh}}(\alpha^*\mathcal{F},\mathcal{G})=\hom_{\text{Sh}}(\mathcal{F},\alpha_*\mathcal{G})$ is a consequence of \ref{pro:adj_kprshv_and_prshv}
+    \end{itemize}
 \end{proof}
 
 \begin{lemma}\label{lem:kshv_equiv_shv}
@@ -127,5 +191,8 @@ Let $X$ be a locally compact Hausdorf space.
 
 \begin{proof}
     \uses{def:K_sheaves, def:sheaves, lem:adj_kshv_and_shv, lem:equiv_of_adj}
-
+    By using \ref{lem:equiv_of_adj}, it's enough to show that for any sheaf $\mathcal{F}$ and $\Kc$-sheaf $\mathcal{G}$, the natural maps $\mathcal{F}\to \alpha_*\alpha^*\mathcal{U}$ and $\alpha^*\alpha_*\mathcal{G}\to \mathcal{G}$ are isomorphism. The fact of being a natural isomorphism can be checked locally.\begin{itemize}
+        \item Let $U$ be an open of $X$. One has to check that $\mathcal{F}(U)\to \varprojlim\limits_{U\supset K \text{ compact}}\varinjlim\limits_{K\subset U' \text{ open}}\mathcal{F}(U')$ is an isomorphism.
+        \item
+    \end{itemize}
 \end{proof}
