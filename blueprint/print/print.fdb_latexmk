@@ -1,7 +1,7 @@
 # Fdb version 3
-["pdflatex"] 1716366975 "print.tex" "/Users/yannismonbru/M2/blueprint/print/print.pdf" "print" 1716366977
-  "/Users/yannismonbru/M2/blueprint/print/print.aux" 1716366977 7843 9dc6f44985c0a869bbb3d39069ae260a "pdflatex"
-  "/Users/yannismonbru/M2/blueprint/print/print.out" 1716366977 3456 46e4f8a472e7c839bab7ed437d8417ac "pdflatex"
+["pdflatex"] 1716376249 "print.tex" "/Users/yannismonbru/M2/blueprint/print/print.pdf" "print" 1716376250
+  "/Users/yannismonbru/M2/blueprint/print/print.aux" 1716376250 7843 9dc6f44985c0a869bbb3d39069ae260a "pdflatex"
+  "/Users/yannismonbru/M2/blueprint/print/print.out" 1716376250 3456 46e4f8a472e7c839bab7ed437d8417ac "pdflatex"
   "/usr/local/texlive/2022/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2022/texmf-dist/fonts/tfm/adobe/zapfding/pzdr.tfm" 1136768653 1528 f853c4d1b4e0550255e02831fdc8496f ""
   "/usr/local/texlive/2022/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam10.tfm" 1246382020 916 f87d7c45f9c908e672703b83b72241a3 ""
@@ -160,7 +160,7 @@
   "Homotopy_colimits.tex" 1712587233 593 d1886b3fcb38ab23a4188f96e1cb745a ""
   "Homotopy_sheaves.tex" 1715246470 3200 c4538e539254f99f2c0168aac59b0939 ""
   "Poincare–Lefschetz_duality.tex" 1713191296 2788 d86e8ff0000c1edffa5844a2fa5103d7 ""
-  "Presheaves_and_sheaves.tex" 1716284289 13055 7036b3b26c4e18001f1051f62ec125da ""
+  "Presheaves_and_sheaves.tex" 1716376244 13047 9e4333a053c706cd1f0ebb904daa49fb ""
   "Purehomotopy_K-sheaves.tex" 1716281498 1850 e6def79347e6faabb34d3f5e1577007f ""
   "Pushforward_and_pullback.tex" 1713885221 2136 95d849d8dcfec280d9cd835e8bbf24de ""
   "Steenrod_homology.tex" 0 -1 0 ""

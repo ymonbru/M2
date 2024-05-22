@@ -59,7 +59,7 @@ Let $X$ be a locally compact Hausdorf space.
 \end{lemma}
 
 \begin{proof}
-    It's the theorem \text{IsCompact.nhdsSet\_inter\_eq}  in the File Mathlib/Topology/Separation.lean and the use of Filter.HasBasis.inf in the file  Mathlib.Order.Filter.Bases
+    %It's the theorem IsCompact.nhdsSet-inter-eq  in the File Mathlib/Topology/Separation.lean and the use of Filter.HasBasis.inf in the file  Mathlib.Order.Filter.Bases
 
    %Let $U_i$ be a relatively comapct open neighborhood of $K_i$ and $U=\cup_{i=1}^nU_i$. Then $\overline{U}$ is compact \\
 
@@ -171,7 +171,7 @@ $$\begin{tikzcd}
         
         By the lemma \ref{lem:cofinal_syst_of_inter_compact} the limit $\varinjlim\limits_{K_i\subset U_i}\mathcal{F}(U_1\cap U_2)$ compute the same thing as $\varinjlim\limits_{K_1\cap K_2\subset U}\mathcal{F}(U)=\alpha^*\mathcal{F}(K_1\cap K_2)$.\\
 
-        Then the exact sequence \eqref{lim_of_shaef_cond} is in fact \eqref{axiom:Ksh2}.\\ \\
+        Then the exact sequence \eqref{lim_of_sheaf_cond} is in fact \eqref{axiom:Ksh2}.\\ \\
 
 
         Let $K$ be a compact, $U$ a relatively comapct open such that $K\subset U$ and $V$ an open suche that $\bar{U}\subset V$ then $K\subset V$. Conversely if $V$ is an open containing $K$, then $K$ is a comapct of $V$ (locally compact as $X$ is) and then admits an open neighborhood $U$ relatively compact (in $V$).Thus (because the two limits are over the same set) one has the equality \[\varinjlim\limits_{K\subset U \text{open relatively compact}}\varinjlim\limits_{\bar{U}\subset V\text{ open}}\mathcal{F}(V)=\varinjlim\limits_{K\subset U\ \text{open}}\mathcal{F}(V)\]. Wich rewrite by definition as $\varinjlim\limits_{K\subset U\ \text{open relatively compact}}\alpha^*\mathcal{F}(\bar{U})=\alpha^*\mathcal{F}(V)$ i.e. \eqref{axiom:Ksh3}

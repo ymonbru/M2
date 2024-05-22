@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.9.20)  22 MAY 2024 10:36
+This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.9.20)  22 MAY 2024 13:10
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1061,13 +1061,7 @@ Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 
 [3
 
-]
-Overfull \hbox (12.68633pt too wide) in paragraph at lines 62--63
-[]\TU/lmr/m/n/10 It’s the theorem [] in the File Mathlib/Topology/Separation.le
-an
- []
-
-[4]
+] [4]
 Underfull \hbox (badness 10000) in paragraph at lines 161--162
 
  []
@@ -1086,10 +1080,6 @@ Underfull \hbox (badness 10000) in paragraph at lines 170--171
 Underfull \hbox (badness 10000) in paragraph at lines 172--173
 
  []
-
-
-LaTeX Warning: Reference `lim_of_shaef_cond' on page 6 undefined on input line 
-174.
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 174--175
@@ -1227,10 +1217,10 @@ Package rerunfilecheck Info: File `print.out' has not changed.
 (rerunfilecheck)             Checksum: 46E4F8A472E7C839BAB7ED437D8417AC;3456.
  ) 
 Here is how much of TeX's memory you used:
- 28249 strings out of 476179
- 574025 string characters out of 5809544
+ 28248 strings out of 476179
+ 574006 string characters out of 5809544
  1055478 words of memory out of 5000000
- 48516 multiletter control sequences out of 15000+600000
+ 48515 multiletter control sequences out of 15000+600000
  478498 words of font info for 104 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  114i,28n,118p,843b,1305s stack positions out of 10000i,1000n,20000p,200000b,200000s
