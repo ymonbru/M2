@@ -22,4 +22,4 @@ require checkdecls from git "https://github.com/PatrickMassot/checkdecls.git"
 require «doc-gen4» from git
   "https://github.com/leanprover/doc-gen4" @ "main"
 
-@"lean4.7.0"
+@[lean4.7.0]
