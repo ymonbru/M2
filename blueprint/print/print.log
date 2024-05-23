@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.9.20)  22 MAY 2024 13:10
+This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.9.20)  23 MAY 2024 13:30
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1061,7 +1061,13 @@ Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 
 [3
 
-] [4]
+]
+Overfull \hbox (4.34633pt too wide) in paragraph at lines 62--63
+[]\TU/lmr/m/n/10 It’s the theorem IsCompact.nhdsSet-inter-eq in the File Mathli
+b/Topology/Separation.lean
+ []
+
+[4]
 Underfull \hbox (badness 10000) in paragraph at lines 161--162
 
  []

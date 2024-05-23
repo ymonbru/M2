@@ -59,7 +59,7 @@ Let $X$ be a locally compact Hausdorf space.
 \end{lemma}
 
 \begin{proof}
-    %It's the theorem IsCompact.nhdsSet-inter-eq  in the File Mathlib/Topology/Separation.lean and the use of Filter.HasBasis.inf in the file  Mathlib.Order.Filter.Bases
+    It's the theorem IsCompact.nhdsSet-inter-eq  in the File Mathlib/Topology/Separation.lean and the use of Filter.HasBasis.inf in the file  Mathlib.Order.Filter.Bases
 
    %Let $U_i$ be a relatively comapct open neighborhood of $K_i$ and $U=\cup_{i=1}^nU_i$. Then $\overline{U}$ is compact \\
 
@@ -150,7 +150,7 @@ $$\begin{tikzcd}
     \uses{def:adj_kprshv_and_prshv}
     \begin{itemize}
         \item $\alpha^*$ send sheaves to $\mathcal{K}$-sheaves
-        \item $\alpha^*$ send $\mathcal{K}$-sheaves to sheaves
+        \item $\alpha_*$ send $\mathcal{K}$-sheaves to sheaves
         \item The reistrictions obtained still form an adjoint pair between shaeves and $\mathcal{K}$-sheaves.
     \end{itemize}
 \end{lemma}
@@ -162,12 +162,12 @@ $$\begin{tikzcd}
 
         Let $K_1,K_2$ be two of compacts of $X$, let $U_1,U_2$ be a two opens such that $K_i\subset U_i$ for all $i$. Then the sheaf condition gives an exact sequence (because for abelian groups the product is the direct sum) $0\to \mathcal{F}(U_1\cup U_2)\to \mathcal{F}(U_1)\bigoplus\mathcal{F}(U_2)\to \mathcal{F}(U_1\cap U_2)$. The injective limits are exacts then taking the limits over those opens gives an exact sequence: 
         \begin{equation}\label{lim_of_sheaf_cond}
-            0\to \varinjlim\limits_{K_i\subset U_i}\mathcal{F}(U_1\cup U_2)\to \varinjlim\limits_{K_i\subset U_i}\mathcal{F}(U_1)\bigoplus\mathcal{F}(U_2)\to \varinjlim\limits_{K_i\subset U_i}\mathcal{F}(U_1\cap U_2)
+            0\to \varinjlim\limits_{K_i\subset U_i}\mathcal{F}(U_1\cup U_2)\to \varinjlim\limits_{K_i\subset U_i}\mathcal{F}(U_1)\times\mathcal{F}(U_2)\to \varinjlim\limits_{K_i\subset U_i}\mathcal{F}(U_1\cap U_2)
         \end{equation}
 
         An open $U$ contains $K_1\cup K_2$ if and only if it's of the form $U_1\cup U_2$ with $K_i\subset U_i$ (one can take $U_1=U_2=U$ for the direct implication), then by definition $\varinjlim\limits_{K_i\subset U_i}\mathcal{F}(U_1\cup U_2)=\alpha^*\mathcal{F}(K_1\cup K_2)$.\\
         
-        The injective limit commute with the direct product, then: $$\varinjlim\limits_{K_i\subset U_i}\mathcal{F}(U_1)\bigoplus\mathcal{F}(U_2)=(\varinjlim\limits_{K_i\subset U_i}\mathcal{F}(U_1))\bigoplus(\varinjlim\limits_{K_i\subset U_i}\mathcal{F}(U_2))=\alpha^*\mathcal{F}(K_1)\bigoplus\alpha^*\mathcal{F}(K_2)$$.\\
+        The injective limit commute with the product, then: \[\varinjlim\limits_{K_i\subset U_i}\mathcal{F}(U_1)\times\mathcal{F}(U_2)=(\varinjlim\limits_{K_i\subset U_i}\mathcal{F}(U_1))\times(\varinjlim\limits_{K_i\subset U_i}\mathcal{F}(U_2))=\alpha^*\mathcal{F}(K_1)\times\alpha^*\mathcal{F}(K_2)\].\\
         
         By the lemma \ref{lem:cofinal_syst_of_inter_compact} the limit $\varinjlim\limits_{K_i\subset U_i}\mathcal{F}(U_1\cap U_2)$ compute the same thing as $\varinjlim\limits_{K_1\cap K_2\subset U}\mathcal{F}(U)=\alpha^*\mathcal{F}(K_1\cap K_2)$.\\
 
