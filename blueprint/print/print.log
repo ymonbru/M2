@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.9.20)  23 MAY 2024 13:30
+This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.9.20)  24 MAY 2024 17:33
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1097,9 +1097,19 @@ Underfull \hbox (badness 10000) in paragraph at lines 174--175
 
  []
 
-[6]) [7]
+
+Underfull \hbox (badness 10000) in paragraph at lines 177--178
+
+ []
+
+LaTeX Font Info:    Trying to load font information for U+bbm on input line 190
+.
+(/usr/local/texlive/2022/texmf-dist/tex/latex/bbm-macros/ubbm.fd
+File: ubbm.fd 1999/03/15 V 1.2 Font definition for bbm font - TH
+) [6] [7])
+[8]
 Chapter 3.
-(./Homotopy_sheaves.tex) [8
+(./Homotopy_sheaves.tex) [9
 
 ]
 Chapter 4.
@@ -1116,9 +1126,9 @@ Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 (hyperref)                removing `math shift' on input line 40.
 
-[9
+[10
 
-]) [10]
+]) [11]
 Chapter 5.
 (./Cech_cohomology.tex
 Underfull \hbox (badness 10000) in paragraph at lines 12--14
@@ -1137,9 +1147,9 @@ Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 (hyperref)                removing `math shift' on input line 28.
 
-[11
+[12
 
-]) [12]
+]) [13]
 Chapter 6.
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
@@ -1165,17 +1175,17 @@ LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
 (Font)              scaled to size 20.73778pt on input line 29.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
 (Font)              scaled to size 17.27815pt on input line 29.
-(./Purehomotopy_K-sheaves.tex) [13
+(./Purehomotopy_K-sheaves.tex) [14
 
 ]
 Chapter 7.
 (./Poincare–Lefschetz_duality.tex
 
-LaTeX Warning: Reference `def:pushforward_of_K-Sheaf' on page 14 undefined on i
+LaTeX Warning: Reference `def:pushforward_of_K-Sheaf' on page 15 undefined on i
 nput line 4.
 
 
-LaTeX Warning: Reference `def:exceptional_pushforward_of_K-Sheaf' on page 14 un
+LaTeX Warning: Reference `def:exceptional_pushforward_of_K-Sheaf' on page 15 un
 defined on input line 4.
 
 
@@ -1184,14 +1194,14 @@ Underfull \hbox (badness 10000) in paragraph at lines 4--6
  []
 
 
-LaTeX Warning: Reference `def:pullback_of_K-sheaf' on page 14 undefined on inpu
+LaTeX Warning: Reference `def:pullback_of_K-sheaf' on page 15 undefined on inpu
 t line 33.
 
 
-LaTeX Warning: Reference `def:exceptional_pushforward_of_K-sheaf' on page 14 un
+LaTeX Warning: Reference `def:exceptional_pushforward_of_K-sheaf' on page 15 un
 defined on input line 33.
 
-) [14
+) [15
 
 ]
 Chapter 8.
@@ -1208,11 +1218,11 @@ Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 (hyperref)                removing `math shift' on input line 11.
 
-) [15
+) [16
 
 ]
 Chapter 9.
-(./Steenrod_homology.tex)) [16
+(./Steenrod_homology.tex)) [17
 
 ]
 (/Users/yannismonbru/M2/blueprint/print/print.aux)
@@ -1223,12 +1233,12 @@ Package rerunfilecheck Info: File `print.out' has not changed.
 (rerunfilecheck)             Checksum: 46E4F8A472E7C839BAB7ED437D8417AC;3456.
  ) 
 Here is how much of TeX's memory you used:
- 28248 strings out of 476179
- 574006 string characters out of 5809544
- 1055478 words of memory out of 5000000
- 48515 multiletter control sequences out of 15000+600000
- 478498 words of font info for 104 fonts, out of 8000000 for 9000
+ 28276 strings out of 476179
+ 574718 string characters out of 5809544
+ 1061478 words of memory out of 5000000
+ 48535 multiletter control sequences out of 15000+600000
+ 479417 words of font info for 111 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 114i,28n,118p,843b,1305s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 114i,28n,118p,855b,1305s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on /Users/yannismonbru/M2/blueprint/print/print.pdf (17 pages).
+Output written on /Users/yannismonbru/M2/blueprint/print/print.pdf (18 pages).

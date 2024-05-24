@@ -167,22 +167,66 @@ $$\begin{tikzcd}
 
         An open $U$ contains $K_1\cup K_2$ if and only if it's of the form $U_1\cup U_2$ with $K_i\subset U_i$ (one can take $U_1=U_2=U$ for the direct implication), then by definition $\varinjlim\limits_{K_i\subset U_i}\mathcal{F}(U_1\cup U_2)=\alpha^*\mathcal{F}(K_1\cup K_2)$.\\
         
-        The injective limit commute with the product, then: \[\varinjlim\limits_{K_i\subset U_i}\mathcal{F}(U_1)\times\mathcal{F}(U_2)=(\varinjlim\limits_{K_i\subset U_i}\mathcal{F}(U_1))\times(\varinjlim\limits_{K_i\subset U_i}\mathcal{F}(U_2))=\alpha^*\mathcal{F}(K_1)\times\alpha^*\mathcal{F}(K_2)\].\\
+        The injective limit commute with the direct sum (as it is a coproduct), then: \[\varinjlim\limits_{K_i\subset U_i}\mathcal{F}(U_1)\times\mathcal{F}(U_2)=(\varinjlim\limits_{K_i\subset U_i}\mathcal{F}(U_1))\bigoplus(\varinjlim\limits_{K_i\subset U_i}\mathcal{F}(U_2))=\alpha^*\mathcal{F}(K_1)\bigoplus\alpha^*\mathcal{F}(K_2)\].\\
         
         By the lemma \ref{lem:cofinal_syst_of_inter_compact} the limit $\varinjlim\limits_{K_i\subset U_i}\mathcal{F}(U_1\cap U_2)$ compute the same thing as $\varinjlim\limits_{K_1\cap K_2\subset U}\mathcal{F}(U)=\alpha^*\mathcal{F}(K_1\cap K_2)$.\\
 
         Then the exact sequence \eqref{lim_of_sheaf_cond} is in fact \eqref{axiom:Ksh2}.\\ \\
 
 
-        Let $K$ be a compact, $U$ a relatively comapct open such that $K\subset U$ and $V$ an open suche that $\bar{U}\subset V$ then $K\subset V$. Conversely if $V$ is an open containing $K$, then $K$ is a comapct of $V$ (locally compact as $X$ is) and then admits an open neighborhood $U$ relatively compact (in $V$).Thus (because the two limits are over the same set) one has the equality \[\varinjlim\limits_{K\subset U \text{open relatively compact}}\varinjlim\limits_{\bar{U}\subset V\text{ open}}\mathcal{F}(V)=\varinjlim\limits_{K\subset U\ \text{open}}\mathcal{F}(V)\]. Wich rewrite by definition as $\varinjlim\limits_{K\subset U\ \text{open relatively compact}}\alpha^*\mathcal{F}(\bar{U})=\alpha^*\mathcal{F}(V)$ i.e. \eqref{axiom:Ksh3}
+        Let $K$ be a compact, $U$ a relatively comapct open such that $K\subset U$ and $V$ an open suche that $\bar{U}\subset V$ then $K\subset V$. Conversely if $V$ is an open containing $K$, then $K$ is a comapct of $V$ (locally compact as $X$ is) and then admits an open neighborhood $U$ relatively compact (in $V$).Thus (because the two limits are over the same set) one has the equality \[\varinjlim\limits_{K\subset U \text{open relatively compact}}\varinjlim\limits_{\bar{U}\subset V\text{ open}}\mathcal{F}(V)=\varinjlim\limits_{K\subset U\ \text{open}}\mathcal{F}(V)\]. Wich rewrite by definition as $\varinjlim\limits_{K\subset U\ \text{open relatively compact}}\alpha^*\mathcal{F}(\bar{U})=\alpha^*\mathcal{F}(V)$ i.e. \eqref{axiom:Ksh3}.\\
+
+        Then $\alpha^*\mathcal{F}$ is a $\Kc$-sheaf. 
+
+
+        \item Let $\mathcal{G}$ be a $\Kc$-sheaf. Let $K_1,\ldots K_n$ be a family of compacts subsets let's show that the sequence $0\to \mathcal{G}(\bigcup\limits_{i=1}^n K_i)\to \prod\limits_{i=1}^n\mathcal{G}(K_i)\to \prod\limits_{i,j=1}^n\mathcal{G}(K_i\cap K_j)$.
+
+        If the family is empty, then the sequence is $0\to \mathcal{G}\to 0\to 0$ wich is exact beause of \eqref{axiom:Ksh1}.
+
+        If $n=1$ then the sequence is $0\to \mathcal{G}(K_1)\to \mathcal{G}(K_2)\to 0$ wich is exact beause of \eqref{axiom:Ksh1}.
+
+        $\mathcal{G}$ is a $\Kc$-sheaf, then (by \eqref{axiom:Ksh2}) the map $\mathcal{G}(K\cup K')\to \mathcal{G}(K)\bigoplus\mathcal{G}(K')$ is injective, then (the direct products of two abélian groups is their product), then bi straightforward induction the map is injective  $\mathcal{G}(\bigcup\limits_{i=1}^nK_i)\to \prod\limits_{i=1}^n\mathcal{G}(K_i)$.
+
+        Let's show the exactness of the other term in the sequence by induction, the base case of $n=2$ is given by \eqref{axiom:Ksh2}. Let's assume that it's exact for $n\in \mathbbm{N}$ fixed. Let $K_1,\ldots K_n, K_{n+1}$ be compacts subset and $(f_1,\ldots,f_{n+1})$ be an element of the kernel of  $\prod\limits_{i=1}^{n+1}\mathcal{G}(K_i)\to \prod\limits_{i,j=1}^{n+1}\mathcal{G}(K_i\cap K_j)$. Then $(f_1,\ldots,f_n)$ is in the kernel of $\prod\limits_{i=1}^n\mathcal{G}(K_i)\to \prod\limits_{i,j=1}^n\mathcal{G}(K_i\cap K_j)$ so by induction hypothesis, it's of the form $(f|_{K_1},\ldots,f|_{K_n})$ for $f\in \mathcal{G}(K:=\bigcup\limits_{i=1}^nK_i)$. 
+        On the other hand, by the compatibility of reistriction $f|_{K\cap K_{n+1}}=f|_{K_1}|_{K\cap K_{n+1}}=f_1|_{K\cap K_{n+1}}=f_1|_{K_1\cap K_{n+1}}|_{K\cap K_{n+1}}$ so $f|_{K\cap K_n+1}-f_{n+1}|_{K\cap K_n+1}=f_1|_{K_1\cap K_{n+1}}|_{K\cap K_{n+1}}-f_{n+1}|_{K_1\cap K_{n+1}}|_{K\cap K_{n+1}}=0$ by hypothesis. Then by the exactness of \eqref{axiom:Ksh2} $f$ and $f_{n+1}$ are of the form $g|_K$ and $g|_{K_{n+1}}$, with $g\in \mathcal{G}(\bigcup\limits_{i=1}^{n+1} K_i)$.
+        
+        Then $(f_1,\ldots,f_{n+1})$ is of the form $(g|_{K_1},\ldots g|_{K_{n+1}})$. Wicch conclude the exactness prof because the inclusion of the image into the kernel is starightforward by definition of the map.
+
+        Let $(U_a)\ind{a}{A}$ be a family of opens of $X$, one can consider the collections of family of compacts $(K_a)\ind{a}{A}$  such that $\forall a\in A /\ K_a\subset U_a$ and only  a finite number of them are not empty (by the \eqref{axiom:Ksh1}adding enpty compacts in the family ad a product with zero in the exact sequence, wich does not changes the sequence) and take the projective limit of the previous exact sequence over it.
+
+        The sequence remains exact because projective limits are left exacts: $$0\to\varprojlim\mathcal{G}(\bigcup\limits_{a\in A}K_a)\to \varprojlim\prod\limits_{a\in A}\mathcal{G}(K_a)\to \varprojlim\prod\limits_{a,b\in A}\mathcal{G}(K_a\cap K_b)$$. The projective limits commmute with products, then the sequence is 
+
+        $$0\to\varprojlim\mathcal{G}(\bigcup\limits_{a\in A}K_a)\to \prod\limits_{a\in A}\varprojlim\mathcal{G}(K_a)\to\prod\limits_{a,b\in A}\varprojlim\mathcal{G}(K_a\cap K_b)$$
+
+        By definition (because it's for aa fixed $a$ and does not depend of the family for other indexes) $\varprojlim\mathcal{G}(K_a)=\alpha_*\mathcal{G}(U_a)$ and $\varprojlim\mathcal{G}(K_a\cap K_b)=\alpha_*\mathcal{G}(U_a\cap U_b)$. Any compact included in $\bigcup\limits\ind{a}{A}U_a$ is included in a finite number of the opens then $\varprojlim\mathcal{G}(\bigcup\limits_{a\in A}K_a)$ compute $\alpha_*\mathcal{G}(\bigcup\limits\ind{a}{A}U_a)$, then one get's the sheaf condition for $\alpha_*\mathcal{G}$.
 
 
 
 
-        \item
+
+
+
+
         \item A morphisme between two ($\mathcal{K}$-)sheaves is by definition is by definition a morphisme between the two underling ($\mathcal{K}$-)presheaves then, the natural equality $\hom_{\text{Sh}}(\alpha^*\mathcal{F},\mathcal{G})=\hom_{\text{Sh}}(\mathcal{F},\alpha_*\mathcal{G})$ is a consequence of \ref{pro:adj_kprshv_and_prshv}
     \end{itemize}
 \end{proof}
+
+\begin{lemma}\label{lem:stalk_preserve}
+    \uses{def:adj_kprshv_and_prshv,def:stalk,def:K_stalk}
+    The functors $\alpha^*$ and $\alpha_*$ preserve the stalk.
+\end{lemma}
+
+\begin{proof}
+    \begin{itemize}
+        \item Let $\mathcal{F}$ be a sheaf. Then the stalk of $\alpha^*\mathcal{F}$ at $p\in X$ is by definition $\alpha^*\mathcal{F}(\{p\})=\varinjlim\limits_{\{p\}\subset U \text{ open}}\mathcal{F}(U)$ wich is by definition the stalk of $\mathcal{F}$ at $p$.
+        \item Let $\mathcal{G}$ be a $\Kc$-sheaf. Then 
+    \end{itemize}
+
+
+
+
+\end{proof}
+
 
 \begin{lemma}\label{lem:kshv_equiv_shv}
     \uses{def:K_sheaves, def:sheaves, lem:adj_kshv_and_shv}

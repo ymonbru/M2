@@ -1006,6 +1006,13 @@ INPUT Presheaves_and_sheaves.tex
 INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/cm/cmmi12.tfm
 INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam10.tfm
 INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm
+INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/bbm-macros/ubbm.fd
+INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/bbm-macros/ubbm.fd
+INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/bbm-macros/ubbm.fd
+INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/bbm-macros/ubbm.fd
+INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/bbm/bbm10.tfm
+INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/bbm/bbm7.tfm
+INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/bbm/bbm5.tfm
 INPUT ./Homotopy_sheaves.tex
 INPUT ./Homotopy_sheaves.tex
 INPUT ./Homotopy_sheaves.tex
@@ -1020,6 +1027,7 @@ INPUT Pushforward_and_pullback.tex
 INPUT ./Pushforward_and_pullback.tex
 INPUT ./Pushforward_and_pullback.tex
 INPUT Pushforward_and_pullback.tex
+INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/bbm/bbm12.tfm
 INPUT ./Cech_cohomology.tex
 INPUT ./Cech_cohomology.tex
 INPUT ./Cech_cohomology.tex
@@ -1036,6 +1044,9 @@ INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam1
 INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm
 INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm
 INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm
+INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/bbm/bbm17.tfm
+INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/bbm/bbm17.tfm
+INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/bbm/bbm17.tfm
 INPUT ./Purehomotopy_K-sheaves.tex
 INPUT ./Purehomotopy_K-sheaves.tex
 INPUT ./Purehomotopy_K-sheaves.tex
