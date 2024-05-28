@@ -588,7 +588,7 @@
   <div class="proof_content">
   <ul class="itemize">
   <li><p>Let \(\tau \) be an element of \(\hom (\alpha ^*\mathcal{F},\mathcal{G})\). It’s the data of morphism \(\tau _K\) for \(K\) a compact of \(X\) such that for any \(K\) and \(K'\) compacts </p>
-<div class="equation" id="<plasTeX.TeXFragment object at 0x11009e4c0>">
+<div class="equation" id="<plasTeX.TeXFragment object at 0x10e55d4c0>">
 <p>
   <div class="equation_content">
     \begin{equation} \label{nat_trans_afg}\begin{tikzcd} 
@@ -617,7 +617,7 @@
 \end{tikzcd} \]
 </div>
 <p> one get’s a commutative square :</p>
-<div class="equation" id="<plasTeX.TeXFragment object at 0x11009e580>">
+<div class="equation" id="<plasTeX.TeXFragment object at 0x10e55d580>">
 <p>
   <div class="equation_content">
     \begin{equation} \label{data_adj}\begin{tikzcd} 
@@ -725,7 +725,7 @@
 <ul class="itemize">
   <li><p>Let \(\mathcal{F}\) be a sheaf. The condition \(\varnothing \subset U\) is always satisfied and \(\varnothing \) is minimal among open subset for the inclusion then \((\alpha ^*)(\mathcal{F})(\varnothing )=\mathcal{F}(\varnothing )\). One can apply the sheaf condition to the empty family and obtain the exact sequence \(0\to \mathcal{F}(\varnothing )\to \Pi _{\varnothing }=0\), and then <a href="sect0002.html#axiom:Ksh1" class="eqref">2</a>.<br /></p>
 <p>Let \(K_1,K_2\) be two of compacts of \(X\), let \(U_1,U_2\) be a two opens such that \(K_i\subset U_i\) for all \(i\). Then the sheaf condition gives an exact sequence (because for abelian groups the product is the direct sum) \(0\to \mathcal{F}(U_1\cup U_2)\to \mathcal{F}(U_1)\bigoplus \mathcal{F}(U_2)\to \mathcal{F}(U_1\cap U_2)\). The injective limits are exacts then taking the limits over those opens gives an exact sequence: </p>
-<div class="equation" id="<plasTeX.TeXFragment object at 0x1101758e0>">
+<div class="equation" id="<plasTeX.TeXFragment object at 0x10e6338e0>">
 <p>
   <div class="equation_content">
     \begin{equation} \label{lim_of_sheaf_cond} 0\to \varinjlim \limits _{K_i\subset U_i}\mathcal{F}(U_1\cup U_2)\to \varinjlim \limits _{K_i\subset U_i}\mathcal{F}(U_1)\times \mathcal{F}(U_2)\to \varinjlim \limits _{K_i\subset U_i}\mathcal{F}(U_1\cap U_2) \end{equation}
@@ -734,9 +734,9 @@
 </p>
 </div>
 <p>An open \(U\) contains \(K_1\cup K_2\) if and only if it’s of the form \(U_1\cup U_2\) with \(K_i\subset U_i\) (one can take \(U_1=U_2=U\) for the direct implication), then by definition \(\varinjlim \limits _{K_i\subset U_i}\mathcal{F}(U_1\cup U_2)=\alpha ^*\mathcal{F}(K_1\cup K_2)\).<br /></p>
-<p>The injective limit commute with the product, then: </p>
+<p>The injective limit commute with the direct sum (as it is a coproduct), then: </p>
 <div class="displaymath" id="a0000000042">
-  \[ \varinjlim \limits _{K_i\subset U_i}\mathcal{F}(U_1)\times \mathcal{F}(U_2)=(\varinjlim \limits _{K_i\subset U_i}\mathcal{F}(U_1))\times (\varinjlim \limits _{K_i\subset U_i}\mathcal{F}(U_2))=\alpha ^*\mathcal{F}(K_1)\times \alpha ^*\mathcal{F}(K_2) \]
+  \[ \varinjlim \limits _{K_i\subset U_i}\mathcal{F}(U_1)\times \mathcal{F}(U_2)=(\varinjlim \limits _{K_i\subset U_i}\mathcal{F}(U_1))\bigoplus (\varinjlim \limits _{K_i\subset U_i}\mathcal{F}(U_2))=\alpha ^*\mathcal{F}(K_1)\bigoplus \alpha ^*\mathcal{F}(K_2) \]
 </div>
 <p>.<br /></p>
 <p>By the lemma <a href="sect0002.html#lem:cofinal_syst_of_inter_compact">2.8</a> the limit \(\varinjlim \limits _{K_i\subset U_i}\mathcal{F}(U_1\cap U_2)\) compute the same thing as \(\varinjlim \limits _{K_1\cap K_2\subset U}\mathcal{F}(U)=\alpha ^*\mathcal{F}(K_1\cap K_2)\).<br /></p>
@@ -745,16 +745,33 @@
 <div class="displaymath" id="a0000000043">
   \[ \varinjlim \limits _{K\subset U \text{open relatively compact}}\varinjlim \limits _{\bar{U}\subset V\text{ open}}\mathcal{F}(V)=\varinjlim \limits _{K\subset U\  \text{open}}\mathcal{F}(V) \]
 </div>
-<p>. Wich rewrite by definition as \(\varinjlim \limits _{K\subset U\  \text{open relatively compact}}\alpha ^*\mathcal{F}(\bar{U})=\alpha ^*\mathcal{F}(V)\) i.e. <a href="sect0002.html#axiom:Ksh3" class="eqref">4</a> </p>
+<p>. Wich rewrite by definition as \(\varinjlim \limits _{K\subset U\  \text{open relatively compact}}\alpha ^*\mathcal{F}(\bar{U})=\alpha ^*\mathcal{F}(V)\) i.e. <a href="sect0002.html#axiom:Ksh3" class="eqref">4</a>.<br /></p>
+<p>Then \(\alpha ^*\mathcal{F}\) is a \(\mathcal{K}\)-sheaf. </p>
 </li>
-  <li></li>
+  <li><p>Let \(\mathcal{G}\) be a \(\mathcal{K}\)-sheaf. Let \(K_1,\ldots K_n\) be a family of compacts subsets let’s show that the sequence \(0\to \mathcal{G}(\bigcup \limits _{i=1}^n K_i)\to \prod \limits _{i=1}^n\mathcal{G}(K_i)\to \prod \limits _{i,j=1}^n\mathcal{G}(K_i\cap K_j)\). </p>
+<p>If the family is empty, then the sequence is \(0\to \mathcal{G}\to 0\to 0\) wich is exact beause of <a href="sect0002.html#axiom:Ksh1" class="eqref">2</a>. </p>
+<p>If \(n=1\) then the sequence is \(0\to \mathcal{G}(K_1)\to \mathcal{G}(K_2)\to 0\) wich is exact beause of <a href="sect0002.html#axiom:Ksh1" class="eqref">2</a>. </p>
+<p>\(\mathcal{G}\) is a \(\mathcal{K}\)-sheaf, then (by <a href="sect0002.html#axiom:Ksh2" class="eqref">3</a>) the map \(\mathcal{G}(K\cup K')\to \mathcal{G}(K)\bigoplus \mathcal{G}(K')\) is injective, then (the direct products of two abélian groups is their product), then bi straightforward induction the map is injective \(\mathcal{G}(\bigcup \limits _{i=1}^nK_i)\to \prod \limits _{i=1}^n\mathcal{G}(K_i)\). </p>
+<p>Let’s show the exactness of the other term in the sequence by induction, the base case of \(n=2\) is given by <a href="sect0002.html#axiom:Ksh2" class="eqref">3</a>. Let’s assume that it’s exact for \(n\in \mathbbm {N}\) fixed. Let \(K_1,\ldots K_n, K_{n+1}\) be compacts subset and \((f_1,\ldots ,f_{n+1})\) be an element of the kernel of \(\prod \limits _{i=1}^{n+1}\mathcal{G}(K_i)\to \prod \limits _{i,j=1}^{n+1}\mathcal{G}(K_i\cap K_j)\). Then \((f_1,\ldots ,f_n)\) is in the kernel of \(\prod \limits _{i=1}^n\mathcal{G}(K_i)\to \prod \limits _{i,j=1}^n\mathcal{G}(K_i\cap K_j)\) so by induction hypothesis, it’s of the form \((f|_{K_1},\ldots ,f|_{K_n})\) for \(f\in \mathcal{G}(K:=\bigcup \limits _{i=1}^nK_i)\). On the other hand, by the compatibility of reistriction \(f|_{K\cap K_{n+1}}=f|_{K_1}|_{K\cap K_{n+1}}=f_1|_{K\cap K_{n+1}}=f_1|_{K_1\cap K_{n+1}}|_{K\cap K_{n+1}}\) so \(f|_{K\cap K_n+1}-f_{n+1}|_{K\cap K_n+1}=f_1|_{K_1\cap K_{n+1}}|_{K\cap K_{n+1}}-f_{n+1}|_{K_1\cap K_{n+1}}|_{K\cap K_{n+1}}=0\) by hypothesis. Then by the exactness of <a href="sect0002.html#axiom:Ksh2" class="eqref">3</a> \(f\) and \(f_{n+1}\) are of the form \(g|_K\) and \(g|_{K_{n+1}}\), with \(g\in \mathcal{G}(\bigcup \limits _{i=1}^{n+1} K_i)\). </p>
+<p>Then \((f_1,\ldots ,f_{n+1})\) is of the form \((g|_{K_1},\ldots g|_{K_{n+1}})\). Wicch conclude the exactness prof because the inclusion of the image into the kernel is starightforward by definition of the map. </p>
+<p>Let \((U_a)_{a\in A}\) be a family of opens of \(X\), one can consider the collections of family of compacts \((K_a)_{a\in A}\) such that \(\forall a\in A /\  K_a\subset U_a\) and only a finite number of them are not empty (by the <a href="sect0002.html#axiom:Ksh1" class="eqref">2</a>adding enpty compacts in the family ad a product with zero in the exact sequence, wich does not changes the sequence) and take the projective limit of the previous exact sequence over it. </p>
+<p>The sequence remains exact because projective limits are left exacts: </p>
+<div class="displaymath" id="a0000000044">
+  \[ 0\to \varprojlim \mathcal{G}(\bigcup \limits _{a\in A}K_a)\to \varprojlim \prod \limits _{a\in A}\mathcal{G}(K_a)\to \varprojlim \prod \limits _{a,b\in A}\mathcal{G}(K_a\cap K_b) \]
+</div>
+<p>. The projective limits commmute with products, then the sequence is </p>
+<div class="displaymath" id="a0000000045">
+  \[ 0\to \varprojlim \mathcal{G}(\bigcup \limits _{a\in A}K_a)\to \prod \limits _{a\in A}\varprojlim \mathcal{G}(K_a)\to \prod \limits _{a,b\in A}\varprojlim \mathcal{G}(K_a\cap K_b) \]
+</div>
+<p>By definition (because it’s for aa fixed \(a\) and does not depend of the family for other indexes) \(\varprojlim \mathcal{G}(K_a)=\alpha _*\mathcal{G}(U_a)\) and \(\varprojlim \mathcal{G}(K_a\cap K_b)=\alpha _*\mathcal{G}(U_a\cap U_b)\). Any compact included in \(\bigcup \limits _{a\in A}U_a\) is included in a finite number of the opens then \(\varprojlim \mathcal{G}(\bigcup \limits _{a\in A}K_a)\) compute \(\alpha _*\mathcal{G}(\bigcup \limits _{a\in A}U_a)\), then one get’s the sheaf condition for \(\alpha _*\mathcal{G}\). </p>
+</li>
   <li><p>A morphisme between two (\(\mathcal{K}\)-)sheaves is by definition is by definition a morphisme between the two underling (\(\mathcal{K}\)-)presheaves then, the natural equality \(\hom _{\text{Sh}}(\alpha ^*\mathcal{F},\mathcal{G})=\hom _{\text{Sh}}(\mathcal{F},\alpha _*\mathcal{G})\) is a consequence of <a href="sect0002.html#pro:adj_kprshv_and_prshv">2.11</a> </p>
 </li>
 </ul>
 
   </div>
 </div>
-<div class="lemma_thmwrapper theorem-style-plain" id="lem:kshv_equiv_shv">
+<div class="lemma_thmwrapper theorem-style-plain" id="lem:stalk_preserve">
   <div class="lemma_thmheading">
     <span class="lemma_thmcaption">
     Lemma
@@ -765,9 +782,75 @@
         </div>
     <div class="thm_header_hidden_extras">
 
+    <a class="icon proof" href="sect0002.html#lem:stalk_preserve">#</a>
+    
+    <a class="icon proof" href="sect0002.html#a0000000046"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
+</a>
+    
+    
+    <button class="modal"><svg  class="icon icon-mindmap "><use xlink:href="symbol-defs.svg#icon-mindmap"></use></svg>
+</button>
+        <div class="modal-container">
+      <div class="modal-content">
+        <header>
+          <h1>Uses</h1>
+          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        </header>
+        
+        <ul class="uses">
+          
+          <li><a href="sect0002.html#def:adj_kprshv_and_prshv">Definition 2.10</a></li>
+          
+          <li><a href="sect0002.html#def:stalk">Definition 2.2</a></li>
+          
+          <li><a href="sect0002.html#def:K_stalk">Definition 2.5</a></li>
+          
+        </ul>
+    
+      </div>
+    </div>
+
+    
+    
+        </div>
+  </div>
+  <div class="lemma_thmcontent">
+  <p>  The functors \(\alpha ^*\) and \(\alpha _*\) preserve the stalk. </p>
+
+  </div>
+</div>
+<div class="proof_wrapper" id="a0000000046">
+  <div class="proof_heading">
+    <span class="proof_caption">
+    Proof
+    </span>
+    <span class="expand-proof">▶</span>
+  </div>
+  <div class="proof_content">
+  <ul class="itemize">
+  <li><p>Let \(\mathcal{F}\) be a sheaf. Then the stalk of \(\alpha ^*\mathcal{F}\) at \(p\in X\) is by definition \(\alpha ^*\mathcal{F}(\{ p\} )=\varinjlim \limits _{\{ p\} \subset U \text{ open}}\mathcal{F}(U)\) wich is by definition the stalk of \(\mathcal{F}\) at \(p\). </p>
+</li>
+  <li><p>Let \(\mathcal{G}\) be a \(\mathcal{K}\)-sheaf. Then </p>
+</li>
+</ul>
+
+  </div>
+</div>
+<div class="lemma_thmwrapper theorem-style-plain" id="lem:kshv_equiv_shv">
+  <div class="lemma_thmheading">
+    <span class="lemma_thmcaption">
+    Lemma
+    </span>
+    <span class="lemma_thmlabel">2.14</span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
     <a class="icon proof" href="sect0002.html#lem:kshv_equiv_shv">#</a>
     
-    <a class="icon proof" href="sect0002.html#a0000000044"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
+    <a class="icon proof" href="sect0002.html#a0000000047"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
 </a>
     
     
@@ -811,7 +894,7 @@
 
   </div>
 </div>
-<div class="proof_wrapper" id="a0000000044">
+<div class="proof_wrapper" id="a0000000047">
   <div class="proof_heading">
     <span class="proof_caption">
     Proof
