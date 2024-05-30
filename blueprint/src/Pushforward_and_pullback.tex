@@ -12,7 +12,9 @@ Let $X$ and $Y$ be two loccaly compacts hausdorf spaces and $f:X\to Y$ be a cont
 \end{definition}
 
 \begin{proof}
-    TODO
+    Let $(U_a)\ind{a}{A}$ be a family of opens of $Y$. Then one ca apply the sheaf condition of $\mathcal{F}$ with the family of opens of $X$: $(f^{-1}(U_a))\ind{a}{A}$. The result is the exact sequence: $$0\to \mathcal{F}(\bigcup\limits\ind{a}{A}f^{-1}(U_a))\to \prod\limits_{a\in A}\mathcal{F}(f^{-1}(U_a))\to \prod\limits_{a,b\in A}\mathcal{F}(f^{-1}(U_a)\cap f^{-1}(U_b))$$. 
+    On the other hand, the inverse image commute with union and intersections, then the previous exact sequence rewrites to $$0\to f_*\mathcal{F}(\bigcup\limits\ind{a}{A}U_a)\to \prod\limits_{a\in A}f_*\mathcal{F}(U_a)\to \prod\limits_{a,b\in A}f_*\mathcal{F}(U_a\cap U_b)$$. 
+    In other words, $f_*\mathcal{F}$ is a sheaf.
 \end{proof}
 
 \begin{definition}\label{def:pullback_of_sheaf}
@@ -23,10 +25,6 @@ Let $X$ and $Y$ be two loccaly compacts hausdorf spaces and $f:X\to Y$ be a cont
 
 \end{definition}
 
-\begin{proof}
-    TODO
-\end{proof}
-
 \begin{definition}\label{def:exceptional_pushforward_of_sheaf}
     If $f:X\to Y$ is the inclusion of an open subset, the exceptional pushforward by $f$: $f_!$ is defined by $f_!\mathcal{F}(U)$ being the subset of $f_*\mathcal{F}(U)$ of sections that vanish over a neighborhood of $Y-X$.
 
@@ -34,7 +32,15 @@ Let $X$ and $Y$ be two loccaly compacts hausdorf spaces and $f:X\to Y$ be a cont
 \end{definition}
 
 \begin{proof}
-    TODO
+    \uses{def:pushforward_of_sheaf}
+    Let $U\supset V$ be two opens of $Y$ and $h$ be an element of $f_!\mathcal{F}(U)$, then $h$ is an element of $\mathcal{F}(U\cap X)$ such that there is a $W$ open that contains $Y\backslash X$ and such that $h|_{U\cap W\cap X}=0$. Then  $0=h|_V|_{U\cap W\cap X}=h|_{V\cap U\cap W\cap X}=h|_{V\cap W\cap X}$ so $h|_V$ is in $f_!\mathcal{F}(V)$. So $f_!\mathcal{F}$ is well defined.
+
+    Let $(U_a)\ind{a}{A}$ be a family of opens of $Y$. The map $f_!\mathcal{F}(\bigcup\limits\ind{a}{A}U_a\cap X)\to\Pi\limits\ind{a}{A}f_!\mathcal{F}(U_a)$ is a reistriction of an injective map (because of the sheaf condition of $f_*\mathcal{F}$), then it's also injective.
+
+    Let $(h_a)$ be an element of the kernel of $\prod\limits_{a\in A}f_!\mathcal{F}(U_a)\to \prod\limits_{a,b\in A}f_!\mathcal{F}(U_a\cap U_b)$. By the sheaf condition of $f_*\mathcal{F}$, it's of the form $(h|_{U_a})$ with $h\in f_*\mathcal{F}(\bigciup\limits\ind{a}{A}U_a)$. To conclude the sheaf condition for $f_!\mathcal{F}$ one has to check that $h$ is $f_!\mathcal{F}(\bigciup\limits\ind{a}{A}U_a)$.
+
+    By definition for any $a\in A$ there is an open $V_a$ of $Y$ that contains $Y\backslash X$ and such that $h_a|_{U_a\cap V_a\cap X}=0$. So for all $a\in A\, h_{U_a\cap V_a\cap X}=0$. Let $V$ be the union of the $V_a$, it contains $Y\backslash X$. the reistriction of $h|_V$ to all $V_a\cap X$ are $0$, then by the first part of the sheaf condition, $h|_{V\cap X}$ is also $0$, then $h$ is in $f_!\mathcal{F}(\bigciup\limits\ind{a}{A}U_a)$.    
+    
 \end{proof}
 
 \section{For $\mathcal{K}$-sheaves}
@@ -57,5 +63,10 @@ Let's assume that $f$ is proper.
 %\begin{definition}\label{def:pullback_of_Homotopy-K-sheaf}
 %    If $f$ is injective, and $\mathcal{F}^{\bullet}$ a Homotopy-$\mathcal{K}$-sheaf over $Y$, then the rule $K\mapsto \mathcal{F}^{\bullet}(f(K))$ defines a Homotopy-$\mathcal{K}$-sheaf over $X$
 %\end{definition}
+
+%\begin{proof}
+%    \uses{lem:lim_comm_inter_for_hksh}
+
+%\end{proof}
 
 % j'en ai vraiment besoin?

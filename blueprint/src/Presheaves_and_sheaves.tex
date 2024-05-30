@@ -173,11 +173,9 @@ $$\begin{tikzcd}
 
         Then the exact sequence \eqref{lim_of_sheaf_cond} is in fact \eqref{axiom:Ksh2}.\\ \\
 
-
         Let $K$ be a compact, $U$ a relatively comapct open such that $K\subset U$ and $V$ an open suche that $\bar{U}\subset V$ then $K\subset V$. Conversely if $V$ is an open containing $K$, then $K$ is a comapct of $V$ (locally compact as $X$ is) and then admits an open neighborhood $U$ relatively compact (in $V$).Thus (because the two limits are over the same set) one has the equality \[\varinjlim\limits_{K\subset U \text{open relatively compact}}\varinjlim\limits_{\bar{U}\subset V\text{ open}}\mathcal{F}(V)=\varinjlim\limits_{K\subset U\ \text{open}}\mathcal{F}(V)\]. Wich rewrite by definition as $\varinjlim\limits_{K\subset U\ \text{open relatively compact}}\alpha^*\mathcal{F}(\bar{U})=\alpha^*\mathcal{F}(V)$ i.e. \eqref{axiom:Ksh3}.\\
 
         Then $\alpha^*\mathcal{F}$ is a $\Kc$-sheaf. 
-
 
         \item Let $\mathcal{G}$ be a $\Kc$-sheaf. Let $K_1,\ldots K_n$ be a family of compacts subsets let's show that the sequence $0\to \mathcal{G}(\bigcup\limits_{i=1}^n K_i)\to \prod\limits_{i=1}^n\mathcal{G}(K_i)\to \prod\limits_{i,j=1}^n\mathcal{G}(K_i\cap K_j)$.
 
@@ -198,34 +196,25 @@ $$\begin{tikzcd}
 
         $$0\to\varprojlim\mathcal{G}(\bigcup\limits_{a\in A}K_a)\to \prod\limits_{a\in A}\varprojlim\mathcal{G}(K_a)\to\prod\limits_{a,b\in A}\varprojlim\mathcal{G}(K_a\cap K_b)$$
 
-        By definition (because it's for aa fixed $a$ and does not depend of the family for other indexes) $\varprojlim\mathcal{G}(K_a)=\alpha_*\mathcal{G}(U_a)$ and $\varprojlim\mathcal{G}(K_a\cap K_b)=\alpha_*\mathcal{G}(U_a\cap U_b)$. Any compact included in $\bigcup\limits\ind{a}{A}U_a$ is included in a finite number of the opens then $\varprojlim\mathcal{G}(\bigcup\limits_{a\in A}K_a)$ compute $\alpha_*\mathcal{G}(\bigcup\limits\ind{a}{A}U_a)$, then one get's the sheaf condition for $\alpha_*\mathcal{G}$.
-
-
-
-
-
-
-
+        By definition (because it's for a fixed $a$ and does not depend of the family for other indexes) $\varprojlim\mathcal{G}(K_a)=\alpha_*\mathcal{G}(U_a)$ and $\varprojlim\mathcal{G}(K_a\cap K_b)=\alpha_*\mathcal{G}(U_a\cap U_b)$. Any compact included in $\bigcup\limits\ind{a}{A}U_a$ is included in a finite number of the opens then $\varprojlim\mathcal{G}(\bigcup\limits_{a\in A}K_a)$ compute $\alpha_*\mathcal{G}(\bigcup\limits\ind{a}{A}U_a)$, then one get's the sheaf condition for $\alpha_*\mathcal{G}$.
 
         \item A morphisme between two ($\mathcal{K}$-)sheaves is by definition is by definition a morphisme between the two underling ($\mathcal{K}$-)presheaves then, the natural equality $\hom_{\text{Sh}}(\alpha^*\mathcal{F},\mathcal{G})=\hom_{\text{Sh}}(\mathcal{F},\alpha_*\mathcal{G})$ is a consequence of \ref{pro:adj_kprshv_and_prshv}
     \end{itemize}
 \end{proof}
 
-\begin{lemma}\label{lem:stalk_preserve}
-    \uses{def:adj_kprshv_and_prshv,def:stalk,def:K_stalk}
-    The functors $\alpha^*$ and $\alpha_*$ preserve the stalk.
-\end{lemma}
+%\begin{lemma}\label{lem:stalk_preserve}
+%    \uses{def:adj_kprshv_and_prshv,def:stalk,def:K_stalk}
+%    The functors $\alpha^*$ and $\alpha_*$ preserve the stalk.
+%\end{lemma}
 
-\begin{proof}
-    \begin{itemize}
-        \item Let $\mathcal{F}$ be a sheaf. Then the stalk of $\alpha^*\mathcal{F}$ at $p\in X$ is by definition $\alpha^*\mathcal{F}(\{p\})=\varinjlim\limits_{\{p\}\subset U \text{ open}}\mathcal{F}(U)$ wich is by definition the stalk of $\mathcal{F}$ at $p$.
-        \item Let $\mathcal{G}$ be a $\Kc$-sheaf. Then 
-    \end{itemize}
+%\begin{proof}
+%    \begin{itemize}
+%        \item Let $\mathcal{F}$ be a sheaf. Then the stalk of $\alpha^*\mathcal{F}$ at $p\in X$ is by definition $\alpha^*\mathcal{F}(\{p\})=\varinjlim\limits_{\{p\}\subset U \text{ open}}\mathcal{F}(U)$ wich is by definition the stalk of $\mathcal{F}$ at $p$.
+%        \item Let $\mathcal{G}$ be a $\Kc$-sheaf. Then 
+%    \end{itemize}
 
-
-
-
-\end{proof}
+    %the proof of this one should not be more complicated than the general case
+%\end{proof}
 
 
 \begin{lemma}\label{lem:kshv_equiv_shv}
@@ -234,9 +223,13 @@ $$\begin{tikzcd}
 \end{lemma}
 
 \begin{proof}
-    \uses{def:K_sheaves, def:sheaves, lem:adj_kshv_and_shv, lem:equiv_of_adj}
+    \uses{def:K_sheaves, def:sheaves, lem:adj_kshv_and_shv, lem:equiv_of_adj,def:stalk,def:K_stalk}
     By using \ref{lem:equiv_of_adj}, it's enough to show that for any sheaf $\mathcal{F}$ and $\Kc$-sheaf $\mathcal{G}$, the natural maps $\mathcal{F}\to \alpha_*\alpha^*\mathcal{U}$ and $\alpha^*\alpha_*\mathcal{G}\to \mathcal{G}$ are isomorphism. The fact of being a natural isomorphism can be checked locally.\begin{itemize}
+
+        \item Let $K$ be a comapct of $X$. One has to check that $\varinjlim\limits_{K\subset U \text{ open}}\varprojlim\limits_{U\supset K' \text{ compact}}\mathcal{G}(K')\to \mathcal{G}(K)$ is an isomorphism. (TODO) %immédiat selon pardon
+
         \item Let $U$ be an open of $X$. One has to check that $\mathcal{F}(U)\to \varprojlim\limits_{U\supset K \text{ compact}}\varinjlim\limits_{K\subset U' \text{ open}}\mathcal{F}(U')$ is an isomorphism.
-        \item
+
+        One can apply the previous item with the compact $K=\{p\}$ (for $p\in X$) and then get that $\alpha_*$ preserve the stlaks. The fact that $\alpha^*$ preserves the stalks is straightforward by definition. Then the map $\mathcal{F}(U)\to \varprojlim\limits_{U\supset K \text{ compact}}\varinjlim\limits_{K\subset U' \text{ open}}\mathcal{F}(U')$ is an isomorphism once restricted to stalks, and because the two are sheaves on $X$ they are then isomorphics.
     \end{itemize}
 \end{proof}

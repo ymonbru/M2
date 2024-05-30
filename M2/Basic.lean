@@ -14,6 +14,7 @@ def RelCN (K:Compacts X) : Set (Opens X):= fun (U:Opens X) => (K.carrier ⊆ U.c
 
 #check RelCN X (⊥:Compacts X)
 
+
 structure Ksheaf where
   F : (Compacts X)ᵒᵖ ⥤ Ab
   ksh1 : F.obj (op (⊥:Compacts X)) = zero

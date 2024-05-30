@@ -140,7 +140,7 @@
 
     <a class="icon proof" href="sect0004.html#def:pushforward_of_sheaf">#</a>
     
-    <a class="icon proof" href="sect0004.html#a0000000051"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
+    <a class="icon proof" href="sect0004.html#a0000000050"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
 </a>
     
     
@@ -174,7 +174,7 @@
 
   </div>
 </div>
-<div class="proof_wrapper" id="a0000000051">
+<div class="proof_wrapper" id="a0000000050">
   <div class="proof_heading">
     <span class="proof_caption">
     Proof
@@ -182,7 +182,15 @@
     <span class="expand-proof">▶</span>
   </div>
   <div class="proof_content">
-  <p>TODO </p>
+  <p>Let \((U_a)_{a\in A}\) be a family of opens of \(Y\). Then one ca apply the sheaf condition of \(\mathcal{F}\) with the family of opens of \(X\): \((f^{-1}(U_a))_{a\in A}\). The result is the exact sequence: </p>
+<div class="displaymath" id="a0000000051">
+  \[ 0\to \mathcal{F}(\bigcup \limits _{a\in A}f^{-1}(U_a))\to \prod \limits _{a\in A}\mathcal{F}(f^{-1}(U_a))\to \prod \limits _{a,b\in A}\mathcal{F}(f^{-1}(U_a)\cap f^{-1}(U_b)) \]
+</div>
+<p>. On the other hand, the inverse image commute with union and intersections, then the previous exact sequence rewrites to </p>
+<div class="displaymath" id="a0000000052">
+  \[ 0\to f_*\mathcal{F}(\bigcup \limits _{a\in A}U_a)\to \prod \limits _{a\in A}f_*\mathcal{F}(U_a)\to \prod \limits _{a,b\in A}f_*\mathcal{F}(U_a\cap U_b) \]
+</div>
+<p>. In other words, \(f_*\mathcal{F}\) is a sheaf. </p>
 
   </div>
 </div>
@@ -198,9 +206,6 @@
     <div class="thm_header_hidden_extras">
 
     <a class="icon proof" href="sect0004.html#def:pullback_of_sheaf">#</a>
-    
-    <a class="icon proof" href="sect0004.html#a0000000052"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
-</a>
     
     
     <button class="modal"><svg  class="icon icon-mindmap "><use xlink:href="symbol-defs.svg#icon-mindmap"></use></svg>
@@ -229,18 +234,6 @@
   <div class="definition_thmcontent">
   <p>  If \(\mathcal{F}\) is a pre-sheaf over \(Y\), then the rule \(U\mapsto \varinjlim \limits _{f(U)\subset V}\mathcal{F}(V)\) defines a pre-sheaf over \(Y\). </p>
 <p>If \(\mathcal{F}\) is a sheaf, the sheafification of the previous pre-sheaf is a denoted \(f^*\mathcal{F}\) and called the pullback by \(f\). </p>
-
-  </div>
-</div>
-<div class="proof_wrapper" id="a0000000052">
-  <div class="proof_heading">
-    <span class="proof_caption">
-    Proof
-    </span>
-    <span class="expand-proof">▶</span>
-  </div>
-  <div class="proof_content">
-  <p>TODO </p>
 
   </div>
 </div>
@@ -278,7 +271,9 @@
     <span class="expand-proof">▶</span>
   </div>
   <div class="proof_content">
-  <p>TODO </p>
+  <p>Let \(U\supset V\) be two opens of \(Y\) and \(h\) be an element of \(f_!\mathcal{F}(U)\), then \(h\) is an element of \(\mathcal{F}(U\cap X)\) such that there is a \(W\) open that contains \(Y\backslash X\) and such that \(h|_{U\cap W\cap X}=0\). Then \(0=h|_V|_{U\cap W\cap X}=h|_{V\cap U\cap W\cap X}=h|_{V\cap W\cap X}\) so \(h|_V\) is in \(f_!\mathcal{F}(V)\). So \(f_!\mathcal{F}\) is well defined. </p>
+<p>Let \((U_a)_{a\in A}\) be a family of opens of \(Y\). Let \(h\) be an element of \(f_!\mathcal{F}(\bigcup \limits _{a\in A}U_a\cap X)\), then there is an open \(V\) of \(Y\) such that \(h|_{V\cap X}=0\). </p>
+<p>One can consider th family of opens TODO </p>
 
   </div>
 </div>
