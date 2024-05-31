@@ -1,7 +1,7 @@
 # Fdb version 3
-["pdflatex"] 1717076545 "print.tex" "/Users/yannismonbru/M2/blueprint/print/print.pdf" "print" 1717076547
-  "/Users/yannismonbru/M2/blueprint/print/print.aux" 1717076547 7850 8c49217a72034e13ddf7eed6652e9c0d "pdflatex"
-  "/Users/yannismonbru/M2/blueprint/print/print.out" 1717076547 3456 46e4f8a472e7c839bab7ed437d8417ac "pdflatex"
+["pdflatex"] 1717159720 "print.tex" "/Users/yannismonbru/M2/blueprint/print/print.pdf" "print" 1717159721
+  "/Users/yannismonbru/M2/blueprint/print/print.aux" 1717159721 7915 df4d19376c225874a95fa0afead5fd52 "pdflatex"
+  "/Users/yannismonbru/M2/blueprint/print/print.out" 1717159721 3456 46e4f8a472e7c839bab7ed437d8417ac "pdflatex"
   "/usr/local/texlive/2022/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2022/texmf-dist/fonts/tfm/adobe/zapfding/pzdr.tfm" 1136768653 1528 f853c4d1b4e0550255e02831fdc8496f ""
   "/usr/local/texlive/2022/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam10.tfm" 1246382020 916 f87d7c45f9c908e672703b83b72241a3 ""
@@ -164,11 +164,11 @@
   "/usr/local/texlive/2022/texmf.cnf" 1647878952 577 209b46be99c9075fd74d4c0369380e8c ""
   "Cech_cohomology.tex" 1716269701 5684 8430e32cba04b477030a0e7399f72bc1 ""
   "Homotopy_colimits.tex" 1712587233 593 d1886b3fcb38ab23a4188f96e1cb745a ""
-  "Homotopy_sheaves.tex" 1716908680 3589 8a3abc621f921bd8ba195335342dffc2 ""
+  "Homotopy_sheaves.tex" 1717081852 4033 0171accc9ec027a90a53387be5ee283f ""
   "Poincare–Lefschetz_duality.tex" 1713191296 2788 d86e8ff0000c1edffa5844a2fa5103d7 ""
   "Presheaves_and_sheaves.tex" 1717076080 18183 2ec24f609a72111d361aac51b8601290 ""
   "Purehomotopy_K-sheaves.tex" 1716281498 1850 e6def79347e6faabb34d3f5e1577007f ""
-  "Pushforward_and_pullback.tex" 1717076535 2797 8c17c15abdf3e78ba463fd89ee32ab90 ""
+  "Pushforward_and_pullback.tex" 1717159716 5246 6897c34827988acba9704c94d802bb8d ""
   "Steenrod_homology.tex" 0 -1 0 ""
   "content.tex" 1716268238 968 b2a85751e5dd7667938200e1e64688f5 ""
   "intro.tex" 1716268123 3728 87e749286777af65301546699c5fce85 ""

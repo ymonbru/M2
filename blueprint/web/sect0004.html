@@ -271,20 +271,58 @@
     <span class="expand-proof">▶</span>
   </div>
   <div class="proof_content">
-  <p>Let \(U\supset V\) be two opens of \(Y\) and \(h\) be an element of \(f_!\mathcal{F}(U)\), then \(h\) is an element of \(\mathcal{F}(U\cap X)\) such that there is a \(W\) open that contains \(Y\backslash X\) and such that \(h|_{U\cap W\cap X}=0\). Then \(0=h|_V|_{U\cap W\cap X}=h|_{V\cap U\cap W\cap X}=h|_{V\cap W\cap X}\) so \(h|_V\) is in \(f_!\mathcal{F}(V)\). So \(f_!\mathcal{F}\) is well defined. </p>
-<p>Let \((U_a)_{a\in A}\) be a family of opens of \(Y\). Let \(h\) be an element of \(f_!\mathcal{F}(\bigcup \limits _{a\in A}U_a\cap X)\), then there is an open \(V\) of \(Y\) such that \(h|_{V\cap X}=0\). </p>
-<p>One can consider th family of opens TODO </p>
+  <p> Let \(U\supset V\) be two opens of \(Y\) and \(h\) be an element of \(f_!\mathcal{F}(U)\), then \(h\) is an element of \(\mathcal{F}(U\cap X)\) such that there is a \(W\) open that contains \(Y\backslash X\) and such that \(h|_{U\cap W\cap X}=0\). Then \(0=h|_V|_{U\cap W\cap X}=h|_{V\cap U\cap W\cap X}=h|_{V\cap W\cap X}\) so \(h|_V\) is in \(f_!\mathcal{F}(V)\). So \(f_!\mathcal{F}\) is well defined. </p>
+<p>Let \((U_a)_{a\in A}\) be a family of opens of \(Y\). The map \(f_!\mathcal{F}(\bigcup \limits _{a\in A}U_a\cap X)\to \prod \limits _{a\in A}f_!\mathcal{F}(U_a)\) is a reistriction of an injective map (because of the sheaf condition of \(f_*\mathcal{F}\)), then it’s also injective. </p>
+<p>Let \((h_a)\) be an element of the kernel of \(\prod \limits _{a\in A}f_!\mathcal{F}(U_a)\to \prod \limits _{a,b\in A}f_!\mathcal{F}(U_a\cap U_b)\). By the sheaf condition of \(f_*\mathcal{F}\), it’s of the form \((h|_{U_a})\) with \(h\in f_*\mathcal{F}(\bigcup \limits _{a\in A}U_a)\). To conclude the sheaf condition for \(f_!\mathcal{F}\) one has to check that \(h\) is \(f_!\mathcal{F}(\bigcup \limits _{a\in A}U_a)\). </p>
+<p>By definition for any \(a\in A\) there is an open \(V_a\) of \(Y\) that contains \(Y\backslash X\) and such that \(h_a|_{U_a\cap V_a\cap X}=0\). So for all \(a\in A\,  h_{U_a\cap V_a\cap X}=0\). Let \(V\) be the union of the \(V_a\), it contains \(Y\backslash X\). the reistriction of \(h|_V\) to all \(V_a\cap X\) are \(0\), then by the first part of the sheaf condition, \(h|_{V\cap X}\) is also \(0\), then \(h\) is in \(f_!\mathcal{F}(\bigcup \limits _{a\in A}U_a)\). </p>
 
   </div>
 </div>
 <h1 id="a0000000027">4.2 For \(\mathcal{K}\)-sheaves</h1>
 <p>Let’s assume that \(f\) is proper. </p>
+<div class="lemma_thmwrapper theorem-style-plain" id="lem:basis_of_open_of_fm1K">
+  <div class="lemma_thmheading">
+    <span class="lemma_thmcaption">
+    Lemma
+    </span>
+    <span class="lemma_thmlabel">4.4</span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0004.html#lem:basis_of_open_of_fm1K">#</a>
+    
+    <a class="icon proof" href="sect0004.html#a0000000054"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
+</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="lemma_thmcontent">
+  <p> If \(K\) is a compact of \(Y\), then \(\{ f^{-1}(U)\} _{K\subset U}\) is a basis of open neighborhoods of \(f^{-1}(K)\). </p>
+
+  </div>
+</div>
+<div class="proof_wrapper" id="a0000000054">
+  <div class="proof_heading">
+    <span class="proof_caption">
+    Proof
+    </span>
+    <span class="expand-proof">▶</span>
+  </div>
+  <div class="proof_content">
+  <p>TODO </p>
+
+  </div>
+</div>
 <div class="definition_thmwrapper theorem-style-plain" id="def:pushforward_of_K-sheaf">
   <div class="definition_thmheading">
     <span class="definition_thmcaption">
     Definition
     </span>
-    <span class="definition_thmlabel">4.4</span>
+    <span class="definition_thmlabel">4.5</span>
     <div class="thm_header_extras">
 
         </div>
@@ -292,7 +330,7 @@
 
     <a class="icon proof" href="sect0004.html#def:pushforward_of_K-sheaf">#</a>
     
-    <a class="icon proof" href="sect0004.html#a0000000054"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
+    <a class="icon proof" href="sect0004.html#a0000000055"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
 </a>
     
     
@@ -310,6 +348,10 @@
           
           <li><a href="sect0002.html#def:K_sheaves">Definition 2.6</a></li>
           
+          <li><a href="sect0004.html#lem:basis_of_open_of_fm1K">Lemma 4.4</a></li>
+          
+          <li><a href="sect0004.html#def:pushforward_of_sheaf">Definition 4.1</a></li>
+          
         </ul>
     
       </div>
@@ -326,7 +368,7 @@
 
   </div>
 </div>
-<div class="proof_wrapper" id="a0000000054">
+<div class="proof_wrapper" id="a0000000055">
   <div class="proof_heading">
     <span class="proof_caption">
     Proof
@@ -334,7 +376,8 @@
     <span class="expand-proof">▶</span>
   </div>
   <div class="proof_content">
-  <p>TODO </p>
+  <p> By the lemma <a href="sect0004.html#lem:basis_of_open_of_fm1K">4.4</a>, for \(K\) a compact of \(Y\), \(\varinjlim \limits _{K\subset U \text{ open in Y}}\mathcal{F}(f^{-1}(U))\) computes \(\varinjlim \limits _{f^-1(K)\subset U \text{ open in X}}\mathcal{F}(U)\). In other words \(f_*(\alpha ^*\mathcal{F})=\alpha ^*f_*(\mathcal{F})\). </p>
+<p>Then if \(\mathcal{G}\) is a \(\mathcal{K}\)-sheaf, it’s of the form \(\alpha ^*\mathcal{F}\) for \(\mathcal{F}\) some sheaf. Then \(f_*\mathcal{G}\) is isomorphic to \(\alpha ^*f_*(\mathcal{F})\) wich is a sheaf because of <a href="sect0004.html#def:pushforward_of_sheaf">4.1</a> and <a href="sect0002.html#lem:adj_kshv_and_shv">2.12</a> </p>
 
   </div>
 </div>
