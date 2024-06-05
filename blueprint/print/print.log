@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.9.20)  31 MAY 2024 14:48
+This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.9.20)  5 JUN 2024 15:46
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1106,14 +1106,28 @@ LaTeX Font Info:    Trying to load font information for U+bbm on input line 188
 .
 (/usr/local/texlive/2022/texmf-dist/tex/latex/bbm-macros/ubbm.fd
 File: ubbm.fd 1999/03/15 V 1.2 Font definition for bbm font - TH
-) [6] [7])
-[8]
-Chapter 3.
-(./Homotopy_sheaves.tex) [9
+) [6]
+Underfull \hbox (badness 10000) in paragraph at lines 229--230
 
-] [10]
+ []
+
+[7]
+Underfull \hbox (badness 10000) in paragraph at lines 231--232
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 235--236
+
+ []
+
+[8]) [9]
+Chapter 3.
+(./Homotopy_sheaves.tex) [10
+
+] [11]
 Chapter 4.
-(./Pushforward_and_pullback.tex [11
+(./Pushforward_and_pullback.tex [12
 
 ]
 
@@ -1134,7 +1148,7 @@ Overfull \hbox (42.38794pt too wide) in paragraph at lines 68--70
 [][][][][][][][]$ computes $[] [][][][]$.
  []
 
-) [12]
+) [13]
 Chapter 5.
 (./Cech_cohomology.tex
 Underfull \hbox (badness 10000) in paragraph at lines 12--14
@@ -1153,9 +1167,9 @@ Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 (hyperref)                removing `math shift' on input line 28.
 
-[13
+[14
 
-]) [14]
+]) [15]
 Chapter 6.
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
@@ -1181,17 +1195,17 @@ LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
 (Font)              scaled to size 20.73778pt on input line 29.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
 (Font)              scaled to size 17.27815pt on input line 29.
-(./Purehomotopy_K-sheaves.tex) [15
+(./Purehomotopy_K-sheaves.tex) [16
 
 ]
 Chapter 7.
 (./Poincare–Lefschetz_duality.tex
 
-LaTeX Warning: Reference `def:pushforward_of_K-Sheaf' on page 16 undefined on i
+LaTeX Warning: Reference `def:pushforward_of_K-Sheaf' on page 17 undefined on i
 nput line 4.
 
 
-LaTeX Warning: Reference `def:exceptional_pushforward_of_K-Sheaf' on page 16 un
+LaTeX Warning: Reference `def:exceptional_pushforward_of_K-Sheaf' on page 17 un
 defined on input line 4.
 
 
@@ -1200,14 +1214,14 @@ Underfull \hbox (badness 10000) in paragraph at lines 4--6
  []
 
 
-LaTeX Warning: Reference `def:pullback_of_K-sheaf' on page 16 undefined on inpu
+LaTeX Warning: Reference `def:pullback_of_K-sheaf' on page 17 undefined on inpu
 t line 33.
 
 
-LaTeX Warning: Reference `def:exceptional_pushforward_of_K-sheaf' on page 16 un
+LaTeX Warning: Reference `def:exceptional_pushforward_of_K-sheaf' on page 17 un
 defined on input line 33.
 
-) [16
+) [17
 
 ]
 Chapter 8.
@@ -1224,11 +1238,11 @@ Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 (hyperref)                removing `math shift' on input line 11.
 
-) [17
+) [18
 
 ]
 Chapter 9.
-(./Steenrod_homology.tex)) [18
+(./Steenrod_homology.tex)) [19
 
 ]
 (/Users/yannismonbru/M2/blueprint/print/print.aux)
@@ -1239,12 +1253,12 @@ Package rerunfilecheck Info: File `print.out' has not changed.
 (rerunfilecheck)             Checksum: 46E4F8A472E7C839BAB7ED437D8417AC;3456.
  ) 
 Here is how much of TeX's memory you used:
- 28276 strings out of 476179
- 574725 string characters out of 5809544
- 1061478 words of memory out of 5000000
- 48535 multiletter control sequences out of 15000+600000
+ 28431 strings out of 476179
+ 578431 string characters out of 5809544
+ 1065478 words of memory out of 5000000
+ 48690 multiletter control sequences out of 15000+600000
  479417 words of font info for 111 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 114i,28n,118p,855b,1305s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 114i,28n,118p,1266b,1305s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on /Users/yannismonbru/M2/blueprint/print/print.pdf (19 pages).
+Output written on /Users/yannismonbru/M2/blueprint/print/print.pdf (20 pages).

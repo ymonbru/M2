@@ -173,7 +173,7 @@ $$\begin{tikzcd}
 
         Then the exact sequence \eqref{lim_of_sheaf_cond} is in fact \eqref{axiom:Ksh2}.\\ \\
 
-        Let $K$ be a compact, $U$ a relatively comapct open such that $K\subset U$ and $V$ an open suche that $\bar{U}\subset V$ then $K\subset V$. Conversely if $V$ is an open containing $K$, then $K$ is a comapct of $V$ (locally compact as $X$ is) and then admits an open neighborhood $U$ relatively compact (in $V$).Thus (because the two limits are over the same set) one has the equality \[\varinjlim\limits_{K\subset U \text{open relatively compact}}\varinjlim\limits_{\bar{U}\subset V\text{ open}}\mathcal{F}(V)=\varinjlim\limits_{K\subset U\ \text{open}}\mathcal{F}(V)\]. Wich rewrite by definition as $\varinjlim\limits_{K\subset U\ \text{open relatively compact}}\alpha^*\mathcal{F}(\bar{U})=\alpha^*\mathcal{F}(V)$ i.e. \eqref{axiom:Ksh3}.\\
+        Let $K$ be a compact, $U$ a relatively comapct open such that $K\subset U$ and $V$ an open suche that $\overline{U}\subset V$ then $K\subset V$. Conversely if $V$ is an open containing $K$, then $K$ is a comapct of $V$ (locally compact as $X$ is) and then admits an open neighborhood $U$ relatively compact (in $V$).Thus (because the two limits are over the same set) one has the equality \[\varinjlim\limits_{K\subset U \text{open relatively compact}}\varinjlim\limits_{\overline{U}\subset V\text{ open}}\mathcal{F}(V)=\varinjlim\limits_{K\subset U\ \text{open}}\mathcal{F}(V)\]. Wich rewrite by definition as $\varinjlim\limits_{K\subset U\ \text{open relatively compact}}\alpha^*\mathcal{F}(\overline{U})=\alpha^*\mathcal{F}(V)$ i.e. \eqref{axiom:Ksh3}.\\
 
         Then $\alpha^*\mathcal{F}$ is a $\Kc$-sheaf. 
 
@@ -192,9 +192,9 @@ $$\begin{tikzcd}
 
         Let $(U_a)\ind{a}{A}$ be a family of opens of $X$, one can consider the collections of family of compacts $(K_a)\ind{a}{A}$  such that $\forall a\in A /\ K_a\subset U_a$ and only  a finite number of them are not empty (by the \eqref{axiom:Ksh1}adding enpty compacts in the family ad a product with zero in the exact sequence, wich does not changes the sequence) and take the projective limit of the previous exact sequence over it.
 
-        The sequence remains exact because projective limits are left exacts: $$0\to\varprojlim\mathcal{G}(\bigcup\limits_{a\in A}K_a)\to \varprojlim\prod\limits_{a\in A}\mathcal{G}(K_a)\to \varprojlim\prod\limits_{a,b\in A}\mathcal{G}(K_a\cap K_b)$$. The projective limits commmute with products, then the sequence is 
+        The sequence remains exact because projective limits are left exacts: \[0\to\varprojlim\mathcal{G}(\bigcup\limits_{a\in A}K_a)\to \varprojlim\prod\limits_{a\in A}\mathcal{G}(K_a)\to \varprojlim\prod\limits_{a,b\in A}\mathcal{G}(K_a\cap K_b)\]. The projective limits commmute with products, then the sequence is 
 
-        $$0\to\varprojlim\mathcal{G}(\bigcup\limits_{a\in A}K_a)\to \prod\limits_{a\in A}\varprojlim\mathcal{G}(K_a)\to\prod\limits_{a,b\in A}\varprojlim\mathcal{G}(K_a\cap K_b)$$
+        \[0\to\varprojlim\mathcal{G}(\bigcup\limits_{a\in A}K_a)\to \prod\limits_{a\in A}\varprojlim\mathcal{G}(K_a)\to\prod\limits_{a,b\in A}\varprojlim\mathcal{G}(K_a\cap K_b)\]
 
         By definition (because it's for a fixed $a$ and does not depend of the family for other indexes) $\varprojlim\mathcal{G}(K_a)=\alpha_*\mathcal{G}(U_a)$ and $\varprojlim\mathcal{G}(K_a\cap K_b)=\alpha_*\mathcal{G}(U_a\cap U_b)$. Any compact included in $\bigcup\limits\ind{a}{A}U_a$ is included in a finite number of the opens then $\varprojlim\mathcal{G}(\bigcup\limits_{a\in A}K_a)$ compute $\alpha_*\mathcal{G}(\bigcup\limits\ind{a}{A}U_a)$, then one get's the sheaf condition for $\alpha_*\mathcal{G}$.
 
@@ -226,7 +226,59 @@ $$\begin{tikzcd}
     \uses{def:K_sheaves, def:sheaves, lem:adj_kshv_and_shv, lem:equiv_of_adj,def:stalk,def:K_stalk}
     By using \ref{lem:equiv_of_adj}, it's enough to show that for any sheaf $\mathcal{F}$ and $\Kc$-sheaf $\mathcal{G}$, the natural maps $\mathcal{F}\to \alpha_*\alpha^*\mathcal{U}$ and $\alpha^*\alpha_*\mathcal{G}\to \mathcal{G}$ are isomorphism. The fact of being a natural isomorphism can be checked locally.\begin{itemize}
 
-        \item Let $K$ be a comapct of $X$. One has to check that $\varinjlim\limits_{K\subset U \text{ open}}\varprojlim\limits_{U\supset K' \text{ compact}}\mathcal{G}(K')\to \mathcal{G}(K)$ is an isomorphism. (TODO) %immédiat selon pardon
+        \item Let $K$ be a comapct of $X$. One has to check that $\varinjlim\limits_{K\subset U \text{ open}}\varprojlim\limits_{U\supset K' \text{ compact}}\mathcal{G}(K')\to \mathcal{G}(K)$ is an isomorphism.\\
+
+        Let $U$ be an open relatively compact that contain $K$, for any $K'\subset U$ comapct,$\mathcal{G}$ define compatible maps $\mathcal{G}(\overline{U})\to \mathcal{G}(K')$, then by the universal proprety of the projective limit one get's a map $\mathcal{G}(\overline{U})\to \varprojlim\limits_{U\supset K'}\mathcal{G}(K')$ such that the map $\mathcal{G}(\overline{U})\to \varprojlim\limits_{U\supset K'}\mathcal{G}(K')\to \mathcal{G}(K)$ is $\mathcal{G}(\overline{U})\to \mathcal{G}(K)$. Then by taking the inductive limit over $U$, one get's ($\mathcal{G}(K)$ does not depend on $U$) that the canonical morphism $\varinjlim\limits_{K\subset U}\mathcal{G}(\overline{U})\to \mathcal{G}(K)$ factors that way: $\varinjlim\limits_{K\subset U}\mathcal{G}(\overline{U})\to \varinjlim\limits_{K\subset U}\varprojlim\limits_{U\supset K'}\mathcal{G}(K')\to \mathcal{G}(K)$. Then by $\eqref{axiom:Ksh3}$ it's enough to show that the map \[\varinjlim\limits_{K\subset U \text{open relatively compact}}\mathcal{G}(\overline{U})\to \varinjlim\limits_{K\subset U \text{open relatively compact}}\varprojlim\limits_{U\supset K' \text{compact}}\mathcal{G}(K')\] is an isomorphism.\\
+        
+        Let's build the map in the other direcction. By using the universal property of the inductive limit, one needs for any open relatively comapct $U$ that contains $K$ to build maps (compatibles with inclusion of opens) \[\varprojlim\limits_{U\supset K' \text{ compact}}\mathcal{G}(K')\to \varinjlim\limits_{K\subset U \text{ open relatively comapct}}\mathcal{G}(\overline{U})\]
+
+        $K$ is a compact of $U$, then let $V$ be an open subset (of $U$ then of $X$) such that $\overline{V}\subset U$. $\overline{V}$ is a compact in $U$ then there is a canonical projection $\varprojlim\limits_{U\supset K' \text{ compact}}\mathcal{G}(K')\to \mathcal{G}(\overline{V})$ and $V$ is an open relatively comapct that contains $K$ then there is a canonical inclusion $\mathcal{G}(\overline{V})\to \varinjlim\limits_{K\subset U \text{ open relatively comapct}}\mathcal{G}(\overline{U})$, the composition of the two maps gives the desired morphism.\\
+
+        One has to chack that it does not depend of the choice of $V$. If $V'$ is an other choice, then $V\cup V'$ is an open subset of $U$ that contains $K$ and $\overline{V\cup V'}=\overline{V}\cup\overline{V'}\subset U$. $V\cap V'$ is an open subset of $U$ that contains $K$ and $\overline{V\cap V'}\subset \overline{V}\cap\overline{V'}\subset U$, then all the triangle of the following diagram are commutative (and thus the two morphism are equal):
+
+        % https://q.uiver.app/#q=WzAsNixbMCwxLCJcXHZhcnByb2psaW1cXGxpbWl0c197VVxcc3Vwc2V0IEsnfVxcbWF0aGNhbHtHfShLJykiXSxbMSwxLCJcXG1hdGhjYWx7R30oXFxvdmVybGluZXtWXFxjdXAgVid9KSJdLFsyLDAsIlxcbWF0aGNhbHtHfShcXG92ZXJsaW5le1YnfSkiXSxbMiwyLCJcXG1hdGhjYWx7R30oXFxvdmVybGluZXtWJ30pIl0sWzMsMSwiXFxtYXRoY2Fse0d9KFxcb3ZlcmxpbmV7VlxcY2FwIFYnfSkiXSxbNCwxLCJcXHZhcmluamxpbVxcbGltaXRzX3tLXFxzdWJzZXQgVX1cXG1hdGhjYWx7R30oXFxiYXJ7VX0pIl0sWzAsMV0sWzEsMl0sWzEsM10sWzIsNF0sWzMsNF0sWzQsNV0sWzIsNV0sWzMsNV0sWzAsMl0sWzAsM11d
+\[\begin{tikzcd}
+	&& {\mathcal{G}(\overline{V'})} \\
+	{\varprojlim\limits_{U\supset K'}\mathcal{G}(K')} & {\mathcal{G}(\overline{V\cup V'})} && {\mathcal{G}(\overline{V\cap V'})} & {\varinjlim\limits_{K\subset U}\mathcal{G}(\overline{U})} \\
+	&& {\mathcal{G}(\overline{V'})}
+	\arrow[from=1-3, to=2-4]
+	\arrow[from=1-3, to=2-5]
+	\arrow[from=2-1, to=1-3]
+	\arrow[from=2-1, to=2-2]
+	\arrow[from=2-1, to=3-3]
+	\arrow[from=2-2, to=1-3]
+	\arrow[from=2-2, to=3-3]
+	\arrow[from=2-4, to=2-5]
+	\arrow[from=3-3, to=2-4]
+	\arrow[from=3-3, to=2-5]
+\end{tikzcd}\]
+
+    If $W$ is an open relatively compact that contains $U$ then (by universal property of the projective limit) there is a commutative triangle :
+
+    % https://q.uiver.app/#q=WzAsMyxbMCwwLCJcXHZhcnByb2psaW1cXGxpbWl0c197VVxcc3Vwc2V0IEsnfVxcbWF0aGNhbHtHfShLJykiXSxbMiwwLCJcXG1hdGhjYWx7R30oXFxvdmVybGluZXtWfSkiXSxbMCwxLCJcXHZhcnByb2psaW1cXGxpbWl0c197Vlxcc3Vwc2V0IEsnfVxcbWF0aGNhbHtHfShLJykiXSxbMCwxXSxbMiwwXSxbMiwxXV0=
+\[\begin{tikzcd}
+	{\varprojlim\limits_{U\supset K'}\mathcal{G}(K')} && {\mathcal{G}(\overline{V})} \\
+	{\varprojlim\limits_{W\supset K'}\mathcal{G}(K')}
+	\arrow[from=1-1, to=1-3]
+	\arrow[from=2-1, to=1-1]
+	\arrow[from=2-1, to=1-3]
+\end{tikzcd}\]
+    Then the triangle is also commutative:% https://q.uiver.app/#q=WzAsMyxbMCwwLCJcXHZhcnByb2psaW1cXGxpbWl0c197VVxcc3Vwc2V0IEsnfVxcbWF0aGNhbHtHfShLJykiXSxbMiwwLCJcXHZhcmluamxpbVxcbGltaXRzX3tLXFxzdWJzZXQgVX1cXG1hdGhjYWx7R30oXFxvdmVybGluZXtVfSkiXSxbMCwxLCJcXHZhcnByb2psaW1cXGxpbWl0c197V1xcc3Vwc2V0IEsnfVxcbWF0aGNhbHtHfShLJykiXSxbMCwxXSxbMiwwXSxbMiwxXV0=
+    \[\begin{tikzcd}
+        {\varprojlim\limits_{U\supset K'}\mathcal{G}(K')} && {\varinjlim\limits_{K\subset U}\mathcal{G}(\overline{U})} \\
+        {\varprojlim\limits_{W\supset K'}\mathcal{G}(K')}
+        \arrow[from=1-1, to=1-3]
+        \arrow[from=2-1, to=1-1]
+        \arrow[from=2-1, to=1-3]
+    \end{tikzcd}\]
+
+
+
+
+
+
+
+
 
         \item Let $U$ be an open of $X$. One has to check that $\mathcal{F}(U)\to \varprojlim\limits_{U\supset K \text{ compact}}\varinjlim\limits_{K\subset U' \text{ open}}\mathcal{F}(U')$ is an isomorphism.
 
