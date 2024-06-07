@@ -50,30 +50,46 @@ def FK : Cocone (FUbar X K F):= Cocone.mk (F.obj (op K)) ((FK_transNat X K F)  �
 
 --Le complexe à 4 terme
 
-open ZeroObject DirectSum
+open ZeroObject
+noncomputable section
+def ZtoFcup:= (0: 0 ⟶ F.obj { unop := K1 ⊔ K2 })-- 0->F(K1∪ K2)
 
-def ZtoFK1uK2:= (0: 0 ⟶ F.obj { unop := K1 ⊔ K2 })
+def FcuptoplusF:= F.map (op  (homOfLE (@le_sup_left _ _ K1 K2))) ≫ biprod.inl + F.map (op  (homOfLE (@le_sup_right _ _ K1 K2))) ≫ biprod.inr-- F(K1∪ K2)-> F(K1)⊞ F(K2)
 
-#check F.map (op  (homOfLE (@inf_le_left _ _ K1 K2)))
+def plusFtoFcap := biprod.fst ≫ F.map (op  (homOfLE (@inf_le_left _ _ K1 K2))) - biprod.snd ≫ F.map (op  (homOfLE (@inf_le_right _ _ K1 K2)))-- F(K1)⊞ F(K2)-> F(K1∩ K2)
 
-#check F.map (op  (homOfLE (@inf_le_right _ _ K1 K2)))
+def complex : ComposableArrows Ab 3:= CategoryTheory.ComposableArrows.mk₃ (ZtoFcup X F K1 K2)  (FcuptoplusF X F K1 K2) (plusFtoFcap X F K1 K2)
 
-#check F.map (op  (homOfLE (@le_sup_left _ _ K1 K2)))
-
-#check F.map (op  (homOfLE (@le_sup_right _ _ K1 K2)))
-
-variable (A B:Ab)
-
-
-#check (A ⊕ B)
-
-#check ComposableArrows.mk₃
-
---def complex : ComposableArrows Ab 3:= CategoryTheory.ComposableArrows.mk₃ (ZtoFK1uK2 X F K1 K2)  _ _ --sorry
-
+instance : ComposableArrows.IsComplex (complex X F K1 K2) where
+  zero := by
+    intros i hi
+    cases hi
+    --F(K1∪ K2)-> F(K1)⊞ F(K2)-> F(K1)⊞ F(K2)-> F(K1∩ K2)=0
+    unfold complex ComposableArrows.map'
+    dsimp
+    unfold ComposableArrows.Precomp.map
+    dsimp
+    unfold ComposableArrows.Precomp.map
+    dsimp
+    unfold FcuptoplusF plusFtoFcap
+    simp
+    repeat rw [← F.map_comp]
+    apply sub_eq_zero_of_eq
+    rfl
+    induction i
+    --0->F(K1∪ K2)->F(K1∪ K2)-> F(K1)⊞ F(K2)=0
+    unfold complex ComposableArrows.map'
+    dsimp
+    unfold ComposableArrows.Precomp.map
+    dsimp
+    unfold ZtoFcup
+    simp
+    contradiction
 
 structure Ksheaf where
-  F : (Compacts X)ᵒᵖ ⥤ Ab
-  ksh1 : F.obj (op (⊥:Compacts X)) = zero
-  ksh2 : ∀ K1 K2 :Compacts X, sorry
-  ksh3 : ∀ K:Compacts X, (IsIso (colimit.desc (FUbar X K F) (FK X K F)))
+  carrier : (Compacts X)ᵒᵖ ⥤ Ab
+  ksh1 : carrier.obj (op (⊥:Compacts X)) = 0 := by aesop_cat
+  ksh2 : ∀ K1 K2 :Compacts X, (complex X carrier K1 K2).Exact:= by aesop_cat
+  ksh3 : ∀ K:Compacts X, (IsIso (colimit.desc (FUbar X K carrier) (FK X K carrier))) := by aesop_cat
+
+instance:  Category (Ksheaf X) := InducedCategory.category (fun (F:Ksheaf X) => F.carrier)
