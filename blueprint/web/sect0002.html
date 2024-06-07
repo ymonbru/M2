@@ -517,7 +517,7 @@
         </div>
   </div>
   <div class="definition_thmcontent">
-  
+  <p>  </p>
 <ul class="itemize">
   <li><p>If \(\mathcal{F}\) is a presheaf then let \(\alpha ^*\mathcal{F}\) be the \(\mathcal{K}\)-presheaf:</p>
 <div class="displaymath" id="a0000000036">
@@ -588,7 +588,7 @@
   <div class="proof_content">
   <ul class="itemize">
   <li><p>Let \(\tau \) be an element of \(\hom (\alpha ^*\mathcal{F},\mathcal{G})\). It’s the data of morphism \(\tau _K\) for \(K\) a compact of \(X\) such that for any \(K\) and \(K'\) compacts </p>
-<div class="equation" id="<plasTeX.TeXFragment object at 0x1102cf4c0>">
+<div class="equation" id="<plasTeX.TeXFragment object at 0x10e59d4c0>">
 <p>
   <div class="equation_content">
     \begin{equation} \label{nat_trans_afg}\begin{tikzcd} 
@@ -617,7 +617,7 @@
 \end{tikzcd} \]
 </div>
 <p> one get’s a commutative square :</p>
-<div class="equation" id="<plasTeX.TeXFragment object at 0x1102cf580>">
+<div class="equation" id="<plasTeX.TeXFragment object at 0x10e59d580>">
 <p>
   <div class="equation_content">
     \begin{equation} \label{data_adj}\begin{tikzcd} 
@@ -701,7 +701,7 @@
         </div>
   </div>
   <div class="lemma_thmcontent">
-  
+  <p>  </p>
 <ul class="itemize">
   <li><p>\(\alpha ^*\) send sheaves to \(\mathcal{K}\)-sheaves </p>
 </li>
@@ -721,11 +721,11 @@
     <span class="expand-proof">▶</span>
   </div>
   <div class="proof_content">
-  
+  <p> </p>
 <ul class="itemize">
   <li><p>Let \(\mathcal{F}\) be a sheaf. The condition \(\varnothing \subset U\) is always satisfied and \(\varnothing \) is minimal among open subset for the inclusion then \((\alpha ^*)(\mathcal{F})(\varnothing )=\mathcal{F}(\varnothing )\). One can apply the sheaf condition to the empty family and obtain the exact sequence \(0\to \mathcal{F}(\varnothing )\to \Pi _{\varnothing }=0\), and then <a href="sect0002.html#axiom:Ksh1" class="eqref">2</a>.<br /></p>
 <p>Let \(K_1,K_2\) be two of compacts of \(X\), let \(U_1,U_2\) be a two opens such that \(K_i\subset U_i\) for all \(i\). Then the sheaf condition gives an exact sequence (because for abelian groups the product is the direct sum) \(0\to \mathcal{F}(U_1\cup U_2)\to \mathcal{F}(U_1)\bigoplus \mathcal{F}(U_2)\to \mathcal{F}(U_1\cap U_2)\). The injective limits are exacts then taking the limits over those opens gives an exact sequence: </p>
-<div class="equation" id="<plasTeX.TeXFragment object at 0x1103a78e0>">
+<div class="equation" id="<plasTeX.TeXFragment object at 0x10e6738e0>">
 <p>
   <div class="equation_content">
     \begin{equation} \label{lim_of_sheaf_cond} 0\to \varinjlim \limits _{K_i\subset U_i}\mathcal{F}(U_1\cup U_2)\to \varinjlim \limits _{K_i\subset U_i}\mathcal{F}(U_1)\times \mathcal{F}(U_2)\to \varinjlim \limits _{K_i\subset U_i}\mathcal{F}(U_1\cap U_2) \end{equation}
@@ -896,7 +896,7 @@
 <div class="displaymath" id="a0000000052">
   \[ \begin{tikzcd} 
 	{\mathcal{G}(\overline{U})} && {\varprojlim\limits_{U\supset K'}\mathcal{G}(K')} \\
-	& {\varinjlim\limits_{K\subset U}\mathcal{G}(\overline{U})} & {\varinjlim\limits_{K\subset U}\varprojlim\limits_{U\supset K'}\mathcal{G}(K')\mathcal{G}(K')} & {\mathcal{G}(\overline{W})} & {\varinjlim\limits_{K\subset U}\mathcal{G}(\overline{U})} \\
+	& {\varinjlim\limits_{K\subset U}\mathcal{G}(\overline{U})} & {\varinjlim\limits_{K\subset U}\varprojlim\limits_{U\supset K'}\mathcal{G}(K')} & {\mathcal{G}(\overline{W})} & {\varinjlim\limits_{K\subset U}\mathcal{G}(\overline{U})} \\
 	{\mathcal{G}(\overline{V})} && {\varprojlim\limits_{V\supset K'}\mathcal{G}(K')}
 	\arrow[from=1-1, to=1-3]
 	\arrow[from=1-1, to=2-2]
@@ -912,7 +912,7 @@
 	\arrow[from=3-3, to=2-4]
 \end{tikzcd} \]
 </div>
-<p>In particular the following square is commutative: </p>
+<p>In particular to conclude that the following square is commutative: </p>
 <div class="displaymath" id="a0000000053">
   \[ \begin{tikzcd} 
 	{\mathcal{G}(\overline{U})} && {\varinjlim\limits_{K\subset U}\mathcal{G}(\overline{U})} \\
@@ -924,7 +924,40 @@
 	\arrow[from=3-1, to=3-3]
 \end{tikzcd} \]
 </div>
-<p>However by the universal property of the inductive limit the only morphism that make this diagram commute is the identity. </p>
+<p> One has to check that the morphism \(\mathcal{G}(\overline{V})\to \varprojlim \limits _{V\supset K'}\mathcal{G}(K')\to \mathcal{G}(\overline{W})\to \varinjlim \limits _{K\subset U}\mathcal{G}(\overline{U})\) is the canonical inclusion. By the compatibility condition of the universal property of the projective limit \(\mathcal{G}(\overline{V})\to \varprojlim \limits _{V\supset K'}\mathcal{G}(K')\to \mathcal{G}(\overline{W})\) is the map \(\mathcal{G}(\overline{V}\supset \overline{W})\). And the maps \(\mathcal{G}(\overline{V})\to \mathcal{G}(\overline{W})\to \varinjlim \limits _{K\subset U}\mathcal{G}(\overline{U})\) is the canonical inclusion by the compatibility condition of the universal property of the injective limit. </p>
+<p>However by the universal property of the inductive limit the only morphism that make this diagram commute is the identity.<br /></p>
+<p>For the other direction, one keeps the same notations. By the previous constructions the following diagram is commutative: </p>
+<div class="tikzcd" id="a0000000054">
+    <img src="images/img-0001.svg" class="tikzcd-vector" alt="\begin{tikzcd} 
+	{\varprojlim\limits_{U\supset K&#39;}\mathcal{G}(K&#39;)} \\
+	{\varinjlim\limits_{K\subset U}\varprojlim\limits_{U\supset K&#39;}\mathcal{G}(K&#39;)} &amp;&amp;&amp; {\mathcal{G}(\overline{W})} &amp; {\varinjlim\limits_{K\subset U}\mathcal{G}(\overline{U})} \\
+	&amp;&amp;&amp; {\varprojlim\limits_{W\supset K&#39;}\mathcal{G}(K&#39;)} &amp; {\varinjlim\limits_{K\subset U}\varprojlim\limits_{U\supset K&#39;}\mathcal{G}(K&#39;)} \\
+	{\varprojlim\limits_{V\supset K&#39;}\mathcal{G}(K&#39;)}
+	\arrow[from=1-1, to=2-1]
+	\arrow[from=1-1, to=2-4]
+	\arrow[from=2-1, to=2-4]
+	\arrow[from=2-4, to=2-5]
+	\arrow[from=2-4, to=3-4]
+	\arrow[from=2-5, to=3-5]
+	\arrow[from=3-4, to=3-5]
+	\arrow[from=4-1, to=2-1]
+	\arrow[from=4-1, to=2-4]
+\end{tikzcd}" />
+</div>
+<p>One can remark that the map \(\varprojlim \limits _{V\supset K'}\mathcal{G}(K')\to \mathcal{G}(\overline{W})\to \varprojlim \limits _{W\supset K'}\mathcal{G}(K')\) is the canonical map. By the universal property of the projective limit, it’s enough to show that it’s true when postcomposed by the maps (for K’ a compact of \(W\))\(\varprojlim \limits _{W\supset K'}\mathcal{G}(K')\to \mathcal{G}(K')\). By construction \(\mathcal{G}(\overline{W})\to \varprojlim \limits _{W\supset K'}\mathcal{G}(K')\to \mathcal{G}(K')=\mathcal{G}(\overline{W}\subset K')\), so the statment is a compatibility condition in the universal property of the projective limit. </p>
+<p>Then by the compatibility condition of the universal property of the inductive limit the map \(\varprojlim \limits _{W\supset K'}\mathcal{G}(K')\to \varprojlim \limits _{W\supset K'}\mathcal{G}(K')\to \varinjlim \limits _{K\subset U}\varprojlim \limits _{U\supset K'}\mathcal{G}(K')\) is also the canonical map. Then the following diagram is commutative: </p>
+<div class="tikzcd" id="a0000000055">
+    <img src="images/img-0002.svg" class="tikzcd-vector" alt="\begin{tikzcd} 
+	{\varprojlim\limits_{U\supset K&#39;}\mathcal{G}(K&#39;)} &amp;&amp; {\varinjlim\limits_{K\subset U}\varprojlim\limits_{U\supset K&#39;}\mathcal{G}(K&#39;)} \\
+	\\
+	{\varprojlim\limits_{V\supset K&#39;}\mathcal{G}(K&#39;)} &amp;&amp; {\varinjlim\limits_{K\subset U}\varprojlim\limits_{U\supset K&#39;}\mathcal{G}(K&#39;)}
+	\arrow[from=1-1, to=1-3]
+	\arrow[from=1-1, to=3-1]
+	\arrow[from=1-3, to=3-3]
+	\arrow[from=3-1, to=3-3]
+    \end{tikzcd}" />
+</div>
+<p>An again by uniqueness it must be the identity, that concludes the proof. </p>
 </li>
   <li><p>Let \(U\) be an open of \(X\). One has to check that \(\mathcal{F}(U)\to \varprojlim \limits _{U\supset K \text{ compact}}\varinjlim \limits _{K\subset U' \text{ open}}\mathcal{F}(U')\) is an isomorphism. </p>
 <p>One can apply the previous item with the compact \(K=\{ p\} \) (for \(p\in X\)) and then get that \(\alpha _*\) preserve the stlaks. The fact that \(\alpha ^*\) preserves the stalks is straightforward by definition. Then the map \(\mathcal{F}(U)\to \varprojlim \limits _{U\supset K \text{ compact}}\varinjlim \limits _{K\subset U' \text{ open}}\mathcal{F}(U')\) is an isomorphism once restricted to stalks, and because the two are sheaves on \(X\) they are then isomorphics. </p>
