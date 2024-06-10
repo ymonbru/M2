@@ -14,13 +14,16 @@ def FZero:(Compacts X)ᵒᵖ ⥤ Ab where
   map _ := 0
 
 def ZKsheaf : (Ksheaf X) where
-  F := (FZero X)
+  carrier := (FZero X)
   ksh2 := by
     intros K1 K2
     unfold FZero complex plusFtoFcap FcuptoplusF ZtoFcup
     simp
+
     unfold ComposableArrows.precomp ComposableArrows.Precomp.map
     simp
+
+
     sorry
 
   ksh3:= sorry
