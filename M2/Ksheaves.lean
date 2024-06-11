@@ -60,36 +60,31 @@ def plusFtoFcap := biprod.fst ≫ F.map (op  (homOfLE (@inf_le_left _ _ K1 K2)))
 
 def complex : ComposableArrows Ab 3:= CategoryTheory.ComposableArrows.mk₃ (ZtoFcup X F K1 K2)  (FcuptoplusF X F K1 K2) (plusFtoFcap X F K1 K2)
 
+
 instance : ComposableArrows.IsComplex (complex X F K1 K2) where
   zero := by
     intros i hi
+    unfold complex ZtoFcup FcuptoplusF plusFtoFcap
+    --simp
     cases hi
     --F(K1∪ K2)-> F(K1)⊞ F(K2)-> F(K1)⊞ F(K2)-> F(K1∩ K2)=0
-    unfold complex ComposableArrows.map'
     dsimp
-    unfold ComposableArrows.Precomp.map
-    dsimp
-    unfold ComposableArrows.Precomp.map
-    dsimp
-    unfold FcuptoplusF plusFtoFcap
+    repeat-- pourquoi ça ne marche pas si je ne le fais pas 2 fois?
+      unfold ComposableArrows.Precomp.map
+      dsimp
     simp
     repeat rw [← F.map_comp]
     apply sub_eq_zero_of_eq
     rfl
     induction i
     --0->F(K1∪ K2)->F(K1∪ K2)-> F(K1)⊞ F(K2)=0
-    unfold complex ComposableArrows.map'
-    dsimp
-    unfold ComposableArrows.Precomp.map
-    dsimp
-    unfold ZtoFcup
     simp
     contradiction
 
 structure Ksheaf where
   carrier : (Compacts X)ᵒᵖ ⥤ Ab
   ksh1 : carrier.obj (op (⊥:Compacts X)) = 0 := by aesop_cat
-  ksh2 : ∀ K1 K2 :Compacts X, (complex X carrier K1 K2).Exact:= by aesop_cat
+  ksh2 : ∀ K1 K2 :Compacts X, (complex X carrier K1 K2).Exact := by aesop_cat
   ksh3 : ∀ K:Compacts X, (IsIso (colimit.desc (FUbar X K carrier) (FK X K carrier))) := by aesop_cat
 
 instance:  Category (Ksheaf X) := InducedCategory.category (fun (F:Ksheaf X) => F.carrier)
