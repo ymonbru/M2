@@ -3,18 +3,20 @@ Let $X$ be a locally compact Hausdorf space.
 
 \section{Sheaves}
 
-
 \begin{definition}\label{def:pre_sheaves}
+    \leanok
     A presheave on $X$ is a contravariant functor from the category of open sets of $X$ to abélian groups.
 \end{definition}
 
 \begin{definition}\label{def:stalk}
     \uses{def:pre_sheaves}
+    \leanok
     If $\mathcal{F}$ is a presheaf on $X$ and $p\in X$ then the stalk of $\mathcal{F}$ at $p$ is the abelian group $\mathcal{F}_p:=\varinjlim\limits_{p\in U\text{ open}}\mathcal{F}(U)$.
 \end{definition}
 
 \begin{definition}\label{def:sheaves}
     \uses{def:pre_sheaves}
+    \leanok
     If $\mathcal{F}$ is a presheaf on $X$, it is said to be a sheaf if for any $U\subset X$ open and any covering family of $U$ $(U_a)_{a\in A}$ one has the exact sequence:
     \begin{equation}\label{axiom:Sh}
         0\to \mathcal{F}(U)\to \prod\limits_{a\in A}\mathcal{F}(U_a)\to \prod\limits_{a,b\in A}\mathcal{F}(U_a\cap U_b)
@@ -24,17 +26,20 @@ Let $X$ be a locally compact Hausdorf space.
 \section{$\mathcal{K}$-sheaves}
 
 \begin{definition}\label{def:K_pre_sheaves}
+    \leanok
     A $\mathcal{K}$-presheave on $X$ is a contravariant functor from the category of compact sets of $X$ to abélian groups.
 \end{definition}
 
 \begin{definition}\label{def:K_stalk}
     \uses{def:K_pre_sheaves}
-    %\lean{M2.K-stalks.}
+    \lean{M2.K_stalks.stalk}
+    \leanok
     If $\mathcal{F}$ is a $\mathcal{K}$-presheaf on $X$ and $p\in X$ then the stalk of $\mathcal{F}$ at $p$ is the abelian group $\mathcal{F}_p:=\varinjlim\limits_{p\in K\text{ compact}}\mathcal{F}(K)=\mathcal{F}(\{p\})$.  
 \end{definition}
 
 \begin{definition}\label{def:K_sheaves}
-    %\lean{M2.Ksheaves.Ksheaf}
+    \lean{M2.Ksheaves.Ksheaf}
+    \leanok
     \uses{def:K_pre_sheaves}
     If $\mathcal{F}$ is a $\mathcal{K}$-presheaf on $X$, it is said to be a $\mathcal{K}$-sheaf if the folowing conditions are satisfied:\begin{itemize}
     \item\begin{equation}\label{axiom:Ksh1}
