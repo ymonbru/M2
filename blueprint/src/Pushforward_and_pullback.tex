@@ -12,8 +12,8 @@ Let $X$ and $Y$ be two loccaly compacts hausdorf spaces and $f:X\to Y$ be a cont
 \end{definition}
 
 \begin{proof}
-    Let $(U_a)\ind{a}{A}$ be a family of opens of $Y$. Then one ca apply the sheaf condition of $\mathcal{F}$ with the family of opens of $X$: $(f^{-1}(U_a))\ind{a}{A}$. The result is the exact sequence: $$0\to \mathcal{F}(\bigcup\limits\ind{a}{A}f^{-1}(U_a))\to \prod\limits_{a\in A}\mathcal{F}(f^{-1}(U_a))\to \prod\limits_{a,b\in A}\mathcal{F}(f^{-1}(U_a)\cap f^{-1}(U_b))$$. 
-    On the other hand, the inverse image commute with union and intersections, then the previous exact sequence rewrites to $$0\to f_*\mathcal{F}(\bigcup\limits\ind{a}{A}U_a)\to \prod\limits_{a\in A}f_*\mathcal{F}(U_a)\to \prod\limits_{a,b\in A}f_*\mathcal{F}(U_a\cap U_b)$$. 
+    Let $(U_a)\ind{a}{A}$ be a family of opens of $Y$. Then one ca apply the sheaf condition of $\mathcal{F}$ with the family of opens of $X$: $(f^{-1}(U_a))\ind{a}{A}$. The result is the exact sequence: \[0\to \mathcal{F}(\bigcup\limits\ind{a}{A}f^{-1}(U_a))\to \prod\limits_{a\in A}\mathcal{F}(f^{-1}(U_a))\to \prod\limits_{a,b\in A}\mathcal{F}(f^{-1}(U_a)\cap f^{-1}(U_b))\]. 
+    On the other hand, the inverse image commute with union and intersections, then the previous exact sequence rewrites to \[0\to f_*\mathcal{F}(\bigcup\limits\ind{a}{A}U_a)\to \prod\limits_{a\in A}f_*\mathcal{F}(U_a)\to \prod\limits_{a,b\in A}f_*\mathcal{F}(U_a\cap U_b)\]. 
     In other words, $f_*\mathcal{F}$ is a sheaf.
 \end{proof}
 
@@ -52,7 +52,9 @@ Let's assume that $f$ is proper.
 \end{lemma}
 
 \begin{proof}
-    TODO
+    %Let $V$ be an open neighbourhood of $f^{-1}(K)$. Because $X$ is locally comapct Hausdorf, let $W$ be an open neighbourhood of $f^{-1}(K)$ relatively compact such that $\overline{W}\subset V$. Then $K\subset f(\overline{W})$, but $f$ is proper so it's closed, then $f(\overline{W})$ is a closed subset of $Y$, hence relatively compact hausdorff.\\
+
+    %Then $K$ has a relatively compact open neighborhood $U$ (in $Y$)such that  $K\subset U\subset \overline{U}\subset f(\overline{W})$. Then one gets $f^{-1}(K)\subset f^{-1}(U)\subset \overline{W}\subset V$. wich conclude the proof.
 \end{proof}
 
 \begin{definition}\label{def:pushforward_of_K-sheaf}

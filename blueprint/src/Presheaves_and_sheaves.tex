@@ -29,10 +29,12 @@ Let $X$ be a locally compact Hausdorf space.
 
 \begin{definition}\label{def:K_stalk}
     \uses{def:K_pre_sheaves}
+    %\lean{M2.K-stalks.}
     If $\mathcal{F}$ is a $\mathcal{K}$-presheaf on $X$ and $p\in X$ then the stalk of $\mathcal{F}$ at $p$ is the abelian group $\mathcal{F}_p:=\varinjlim\limits_{p\in K\text{ compact}}\mathcal{F}(K)=\mathcal{F}(\{p\})$.  
 \end{definition}
 
 \begin{definition}\label{def:K_sheaves}
+    %\lean{M2.Ksheaves.Ksheaf}
     \uses{def:K_pre_sheaves}
     If $\mathcal{F}$ is a $\mathcal{K}$-presheaf on $X$, it is said to be a $\mathcal{K}$-sheaf if the folowing conditions are satisfied:\begin{itemize}
     \item\begin{equation}\label{axiom:Ksh1}
@@ -312,7 +314,7 @@ In particular to conclude that the following square is commutative:
 
     For the other direction, one keeps the same notations. By the previous constructions the following diagram is commutative:
     % https://q.uiver.app/#q=WzAsNyxbMCwwLCJcXHZhcnByb2psaW1cXGxpbWl0c197VVxcc3Vwc2V0IEsnfVxcbWF0aGNhbHtHfShLJykiXSxbMCwzLCJcXHZhcnByb2psaW1cXGxpbWl0c197Vlxcc3Vwc2V0IEsnfVxcbWF0aGNhbHtHfShLJykiXSxbMCwxLCJcXHZhcmluamxpbVxcbGltaXRzX3tLXFxzdWJzZXQgVX1cXHZhcnByb2psaW1cXGxpbWl0c197VVxcc3Vwc2V0IEsnfVxcbWF0aGNhbHtHfShLJykiXSxbMywxLCJcXG1hdGhjYWx7R30oXFxvdmVybGluZXtXfSkiXSxbNCwxLCJcXHZhcmluamxpbVxcbGltaXRzX3tLXFxzdWJzZXQgVX1cXG1hdGhjYWx7R30oXFxvdmVybGluZXtVfSkiXSxbNCwyLCJcXHZhcmluamxpbVxcbGltaXRzX3tLXFxzdWJzZXQgVX1cXHZhcnByb2psaW1cXGxpbWl0c197VVxcc3Vwc2V0IEsnfVxcbWF0aGNhbHtHfShLJykiXSxbMywyLCJcXHZhcnByb2psaW1cXGxpbWl0c197V1xcc3Vwc2V0IEsnfVxcbWF0aGNhbHtHfShLJykiXSxbMCwyXSxbMSwyXSxbMCwzXSxbMSwzXSxbMiwzXSxbMyw0XSxbNCw1XSxbMyw2XSxbNiw1XV0=
-\begin{tikzcd}
+$$\begin{tikzcd}
 	{\varprojlim\limits_{U\supset K'}\mathcal{G}(K')} \\
 	{\varinjlim\limits_{K\subset U}\varprojlim\limits_{U\supset K'}\mathcal{G}(K')} &&& {\mathcal{G}(\overline{W})} & {\varinjlim\limits_{K\subset U}\mathcal{G}(\overline{U})} \\
 	&&& {\varprojlim\limits_{W\supset K'}\mathcal{G}(K')} & {\varinjlim\limits_{K\subset U}\varprojlim\limits_{U\supset K'}\mathcal{G}(K')} \\
@@ -326,13 +328,13 @@ In particular to conclude that the following square is commutative:
 	\arrow[from=3-4, to=3-5]
 	\arrow[from=4-1, to=2-1]
 	\arrow[from=4-1, to=2-4]
-\end{tikzcd}
+\end{tikzcd}$$
 
     One can remark that the map $\varprojlim\limits_{V\supset K'}\mathcal{G}(K')\to \mathcal{G}(\overline{W})\to \varprojlim\limits_{W\supset K'}\mathcal{G}(K')$ is the canonical map. By the universal property of the projective limit, it's enough to show that it's true when postcomposed by the maps (for K' a compact of $W$)$\varprojlim\limits_{W\supset K'}\mathcal{G}(K')\to\mathcal{G}(K')$. By construction $\mathcal{G}(\overline{W})\to \varprojlim\limits_{W\supset K'}\mathcal{G}(K')\to\mathcal{G}(K')=\mathcal{G}(\overline{W}\subset K')$, so the statment is a compatibility condition in the universal property of the projective limit.
 
     Then by the compatibility condition of the universal property of the inductive limit the map $\varprojlim\limits_{W\supset K'}\mathcal{G}(K')\to \varprojlim\limits_{W\supset K'}\mathcal{G}(K')\to \varinjlim\limits_{K\subset U}\varprojlim\limits_{U\supset K'}\mathcal{G}(K')$ is also the canonical map. Then the following diagram is commutative: 
     % https://q.uiver.app/#q=WzAsNCxbMCwwLCJcXHZhcnByb2psaW1cXGxpbWl0c197VVxcc3Vwc2V0IEsnfVxcbWF0aGNhbHtHfShLJykiXSxbMCwyLCJcXHZhcnByb2psaW1cXGxpbWl0c197Vlxcc3Vwc2V0IEsnfVxcbWF0aGNhbHtHfShLJykiXSxbMiwwLCJcXHZhcmluamxpbVxcbGltaXRzX3tLXFxzdWJzZXQgVX1cXHZhcnByb2psaW1cXGxpbWl0c197VVxcc3Vwc2V0IEsnfVxcbWF0aGNhbHtHfShLJykiXSxbMiwyLCJcXHZhcmluamxpbVxcbGltaXRzX3tLXFxzdWJzZXQgVX1cXHZhcnByb2psaW1cXGxpbWl0c197VVxcc3Vwc2V0IEsnfVxcbWF0aGNhbHtHfShLJykiXSxbMCwyXSxbMiwzXSxbMSwzXSxbMCwxXV0=
-    \begin{tikzcd}
+    $$\begin{tikzcd}
 	{\varprojlim\limits_{U\supset K'}\mathcal{G}(K')} && {\varinjlim\limits_{K\subset U}\varprojlim\limits_{U\supset K'}\mathcal{G}(K')} \\
 	\\
 	{\varprojlim\limits_{V\supset K'}\mathcal{G}(K')} && {\varinjlim\limits_{K\subset U}\varprojlim\limits_{U\supset K'}\mathcal{G}(K')}
@@ -340,7 +342,7 @@ In particular to conclude that the following square is commutative:
 	\arrow[from=1-1, to=3-1]
 	\arrow[from=1-3, to=3-3]
 	\arrow[from=3-1, to=3-3]
-    \end{tikzcd}
+    \end{tikzcd}$$
 
     An again by uniqueness it must be the identity, that concludes the proof.
 

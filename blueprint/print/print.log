@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.9.20)  7 JUN 2024 17:37
+This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.9.20)  12 JUN 2024 17:46
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1062,22 +1062,17 @@ Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 [3
 
 ]
-Overfull \hbox (4.34633pt too wide) in paragraph at lines 62--63
+Overfull \hbox (4.34633pt too wide) in paragraph at lines 64--65
 []\TU/lmr/m/n/10 It’s the theorem IsCompact.nhdsSet-inter-eq in the File Mathli
 b/Topology/Separation.lean
  []
 
 [4]
-Underfull \hbox (badness 10000) in paragraph at lines 161--162
+Underfull \hbox (badness 10000) in paragraph at lines 163--164
 
  []
 
 [5]
-Underfull \hbox (badness 10000) in paragraph at lines 168--169
-
- []
-
-
 Underfull \hbox (badness 10000) in paragraph at lines 170--171
 
  []
@@ -1093,7 +1088,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 174--175
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 174--175
+Underfull \hbox (badness 10000) in paragraph at lines 176--177
 
  []
 
@@ -1102,38 +1097,38 @@ Underfull \hbox (badness 10000) in paragraph at lines 176--177
 
  []
 
-LaTeX Font Info:    Trying to load font information for U+bbm on input line 188
+
+Underfull \hbox (badness 10000) in paragraph at lines 178--179
+
+ []
+
+LaTeX Font Info:    Trying to load font information for U+bbm on input line 190
 .
 (/usr/local/texlive/2022/texmf-dist/tex/latex/bbm-macros/ubbm.fd
 File: ubbm.fd 1999/03/15 V 1.2 Font definition for bbm font - TH
 ) [6]
-Underfull \hbox (badness 10000) in paragraph at lines 229--230
-
- []
-
-[7]
 Underfull \hbox (badness 10000) in paragraph at lines 231--232
 
  []
 
+[7]
+Underfull \hbox (badness 10000) in paragraph at lines 233--234
 
-Underfull \hbox (badness 10000) in paragraph at lines 235--236
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 237--238
 
  []
 
 [8]
-Underfull \hbox (badness 10000) in paragraph at lines 275--276
+Underfull \hbox (badness 10000) in paragraph at lines 277--278
 
  []
 
 [9]
-Underfull \hbox (badness 10000) in paragraph at lines 311--312
+Underfull \hbox (badness 10000) in paragraph at lines 313--314
 
- []
-
-
-Overfull \hbox (62.27306pt too wide) in paragraph at lines 313--330
-\TU/lmr/m/n/10 lowing diagram is commutative: [] 
  []
 
 [10]) [11]
@@ -1158,7 +1153,7 @@ Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 (hyperref)                removing `math shift' on input line 46.
 
 
-Overfull \hbox (42.38794pt too wide) in paragraph at lines 68--70
+Overfull \hbox (42.38794pt too wide) in paragraph at lines 70--72
 [][][]\TU/lmr/m/n/10 By the lemma [][]4.4[][], for $[]$ a compact of $[]$, $[] 
 [][][][][][][][]$ computes $[] [][][][]$.
  []
