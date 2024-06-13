@@ -110,7 +110,7 @@ Let $X$ be a locally compact Hausdorf space.
     \begin{itemize}
         \item Let $\tau$ be an element of $\hom(\alpha^*\mathcal{F},\mathcal{G})$. It's the data of morphism $\tau_K$ for $K$ a compact of $X$ such that for any $K$ and $K'$ compacts 
         % https://q.uiver.app/#q=WzAsNCxbMCwwLCJcXHZhcmluamxpbVxcbGltaXRzX3tLXFxzdWJzZXQgVX1cXG1hdGhjYWx7Rn0oVSkiXSxbMCwyLCJcXHZhcmluamxpbVxcbGltaXRzX3tLJ1xcc3Vic2V0IFV9XFxtYXRoY2Fse0Z9KFUpIl0sWzIsMCwiXFxtYXRoY2Fse0d9KEspIl0sWzIsMiwiXFxtYXRoY2Fse0d9KEsnKSJdLFswLDFdLFswLDIsIlxcdGF1X0siXSxbMSwzLCJcXHRhdV97Syd9Il0sWzIsM11d
-\begin{equation}\label{nat_trans_afg}\begin{tikzcd}
+\begin{figure}\label{nat_trans_afg}\begin{tikzcd}
 	{\varinjlim\limits_{K\subset U}\mathcal{F}(U)} && {\mathcal{G}(K)} \\
 	\\
 	{\varinjlim\limits_{K'\subset U}\mathcal{F}(U)} && {\mathcal{G}(K')}
@@ -118,8 +118,8 @@ Let $X$ be a locally compact Hausdorf space.
 	\arrow[from=1-1, to=3-1]
 	\arrow[from=1-3, to=3-3]
 	\arrow["{\tau_{K'}}", from=3-1, to=3-3]
-\end{tikzcd}\end{equation} is a commutative square. Then for any $U$ and $V$ opens,  by composing with the commutative square % https://q.uiver.app/#q=WzAsNCxbMiwwLCJcXHZhcmluamxpbVxcbGltaXRzX3tLXFxzdWJzZXQgVX1cXG1hdGhjYWx7Rn0oVSkiXSxbMiwyLCJcXHZhcmluamxpbVxcbGltaXRzX3tLJ1xcc3Vic2V0IFV9XFxtYXRoY2Fse0Z9KFUpIl0sWzAsMCwiXFxtYXRoY2Fse0Z9KFUpIl0sWzAsMiwiXFxtYXRoY2Fse0Z9KFYpIl0sWzAsMV0sWzIsMF0sWzIsM10sWzMsMV1d
-$$\begin{tikzcd}
+\end{tikzcd}\end{figure} is a commutative square. Then for any $U$ and $V$ opens,  by composing with the commutative square % https://q.uiver.app/#q=WzAsNCxbMiwwLCJcXHZhcmluamxpbVxcbGltaXRzX3tLXFxzdWJzZXQgVX1cXG1hdGhjYWx7Rn0oVSkiXSxbMiwyLCJcXHZhcmluamxpbVxcbGltaXRzX3tLJ1xcc3Vic2V0IFV9XFxtYXRoY2Fse0Z9KFUpIl0sWzAsMCwiXFxtYXRoY2Fse0Z9KFUpIl0sWzAsMiwiXFxtYXRoY2Fse0Z9KFYpIl0sWzAsMV0sWzIsMF0sWzIsM10sWzMsMV1d
+\begin{center}\begin{tikzcd}
 	{\mathcal{F}(U)} && {\varinjlim\limits_{K\subset U}\mathcal{F}(U)} \\
 	\\
 	{\mathcal{F}(V)} && {\varinjlim\limits_{K'\subset U}\mathcal{F}(U)}
@@ -127,8 +127,8 @@ $$\begin{tikzcd}
 	\arrow[from=1-1, to=3-1]
 	\arrow[from=1-3, to=3-3]
 	\arrow[from=3-1, to=3-3]
-\end{tikzcd}$$ one get's a commutative square :% https://q.uiver.app/#q=WzAsNCxbMCwwLCJcXG1hdGhjYWx7Rn0oVSkiXSxbMCwyLCJcXG1hdGhjYWx7Rn0oVikiXSxbMiwwLCJcXG1hdGhjYWx7R30oSykiXSxbMiwyLCJcXG1hdGhjYWx7R30oSycpIl0sWzAsMV0sWzIsM10sWzEsM10sWzAsMl1d
-\begin{equation}\label{data_adj}\begin{tikzcd}
+\end{tikzcd}\end{center} one get's a commutative square :% https://q.uiver.app/#q=WzAsNCxbMCwwLCJcXG1hdGhjYWx7Rn0oVSkiXSxbMCwyLCJcXG1hdGhjYWx7Rn0oVikiXSxbMiwwLCJcXG1hdGhjYWx7R30oSykiXSxbMiwyLCJcXG1hdGhjYWx7R30oSycpIl0sWzAsMV0sWzIsM10sWzEsM10sWzAsMl1d
+\begin{figure}\label{data_adj}\begin{tikzcd}
 	{\mathcal{F}(U)} && {\mathcal{G}(K)} \\
 	\\
 	{\mathcal{F}(V)} && {\mathcal{G}(K')}
@@ -136,11 +136,11 @@ $$\begin{tikzcd}
 	\arrow[from=1-1, to=3-1]
 	\arrow[from=1-3, to=3-3]
 	\arrow[from=3-1, to=3-3]
-\end{tikzcd}\end{equation}. Conversely such data give rise (by taking the limit over $U$ and $V$) to a commutative square such as in \eqref{nat_trans_afg}
+\end{tikzcd}\end{figure}. Conversely such data give rise (by taking the limit over $U$ and $V$) to a commutative square such as in \eqref{nat_trans_afg}
 
     \item On the other hand if one takes the limit over $K$ and $K'$ one get's a commutative square 
     % https://q.uiver.app/#q=WzAsNCxbMCwwLCJcXG1hdGhjYWx7Rn0oVSkiXSxbMCwyLCJcXG1hdGhjYWx7Rn0oVikiXSxbMiwwLCJcXHZhcnByb2psaW1cXGxpbWl0c197S1xcc3Vic2V0IFV9XFxtYXRoY2Fse0d9KEspIl0sWzIsMiwiXFx2YXJwcm9qbGltXFxsaW1pdHNfe0tcXHN1YnNldCBWfVxcbWF0aGNhbHtHfShLKSJdLFswLDFdLFsyLDNdLFsxLDNdLFswLDJdXQ==
-$$\begin{tikzcd}
+\begin{center}\begin{tikzcd}
 	{\mathcal{F}(U)} && {\varprojlim\limits_{K\subset U}\mathcal{G}(K)} \\
 	\\
 	{\mathcal{F}(V)} && {\varprojlim\limits_{K\subset V}\mathcal{G}(K)}
@@ -148,7 +148,7 @@ $$\begin{tikzcd}
 	\arrow[from=1-1, to=3-1]
 	\arrow[from=1-3, to=3-3]
 	\arrow[from=3-1, to=3-3]
-\end{tikzcd}$$ (that allow to recover the previous one in the same as before) wich is the data of an element of $\hom(\mathcal{F},\alpha_*\mathcal{G})$.
+\end{tikzcd}\end{center} (that allow to recover the previous one in the same as before) wich is the data of an element of $\hom(\mathcal{F},\alpha_*\mathcal{G})$.
 \end{itemize}
     Then the elements of $\hom(\alpha^*\mathcal{F},\mathcal{G})$ and $\hom(\mathcal{F},\alpha_*\mathcal{G})$ are both obtained by a natural construction (in $\mathcal{F}$ and $\mathcal{G}$) aplied to \eqref{data_adj}.
 \end{proof}
@@ -244,7 +244,7 @@ $$\begin{tikzcd}
         One has to chack that it does not depend of the choice of $V$. If $V'$ is an other choice, then $V\cup V'$ is an open subset of $U$ that contains $K$ and $\overline{V\cup V'}=\overline{V}\cup\overline{V'}\subset U$. $V\cap V'$ is an open subset of $U$ that contains $K$ and $\overline{V\cap V'}\subset \overline{V}\cap\overline{V'}\subset U$, then all the triangle of the following diagram are commutative (and thus the two morphism are equal):
 
         % https://q.uiver.app/#q=WzAsNixbMCwxLCJcXHZhcnByb2psaW1cXGxpbWl0c197VVxcc3Vwc2V0IEsnfVxcbWF0aGNhbHtHfShLJykiXSxbMSwxLCJcXG1hdGhjYWx7R30oXFxvdmVybGluZXtWXFxjdXAgVid9KSJdLFsyLDAsIlxcbWF0aGNhbHtHfShcXG92ZXJsaW5le1YnfSkiXSxbMiwyLCJcXG1hdGhjYWx7R30oXFxvdmVybGluZXtWJ30pIl0sWzMsMSwiXFxtYXRoY2Fse0d9KFxcb3ZlcmxpbmV7VlxcY2FwIFYnfSkiXSxbNCwxLCJcXHZhcmluamxpbVxcbGltaXRzX3tLXFxzdWJzZXQgVX1cXG1hdGhjYWx7R30oXFxiYXJ7VX0pIl0sWzAsMV0sWzEsMl0sWzEsM10sWzIsNF0sWzMsNF0sWzQsNV0sWzIsNV0sWzMsNV0sWzAsMl0sWzAsM11d
-\[\begin{tikzcd}
+\begin{center}\begin{tikzcd}
 	&& {\mathcal{G}(\overline{V'})} \\
 	{\varprojlim\limits_{U\supset K'}\mathcal{G}(K')} & {\mathcal{G}(\overline{V\cup V'})} && {\mathcal{G}(\overline{V\cap V'})} & {\varinjlim\limits_{K\subset U}\mathcal{G}(\overline{U})} \\
 	&& {\mathcal{G}(\overline{V'})}
@@ -258,32 +258,32 @@ $$\begin{tikzcd}
 	\arrow[from=2-4, to=2-5]
 	\arrow[from=3-3, to=2-4]
 	\arrow[from=3-3, to=2-5]
-\end{tikzcd}\]
+\end{tikzcd}\end{center}
 
     If $W$ is an open relatively compact that contains $U$ then (by universal property of the projective limit) there is a commutative triangle :
 
     % https://q.uiver.app/#q=WzAsMyxbMCwwLCJcXHZhcnByb2psaW1cXGxpbWl0c197VVxcc3Vwc2V0IEsnfVxcbWF0aGNhbHtHfShLJykiXSxbMiwwLCJcXG1hdGhjYWx7R30oXFxvdmVybGluZXtWfSkiXSxbMCwxLCJcXHZhcnByb2psaW1cXGxpbWl0c197Vlxcc3Vwc2V0IEsnfVxcbWF0aGNhbHtHfShLJykiXSxbMCwxXSxbMiwwXSxbMiwxXV0=
-\[\begin{tikzcd}
+\begin{center}\begin{tikzcd}
 	{\varprojlim\limits_{U\supset K'}\mathcal{G}(K')} && {\mathcal{G}(\overline{V})} \\
 	{\varprojlim\limits_{W\supset K'}\mathcal{G}(K')}
 	\arrow[from=1-1, to=1-3]
 	\arrow[from=2-1, to=1-1]
 	\arrow[from=2-1, to=1-3]
-\end{tikzcd}\]
+\end{tikzcd}\end{center}
     Then the triangle is also commutative:% https://q.uiver.app/#q=WzAsMyxbMCwwLCJcXHZhcnByb2psaW1cXGxpbWl0c197VVxcc3Vwc2V0IEsnfVxcbWF0aGNhbHtHfShLJykiXSxbMiwwLCJcXHZhcmluamxpbVxcbGltaXRzX3tLXFxzdWJzZXQgVX1cXG1hdGhjYWx7R30oXFxvdmVybGluZXtVfSkiXSxbMCwxLCJcXHZhcnByb2psaW1cXGxpbWl0c197V1xcc3Vwc2V0IEsnfVxcbWF0aGNhbHtHfShLJykiXSxbMCwxXSxbMiwwXSxbMiwxXV0=
-    \[\begin{tikzcd}
+    \begin{center}\begin{tikzcd}
         {\varprojlim\limits_{U\supset K'}\mathcal{G}(K')} && {\varinjlim\limits_{K\subset U}\mathcal{G}(\overline{U})} \\
         {\varprojlim\limits_{W\supset K'}\mathcal{G}(K')}
         \arrow[from=1-1, to=1-3]
         \arrow[from=2-1, to=1-1]
         \arrow[from=2-1, to=1-3]
-    \end{tikzcd}\]
+    \end{tikzcd}\end{center}
 
     That concludes the compatibility condition.\\
 
     Let's now check that the two maps are the inverse of one another. If $U$ and $V$ are opens relatively compacts of $X$ such that $K\subset V\subset U$, and $W$ is an open such that $K\subset W\subset \overline{W}\subset V$, then y the previous constructions, the following diagram is commutative:
     % https://q.uiver.app/#q=WzAsOCxbMCwwLCJcXG1hdGhjYWx7R30oXFxvdmVybGluZXtVfSkiXSxbMCwyLCJcXG1hdGhjYWx7R30oXFxvdmVybGluZXtWfSkiXSxbMSwxLCJcXHZhcmluamxpbVxcbGltaXRzX3tLXFxzdWJzZXQgVX1cXG1hdGhjYWx7R30oXFxvdmVybGluZXtVfSkiXSxbMiwwLCJcXHZhcnByb2psaW1cXGxpbWl0c197VVxcc3Vwc2V0IEsnfVxcbWF0aGNhbHtHfShLJykiXSxbMiwyLCJcXHZhcnByb2psaW1cXGxpbWl0c197Vlxcc3Vwc2V0IEsnfVxcbWF0aGNhbHtHfShLJykiXSxbMiwxLCJcXHZhcmluamxpbVxcbGltaXRzX3tLXFxzdWJzZXQgVX1cXHZhcnByb2psaW1cXGxpbWl0c197VVxcc3Vwc2V0IEsnfVxcbWF0aGNhbHtHfShLJylcXG1hdGhjYWx7R30oSycpIl0sWzMsMSwiXFxtYXRoY2Fse0d9KFxcb3ZlcmxpbmV7V30pIl0sWzQsMSwiXFx2YXJpbmpsaW1cXGxpbWl0c197S1xcc3Vic2V0IFV9XFxtYXRoY2Fse0d9KFxcb3ZlcmxpbmV7VX0pIl0sWzAsMV0sWzAsMl0sWzEsMl0sWzAsM10sWzEsNF0sWzMsNV0sWzIsNV0sWzQsNV0sWzMsNl0sWzQsNl0sWzUsNl0sWzYsN11d
-\[\begin{tikzcd}
+\begin{center}\begin{tikzcd}
 	{\mathcal{G}(\overline{U})} && {\varprojlim\limits_{U\supset K'}\mathcal{G}(K')} \\
 	& {\varinjlim\limits_{K\subset U}\mathcal{G}(\overline{U})} & {\varinjlim\limits_{K\subset U}\varprojlim\limits_{U\supset K'}\mathcal{G}(K')} & {\mathcal{G}(\overline{W})} & {\varinjlim\limits_{K\subset U}\mathcal{G}(\overline{U})} \\
 	{\mathcal{G}(\overline{V})} && {\varprojlim\limits_{V\supset K'}\mathcal{G}(K')}
@@ -299,12 +299,12 @@ $$\begin{tikzcd}
 	\arrow[from=3-1, to=3-3]
 	\arrow[from=3-3, to=2-3]
 	\arrow[from=3-3, to=2-4]
-\end{tikzcd}\]
+\end{tikzcd}\end{center}
 
 In particular to conclude that the following square is commutative:
 
 % https://q.uiver.app/#q=WzAsNCxbMCwwLCJcXG1hdGhjYWx7R30oXFxvdmVybGluZXtVfSkiXSxbMCwyLCJcXG1hdGhjYWx7R30oXFxvdmVybGluZXtWfSkiXSxbMiwwLCJcXHZhcmluamxpbVxcbGltaXRzX3tLXFxzdWJzZXQgVX1cXG1hdGhjYWx7R30oXFxvdmVybGluZXtVfSkiXSxbMiwyLCJcXHZhcmluamxpbVxcbGltaXRzX3tLXFxzdWJzZXQgVX1cXG1hdGhjYWx7R30oXFxvdmVybGluZXtVfSkiXSxbMCwxXSxbMCwyXSxbMSwzXSxbMiwzXV0=
-\[\begin{tikzcd}
+\begin{center}\begin{tikzcd}
 	{\mathcal{G}(\overline{U})} && {\varinjlim\limits_{K\subset U}\mathcal{G}(\overline{U})} \\
 	\\
 	{\mathcal{G}(\overline{V})} && {\varinjlim\limits_{K\subset U}\mathcal{G}(\overline{U})}
@@ -312,14 +312,14 @@ In particular to conclude that the following square is commutative:
 	\arrow[from=1-1, to=3-1]
 	\arrow[from=1-3, to=3-3]
 	\arrow[from=3-1, to=3-3]
-\end{tikzcd}\]
+\end{tikzcd}\end{center}
     One has to check that the morphism $\mathcal{G}(\overline{V})\to \varprojlim\limits_{V\supset K'}\mathcal{G}(K')\to \mathcal{G}(\overline{W})\to \varinjlim\limits_{K\subset U}\mathcal{G}(\overline{U})$ is the canonical inclusion. By the compatibility condition of the universal property of the projective limit $\mathcal{G}(\overline{V})\to \varprojlim\limits_{V\supset K'}\mathcal{G}(K')\to \mathcal{G}(\overline{W})$ is the map $\mathcal{G}(\overline{V}\supset \overline{W})$. And the maps $\mathcal{G}(\overline{V})\to \mathcal{G}(\overline{W})\to \varinjlim\limits_{K\subset U}\mathcal{G}(\overline{U})$ is the canonical inclusion by the compatibility condition of the universal property of the injective limit.
 
     However by the universal property of the inductive limit the only morphism that make this diagram commute is the identity.\\
 
     For the other direction, one keeps the same notations. By the previous constructions the following diagram is commutative:
     % https://q.uiver.app/#q=WzAsNyxbMCwwLCJcXHZhcnByb2psaW1cXGxpbWl0c197VVxcc3Vwc2V0IEsnfVxcbWF0aGNhbHtHfShLJykiXSxbMCwzLCJcXHZhcnByb2psaW1cXGxpbWl0c197Vlxcc3Vwc2V0IEsnfVxcbWF0aGNhbHtHfShLJykiXSxbMCwxLCJcXHZhcmluamxpbVxcbGltaXRzX3tLXFxzdWJzZXQgVX1cXHZhcnByb2psaW1cXGxpbWl0c197VVxcc3Vwc2V0IEsnfVxcbWF0aGNhbHtHfShLJykiXSxbMywxLCJcXG1hdGhjYWx7R30oXFxvdmVybGluZXtXfSkiXSxbNCwxLCJcXHZhcmluamxpbVxcbGltaXRzX3tLXFxzdWJzZXQgVX1cXG1hdGhjYWx7R30oXFxvdmVybGluZXtVfSkiXSxbNCwyLCJcXHZhcmluamxpbVxcbGltaXRzX3tLXFxzdWJzZXQgVX1cXHZhcnByb2psaW1cXGxpbWl0c197VVxcc3Vwc2V0IEsnfVxcbWF0aGNhbHtHfShLJykiXSxbMywyLCJcXHZhcnByb2psaW1cXGxpbWl0c197V1xcc3Vwc2V0IEsnfVxcbWF0aGNhbHtHfShLJykiXSxbMCwyXSxbMSwyXSxbMCwzXSxbMSwzXSxbMiwzXSxbMyw0XSxbNCw1XSxbMyw2XSxbNiw1XV0=
-$$\begin{tikzcd}
+\begin{center}\begin{tikzcd}
 	{\varprojlim\limits_{U\supset K'}\mathcal{G}(K')} \\
 	{\varinjlim\limits_{K\subset U}\varprojlim\limits_{U\supset K'}\mathcal{G}(K')} &&& {\mathcal{G}(\overline{W})} & {\varinjlim\limits_{K\subset U}\mathcal{G}(\overline{U})} \\
 	&&& {\varprojlim\limits_{W\supset K'}\mathcal{G}(K')} & {\varinjlim\limits_{K\subset U}\varprojlim\limits_{U\supset K'}\mathcal{G}(K')} \\
@@ -333,13 +333,13 @@ $$\begin{tikzcd}
 	\arrow[from=3-4, to=3-5]
 	\arrow[from=4-1, to=2-1]
 	\arrow[from=4-1, to=2-4]
-\end{tikzcd}$$
+\end{tikzcd}\end{center}
 
     One can remark that the map $\varprojlim\limits_{V\supset K'}\mathcal{G}(K')\to \mathcal{G}(\overline{W})\to \varprojlim\limits_{W\supset K'}\mathcal{G}(K')$ is the canonical map. By the universal property of the projective limit, it's enough to show that it's true when postcomposed by the maps (for K' a compact of $W$)$\varprojlim\limits_{W\supset K'}\mathcal{G}(K')\to\mathcal{G}(K')$. By construction $\mathcal{G}(\overline{W})\to \varprojlim\limits_{W\supset K'}\mathcal{G}(K')\to\mathcal{G}(K')=\mathcal{G}(\overline{W}\subset K')$, so the statment is a compatibility condition in the universal property of the projective limit.
 
     Then by the compatibility condition of the universal property of the inductive limit the map $\varprojlim\limits_{W\supset K'}\mathcal{G}(K')\to \varprojlim\limits_{W\supset K'}\mathcal{G}(K')\to \varinjlim\limits_{K\subset U}\varprojlim\limits_{U\supset K'}\mathcal{G}(K')$ is also the canonical map. Then the following diagram is commutative: 
     % https://q.uiver.app/#q=WzAsNCxbMCwwLCJcXHZhcnByb2psaW1cXGxpbWl0c197VVxcc3Vwc2V0IEsnfVxcbWF0aGNhbHtHfShLJykiXSxbMCwyLCJcXHZhcnByb2psaW1cXGxpbWl0c197Vlxcc3Vwc2V0IEsnfVxcbWF0aGNhbHtHfShLJykiXSxbMiwwLCJcXHZhcmluamxpbVxcbGltaXRzX3tLXFxzdWJzZXQgVX1cXHZhcnByb2psaW1cXGxpbWl0c197VVxcc3Vwc2V0IEsnfVxcbWF0aGNhbHtHfShLJykiXSxbMiwyLCJcXHZhcmluamxpbVxcbGltaXRzX3tLXFxzdWJzZXQgVX1cXHZhcnByb2psaW1cXGxpbWl0c197VVxcc3Vwc2V0IEsnfVxcbWF0aGNhbHtHfShLJykiXSxbMCwyXSxbMiwzXSxbMSwzXSxbMCwxXV0=
-    $$\begin{tikzcd}
+    \begin{center}\begin{tikzcd}
 	{\varprojlim\limits_{U\supset K'}\mathcal{G}(K')} && {\varinjlim\limits_{K\subset U}\varprojlim\limits_{U\supset K'}\mathcal{G}(K')} \\
 	\\
 	{\varprojlim\limits_{V\supset K'}\mathcal{G}(K')} && {\varinjlim\limits_{K\subset U}\varprojlim\limits_{U\supset K'}\mathcal{G}(K')}
@@ -347,7 +347,7 @@ $$\begin{tikzcd}
 	\arrow[from=1-1, to=3-1]
 	\arrow[from=1-3, to=3-3]
 	\arrow[from=3-1, to=3-3]
-    \end{tikzcd}$$
+    \end{tikzcd}\end{center}
 
     An again by uniqueness it must be the identity, that concludes the proof.
 

@@ -30,9 +30,9 @@ def K1subK2natTrans : (FU X K2 F) ⟶  (Functor.comp (K1subK2subU X K1 K2 f).op 
   app W := by
     exact 𝟙 _
 
-noncomputable
+noncomputable section
 
-def AlphaUpStar :(Compacts X)ᵒᵖ ⥤ Ab  where
+def AlphaUpStarF :(Compacts X)ᵒᵖ ⥤ Ab  where
   obj K := colimit (FU X K.unop F)
   map f:= colimMap (K1subK2natTrans X F _ _ f.unop) ≫ (colimit.pre (FU X _ F) (K1subK2subU X _ _ f.unop).op)
   map_id := by
@@ -48,6 +48,58 @@ def AlphaUpStar :(Compacts X)ᵒᵖ ⥤ Ab  where
     simp
     intro _
     rfl
+
+variable (F1:(Opens X)ᵒᵖ⥤ Ab) (F2:(Opens X)ᵒᵖ⥤ Ab) (τ :F1 ⟶ F2)
+
+def τres :(FU X K F1)⟶ (FU X K F2) where
+  app U:= τ.app (op (U.unop.obj))
+  naturality := by
+    unfold FU
+    simp [τ.naturality]
+
+
+#check (Cocones.precompose (τres X K F1 F2 τ))
+
+#check colimit.desc (FU X K F1) ((Cocones.precompose (τres X K F1 F2 τ)).obj (getColimitCocone (FU X K F2)).cocone)
+
+#check (Cocones.precompose (τres X K F1 F2 τ)).obj (getColimitCocone (FU X K F2)).cocone
+
+def AlphaUpStarTau : (AlphaUpStarF X F1) ⟶ (AlphaUpStarF X F2) where
+  app K := colimit.desc (FU X K.unop F1) ((Cocones.precompose (τres X K.unop F1 F2 τ)).obj (getColimitCocone (FU X K.unop F2)).cocone)
+  naturality := by
+    intro K1 K2 f
+    apply colimit.hom_ext
+    intro U
+    simp
+    unfold τres
+    simp
+    sorry
+
+
+def AlphaUpStar :((Opens X)ᵒᵖ ⥤ Ab)⥤ ((Compacts X)ᵒᵖ ⥤ Ab) where
+  obj F:= AlphaUpStarF X F
+  map τ := AlphaUpStarTau X _ _ τ
+  map_id:= by
+    intro F
+    simp
+    unfold AlphaUpStarTau Cocones.precompose τres
+    simp
+    --rfl
+    
+    sorry
+  map_comp:= by
+    intro F1 F2 F3 f g
+    
+    simp
+    sorry
+
+
+
+
+
+
+
+
 
 --α_*
 variable (U:Opens X) (G:(Compacts X)ᵒᵖ ⥤ Ab)
@@ -91,4 +143,6 @@ def AlphaDownStar :(Opens X)ᵒᵖ ⥤ Ab  where
     simp
     rfl
 
-#check AlphaDownStar
+--Adjunction
+
+--#check (AlphaUpStar X _) ⊣ (AlphaDownStar X _)
