@@ -36,13 +36,10 @@ app W:= by
   apply homOfLE
   apply Set.Subset.trans (W.unop).property.1
   unfold closureFunc closure
-  intro a ha
-  simp [Set.mem_iInter]
-  intro t _ hwt
-  exact hwt ha
+  simp
 naturality := by
   intros W Y f
-  unfold FUbar closureFunc
+  unfold FUbar
   simp
   rw [← F.map_comp]
   rfl
@@ -82,6 +79,7 @@ instance : ComposableArrows.IsComplex (complex X F K1 K2) where
     simp
     contradiction
 
+@[ext]
 structure Ksheaf where
   carrier : (Compacts X)ᵒᵖ ⥤ Ab
   ksh1 : carrier.obj (op (⊥:Compacts X)) = 0 := by aesop_cat
