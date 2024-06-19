@@ -79,7 +79,7 @@ instance : ComposableArrows.IsComplex (complex X F K1 K2) where
     simp
     contradiction
 
-@[ext]
+--@[ext]
 structure Ksheaf where
   carrier : (Compacts X)ᵒᵖ ⥤ Ab
   ksh1 : carrier.obj (op (⊥:Compacts X)) = 0 := by aesop_cat
@@ -87,3 +87,5 @@ structure Ksheaf where
   ksh3 : ∀ K:Compacts X, (IsIso (colimit.desc (FUbar X K carrier) (FK X K carrier))) := by aesop_cat
 
 instance:  Category (Ksheaf X) := InducedCategory.category (fun (F:Ksheaf X) => F.carrier)
+
+#check Ksheaf X

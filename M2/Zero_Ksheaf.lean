@@ -9,13 +9,11 @@ open ZeroObject
 
 noncomputable section
 
-
 def FZero:(Compacts X)ᵒᵖ ⥤ Ab where
   obj _ := 0
   map _ := 0
 
 def zC:Cocone (FUbar X K (FZero X)):=Cocone.mk (0) (0)
-
 
 def zCisCol : IsColimit (zC X K) where
   desc := by
@@ -28,8 +26,6 @@ def zCisCol : IsColimit (zC X K) where
   uniq := by
     intro s m _
     apply IsZero.eq_zero_of_src (isZero_zero Ab)
-
-
 
 def zeroCocone :ColimitCocone (FUbar X K (FZero X)) where
   cocone:= (@zC X _ _ K)
@@ -69,7 +65,5 @@ def ZKsheaf : (Ksheaf X) where
 
     unfold FZero FK
     rfl
-
-
 
 #check ZKsheaf

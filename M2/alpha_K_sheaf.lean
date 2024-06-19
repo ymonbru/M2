@@ -6,9 +6,7 @@ import M2.alpha
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite TopCat
 
 variable (X) [TopologicalSpace X] [T2Space X]
-
 variable (F:Ksheaf X)
-
 
 noncomputable section
 
@@ -35,9 +33,9 @@ def shAlphaDownStar : (Ksheaf X) ⥤ Sheaf Ab (of X) where
 
 def shAlphaUpStarG : (KSheaf X) where
   carrier:= (AlphaDownStar X).obj (G)
-  --ksh1:= sorry
-  --ksh2:= sorry
-  --ksh3:= sorry
+  ksh1:= sorry
+  ksh2:= sorry
+  ksh3:= sorry
 
 
 def shAlphaUpStar : Sheaf Ab (of X)⥤ (Ksheaf X)  where
