@@ -181,34 +181,25 @@ variable (F:(Opens X)ᵒᵖ⥤ Ab) (G:(Compacts X)ᵒᵖ ⥤ Ab) (τ:(AlphaUpSta
 variable (K:Compacts X) (U:Opens X)
 
 noncomputable section
-
-variable [LocallyCompactSpace X]
-
+/- je ne le suprime pas encore, peut être utile?
 lemma existsIntermed (h: K.carrier ⊆ U.carrier):Nonempty ({ L //IsCompact L ∧ K.carrier ⊆ interior L ∧ L ⊆ U.carrier}):= by
   rcases (exists_compact_between K.isCompact U.isOpen h ) with ⟨L,hL⟩
   exact Nonempty.intro ⟨L,hL⟩
 
-#check (Classical.choice (existsIntermed X K U _)).val
-#check Nonempty.intro (exists_compact_between K.isCompact U.isOpen sorry )
-
-#check exists_compact_between
-
-def V (h: K.carrier ⊆ U.carrier) :Opens X:= sorry/-by
+def KLU (h: K.carrier ⊆ U.carrier) :Compacts X:= by
   let L:=(Classical.choice (existsIntermed X K U h)).val
-  exact ⟨interior L, @isOpen_interior X L _⟩-/
+  exact ⟨L, (Classical.choice (existsIntermed X K U h)).property.1⟩
+
+def KintLU (h: K.carrier ⊆ U.carrier) :Opens X:= by
+  let L:=(Classical.choice (existsIntermed X K U h)).val
+  exact ⟨interior L,@isOpen_interior X L _⟩
 
 
-
-lemma intermedKU_spec (h: K.carrier ⊆ U.carrier): K.carrier ⊆ (V _ K U h).carrier ∧ closure (V _ K U h).carrier ⊆ U.carrier ∧ IsCompact (closure (V _ K U h).carrier):= by
-  sorry/--/
+lemma KintLLU_spec (h: K.carrier ⊆ U.carrier): K.carrier ⊆ (KintLU _ K U h).carrier ∧ (KLU _ K U h).carrier ⊆ U.carrier:= by
   let ⟨h1,h2,h3⟩ :=(Classical.choice (existsIntermed X K U h)).property
   constructor
-  exact h2
-  constructor
-  unfold closure V
-  simp
-
-  sorry-/
+  assumption
+  assumption
 
 lemma SelfSubClosure (U:Set X) : U⊆ closure U:= by
   intro a ha
@@ -217,29 +208,35 @@ lemma SelfSubClosure (U:Set X) : U⊆ closure U:= by
   intro t _ hVt
   exact hVt ha
 
---rcases ∃ V dans la def d'en dessous ça ne marche pas
+lemma IntSubSelf (U:Set X) : interior U⊆U:= by
+  unfold interior
+  intro _
+  simp
+  intro _ _ htu hat
+  exact htu hat-/
+
+
 def ConeFtoAG_NT: (Functor.const (UsupK_cat X U)ᵒᵖ).obj (F.obj { unop := U }) ⟶ GK X U G where
   app L := by
+    unfold GK
+    simp
     apply CategoryStruct.comp _ (τ.app _ )
     apply CategoryStruct.comp _
     apply colimit.ι
     apply op
-    exact ⟨V _ L.unop.obj U L.unop.property,(intermedKU_spec _ L.unop.obj U L.unop.property).1⟩
-    unfold KsubU_cat KsubU
-    apply F.map
-    apply op
-    apply homOfLE
-    apply Set.Subset.trans _
-    exact(intermedKU_spec _ L.unop.obj U L.unop.property).2.1
-    apply SelfSubClosure
+    exact ⟨U,L.unop.property⟩
+
+    /-Si on ne prend pas les U relativement compacst dans ALphaUpStar, pas besoin du truc intermédiaire-/
+    --exact ⟨(KintLU X L.unop.obj U L.unop.property),(Classical.choice (existsIntermed X L.unop.obj U L.unop.property)).property.2.1⟩
+    exact 𝟙 _
+
   naturality := by
     intro K L f
     unfold GK
     simp
     rw [← (τ.naturality _)]
-    unfold AlphaUpStar AlphaUpStarF
+    unfold AlphaUpStar AlphaUpStarF K1subK2natTrans K1subK2subU
     simp
-    rfl
 
 def ConeFtoAG :Cone (GK X U G) where
   pt:= F.obj {unop:= U}
@@ -251,31 +248,26 @@ def FtoAG : ( F ⟶ (AlphaDownStar X).obj G) where
     intro U V f
     apply limit.hom_ext
     intro K
-    unfold AlphaDownStar AlphaDownStarG  U2supU1natTrans U2supU1supK ConeFtoAG ConeFtoAG_NT--
+    unfold AlphaDownStar AlphaDownStarG  U2supU1natTrans U2supU1supK ConeFtoAG ConeFtoAG_NT
     simp
-    rw [@Category.comp_id _ _ _ ((GK X V.unop G).obj K) _,← Category.assoc,← F.map_comp]
+
+    rw [@Category.comp_id _ _ _ ((GK X V.unop G).obj K) _,← Category.assoc,← colimit.w_assoc]
     rfl
 
 def CoconeAFtoG_NT: FU X K F ⟶ (Functor.const (KsubU_cat X K)ᵒᵖ).obj (G.obj { unop := K })  where
   app W := by
-    apply CategoryStruct.comp (σ.app _ ) _
+    apply CategoryStruct.comp (σ.app _ )
     apply CategoryStruct.comp
     apply limit.π
     apply op
-    exact ⟨⟨closure  (V _ K W.unop.obj W.unop.property).carrier, (intermedKU_spec _ K W.unop.obj W.unop.property).2.2⟩,(intermedKU_spec _ K W.unop.obj W.unop.property).2.1⟩
-    unfold KsubU_cat KsubU
-    apply G.map
-    apply op
-    apply homOfLE
-    apply Set.Subset.trans
-    exact (intermedKU_spec _ K W.unop.obj W.unop.property).1
-    apply SelfSubClosure
+    simp
+    exact ⟨_,W.unop.property⟩
+    exact 𝟙 _
   naturality := by
     intro K L f
     unfold FU
     simp
-    rw [← Category.assoc, ← (σ.naturality _)]
-    unfold AlphaDownStar AlphaDownStarG
+    unfold AlphaDownStar AlphaDownStarG U2supU1natTrans U2supU1supK
     simp
     rfl
 
@@ -289,10 +281,9 @@ def AFtoG : ( (AlphaUpStar X).obj F ⟶  G) where
     intro K L f
     apply colimit.hom_ext
     intro V
-    simp
     unfold AlphaUpStar AlphaUpStarF  K1subK2natTrans K1subK2subU CoconeAFtoG CoconeAFtoG_NT
     simp
-    rw [← G.map_comp]
+    rw [← limit.w _ _]
     rfl
 
 def homEquiv: ((AlphaUpStar X ).obj F ⟶ G) ≃ ( F ⟶ (AlphaDownStar X).obj G) where
@@ -307,10 +298,6 @@ def homEquiv: ((AlphaUpStar X ).obj F ⟶ G) ≃ ( F ⟶ (AlphaDownStar X).obj G
     intro U
     unfold AFtoG CoconeAFtoG CoconeAFtoG_NT FtoAG ConeFtoAG ConeFtoAG_NT
     simp
-    rw [←  σ.naturality,← Category.assoc,← Category.assoc ]
-    unfold AlphaUpStar AlphaUpStarF
-    simp
-    rw [← @colimit.w _ _ _ _ (FU X K.unop F) _ U]
     rfl
   right_inv := by
     intro τ
@@ -322,10 +309,6 @@ def homEquiv: ((AlphaUpStar X ).obj F ⟶ G) ≃ ( F ⟶ (AlphaDownStar X).obj G
     simp
     unfold FtoAG ConeFtoAG ConeFtoAG_NT AFtoG CoconeAFtoG CoconeAFtoG_NT
     simp
-    rw [← Category.assoc,← Category.assoc,←  τ.naturality]
-    unfold AlphaDownStar AlphaDownStarG
-    simp
-    rw [← @limit.w _ _ _ _ (GK X K.unop G) _ _ U]
     rfl
 
 def adjthm : Adjunction.CoreHomEquiv (AlphaUpStar X) (AlphaDownStar X) where
