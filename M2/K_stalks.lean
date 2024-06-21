@@ -42,14 +42,11 @@ def Fp : Cocone (Fres X p F):= Cocone.mk (F.obj (op (pC X p))) ((Fp_transNat X p
 def pC2: (pinK_cat X p):=⟨pC X p,rfl⟩
 
 def FpisCol : IsColimit (Fp X p F) where
-  desc := by
-    intro s
-    exact s.ι.app (op (pC2 X p))
-  fac := by
-    intro s K
-    apply s.ι.naturality
+  desc := fun s => s.ι.app (op (pC2 X p))
+  fac := fun s => fun _ => s.ι.naturality _
   uniq := by
     intro s m hm
+    simp
     rw [← hm (op (pC2 X p))]
     unfold Fp Fp_transNat
     simp

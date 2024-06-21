@@ -4,36 +4,37 @@ import M2.Ksheaves
 
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite
 
-variable (X) [TopologicalSpace X] [T2Space X]
+variable (X) [TopologicalSpace X] --[T2Space X]
 
 --α^*
 noncomputable section
 variable (K:Compacts X)
 variable (F:(Opens X)ᵒᵖ⥤ Ab)
+variable (P:Opens X → Prop)-- true pour le alpha normal et IsCompact (closure U.carrier) pour la version relativement compacte
 
-def KsubU : Set (Opens X) := fun (U:Opens X) => (K.carrier ⊆ U.carrier) --∧ IsCompact (closure U.carrier) peut être?
+def KsubU : Set (Opens X) := fun (U:Opens X) => (K.carrier ⊆ U.carrier) ∧ P U
 
-def KsubU_cat : Type := FullSubcategory (KsubU X K)
+def KsubU_cat : Type := FullSubcategory (KsubU X K P)
 
-instance : Category (KsubU_cat X K) := FullSubcategory.category (KsubU X K)
+instance : Category (KsubU_cat X K P) := FullSubcategory.category (KsubU X K P)
 
-def FU : (KsubU_cat X K)ᵒᵖ ⥤ Ab := Functor.comp (fullSubcategoryInclusion (KsubU X K)).op  F
+def FU : (KsubU_cat X K P)ᵒᵖ ⥤ Ab := Functor.comp (fullSubcategoryInclusion (KsubU X K P)).op  F
 
 variable (K1 K2:Compacts X) (f:K1⟶ K2)
 
-def K1subK2subU : (KsubU_cat X K2) ⥤ (KsubU_cat X K1) where
-  obj W:=(⟨W.obj,Set.Subset.trans (leOfHom f) W.property⟩:KsubU_cat X K1)
+def K1subK2subU : (KsubU_cat X K2 P) ⥤ (KsubU_cat X K1 P) where
+  obj W:=(⟨W.obj,Set.Subset.trans (leOfHom f) W.property.1,W.property.2⟩:KsubU_cat X K1 P)
   map := by
     intro U V F
     exact homOfLE (leOfHom F)
 
-def K1subK2natTrans : (FU X K2 F) ⟶  (Functor.comp (K1subK2subU X K1 K2 f).op (FU X K1 F)) where
+def K1subK2natTrans : (FU X K2 F P) ⟶  (Functor.comp (K1subK2subU X P K1 K2 f).op (FU X K1 F P)) where
   app W := by
     exact 𝟙 _
 
 def AlphaUpStarF :(Compacts X)ᵒᵖ ⥤ Ab  where
-  obj K := colimit (FU X K.unop F)
-  map f:= colimMap (K1subK2natTrans X F _ _ f.unop) ≫ (colimit.pre (FU X _ F) (K1subK2subU X _ _ f.unop).op)
+  obj K := colimit (FU X K.unop F P)
+  map f:= colimMap (K1subK2natTrans X F P _ _ f.unop) ≫ (colimit.pre (FU X _ F P) (K1subK2subU X P _  _ f.unop).op)
   map_id := by
     intro _
     apply colimit.hom_ext
@@ -50,14 +51,14 @@ def AlphaUpStarF :(Compacts X)ᵒᵖ ⥤ Ab  where
 
 variable (F1:(Opens X)ᵒᵖ⥤ Ab) (F2:(Opens X)ᵒᵖ⥤ Ab) (τ :F1 ⟶ F2)
 
-def τres :(FU X K F1)⟶ (FU X K F2) where
+def τres :(FU X K F1 P)⟶ (FU X K F2 P) where
   app U:= τ.app (op (U.unop.obj))
   naturality := by
     unfold FU
     simp [τ.naturality]
 
-def AlphaUpStarTau : (AlphaUpStarF X F1) ⟶ (AlphaUpStarF X F2) where
-  app K := colimMap (τres X K.unop F1 F2 τ)
+def AlphaUpStarTau : (AlphaUpStarF X F1 P) ⟶ (AlphaUpStarF X F2 P) where
+  app K := colimMap (τres X K.unop P F1 F2 τ)
   naturality := by
     intro _ _ _
     apply colimit.hom_ext
@@ -66,9 +67,9 @@ def AlphaUpStarTau : (AlphaUpStarF X F1) ⟶ (AlphaUpStarF X F2) where
     simp
     rfl
 
-def AlphaUpStar :((Opens X)ᵒᵖ ⥤ Ab)⥤ ((Compacts X)ᵒᵖ ⥤ Ab) where
-  obj F:= AlphaUpStarF X F
-  map τ := AlphaUpStarTau X _ _ τ
+def AlphaUpStarP :((Opens X)ᵒᵖ ⥤ Ab)⥤ ((Compacts X)ᵒᵖ ⥤ Ab) where
+  obj F:= AlphaUpStarF X F P
+  map τ := AlphaUpStarTau X P _ _ τ
   map_id:= by
     intro F
     apply NatTrans.ext
@@ -88,6 +89,10 @@ def AlphaUpStar :((Opens X)ᵒᵖ ⥤ Ab)⥤ ((Compacts X)ᵒᵖ ⥤ Ab) where
     intro _
     unfold AlphaUpStarTau τres
     simp
+
+def trueCond: Opens X → Prop := (fun (_:Opens X) => true)
+
+def AlphaUpStar : ((Opens X)ᵒᵖ ⥤ Ab)⥤ ((Compacts X)ᵒᵖ ⥤ Ab) := AlphaUpStarP _ (trueCond X)
 
 end
 
@@ -224,7 +229,7 @@ def ConeFtoAG_NT: (Functor.const (UsupK_cat X U)ᵒᵖ).obj (F.obj { unop := U }
     apply CategoryStruct.comp _
     apply colimit.ι
     apply op
-    exact ⟨U,L.unop.property⟩
+    exact ⟨U,L.unop.property,rfl⟩
 
     /-Si on ne prend pas les U relativement compacst dans ALphaUpStar, pas besoin du truc intermédiaire-/
     --exact ⟨(KintLU X L.unop.obj U L.unop.property),(Classical.choice (existsIntermed X L.unop.obj U L.unop.property)).property.2.1⟩
@@ -235,7 +240,7 @@ def ConeFtoAG_NT: (Functor.const (UsupK_cat X U)ᵒᵖ).obj (F.obj { unop := U }
     unfold GK
     simp
     rw [← (τ.naturality _)]
-    unfold AlphaUpStar AlphaUpStarF K1subK2natTrans K1subK2subU
+    unfold AlphaUpStar AlphaUpStarP AlphaUpStarF K1subK2natTrans K1subK2subU
     simp
 
 def ConeFtoAG :Cone (GK X U G) where
@@ -254,14 +259,14 @@ def FtoAG : ( F ⟶ (AlphaDownStar X).obj G) where
     rw [@Category.comp_id _ _ _ ((GK X V.unop G).obj K) _,← Category.assoc,← colimit.w_assoc]
     rfl
 
-def CoconeAFtoG_NT: FU X K F ⟶ (Functor.const (KsubU_cat X K)ᵒᵖ).obj (G.obj { unop := K })  where
+def CoconeAFtoG_NT: FU X K F P ⟶ (Functor.const (KsubU_cat X K P)ᵒᵖ).obj (G.obj { unop := K })  where
   app W := by
     apply CategoryStruct.comp (σ.app _ )
     apply CategoryStruct.comp
     apply limit.π
     apply op
     simp
-    exact ⟨_,W.unop.property⟩
+    exact ⟨_,W.unop.property.1⟩
     exact 𝟙 _
   naturality := by
     intro K L f
@@ -271,7 +276,7 @@ def CoconeAFtoG_NT: FU X K F ⟶ (Functor.const (KsubU_cat X K)ᵒᵖ).obj (G.ob
     simp
     rfl
 
-def CoconeAFtoG :Cocone (FU X K F) where
+def CoconeAFtoG :Cocone (FU X K F P) where
   pt:= G.obj {unop:= K}
   ι :=(CoconeAFtoG_NT X F G σ K)
 
@@ -281,7 +286,7 @@ def AFtoG : ( (AlphaUpStar X).obj F ⟶  G) where
     intro K L f
     apply colimit.hom_ext
     intro V
-    unfold AlphaUpStar AlphaUpStarF  K1subK2natTrans K1subK2subU CoconeAFtoG CoconeAFtoG_NT
+    unfold AlphaUpStar AlphaUpStarP AlphaUpStarF  K1subK2natTrans K1subK2subU CoconeAFtoG CoconeAFtoG_NT
     simp
     rw [← limit.w _ _]
     rfl
@@ -320,7 +325,7 @@ homEquiv_naturality_left_symm:= by
   intro _
   apply colimit.hom_ext
   intro _
-  unfold homEquiv AlphaUpStar AlphaUpStarTau AFtoG CoconeAFtoG CoconeAFtoG_NT τres
+  unfold homEquiv AlphaUpStar AlphaUpStarP AlphaUpStarTau AFtoG CoconeAFtoG CoconeAFtoG_NT τres
   simp
 homEquiv_naturality_right:= by
   intro F G1 G2 τ σ
