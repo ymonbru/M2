@@ -16,6 +16,15 @@ def KsubU : Set (Opens X) := fun (U:Opens X) => (K.carrier ⊆ U.carrier) ∧ P 
 
 def KsubU_cat : Type := FullSubcategory (KsubU X K P)
 
+/-instance : SetLike (KsubU_cat X K P) X where
+  coe U:= U.obj.carrier
+
+  coe_injective':= fun ⟨_ , _ ⟩ ⟨_, _⟩ h => by
+    apply FullSubcategory.ext
+    simp at h
+    exact h-/
+
+
 instance : Category (KsubU_cat X K P) := FullSubcategory.category (KsubU X K P)
 
 def FU : (KsubU_cat X K P)ᵒᵖ ⥤ Ab := Functor.comp (fullSubcategoryInclusion (KsubU X K P)).op  F
