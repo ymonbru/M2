@@ -5,6 +5,9 @@ open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Comp
 
 variable (X) [TopologicalSpace X] [T2Space X]
 variable (p:X) --(K:Compacts X)
+
+noncomputable section
+
 variable (F:(Compacts X)ᵒᵖ ⥤ Ab)
 
 def pinK : Set (Compacts X) := fun K => (p ∈ K.carrier)
@@ -15,9 +18,7 @@ instance : Category (pinK_cat X p) := FullSubcategory.category (pinK X p)
 
 def Fres : ((pinK_cat X p)ᵒᵖ) ⥤ Ab := Functor.comp (fullSubcategoryInclusion (pinK X p)).op F
 
-noncomputable section
-
-def stalk : Ab :=colimit (Fres X p F)
+def Kstalk : Ab :=colimit (Fres X p F)
 
 def pC: Compacts X:=⟨{p},isCompact_singleton⟩
 
@@ -55,3 +56,13 @@ def FpisCol : IsColimit (Fp X p F) where
         _ = 𝟙 F.obj ({unop := (pC X p)}) := by rw [F.map_id]; rfl
 
     rw [this, @Category.id_comp _ _ (F.obj {unop:=(pC X p)})  _ m]
+
+
+def KstalkFunctor :((Compacts X)ᵒᵖ ⥤ Ab)⥤ Ab where
+  obj F :=(Fp X p F ).pt
+  map τ:= τ.app (op ⟨{p},isCompact_singleton⟩)
+  --map_id:=sorry
+  --map_comp:=sorry
+
+
+end

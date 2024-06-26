@@ -25,20 +25,9 @@ def K2subUPtoK1subUP: (KsubU_cat X K2 P) ⥤ (KsubU_cat X K1 P ) where
 
 def KsubUPtoQ : (KsubU_cat X K P) ⥤  (KsubU_cat X K Q ):= FullSubcategory.map (fun U => fun hP=> ⟨hP.1, hpq U hP.2⟩)
 
-/-lemma commuteFPtoFQ: (FU X K F P) = Functor.comp (KsubUPtoQ X K P Q hpq).op (FU X K F Q):= by
-  rfl-/
-
---lemma relcToTrue:∀ U,(relcCond X) U → (trueCond X) U:= λ _ _ => rfl
-
-
 variable (V: ∀ K, KsubU_cat X K Q → KsubU_cat X K P)
 
 variable (V_spec: ∀ K,∀ U, (V K U).obj.carrier ⊆ U.obj.carrier)
-
---variable (UtoV:∀ U,(KsubUPtoQ X K P Q hpq).obj (V K U) ⟶  U)
-
-
---def UtoV U: (KsubUPtoQ X K P Q hpq).obj (V K U) ⟶  U:= homOfLE (V_spec _ _)
 
 variable (axiomP: ∀ U1 U2, P U1 → P U2 → P (U1 ⊔ U2))
 
@@ -51,7 +40,6 @@ lemma diagram_commute (U:KsubU_cat X K Q) (V1 V2: KsubU_cat X K P) (h1: op U.obj
   let g:F.obj { unop := U.obj } ⟶ F.obj { unop := V1cupV2.unop.obj }:= by
     apply F.map (op (homOfLE _) )
     exact sup_le (leOfHom h1.unop) (leOfHom h2.unop)
-    --exact (sup_le (V_spec _ _) (Set.Subset.trans (V_spec _ _) (leOfHom f.unop)))
 
   let f1:F.obj { unop := V1cupV2.unop.obj } ⟶ F.obj { unop := V1.obj }:= by
     apply F.map (op (homOfLE _) )
@@ -62,7 +50,6 @@ lemma diagram_commute (U:KsubU_cat X K Q) (V1 V2: KsubU_cat X K P) (h1: op U.obj
     apply le_sup_right
 
   apply @Eq.trans _ _ (g≫ f1 ≫ c.ι.app (op V1))
-
 
   rw [← Category.assoc]
   apply eq_whisker
@@ -170,9 +157,8 @@ def AlphaUpFPtoQ : (AlphaUpStarF X F Q)⟶ (AlphaUpStarF X F P) where
     apply diagram_commute _ _ _ _ _ axiomP _ ((K2subUPtoK1subUP X Q K2.unop K1.unop f.unop).obj U.unop)
 
 
-def AlphaUpPPtoQ : (AlphaUpStarP X Q)⟶ (AlphaUpStarP X P) where
+def AlphaUpPQtoP : (AlphaUpStarP X Q)⟶ (AlphaUpStarP X P) where
   app F:= (AlphaUpFPtoQ X F P Q V V_spec axiomP)
-
   naturality F1 F2 τ:= by
     apply NatTrans.ext
     apply funext
@@ -181,10 +167,10 @@ def AlphaUpPPtoQ : (AlphaUpStarP X Q)⟶ (AlphaUpStarP X P) where
     unfold AlphaUpStarP AlphaUpStarTau AlphaUpFPtoQ τres PtoQhom CoconePtoQ CoconePtoQι
     simp
 
-theorem IsoAlphaUpPtoQ : IsIso (AlphaUpPPtoQ X P Q V V_spec axiomP ):= by
+theorem IsIsoAlphaUpPtoQ : IsIso (AlphaUpPQtoP X P Q V V_spec axiomP ):= by
   apply ( NatTrans.isIso_iff_isIso_app _).2
   intro F
-  unfold AlphaUpPPtoQ
+  unfold AlphaUpPQtoP
   simp
   apply ( NatTrans.isIso_iff_isIso_app _).2
   intro K
@@ -203,6 +189,9 @@ theorem IsoAlphaUpPtoQ : IsIso (AlphaUpPPtoQ X P Q V V_spec axiomP ):= by
   unfold AlphaUpStarP AlphaUpStarF CoconePtoQ
   simp
 
+def IsoAlphaUpPtoQ: (AlphaUpStarP X Q) ≅ (AlphaUpStarP X P):= by
+  let h:= IsIsoAlphaUpPtoQ X P Q hpq V V_spec axiomP
+  apply asIso (AlphaUpPQtoP X P Q V V_spec axiomP )
 
 end
 
@@ -213,6 +202,7 @@ variable [LocallyCompactSpace X]
 def relcCond: Opens X → Prop := (fun (U:Opens X) => IsCompact (closure U.carrier))
 --Q
 #check trueCond
+
 def AlphaUpStarRc : ((Opens X)ᵒᵖ ⥤ Ab) ⥤ (Compacts X)ᵒᵖ ⥤ Ab := AlphaUpStarP _ (relcCond X)
 
 lemma hpq:∀ (U:Opens X), (relcCond X) U  → (trueCond X) U:= λ _ _ => rfl
@@ -220,6 +210,13 @@ lemma hpq:∀ (U:Opens X), (relcCond X) U  → (trueCond X) U:= λ _ _ => rfl
 lemma existsIntermed (h: K.carrier ⊆ U.carrier):Nonempty ({ L //IsCompact L ∧ K.carrier ⊆ interior L ∧ L ⊆ U.carrier}):= by
   rcases (exists_compact_between K.isCompact U.isOpen h ) with ⟨L,hL⟩
   exact Nonempty.intro ⟨L,hL⟩
+
+lemma IntSubSelf (U:Set X) : interior U⊆U:= by
+  unfold interior
+  intro _
+  simp
+  intro _ _ htu hat
+  exact htu hat
 
 def V K: KsubU_cat X K (trueCond X) → KsubU_cat X K (relcCond X):= by
   intro U
@@ -240,14 +237,27 @@ def V K: KsubU_cat X K (trueCond X) → KsubU_cat X K (relcCond X):= by
   apply IsCompact.isClosed
   exact (Classical.choice (existsIntermed X K U.obj U.property.1)).property.1
 
-  unfold interior
-  intro _
-  simp
-  intro _ _ htu hat
-  exact htu hat
+  apply IntSubSelf
 
 lemma V_spec: ∀ K,∀ U, (V X K U).obj.carrier ⊆ U.obj.carrier:= by
-  sorry
+  intro K U
+  unfold V
+  simp
+  apply Set.Subset.trans
+  apply IntSubSelf
+  exact (Classical.choice (existsIntermed X K U.obj U.property.1)).property.2.2
 
 lemma axiomP: ∀ U1 U2, (relcCond X) U1 → (relcCond X) U2 → (relcCond X) (U1 ⊔ U2):= by
-  sorry
+  intro U1 U2 h1 h2
+  unfold relcCond
+  simp
+  exact IsCompact.union h1 h2
+
+def AlphaUpStarToRc : (AlphaUpStar X) ≅ (AlphaUpStarRc X):= by
+  apply IsoAlphaUpPtoQ _ _ _ _ _ _ _
+  exact λ _ _ => rfl
+  exact V X
+  exact (V_spec X)
+  exact axiomP X
+
+def AdjAlphaStarRc : (AlphaUpStarRc X ) ⊣ (AlphaDownStar X ) := Adjunction.ofNatIsoLeft (AdjAlphaStar X) (AlphaUpStarToRc X)

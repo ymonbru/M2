@@ -86,8 +86,6 @@ structure Ksheaf where
   ksh2 : ∀ K1 K2 :Compacts X, (complex X carrier K1 K2).Exact := by aesop_cat
   ksh3 : ∀ K:Compacts X, (IsIso (colimit.desc (FUbar X K carrier) (FK X K carrier))) := by aesop_cat
 
-instance:  Category (Ksheaf X) := InducedCategory.category (fun (F:Ksheaf X) => F.carrier)
+instance :  Category (Ksheaf X) := InducedCategory.category (fun (F:Ksheaf X) => F.carrier)
 
 #check (inducedFunctor (fun (F:Ksheaf X) => F.carrier):(Ksheaf X)⥤ _)
-
-#check Ksheaf X

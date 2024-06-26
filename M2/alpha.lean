@@ -195,39 +195,6 @@ variable (F:(Opens X)ᵒᵖ⥤ Ab) (G:(Compacts X)ᵒᵖ ⥤ Ab) (τ:(AlphaUpSta
 variable (K:Compacts X) (U:Opens X)
 
 noncomputable section
-/- je ne le suprime pas encore, peut être utile?
-lemma existsIntermed (h: K.carrier ⊆ U.carrier):Nonempty ({ L //IsCompact L ∧ K.carrier ⊆ interior L ∧ L ⊆ U.carrier}):= by
-  rcases (exists_compact_between K.isCompact U.isOpen h ) with ⟨L,hL⟩
-  exact Nonempty.intro ⟨L,hL⟩
-
-def KLU (h: K.carrier ⊆ U.carrier) :Compacts X:= by
-  let L:=(Classical.choice (existsIntermed X K U h)).val
-  exact ⟨L, (Classical.choice (existsIntermed X K U h)).property.1⟩
-
-def KintLU (h: K.carrier ⊆ U.carrier) :Opens X:= by
-  let L:=(Classical.choice (existsIntermed X K U h)).val
-  exact ⟨interior L,@isOpen_interior X L _⟩
-
-
-lemma KintLLU_spec (h: K.carrier ⊆ U.carrier): K.carrier ⊆ (KintLU _ K U h).carrier ∧ (KLU _ K U h).carrier ⊆ U.carrier:= by
-  let ⟨h1,h2,h3⟩ :=(Classical.choice (existsIntermed X K U h)).property
-  constructor
-  assumption
-  assumption
-
-lemma SelfSubClosure (U:Set X) : U⊆ closure U:= by
-  intro a ha
-  unfold closure
-  simp [Set.mem_iInter]
-  intro t _ hVt
-  exact hVt ha
-
-lemma IntSubSelf (U:Set X) : interior U⊆U:= by
-  unfold interior
-  intro _
-  simp
-  intro _ _ htu hat
-  exact htu hat-/
 
 
 def ConeFtoAG_NT: (Functor.const (UsupK_cat X U)ᵒᵖ).obj (F.obj { unop := U }) ⟶ GK X U G where
@@ -239,9 +206,6 @@ def ConeFtoAG_NT: (Functor.const (UsupK_cat X U)ᵒᵖ).obj (F.obj { unop := U }
     apply colimit.ι
     apply op
     exact ⟨U,L.unop.property,rfl⟩
-
-    /-Si on ne prend pas les U relativement compacst dans ALphaUpStar, pas besoin du truc intermédiaire-/
-    --exact ⟨(KintLU X L.unop.obj U L.unop.property),(Classical.choice (existsIntermed X L.unop.obj U L.unop.property)).property.2.1⟩
     exact 𝟙 _
 
   naturality := by

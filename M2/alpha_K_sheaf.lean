@@ -7,7 +7,7 @@ open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Comp
 open ZeroObject
 
 variable (X) [TopologicalSpace X] [T2Space X]
-variable (G:Ksheaf X) (F:Sheaf Ab (of X))
+variable (G:Ksheaf.{0} X) (F:Sheaf Ab.{0} (of X))
 
 noncomputable section
 
@@ -38,6 +38,8 @@ theorem KshToSh: @Presheaf.IsSheaf _ _ (of X) ((AlphaDownStar X).obj (G.carrier)
   simp at f
 
   sorry
+  repeat sorry
+
 
 
 def shAlphaDownStarF : Sheaf Ab (of X) where
@@ -61,7 +63,7 @@ def shAlphaDownStar : (Ksheaf X) ⥤ Sheaf Ab (of X) where
 def shAlphaUpStarG : (Ksheaf X) where
   carrier:= (AlphaUpStar X).obj ((Sheaf.forget _ _).obj F)
   ksh1:= by
-    unfold AlphaUpStar AlphaUpStarF --FU KsubU
+    unfold AlphaUpStar AlphaUpStarP AlphaUpStarF--FU KsubU
     simp
     have :((Sheaf.forget _ _).obj F).obj (op (⊥:Opens X)) = 0:= by
       sorry
@@ -95,6 +97,8 @@ def AdjShAlphaStar: (shAlphaUpStar X ) ⊣ (shAlphaDownStar X ) := by
 
 
 theorem IsoAlphaCoUnit :IsIso ((AdjShAlphaStar X).unit.app F):= by
+  --apply @Presheaf.isIso_of_stalkFunctor_map_iso
+  --apply asIso
 
   --unfold AdjShAlphaStar AdjAlphaStar
   --simp
@@ -102,13 +106,22 @@ theorem IsoAlphaCoUnit :IsIso ((AdjShAlphaStar X).unit.app F):= by
 
   sorry
 
+#check (AdjShAlphaStar X).counit.app G
+
 theorem IsoAlphaUnit :IsIso ((AdjShAlphaStar X).counit.app G):= by
   --unfold AdjShAlphaStar AlphaDownStar
   --simp
-  --#check  Presheaf.isIso_of_stalkFunctor_map_iso
+
+
+  #check  Presheaf.isIso_of_stalkFunctor_map_iso
   sorry
 
 
-def KshIsoSh: (Sheaf Ab (of X)) ≅  (Ksheaf X):= by
-  #check   @Adjunction.toEquivalence _ _ _ _  _  _ (AdjShAlphaStar X) (IsoAlphaCoUnit X) (IsoAlphaUnit X)
-  --pourquoi ça ne convient pas
+set_option pp.universes true
+def KshIsoSh: (Sheaf Ab.{0} (of X)) ≃  (Ksheaf.{0} X) := by
+
+   apply @Adjunction.toEquivalence _ _ _ _  _  _ (AdjShAlphaStar X) (IsoAlphaCoUnit X) (IsoAlphaUnit X)
+
+
+  --sorry
+  --pourquoi ça ne convient pas? problème d'univers
