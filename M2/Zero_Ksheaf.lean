@@ -2,68 +2,60 @@ import M2.Ksheaves
 
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite
 
-variable (X) [TopologicalSpace X] [T2Space X]
-variable (K:Compacts X)
+variable {X} [TopologicalSpace X] [T2Space X]
+variable (K : Compacts X)
 
 open ZeroObject
 
 noncomputable section
 
-def FZero:(Compacts X)ᵒᵖ ⥤ Ab where
+/-- The constant functor equal to 0-/
+@[simps]
+def FZero : (Compacts X)ᵒᵖ ⥤ Ab where-- ça n'a pas l'air de marcher := 0
   obj _ := 0
   map _ := 0
 
-def zC:Cocone (FUbar X K (FZero X)):=Cocone.mk (0) (0)
 
-def zCisCol : IsColimit (zC X K) where
-  desc := by
-    intro s
-    exact 0
-  fac := by
-    intro s W
-    rw [IsZero.eq_zero_of_src (isZero_zero Ab) (s.ι.app W)]
-    simp
-  uniq := by
-    intro s m _
-    apply IsZero.eq_zero_of_src (isZero_zero Ab)
+--@[simps]
+/--The cocone of the diagram FUbar given by the zero maps-/
+def zC:Cocone <| FUbar _ K (FZero):=Cocone.mk 0 0
 
-def zeroCocone :ColimitCocone (FUbar X K (FZero X)) where
-  cocone:= (@zC X _ _ K)
-  isColimit := zCisCol X K
+/-- The fact that the cocone zC satisfy the universal property-/
+def zCisCol : IsColimit (zC K) where
+  desc _ := 0
+  fac _ _ := Eq.symm <| IsZero.eq_zero_of_src (isZero_zero _) _
+  uniq _ _ _ := IsZero.eq_zero_of_src (isZero_zero _) _
 
-def ZKsheaf : (Ksheaf X) where
-  carrier := (FZero X)
-  ksh2 := by
-    intros K1 K2
+/--The colimit of the diagram FUbar is the zero cocone-/
+def zeroCocone : ColimitCocone <| FUbar _ K (FZero) where
+  cocone:= zC _
+  isColimit := zCisCol _
 
-    unfold complex FZero plusFtoFcap FcuptoplusF ZtoFcup
-    --simp
+/--The functor FZero gives rise to a Ksheaf-/
+def ZKsheaf : Ksheaf X where
+  carrier := FZero
+  ksh1 := by simp
+  ksh2 _ _ := by
+    unfold complex
     apply ComposableArrows.exact_of_δ₀
-    --deux fois le même bloc mais avec repeat ça ne marche pas
+    · apply ComposableArrows.exact₂_mk
+      · apply ShortComplex.exact_of_isZero_X₂
+        apply isZero_zero
+      · unfold ZtoFcup
+        simp
 
-    apply ComposableArrows.exact₂_mk
-    apply ShortComplex.exact_of_isZero_X₂
-    --simp
-    exact isZero_zero Ab
-    apply ComposableArrows.IsComplex.zero
-    apply ComposableArrows.isComplex₂_mk
-    simp
+    · apply ComposableArrows.exact₂_mk
+      · apply ShortComplex.exact_of_isZero_X₂
+        simp [isZero_zero _]
+      · unfold plusFtoFcap FcuptoplusF
+        simp
 
-    apply ComposableArrows.exact₂_mk
-    apply ShortComplex.exact_of_isZero_X₂
-    simp
-    exact isZero_zero Ab
-    apply ComposableArrows.IsComplex.zero
-    apply ComposableArrows.isComplex₂_mk
-    simp
-
-  ksh3:= by
-    intro K
+  ksh3 _ := by
     apply isIso_of_source_target_iso_zero
-
-    apply colimit.isoColimitCocone (zeroCocone _ _)
-
-    unfold FZero FK
+    apply colimit.isoColimitCocone (zeroCocone _)
     rfl
 
-#check ZKsheaf
+instance : Inhabited (Ksheaf X) where
+  default := ZKsheaf
+
+#lint

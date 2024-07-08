@@ -7,7 +7,7 @@ open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Comp
 open ZeroObject
 
 variable (X) [TopologicalSpace X] [T2Space X]
-variable (G:Ksheaf.{0} X) (F:Sheaf Ab.{0} (of X))
+variable (G:Ksheaf X) (F:Sheaf Ab (of X))
 
 noncomputable section
 
@@ -118,7 +118,7 @@ theorem IsoAlphaUnit :IsIso ((AdjShAlphaStar X).counit.app G):= by
 
 
 set_option pp.universes true
-def KshIsoSh: (Sheaf Ab.{0} (of X)) ≃  (Ksheaf.{0} X) := by
+def KshIsoSh: (Sheaf Ab (of X)) ≃  (Ksheaf X) := by
 
    apply @Adjunction.toEquivalence _ _ _ _  _  _ (AdjShAlphaStar X) (IsoAlphaCoUnit X) (IsoAlphaUnit X)
 
