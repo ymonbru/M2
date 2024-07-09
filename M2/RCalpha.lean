@@ -29,46 +29,37 @@ variable (axiomP: ∀ U1 U2, P U1 → P U2 → P (U1 ⊔ U2))
 
 variable (c:Cocone (FU K F P))
 
-lemma diagram_commute (U : KsubU_cat K Q) (V1 V2 : KsubU_cat K P) (h1 : op U.obj ⟶ op V1.obj) (h2 : op U.obj ⟶ op V2.obj) : F.map h1 ≫ c.ι.app (op V1) = F.map h2 ≫ c.ι.app (op V2):= by
+lemma diagram_commute (U : KsubU_cat K Q) V1 V2 (h1 : op U.obj ⟶ op V1.obj) (h2 : op U.obj ⟶ op V2.obj) : F.map h1 ≫ c.ι.app (op V1) = F.map h2 ≫ c.ι.app (op V2):= by
 
-  let V1cupV2:= op (⟨V1.obj ⊔ V2.obj, ⟨Set.Subset.trans V1.property.1 (Set.subset_union_left) , axiomP _  _ V1.property.2 V2.property.2⟩⟩: (KsubU_cat K P))
+  let V1cupV2op := op (⟨V1.obj ⊔ V2.obj, ⟨Set.Subset.trans V1.property.1 (Set.subset_union_left) , axiomP _  _ V1.property.2 V2.property.2⟩⟩: (KsubU_cat K P))
 
-  let g:F.obj { unop := U.obj } ⟶ F.obj { unop := V1cupV2.unop.obj }:= by
-    apply F.map (op (homOfLE _) )
+  let g : F.obj (op U.obj) ⟶ F.obj (op V1cupV2op.unop.obj):= by
+    apply F.map <| op (homOfLE _ )
     exact sup_le (leOfHom h1.unop) (leOfHom h2.unop)
 
-  let f1:F.obj { unop := V1cupV2.unop.obj } ⟶ F.obj { unop := V1.obj }:= by
-    apply F.map (op (homOfLE _) )
+  let f1 : V1cupV2op ⟶ op  V1 := by
+    apply op (homOfLE _ )
     apply le_sup_left
 
-  let f2:F.obj { unop := V1cupV2.unop.obj } ⟶ F.obj { unop := V2.obj }:= by
-    apply F.map (op (homOfLE _) )
+
+  let f2 :  V1cupV2op  ⟶ op V2 := by
+    apply (op (homOfLE _ ) )
     apply le_sup_right
 
-  apply @Eq.trans _ _ (g≫ f1 ≫ c.ι.app (op V1))
-
-  · rw [← Category.assoc]
+  calc F.map h1 ≫ c.ι.app { unop := V1 } = g≫ (FU _ _ _).map f1 ≫ c.ι.app (op V1) := by {
+    rw [← Category.assoc]
     apply eq_whisker
-    rw [← F.map_comp]
-    apply congrArg
-    rfl
-
-  apply @Eq.trans _ _ (g≫ f2 ≫ c.ι.app (op V2))
-
-  · apply whisker_eq
-    let h:= c.ι.naturality
-    unfold FU at h
-    simp at h
-
-    apply Eq.trans
-    apply h
-    rw [← h]
-    rfl
-
-  · rw [← Category.assoc]
-    apply eq_whisker
-    rw [← F.map_comp]
-    rfl
+    apply F.map_comp}
+    _ = g ≫ (FU _ _ _).map f2 ≫ c.ι.app (op V2) := by {
+      apply whisker_eq
+      repeat rw [c.ι.naturality]
+      rfl
+    }
+    _ = F.map h2 ≫ c.ι.app { unop := V2 } := by {
+      rw [← Category.assoc]
+      apply eq_whisker
+      apply Eq.symm
+      apply F.map_comp }
 
 /--The family of maps from F(U) such that Q(U) to a cone of the diagram of F(U) such that P(U) build by factorising along the path given by V-/
 @[simps]
@@ -116,63 +107,55 @@ instance IsColPtoQ: IsColimit (CoconePtoQ K F V V_spec axiomP (colimit.cocone (F
   uniq s m h := by
     apply @colimit.hom_ext _ _ _ _ (FU _ _ _)
     intro U
-    suffices colimit.ι (FU _ _ _) U ≫ m = s.ι.app (op ((KsubUPtoQ _ hpq).obj U.unop))  by simpa
+    suffices colimit.ι (FU _ _ _) U ≫ _ = s.ι.app (op ((KsubUPtoQ _ hpq).obj U.unop))  by simpa
     rw [← h]
-
-    suffices colimit.ι (FU _ _ _) _ ≫ _ = F.map _ ≫ colimit.ι (FU _ _ _) _ ≫ _ by simpa
-
+    suffices colimit.ι (FU _ _ _) _ ≫ _ = _ ≫ colimit.ι (FU _ _ _) _ ≫ _ by simpa
     rw [← Category.assoc]
     apply eq_whisker
 
-    let ιnat:= (colimit.cocone (FU K F P)).ι.naturality
+    have f:U ⟶ _ := op (homOfLE (V_spec _ ((KsubUPtoQ _ hpq).obj U.unop)))
 
-    --C'est le même problème où je n'arrive pas à lui faire deviner les trucs
-    apply Eq.trans _
-    apply Eq.trans
-    apply Eq.symm (ιnat _)
+    calc colimit.ι (FU _ _ _) _ = (FU _ _ _).map f ≫ colimit.ι (FU _ _ _) _ := by simp
+    _ = _ ≫ colimit.ι (FU _ _ _) _ := by rfl
 
-    exact op (V K ((KsubUPtoQ _ hpq).obj U.unop))
-    apply op (homOfLE (V_spec _ _))
-    repeat rfl
 
 instance isoQtoP: IsIso (QtoPhom K F _ V_spec axiomP):= IsColimit.hom_isIso (colimit.isColimit (FU _ _ _)) (IsColPtoQ _ _ hpq _ _ _ ) _
 
-
+/--The natural morphism from α^*_QF ⟶ α^ *_PF  -/
+@[simps!]
 def AlphaUpFQtoP : (AlphaUpStarF F Q)⟶ (AlphaUpStarF F P) where
   app _ := (QtoPhom _ _ _ V_spec axiomP).hom
   naturality _ _ f := by
     apply colimit.hom_ext
     intro _
-    suffices F.map _ ≫ colimit.ι (FU _ _ _ ) _ = F.map _ ≫ colimit.ι (FU _ _ _ ) _ by simpa
+    suffices _ ≫ colimit.ι (FU _ _ _ ) _ = _ ≫ colimit.ι _ _ by simpa
     apply diagram_commute _ _  axiomP _ ((K1subK2subU _ _ _ f.unop).obj _)
 
+/--The natural morphism from α^*_Q ⟶ α^ *_P  -/
+@[simps]
 def AlphaUpPQtoP : (AlphaUpStarP Q)⟶ (AlphaUpStarP P) where
-  app F := (AlphaUpFQtoP F V V_spec axiomP)
+  app _ := (AlphaUpFQtoP _ _ V_spec axiomP)
   naturality _ _ _ := by
     ext : 2
     apply colimit.hom_ext
     simp [AlphaUpFQtoP]
 
 instance IsIsoAlphaUpPtoQ : IsIso (AlphaUpPQtoP V V_spec axiomP ):= by
-  apply ( NatTrans.isIso_iff_isIso_app _).2
-  intro F
-  unfold AlphaUpPQtoP
-  simp
-  apply ( NatTrans.isIso_iff_isIso_app _).2
-  intro K
+  repeat
+    apply ( NatTrans.isIso_iff_isIso_app _).2
+    intro _
 
-  unfold AlphaUpFQtoP
-  simp
+  rcases (isoQtoP _ _ hpq _ V_spec axiomP).out with ⟨i,hi⟩
 
-  rcases (isoQtoP K.unop F hpq V V_spec axiomP).out with ⟨i,hi⟩
   use i.hom
   constructor
+  · calc _ = (QtoPhom _ _ _ _ _).hom ≫ i.hom := by simp
+    _ = _ := by rw [← Cocone.category_comp_hom]
+    _ = 𝟙 _ := by rw [hi.1] ;simp
 
-  rw [← Cocone.category_comp_hom, hi.1]
-  rfl
-
-  rw [← Cocone.category_comp_hom, hi.2]
-  rfl
+  · calc _ = i.hom ≫ (QtoPhom _ _ _ _ _).hom := by simp
+    _ = _ := by rw [← Cocone.category_comp_hom]
+    _ = 𝟙 _ := by rw [hi.2] ;simp
 
 def IsoAlphaUpPtoQ: (AlphaUpStarP Q) ≅ (AlphaUpStarP P):= by
   let h:= IsIsoAlphaUpPtoQ hpq V V_spec axiomP
@@ -186,7 +169,8 @@ section --α^* variante avec seulement les U relativements comapcts
 variable (X)
 variable [LocallyCompactSpace X] [T2Space X]
 --P
-def relcCond : Opens X → Prop := (fun (U:Opens X) => IsCompact (closure U.carrier))
+
+def relcCond : Opens X → Prop := fun (U:Opens X) => IsCompact (closure (U:Set X))
 --Q
 #check trueCond
 
@@ -194,54 +178,41 @@ def AlphaUpStarRc : ((Opens X)ᵒᵖ ⥤ Ab) ⥤ (Compacts X)ᵒᵖ ⥤ Ab := Al
 
 
 
-lemma hpq:∀ (U:Opens X), (relcCond X) U  → trueCond U := λ _ _ => rfl
+lemma hpq : ∀ (U : Opens X), (relcCond X) U  → trueCond U := λ _ _ => rfl
 
-lemma existsIntermed (h: K.carrier ⊆ U.carrier):Nonempty ({ L //IsCompact L ∧ K.carrier ⊆ interior L ∧ L ⊆ U.carrier}):= by
+lemma existsIntermed (h : K.carrier ⊆ U.carrier) : Nonempty ({ L //IsCompact L ∧ K.carrier ⊆ interior L ∧ L ⊆ U.carrier}) := by
   rcases (exists_compact_between K.isCompact U.isOpen h ) with ⟨L,hL⟩
   exact Nonempty.intro ⟨L,hL⟩
 
---lemma IntSubSelf (U:Set X) : interior U⊆U:= by
- -- exact interior_subset
-  --unfold interior
-  --intro _
-  --simp
-  --intro _ _ htu hat
-  --exact htu hat
-
-def V K: KsubU_cat K (trueCond) → KsubU_cat K (@relcCond X _):= by
+def V K : KsubU_cat K (trueCond) → KsubU_cat K (@relcCond X _):= by
   intro U
   let L:=(Classical.choice (existsIntermed X K U.obj U.property.1)).val
   use ⟨interior L,@isOpen_interior X L _⟩
-
-  unfold KsubU
   constructor
-  exact (Classical.choice (existsIntermed X K U.obj U.property.1)).property.2.1
-  unfold relcCond
-  apply IsCompact.of_isClosed_subset
-  exact (Classical.choice (existsIntermed X K U.obj U.property.1)).property.1
-  apply isClosed_closure
+  · exact (Classical.choice (existsIntermed X K U.obj U.property.1)).property.2.1
+  · apply IsCompact.of_isClosed_subset
+    exact (Classical.choice (existsIntermed X K U.obj U.property.1)).property.1
+    apply isClosed_closure
+    intro _ ha
+    apply ha
+    constructor
+    · apply IsCompact.isClosed
+      exact (Classical.choice (existsIntermed X _ U.obj U.property.1)).property.1
+    · apply interior_subset
 
-  intro a ha
-  apply ha
-  constructor
-  apply IsCompact.isClosed
-  exact (Classical.choice (existsIntermed X K U.obj U.property.1)).property.1
-
-  apply interior_subset
-
-lemma V_spec: ∀ K,∀ U, (V X K U).obj.carrier ⊆ U.obj.carrier:= by
-  intro K U
+lemma V_spec : ∀ K,∀ U, (V X K U).obj.carrier ⊆ U.obj:= by
+  intro _ U
   unfold V
-  simp
   apply Set.Subset.trans
   apply interior_subset
-  exact (Classical.choice (existsIntermed X K U.obj U.property.1)).property.2.2
+  exact (Classical.choice (existsIntermed X _ _ U.property.1)).property.2.2
 
-lemma axiomP: ∀ U1 U2, relcCond X U1 → relcCond X U2 → relcCond X (U1 ⊔ U2):= by
-  intro U1 U2 h1 h2
+lemma axiomP : ∀ U₁ U₂, relcCond X U₁ → relcCond X U₂ → relcCond X (U₁ ⊔ U₂):= by
+  intro _ _ _ _
   unfold relcCond
-  simp
-  exact IsCompact.union h1 h2
+  rw [ Opens.coe_sup, closure_union]
+  apply IsCompact.union
+  repeat assumption
 
 def AlphaUpStarToRc : AlphaUpStar ≅ AlphaUpStarRc X:= by
   apply IsoAlphaUpPtoQ _ _ _ _
