@@ -5,7 +5,6 @@ import M2.Ksheaves
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite
 
 variable {X} [TopologicalSpace X] --[T2Space X]
---variable {A} [Ring A]
 
 --α^*
 noncomputable section
@@ -30,46 +29,44 @@ def KsubU_cat : Type := FullSubcategory (KsubU K P)
 
 instance : Category (KsubU_cat K P) := FullSubcategory.category (KsubU K P)
 
-/--The diagram obtained by restricting F to the category KsubU-/
+/-- The diagram obtained by restricting F to the category KsubU-/
+@[simps!]
 def FU : (KsubU_cat K P)ᵒᵖ ⥤ Ab := Functor.comp (fullSubcategoryInclusion (KsubU K P)).op  F
 
 variable (K₁ K₂ : Compacts X) (f : K₁ ⟶ K₂) --K1 ⊆ K2
 
-/--The functor that sends opens that containt K2 to opens that contains K1-/
+/-- The functor that sends opens that containt K2 to opens that contains K1-/
 @[simps]
-def K1subK2subU : (KsubU_cat K₂ P) ⥤ (KsubU_cat K₁ P) where
+def K1subK2subU : (KsubU_cat K₂ P) ⥤ (KsubU_cat K₁ P ) where
   obj W := (⟨W.obj,Set.Subset.trans (leOfHom _ ) W.property.1 , W.property.2⟩ : KsubU_cat _ _)
   map  _ := homOfLE (leOfHom _)
 
-/--The natural transformation of change of basis for the diagram FU-/
+/-- The natural transformation of change of basis for the diagram FU-/
 @[simps]
 def K1subK2natTrans : (FU _ F P) ⟶  (Functor.comp (K1subK2subU _ _ _ f).op (FU _ F _)) where
   app _ := 𝟙 _
 
-
 attribute [local aesop safe (rule_sets := [CategoryTheory])] colimit.hom_ext limit.hom_ext
 
---Ici quand on change Ab par ModuleCat A, il y a un problème d'univers
-/-The functor α^*F-/
+/-- The functor α^*F-/
 @[simps]
 def AlphaUpStarF : (Compacts X)ᵒᵖ ⥤ Ab  where
   obj K := colimit (FU K.unop F P)
-  map f := colimMap (K1subK2natTrans F P _ _ f.unop) ≫ (colimit.pre (FU _ F P) (K1subK2subU P _  _ f.unop).op)
+  map f := colimMap (K1subK2natTrans F P _ _ f.unop) ≫ (colimit.pre (FU _ _ _) (K1subK2subU _ _ _ _ ).op)
 
 variable (F₁ F₂ : (Opens X)ᵒᵖ ⥤ Ab) (τ : F₁ ⟶ F₂)
 
-/-The restriction of the natural transformation between the digram FU over K₁ eand FU over K₂ -/
+/-- The restriction of the natural transformation between the digram FU over K₁ eand FU over K₂ -/
 @[simps]
-def τres : (FU K F₁ P) ⟶ (FU K F₂ P) where
+def τres : (FU K F₁ P) ⟶ (FU _ F₂ _) where
   app U := τ.app <| op (U.unop.obj)
-  naturality := by simp [FU,τ.naturality]
 
-/-The natural transformation α^* τ between α^* F₁ and α^* F₂-/
+/-- The natural transformation α^* τ between α^* F₁ and α^* F₂-/
 @[simps]
 def AlphaUpStarTau : (AlphaUpStarF F₁ P) ⟶ (AlphaUpStarF F₂ P) where
   app K := colimMap (τres K.unop P _ _ τ)
 
-/-The functor α^* with the conditon P-/
+/-- The functor α^* with the conditon P-/
 @[simps]
 def AlphaUpStarP : ((Opens X)ᵒᵖ ⥤ Ab) ⥤ (Compacts X)ᵒᵖ ⥤ Ab where
   obj _ := AlphaUpStarF _ _
@@ -81,10 +78,10 @@ def AlphaUpStarP : ((Opens X)ᵒᵖ ⥤ Ab) ⥤ (Compacts X)ᵒᵖ ⥤ Ab where
     ext : 2
     aesop_cat
 
-/--The condition that is always true -/
-def trueCond: Opens X → Prop := (fun _ => true)
+/-- The condition that is always true -/
+def trueCond :Opens X → Prop:= λ _ => true
 
-/-The first version of α^* -/
+/-- The first version of α^* -/
 @[simps!]
 def AlphaUpStar : ((Opens X)ᵒᵖ ⥤ Ab)⥤ ((Compacts X)ᵒᵖ ⥤ Ab) := AlphaUpStarP (trueCond)
 
@@ -95,32 +92,32 @@ noncomputable section
 
 variable (U : Opens X) (G : (Compacts X)ᵒᵖ ⥤ Ab)
 
-/-The condition over compacts subset of being contained in U-/
+/-- The condition over compacts subset of being contained in U -/
 def UsupK : Set (Compacts X) := fun (K:Compacts X) => (K : Set X) ⊆ U
 
-/--The category induced by UsupK -/
+/-- The category induced by UsupK -/
 def UsupK_cat : Type := FullSubcategory (UsupK U)
 
 instance : Category (UsupK_cat U) := FullSubcategory.category (UsupK U)
 
-/--The diagrom obtained by restricting G to the subcategory UsupK-/
+/-- The diagrom obtained by restricting G to the subcategory UsupK-/
 @[simps!]
 def GK : (UsupK_cat U)ᵒᵖ ⥤ Ab := Functor.comp (fullSubcategoryInclusion (UsupK U)).op  G
 
 variable (U₁ U₂ : Opens X) (f : U₁ ⟶ U₂)-- U₁ ⊆ U₂
 
-/--The functor that sends compacts contained  in U₁ to compaccts contained in U₂-/
+/-- The functor that sends compacts contained  in U₁ to compaccts contained in U₂-/
 @[simps]
 def U2supU1supK : (UsupK_cat U₁) ⥤ (UsupK_cat U₂) where
   obj W := (⟨W.obj,Set.Subset.trans W.property (leOfHom f)⟩ : UsupK_cat _)
   map _ := homOfLE (leOfHom _)
 
-/--The natural transformation of change of basis for the diagram GK-/
+/-- The natural transformation of change of basis for the diagram GK-/
 @[simps]
 def U2supU1natTrans : (GK _ G) ⟶  Functor.comp (U2supU1supK _ _ f).op (GK _ G) where
   app _ := 𝟙 _
 
-/-The functor α_* G-/
+/-- The functor α_* G-/
 @[simps]
 def AlphaDownStarG : (Opens X)ᵒᵖ ⥤ Ab  where
   obj U := limit (GK U.unop G)
@@ -130,19 +127,19 @@ def AlphaDownStarG : (Opens X)ᵒᵖ ⥤ Ab  where
 
 variable (G₁ G₂:(Compacts X)ᵒᵖ ⥤ Ab) (σ : G₁ ⟶ G₂)
 
-/-The natural transformation induced by σ between the two diagrams-/
+/-- The natural transformation induced by σ between the two diagrams-/
 @[simps]
 def σres : (GK U G₁) ⟶ (GK _ G₂) where
   app K:= σ.app (op (K.unop.obj))
   naturality := by simp [σ.naturality]
 
-/--The natural transformation α_* σ between α_* G₁ and /alpha_*G₂ -/
+/-- The natural transformation α_* σ between α_* G₁ and /alpha_*G₂ -/
 @[simps]
 def AlphaDownStarSigma : (AlphaDownStarG G₁) ⟶ (AlphaDownStarG G₂) where
   app U := limMap <| σres U.unop _ _ σ
   naturality _ _ _ := limit.hom_ext (by aesop)
 
-/-The functor α_*-/
+/-- The functor α_*-/
 @[simps]
 def AlphaDownStar : ((Compacts X)ᵒᵖ ⥤ Ab) ⥤ (Opens X)ᵒᵖ ⥤ Ab where
   obj _:= AlphaDownStarG _
@@ -163,7 +160,7 @@ variable {F : (Opens X)ᵒᵖ⥤ Ab} {G : (Compacts X)ᵒᵖ ⥤ Ab} (τ : (Alph
 
 noncomputable section
 
-/-The naturals maps from F(U) to the family of G(K) for K contained in U-/
+/-- The naturals maps from F(U) to the family of G(K) for K contained in U-/
 @[simps]
 def ConeFtoAG_NT : (Functor.const _ ).obj (F.obj (op U)) ⟶ GK U G where
   app L := colimit.ι (FU (fullSubcategoryInclusion _ |>.op.obj L).unop F <| trueCond) (op ⟨U,L.unop.property,rfl⟩) ≫ τ.app _
@@ -175,11 +172,11 @@ def ConeFtoAG_NT : (Functor.const _ ).obj (F.obj (op U)) ⟶ GK U G where
     rw [← (τ.naturality _)]
     simp [AlphaUpStar, K1subK2subU]
 
-/--The cone of the diragram GK U with point F(U)-/
+/-- The cone of the diragram GK U with point F(U)-/
 @[simps]
 def ConeFtoAG : Cone (GK U G) := Cone.mk _ (ConeFtoAG_NT τ _)
 
-/--The natural transformation from F to α_*G induced taking the natural map from ConeFtoAG to the colimit-/
+/-- The natural transformation from F to α_*G induced taking the natural map from ConeFtoAG to the colimit-/
 @[simps]
 def FtoAG : F ⟶ (AlphaDownStar).obj G where
   app U:= limit.lift _ (ConeFtoAG τ U.unop)
@@ -195,22 +192,17 @@ def FtoAG : F ⟶ (AlphaDownStar).obj G where
 /-- The naturals maps from the family of F(U) to  G(K) for U containing K -/
 @[simps]
 def CoconeAFtoG_NT : FU K F P ⟶ (Functor.const _ ).obj (G.obj (op K))  where
-  app W := by--enlever le mode tactique mais je n'arrive pas à lui faire deviner des trucs
-    apply CategoryStruct.comp (σ.app _ )
-    apply CategoryStruct.comp
-    apply limit.π _
-    exact op ⟨_,W.unop.property.1⟩
-    exact 𝟙 _
+  app W := σ.app _ ≫ limit.π (GK _ _) (op ⟨K, W.unop.property.1⟩) ≫ 𝟙 (G.obj $ op K)
   naturality _ _ _:= by
     suffices σ.app _ ≫ limit.π (GK _ _) (op ((U2supU1supK _ _ _).obj ⟨_, _ ⟩) ) =
   σ.app (op _) ≫ limit.π (GK _ _) (op ⟨_,_⟩) by simpa [FU]
     rfl
 
-/--The cocone induced by the natural transformation CoconeAFtoG_NT-/
+/-- The cocone induced by the natural transformation CoconeAFtoG_NT-/
 @[simps]
 def CoconeAFtoG : Cocone (FU K F P) := Cocone.mk _ (CoconeAFtoG_NT σ K)
 
-/--The natural transformation  from α^* F to G induced taking the natural map from the limit to CoconeAFtoG-/
+/-- The natural transformation  from α^* F to G induced taking the natural map from the limit to CoconeAFtoG-/
 @[simps]
 def AFtoG : ( (AlphaUpStar).obj F ⟶  G) where
   app K := colimit.desc _ (CoconeAFtoG _ K.unop)
@@ -221,8 +213,8 @@ def AFtoG : ( (AlphaUpStar).obj F ⟶  G) where
     rw [← limit.w _ _ ]
     rfl
 
-/--The bijection between hom(αF, G) and hom(F,αG) -/
-@[simps]
+/-- The bijection between hom(αF, G) and hom(F,αG) -/
+--@[simps!] --#lint does not like it
 def homEquiv: (AlphaUpStar.obj F ⟶ G) ≃ ( F ⟶ AlphaDownStar.obj G) where
   toFun := fun τ => FtoAG τ
   invFun := fun σ  => AFtoG σ
@@ -240,7 +232,7 @@ def homEquiv: (AlphaUpStar.obj F ⟶ G) ≃ ( F ⟶ AlphaDownStar.obj G) where
     suffices σ.app _ ≫ limit.π (GK _ _) (op ⟨K.unop.obj,_⟩ ) = σ.app _ ≫ limit.π (GK _ _) K by simpa
     rfl
 
-/--The data necessary to build the adjunction between α^* and α_*-/
+/-- The data necessary to build the adjunction between α^* and α_*-/
 def adjthm : Adjunction.CoreHomEquiv (AlphaUpStar) (@AlphaDownStar X _) where
 homEquiv := (@homEquiv _ _)
 homEquiv_naturality_left_symm _ _ := by
@@ -250,8 +242,10 @@ homEquiv_naturality_left_symm _ _ := by
 homEquiv_naturality_right _ _ := by
   ext : 2
   apply limit.hom_ext
+
   simp [homEquiv]
 
-/--The adjunction between α^* and α_*-/
-@[simps!]
+/-- The adjunction between α^* and α_*-/
 def AdjAlphaStar : (AlphaUpStar ) ⊣ (@AlphaDownStar X _ ) := Adjunction.mkOfHomEquiv (adjthm)
+
+--#lint

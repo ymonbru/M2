@@ -1,6 +1,9 @@
 import Mathlib
 import Mathlib.Topology.Separation
 import Mathlib.CategoryTheory.Abelian.Basic
+--import Mathlib.Tactic.Widget.CommDiag
+--import ProofWidgets.Component.Panel.SelectionPanel
+--import ProofWidgets.Component.Panel.GoalTypePanel
 
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite
 
@@ -23,7 +26,7 @@ instance : Category (RelCN_cat X K) := FullSubcategory.category (RelCN X K)
 @[simps]
 def closureFunc : RelCN_cat X K ⥤ (Compacts X)  where
   obj U := ⟨closure U.obj, U.property.2⟩
-  map f :=  homOfLE (closure_mono (leOfHom f))
+  map _ :=  homOfLE <| closure_mono <| leOfHom _
 
 /-- The Functor that represent the diagram composed of the F(overline{U}) together with the canonical maps-/
 @[simps!]
@@ -41,7 +44,7 @@ naturality _ _ _ := by
 
 /-- The cocone of the diagram FUbar given by F(K) and the canonical maps-/
 @[simps]
-def FK : Cocone (FUbar X K F):= Cocone.mk _ ((FK_transNat X K F)  ≫ ((Functor.constComp _ _ _).hom))
+def FK : Cocone (FUbar X K F):= Cocone.mk _ <| (FK_transNat X K F)  ≫ (Functor.constComp _ _ _).hom
 
 --the complex sheaf like in the axiom of K-sheaf
 
@@ -67,7 +70,7 @@ lemma toSupLeft_comp_fromInf_left : toSupLeft K₁ K₂ ≫ fromInfLeft K₁ K�
 lemma toSupRight_comp_fromInf_rigt : toSupRight K₁ K₂ ≫ fromInfRight K₁ K₂ = opHomOfLE inf_le_sup := rfl
 
 /--The zero map from 0 to F(K1 ∪ K2)-/
---@[simps!]
+--@[simps]
 def ZtoFcup : 0 ⟶ F.obj <| op (K₁ ⊔ K₂) := 0
 
 /-- The canonical map F(K1∪ K2)-> F(K1)⊞ F(K2) that sends a section to the sum of its restrictions-/
@@ -79,19 +82,20 @@ def FcuptoplusF: F.obj (op (K₁⊔ K₂)) ⟶ F.obj (op K₁) ⊞  F.obj (op K�
 def plusFtoFcap := biprod.fst ≫ F.map (fromInfLeft K₁ K₂) - biprod.snd ≫ F.map (fromInfRight K₁ K₂)
 
 /--The short complex given by the three previous maps-/
-@[simps!]
+--@[simps!]
 def complex : ComposableArrows (ModuleCat A) 3:= CategoryTheory.ComposableArrows.mk₃ (ZtoFcup F K₁ K₂)  (FcuptoplusF F K₁ K₂) (plusFtoFcap F K₁ K₂)
+open ProofWidgets
 
 --#Lint does not like it
-instance : (complex F K₁ K₂).IsComplex where
+lemma FisCplx : (complex F K₁ K₂).IsComplex where
   zero := by
     intros i hi
     unfold complex ZtoFcup FcuptoplusF plusFtoFcap
     have hi' : i ≤ 1 := by simpa using hi
     set_option simprocs false in
-
     interval_cases i
     · -- F(K₁ ∪ K₂)-> F(K₁) ⊞ F(K₂)-> F(K₁) ⊞ F(K₂)-> F(K₁ ∩ K₂)=0
+      --with_panel_widgets [GoalTypePanel]
       simp
     · -- 0 -> F(K₁ ∪ K₂) -> F(K₁ ∪ K₂)-> F(K₁) ⊞ F(K₂)=0
       simp [← F.map_comp]
@@ -106,17 +110,16 @@ variable (A)
 
 @[ext]
 structure Ksheaf where
-  /-- lint want's docs here-/
+  /-- The K-preshaef that has the property of being a sheaf-/
   carrier : (Compacts X)ᵒᵖ ⥤ ModuleCat A
-  ksh1 : carrier.obj (op (⊥ : Compacts X)) = 0
+  ksh1 : carrier.obj (op (⊥ : Compacts _)) = 0
   ksh2 : ∀ K₁ K₂ :Compacts X, (complex carrier K₁ K₂).Exact
-  ksh3 : ∀ K : Compacts X, (IsIso (colimit.desc (FUbar X K carrier) (FK X K carrier)))
-
+  ksh3 : ∀ K : Compacts X, (IsIso (colimit.desc (FUbar _ K carrier) (FK _ _ _)))
 
 #check Ksheaf
+
 instance :  Category (Ksheaf X A) := InducedCategory.category (·.carrier)
 
 #check (inducedFunctor fun (F : Ksheaf X A) ↦ F.carrier : (Ksheaf X A )⥤ _ )
 
---deux trucs qui marchent pas mais sont bizzares
---#lint
+#lint
