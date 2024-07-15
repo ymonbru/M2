@@ -29,6 +29,7 @@ variable (axiomP : ∀ U1 U2, P U1 → P U2 → P (U1 ⊔ U2))
 
 variable (c : Cocone (FU K F P))
 
+--@[simp]
 lemma diagram_commute (U : KsubU_cat K Q) V1 V2 (h1 : op U.obj ⟶ op V1.obj) (h2 : op U.obj ⟶ op V2.obj) : F.map h1 ≫ c.ι.app (op V1) = F.map h2 ≫ c.ι.app (op V2):= by
 
   let V1cupV2op := op (⟨V1.obj ⊔ V2.obj, ⟨Set.Subset.trans V1.property.1 (Set.subset_union_left) , axiomP _  _ V1.property.2 V2.property.2⟩⟩: (KsubU_cat K P))
@@ -41,25 +42,29 @@ lemma diagram_commute (U : KsubU_cat K Q) V1 V2 (h1 : op U.obj ⟶ op V1.obj) (h
     apply op (homOfLE _ )
     apply le_sup_left
 
-
   let f2 :  V1cupV2op  ⟶ op V2 := by
     apply (op (homOfLE _ ) )
     apply le_sup_right
 
-  calc F.map h1 ≫ c.ι.app { unop := V1 } = g≫ (FU _ _ _).map f1 ≫ c.ι.app (op V1) := by {
-    rw [← Category.assoc]
-    apply eq_whisker
-    apply F.map_comp}
-    _ = g ≫ (FU _ _ _).map f2 ≫ c.ι.app (op V2) := by {
+  calc F.map h1 ≫ c.ι.app { unop := V1 } = g≫ (FU _ _ _).map f1 ≫ c.ι.app (op V1) := by
+    {
+      rw [← Category.assoc]
+      apply eq_whisker
+      apply F.map_comp
+    }
+    _ = g ≫ (FU _ _ _).map f2 ≫ c.ι.app (op V2) := by
+    {
       apply whisker_eq
       repeat rw [c.ι.naturality]
       rfl
     }
-    _ = F.map h2 ≫ c.ι.app { unop := V2 } := by {
+    _ = F.map h2 ≫ c.ι.app { unop := V2 } := by
+    {
       rw [← Category.assoc]
       apply eq_whisker
       apply Eq.symm
-      apply F.map_comp }
+      apply F.map_comp
+    }
 
 /-- The family of maps from F(U) such that Q(U) to a cone of the diagram of F(U) such that P(U) build by factorising along the path given by V-/
 @[simps]
@@ -70,8 +75,7 @@ def CoconePtoQι : FU K F Q ⟶ (Functor.const _).obj c.pt where
     apply op (homOfLE (V_spec _ _))
     exact c.ι.app (op (V _ U.unop))
   naturality U1 U2 _ := by
-    suffices  F.map _ ≫ F.map _ ≫ c.ι.app (op (V _ U2.unop)) =
-  F.map _ ≫ c.ι.app (op ( V _ U1.unop )) by simpa
+    suffices  F.map _ ≫ F.map _ ≫ c.ι.app (op (V _ U2.unop)) = F.map _ ≫ c.ι.app (op ( V _ U1.unop )) by simpa
     rw [← Category.assoc,← F.map_comp]
     apply diagram_commute
     repeat assumption
@@ -84,7 +88,7 @@ def CoconePtoQ : Cocone (FU K F Q) := Cocone.mk _ (CoconePtoQι _ _ _ V_spec axi
 @[simps]
 def QtoPhom : colimit.cocone (FU K F Q) ⟶ CoconePtoQ _ _ _ V_spec axiomP (colimit.cocone (FU _ _ _ )) where
   hom:=colimit.desc _ _
-  w _:= by simp
+  --w _:= by simp
 
 
 variable (d : Cocone (FU K F Q))
@@ -99,7 +103,7 @@ def CoconeQtoPι : FU K F P ⟶ (Functor.const _ ).obj d.pt where
 @[simps]
 def CoconeQtoP : Cocone (FU K F P) := Cocone.mk _ (CoconeQtoPι _ _ hpq d)
 
-instance IsColPtoQ : IsColimit (CoconePtoQ K F V V_spec axiomP (colimit.cocone (FU _ _ _))) where
+instance IsColPtoQ : IsColimit (CoconePtoQ K F _ V_spec axiomP (colimit.cocone (FU _ _ _))) where
   desc _ := colimit.desc _ (CoconeQtoP _ _ hpq _)
   fac s U := by
     suffices F.map _ ≫ s.ι.app (op ((KsubUPtoQ _ hpq).obj _ )) = s.ι.app U by simpa
@@ -115,7 +119,7 @@ instance IsColPtoQ : IsColimit (CoconePtoQ K F V V_spec axiomP (colimit.cocone (
 
     have f : U ⟶ _ := op (homOfLE (V_spec _ ((KsubUPtoQ _ hpq).obj U.unop)))
 
-    calc colimit.ι (FU _ _ _) _ = (FU _ _ _).map f ≫ colimit.ι (FU _ _ _) _ := by simp
+    calc colimit.ι (FU _ _ _) _ = (FU _ _ _).map f ≫ colimit.ι (FU _ _ _) _ := Eq.symm (colimit.w (FU K F P) f)
     _ = _ ≫ colimit.ι (FU _ _ _) _ := by rfl
 
 

@@ -18,7 +18,7 @@ def KsubU : Set (Opens X) := fun (U:Opens _) => (K.carrier ⊆ U) ∧ P U
 /--The full subcategory induced by the property KsubU-/
 def KsubU_cat : Type := FullSubcategory (KsubU K P)
 
-/-instance : SetLike (KsubU_cat X K P) X where
+/-instance : SetLike (KsubU_cat K P) X where
   coe U:= U.obj.carrier
 
   coe_injective':= fun ⟨_ , _ ⟩ ⟨_, _⟩ h => by
