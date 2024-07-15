@@ -9,8 +9,9 @@ open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Comp
 
 variable (X) [TopologicalSpace X] [T2Space X]
 variable (K : Compacts X)
+variable {C} [Category C] [HasPullbacks C] [HasColimits C] [HasZeroObject C]
 variable {A} [Ring A]
-variable (F : (Compacts X)ᵒᵖ ⥤ ModuleCat A) (K₁ :Compacts X) (K₂:Compacts X)
+variable (F : (Compacts X)ᵒᵖ ⥤ C) (K₁ :Compacts X) (K₂:Compacts X)
 
 -- definiing the limit limit that apear in the axiom Ksh3
 
@@ -30,7 +31,7 @@ def closureFunc : RelCN_cat X K ⥤ (Compacts X)  where
 
 /-- The Functor that represent the diagram composed of the F(overline{U}) together with the canonical maps-/
 @[simps!]
-def FUbar : (RelCN_cat X K)ᵒᵖ ⥤ (ModuleCat A) := (closureFunc X K).op.comp  F
+def FUbar : (RelCN_cat X K)ᵒᵖ ⥤ C := (closureFunc X K).op.comp  F
 
 /-- The natural transformation that allows to define F(K) as a cocone of the diagram FUbar-/
 def FK_transNat: (FUbar X K F) ⟶ (Functor.const _ ).obj (op K) |>.comp F where
@@ -46,29 +47,48 @@ naturality _ _ _ := by
 @[simps]
 def FK : Cocone (FUbar X K F):= Cocone.mk _ <| (FK_transNat X K F)  ≫ (Functor.constComp _ _ _).hom
 
---the complex sheaf like in the axiom of K-sheaf
+--the pullback square that gives a complex sheaf like in some good cases in the axiom of K-sheaf
 
 open ZeroObject
 noncomputable section
 
 variable {X}
 
+/-
 /--The canonical map in (Compacts X)ᵒᵖ induced by K1 ⊆ K1 ⊔ K2-/
 def toSupLeft : op (K₁ ⊔ K₂) ⟶ op K₁ := opHomOfLE le_sup_left
 /--The canonical map in (Compacts X)ᵒᵖ induced by K2 ⊆ K1 ⊔ K2-/
 def toSupRight : op (K₁ ⊔ K₂) ⟶ op K₂ := opHomOfLE le_sup_right
 
-/--The canonical map in (Compacts X)ᵒᵖ induced by K1 ⊓ K2  ⊆ K1-/
+/-The canonical map in (Compacts X)ᵒᵖ induced by K1 ⊓ K2  ⊆ K1-/
 def fromInfLeft : op K₁ ⟶ op (K₁ ⊓ K₂) := opHomOfLE inf_le_left
 /--The canonical map in (Compacts X)ᵒᵖ induced by K1 ⊓ K2  ⊆ K2-/
 def fromInfRight : op K₂ ⟶ op (K₁ ⊓ K₂) := opHomOfLE inf_le_right
 
-@[simp]
+
 lemma toSupLeft_comp_fromInf_left : toSupLeft K₁ K₂ ≫ fromInfLeft K₁ K₂ = opHomOfLE inf_le_sup := rfl
 
-@[simp]
-lemma toSupRight_comp_fromInf_rigt : toSupRight K₁ K₂ ≫ fromInfRight K₁ K₂ = opHomOfLE inf_le_sup := rfl
+lemma toSupRight_comp_fromInf_rigt : toSupRight K₁ K₂ ≫ fromInfRight K₁ K₂ = opHomOfLE inf_le_sup := rfl -/
 
+/-- The canonical map F(K₁) ⟶ F(K₁ ⊓ K₂)-/
+def FtoFInfLeft : F.obj (op K₁) ⟶ F.obj (op (K₁ ⊓ K₂)) := F.map (opHomOfLE inf_le_left)
+
+/-- The canonical map F(K₂) ⟶ F(K₁ ⊓ K₂)-/
+def FtoFInfRight : F.obj (op K₂) ⟶ F.obj (op (K₁ ⊓ K₂)):= F.map (opHomOfLE inf_le_right)
+
+/-- The canonical map F(K₁ ⊔  K₂) ⟶ F( K₁)-/
+def FSuptoFLeft : F.obj (op (K₁ ⊔  K₂)) ⟶ F.obj (op K₁) := F.map (opHomOfLE le_sup_left)
+
+/-- The canonical map F(K₁ ⊔  K₂) ⟶ F( K₂)-/
+def FSuptoFRight : F.obj (op (K₁ ⊔  K₂)) ⟶ F.obj (op K₂) := F.map (opHomOfLE le_sup_right)
+
+/-- The commutative square F(K₁ ⊔  K₂) ⟶ F(K₁) ⟶ F(K₁ ⊓ K₂) = F(K₁ ⊔  K₂) ⟶ F(K₂) ⟶ F(K₁ ⊓ K₂) as a pullback cone -/
+def SquareSuptoInf : PullbackCone (FtoFInfLeft F K₁ K₂) ( FtoFInfRight _ _ _):= by
+  apply PullbackCone.mk (FSuptoFLeft _ _ _) (FSuptoFRight _ _ _)
+  repeat erw [← F.map_comp]
+  rfl
+
+/-
 /--The zero map from 0 to F(K1 ∪ K2)-/
 --@[simps]
 def ZtoFcup : 0 ⟶ F.obj <| op (K₁ ⊔ K₂) := 0
@@ -98,28 +118,27 @@ lemma FisCplx : (complex F K₁ K₂).IsComplex where
       --with_panel_widgets [GoalTypePanel]
       simp
     · -- 0 -> F(K₁ ∪ K₂) -> F(K₁ ∪ K₂)-> F(K₁) ⊞ F(K₂)=0
-      simp [← F.map_comp]
+      simp [← F.map_comp]-/
 
-variable (X)
+variable (X) (C)
 
-variable (A)
-/-- The definition of J.pardon: A functor (Compacts X)ᵒᵖ ⥤ Ab that satify:
--a condition of zerology
--a finite exact sequence sheaf-like
--a condition of continuity-/
+/-- An extension of the definition of J.pardon: A functor (Compacts X)ᵒᵖ ⥤ C -/
 
 @[ext]
 structure Ksheaf where
   /-- The K-preshaef that has the property of being a sheaf-/
-  carrier : (Compacts X)ᵒᵖ ⥤ ModuleCat A
+  carrier : (Compacts X)ᵒᵖ ⥤ C
+  /--The empty set is sent to 0_C-/
   ksh1 : carrier.obj (op (⊥ : Compacts _)) = 0
-  ksh2 : ∀ K₁ K₂ :Compacts X, (complex carrier K₁ K₂).Exact
+  /--There is a pullback square -/
+  ksh2 : ∀ K₁ K₂ :Compacts X, IsLimit (SquareSuptoInf carrier K₁ K₂ )
+  /--A continuity condition that state that a "regula function on K" is defined at the neighbourhood of K-/
   ksh3 : ∀ K : Compacts X, (IsIso (colimit.desc (FUbar _ K carrier) (FK _ _ _)))
 
 #check Ksheaf
 
-instance :  Category (Ksheaf X A) := InducedCategory.category (·.carrier)
+instance :  Category (Ksheaf X C) := InducedCategory.category (·.carrier)
 
-#check (inducedFunctor fun (F : Ksheaf X A) ↦ F.carrier : (Ksheaf X A )⥤ _ )
+#check (inducedFunctor fun (F : Ksheaf X C) ↦ F.carrier : (Ksheaf X C )⥤ _ )
 
 #lint
