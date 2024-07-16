@@ -1,15 +1,16 @@
-import Mathlib
-import Mathlib.Topology.Separation
+
+--import Mathlib.Topology.Separation
 import M2.alpha
 
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite
 
 variable {X} [TopologicalSpace X] --[T2Space X]
+variable {C} [Category C] [HasPullbacks C] [HasColimits C] [HasLimits C] [HasZeroObject C]
 
 
 noncomputable section
 variable (K : Compacts X) (U : Opens X)
-variable (F : (Opens X)ᵒᵖ⥤ Ab)
+variable (F : (Opens X)ᵒᵖ ⥤ C)
 
 --a^* P et a^*Q are naturaly isomorphic if P et Q are nice enough
 section
@@ -19,7 +20,7 @@ variable {K1 K2 : Compacts X} (f : K1 ⟶ K2)
 
 /-- The functor induced by P -> Q from the category of opens that contains K and satiffy P to the one that satisfy Q-/
 @[simps!]
-def KsubUPtoQ : (KsubU_cat K P) ⥤  (KsubU_cat K Q ):= FullSubcategory.map (fun _ => fun hP=> ⟨hP.1, hpq _ hP.2⟩)
+def KsubUPtoQ : (KsubU_cat K P) ⥤  (KsubU_cat K Q ):= FullSubcategory.map (fun _ => fun hP => ⟨hP.1, hpq _ hP.2⟩)
 
 variable (V : ∀ K, KsubU_cat K Q → KsubU_cat K P)
 
@@ -107,8 +108,12 @@ instance IsColPtoQ : IsColimit (CoconePtoQ K F _ V_spec axiomP (colimit.cocone (
   desc _ := colimit.desc _ (CoconeQtoP _ _ hpq _)
   fac s U := by
     suffices F.map _ ≫ s.ι.app (op ((KsubUPtoQ _ hpq).obj _ )) = s.ι.app U by simpa
-    apply s.ι.naturality
+    --apply s.ι.naturality
+    sorry
   uniq s m h := by
+    --rw [CoconePtoQ_pt _ _ _ _ _ _, colimit.cocone_x] at m ne marche pas
+    --simp at m
+    #check @colimit.hom_ext _ _ _ _ (FU _ _ _)
     apply @colimit.hom_ext _ _ _ _ (FU _ _ _)
     intro U
     suffices colimit.ι (FU _ _ _) U ≫ _ = s.ι.app (op ((KsubUPtoQ _ hpq).obj U.unop))  by simpa

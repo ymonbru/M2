@@ -1,6 +1,10 @@
-import Mathlib
-import Mathlib.Topology.Separation
-import Mathlib.CategoryTheory.Abelian.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
+import Mathlib.CategoryTheory.Limits.HasLimits
+import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
+import Mathlib.Topology.Sets.Compacts
+
+
+
 --import Mathlib.Tactic.Widget.CommDiag
 --import ProofWidgets.Component.Panel.SelectionPanel
 --import ProofWidgets.Component.Panel.GoalTypePanel
