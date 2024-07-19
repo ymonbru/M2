@@ -1,11 +1,12 @@
-
---import Mathlib.Topology.Separation
 import M2.alpha
+import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.Filtered.Final
+import Mathlib.Order.Lattice
 
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite
 
 variable {X} [TopologicalSpace X] --[T2Space X]
-variable {C} [Category C] [HasPullbacks C] [HasColimits C] [HasLimits C] [HasZeroObject C]
+variable (C) [Category C] [HasPullbacks C] [HasColimits C] [HasLimits C] [HasZeroObject C]
 
 
 noncomputable section
@@ -15,199 +16,157 @@ variable (F : (Opens X)ᵒᵖ ⥤ C)
 --a^* P et a^*Q are naturaly isomorphic if P et Q are nice enough
 section
 
-variable {P Q : Opens X → Prop} (hpq : ∀ (U : Opens X), P U → Q U)
-variable {K1 K2 : Compacts X} (f : K1 ⟶ K2)
+variable {P Q : Opens X → Prop} (hpq : ∀ (U : Opens X), P U → Q U) (axiomP : ∀ U1 U2, P U1 → P U2 → P (U1 ⊓ U2))
+--variable {K1 K2 : Compacts X} (f : K1 ⟶ K2)
+
+/-- U1⊓ U2 as an element of (KsubU_cat K P)ᵒᵖ-/
+@[simps]
+def InfKsubU (U1 U2 :(KsubU_cat K P)ᵒᵖ ): (KsubU_cat K P)ᵒᵖ:= ⟨( U1.unop.obj ⊓ U2.unop.obj), ⟨le_inf U1.unop.property.1 U2.unop.property.1, axiomP _ _ U1.unop.property.2 U2.unop.property.2⟩ ⟩
+
+/-- The morphisme U1 ⟶ U1 ⊓ U2 for elements of (KsubU_cat K P)ᵒᵖ-/
+def LeftInInf (U1 U2 :(KsubU_cat K P)ᵒᵖ ): U1 ⟶ (InfKsubU K axiomP U1 U2):= op (homOfLE (by simp))
+
+/-- The morphisme U2 ⟶ U1 ⊓ U2 for elements of (KsubU_cat K P)ᵒᵖ-/
+def RightInInf (U1 U2 :(KsubU_cat K P)ᵒᵖ ): U2 ⟶ (InfKsubU K axiomP U1 U2):= op (homOfLE (by simp))
 
 /-- The functor induced by P -> Q from the category of opens that contains K and satiffy P to the one that satisfy Q-/
 @[simps!]
 def KsubUPtoQ : (KsubU_cat K P) ⥤  (KsubU_cat K Q ):= FullSubcategory.map (fun _ => fun hP => ⟨hP.1, hpq _ hP.2⟩)
 
+@[simp]
+lemma KsubPtoQCompFQEqFP : (KsubUPtoQ K hpq).op ⋙ FU K F Q = FU K F P := by rfl
+
 variable (V : ∀ K, KsubU_cat K Q → KsubU_cat K P)
 
 variable (V_spec : ∀ K,∀ U, (V K U).obj.carrier ⊆ U.obj.carrier)
 
-variable (axiomP : ∀ U1 U2, P U1 → P U2 → P (U1 ⊔ U2))
-
-variable (c : Cocone (FU K F P))
-
---@[simp]
-lemma diagram_commute (U : KsubU_cat K Q) V1 V2 (h1 : op U.obj ⟶ op V1.obj) (h2 : op U.obj ⟶ op V2.obj) : F.map h1 ≫ c.ι.app (op V1) = F.map h2 ≫ c.ι.app (op V2):= by
-
-  let V1cupV2op := op (⟨V1.obj ⊔ V2.obj, ⟨Set.Subset.trans V1.property.1 (Set.subset_union_left) , axiomP _  _ V1.property.2 V2.property.2⟩⟩: (KsubU_cat K P))
-
-  let g : F.obj (op U.obj) ⟶ F.obj (op V1cupV2op.unop.obj):= by
-    apply F.map <| op (homOfLE _ )
-    exact sup_le (leOfHom h1.unop) (leOfHom h2.unop)
-
-  let f1 : V1cupV2op ⟶ op  V1 := by
-    apply op (homOfLE _ )
-    apply le_sup_left
-
-  let f2 :  V1cupV2op  ⟶ op V2 := by
-    apply (op (homOfLE _ ) )
-    apply le_sup_right
-
-  calc F.map h1 ≫ c.ι.app { unop := V1 } = g≫ (FU _ _ _).map f1 ≫ c.ι.app (op V1) := by
-    {
-      rw [← Category.assoc]
-      apply eq_whisker
-      apply F.map_comp
-    }
-    _ = g ≫ (FU _ _ _).map f2 ≫ c.ι.app (op V2) := by
-    {
-      apply whisker_eq
-      repeat rw [c.ι.naturality]
-      rfl
-    }
-    _ = F.map h2 ≫ c.ι.app { unop := V2 } := by
-    {
-      rw [← Category.assoc]
-      apply eq_whisker
-      apply Eq.symm
-      apply F.map_comp
-    }
-
-/-- The family of maps from F(U) such that Q(U) to a cone of the diagram of F(U) such that P(U) build by factorising along the path given by V-/
+/-- The morphisme from α_P F to α_Q F induced by the inclusion of (KsubU_cat K P) into (KsubU_cat K Q )-/
 @[simps]
-def CoconePtoQι : FU K F Q ⟶ (Functor.const _).obj c.pt where
-  app U := by--enlever le mode tactique, mais il y a des trucs qu'il ne devine pas
-    apply CategoryStruct.comp
-    apply F.map (_ : _⟶ op (V _ U.unop).obj )
-    apply op (homOfLE (V_spec _ _))
-    exact c.ι.app (op (V _ U.unop))
-  naturality U1 U2 _ := by
-    suffices  F.map _ ≫ F.map _ ≫ c.ι.app (op (V _ U2.unop)) = F.map _ ≫ c.ι.app (op ( V _ U1.unop )) by simpa
-    rw [← Category.assoc,← F.map_comp]
-    apply diagram_commute
-    repeat assumption
+def AlphaUpFPtoQ : (AlphaUpStarF F P) ⟶ (AlphaUpStarF F Q) where
+app K := colimit.pre (FU K.unop _ _) (Functor.op (KsubUPtoQ K.unop hpq))
+naturality K L f:= by
 
-/-- The cone of the diagram of F(U) such that Q(U) induced by onne over the diagram of F(U) such that P(U) -/
+  apply colimit.hom_ext
+  intro J
+  rw [ ← Category.assoc, ← Category.assoc]
+  have : colimit.ι (FU _ _ _) J ≫ colimit.pre (FU _ _ _) (KsubUPtoQ _ hpq).op =
+  colimit.ι (FU _ F _) (op <| (KsubUPtoQ _ hpq).obj J.unop ) := by
+    exact colimit.ι_pre (FU _ _ _) (Functor.op (KsubUPtoQ _ hpq)) J
+
+  rw [this]
+
+  suffices _ = colimit.ι (FU _ _ _) ( op <| (K1subK2subU _ _ _ _ ).obj <| (KsubUPtoQ _ hpq).obj J.unop ) by simpa
+
+  have : colimit.ι (FU _ _ _ ) ( op <| (K1subK2subU _ _ _ f.unop).obj J.unop ) ≫
+    colimit.pre (FU _ _ _) (KsubUPtoQ _ hpq).op =
+  colimit.ι (FU _ F _) (op <| (KsubUPtoQ _ hpq).obj <| (K1subK2subU _ _ _ f.unop).obj J.unop )  := by
+    exact colimit.ι_pre (FU _ _ _) (Functor.op (KsubUPtoQ _ hpq)) ( op <| (K1subK2subU _ _ _ _).obj J.unop )
+
+  rw [this]
+  rfl
+
+/-- The morphism from α_P to α_Q induced by the natural transformation AlphaUpFPtoQ -/
 @[simps]
-def CoconePtoQ : Cocone (FU K F Q) := Cocone.mk _ (CoconePtoQι _ _ _ V_spec axiomP c)
-
-/-- The morphisme of cocone from the colimit to CoconePtoQ-/
-@[simps]
-def QtoPhom : colimit.cocone (FU K F Q) ⟶ CoconePtoQ _ _ _ V_spec axiomP (colimit.cocone (FU _ _ _ )) where
-  hom:=colimit.desc _ _
-  --w _:= by simp
-
-
-variable (d : Cocone (FU K F Q))
-
-/-- The family of maps from F(U) such that P(U) to a cone of the diagram of F(U) such that Q(U) build by using the implication P -> Q -/
-@[simps]
-def CoconeQtoPι : FU K F P ⟶ (Functor.const _ ).obj d.pt where
-  app _ := d.ι.app  (op ((KsubUPtoQ _ hpq).obj _))
-  naturality _ _ _ := d.ι.naturality (op ((KsubUPtoQ _ hpq).map _))
-
-/-- The cocone induced by CoconeQtoPι-/
-@[simps]
-def CoconeQtoP : Cocone (FU K F P) := Cocone.mk _ (CoconeQtoPι _ _ hpq d)
-
-instance IsColPtoQ : IsColimit (CoconePtoQ K F _ V_spec axiomP (colimit.cocone (FU _ _ _))) where
-  desc _ := colimit.desc _ (CoconeQtoP _ _ hpq _)
-  fac s U := by
-    suffices F.map _ ≫ s.ι.app (op ((KsubUPtoQ _ hpq).obj _ )) = s.ι.app U by simpa
-    --apply s.ι.naturality
-    sorry
-  uniq s m h := by
-    --rw [CoconePtoQ_pt _ _ _ _ _ _, colimit.cocone_x] at m ne marche pas
-    --simp at m
-    #check @colimit.hom_ext _ _ _ _ (FU _ _ _)
-    apply @colimit.hom_ext _ _ _ _ (FU _ _ _)
+def AlphaUpPPtoQ : (AlphaUpStarP P)⟶ (@AlphaUpStarP _ _ C _ _ Q) where
+  app _ := AlphaUpFPtoQ C _  hpq
+  naturality F1 F2 _ := by
+    ext _
+    apply colimit.hom_ext
     intro U
-    suffices colimit.ι (FU _ _ _) U ≫ _ = s.ι.app (op ((KsubUPtoQ _ hpq).obj U.unop))  by simpa
-    rw [← h]
-    suffices colimit.ι (FU _ _ _) _ ≫ _ = _ ≫ colimit.ι (FU _ _ _) _ ≫ _ by simpa
-    rw [← Category.assoc]
-    apply eq_whisker
+    suffices _ = _ ≫ colimit.pre _ (KsubUPtoQ _ _).op ≫ colimMap (τres _ _ _ _ _) by simpa
+    rw [ ← Category.assoc,← Category.assoc]
+    have : colimit.ι (FU _ _ _) U ≫ colimit.pre (FU _ _ _ ) (KsubUPtoQ _ hpq).op =
+  colimit.ι (FU _ F1 _) (op <| (KsubUPtoQ _ hpq).obj _ ) := by
+      exact colimit.ι_pre (FU _ _ _) (KsubUPtoQ _ hpq).op _
+    rw [this]
+    suffices _ = _ ≫ colimit.ι (FU _ _ _) (op <| (KsubUPtoQ _ hpq).obj U.unop )  by simpa
+    apply whisker_eq
+    have : colimit.ι (FU _ _ _ ) U ≫ colimit.pre (FU _ _ _ ) (KsubUPtoQ _ hpq).op =
+  colimit.ι (FU _ F2 _ ) ( op <| (KsubUPtoQ _ hpq).obj U.unop ) := by
+      exact colimit.ι_pre (FU _ _ _) (KsubUPtoQ _ hpq).op _
 
-    have f : U ⟶ _ := op (homOfLE (V_spec _ ((KsubUPtoQ _ hpq).obj U.unop)))
+    rw [this]
 
-    calc colimit.ι (FU _ _ _) _ = (FU _ _ _).map f ≫ colimit.ι (FU _ _ _) _ := Eq.symm (colimit.w (FU K F P) f)
-    _ = _ ≫ colimit.ι (FU _ _ _) _ := by rfl
+--Implicit argument are an issue for infering the instance
+/-- The evidence that the category (KsubU_cat K P)ᵒᵖ is filtered-/
+lemma IsFilteredKsubU: IsFilteredOrEmpty (KsubU_cat K P)ᵒᵖ where
+  cocone_objs U1 U2 := by
+    use InfKsubU K axiomP U1 U2
+    use LeftInInf K axiomP U1 U2
+    use RightInInf K axiomP U1 U2
+  cocone_maps U1 U2 _ _:= by
+    use InfKsubU K axiomP U1 U2
+    use RightInInf K axiomP U1 U2
+    rfl
 
-
-instance isoQtoP: IsIso (QtoPhom K F _ V_spec axiomP):= IsColimit.hom_isIso (colimit.isColimit (FU _ _ _)) (IsColPtoQ _ _ hpq _ _ _ ) _
-
-/-- The natural morphism from α^*_QF ⟶ α^ *_PF  -/
-@[simps!]
-def AlphaUpFQtoP : (AlphaUpStarF F Q)⟶ (AlphaUpStarF F P) where
-  app _ := (QtoPhom _ _ _ V_spec axiomP).hom
-  naturality _ _ f := by
-    apply colimit.hom_ext
-    intro _
-    suffices _ ≫ colimit.ι (FU _ _ _ ) _ = _ ≫ colimit.ι _ _ by simpa
-    apply diagram_commute _ _  axiomP _ ((K1subK2subU _ _ _ f.unop).obj _)
-
-/-- The natural morphism from α^*_Q ⟶ α^ *_P  -/
-@[simps]
-def AlphaUpPQtoP : (AlphaUpStarP Q)⟶ (AlphaUpStarP P) where
-  app _ := (AlphaUpFQtoP _ _ V_spec axiomP)
-  naturality _ _ _ := by
-    ext : 2
-    apply colimit.hom_ext
-    simp [AlphaUpFQtoP]
-
-instance IsIsoAlphaUpPtoQ : IsIso (AlphaUpPQtoP V V_spec axiomP ):= by
-  repeat
-    apply ( NatTrans.isIso_iff_isIso_app _).2
-    intro _
-
-  rcases (isoQtoP _ _ hpq _ V_spec axiomP).out with ⟨i,hi⟩
-
-  use i.hom
+--Implicit argument are an issue for infering the instance
+/-- The evidence that the functor op (KsubUPtoQ K hpq) is final-/
+lemma IsFinalOpKsubUPtoQ: Functor.Final (Functor.op (KsubUPtoQ K hpq)) := by
+  have := @IsFilteredKsubU _ _ K _ axiomP
+  apply ( Functor.final_iff_of_isFiltered _ ).2
   constructor
-  · calc _ = (QtoPhom _ _ _ _ _).hom ≫ i.hom := by simp
-    _ = _ := by rw [← Cocone.category_comp_hom]
-    _ = 𝟙 _ := by rw [hi.1] ;simp
+  · intro U
+    use op ( V K U.unop)
+    apply Nonempty.intro
+    apply op
+    apply homOfLE
+    apply V_spec
+  · intro _ U2 _ _
+    use U2
+    use 𝟙 _
+    rfl
 
-  · calc _ = i.hom ≫ (QtoPhom _ _ _ _ _).hom := by simp
-    _ = _ := by rw [← Cocone.category_comp_hom]
-    _ = 𝟙 _ := by rw [hi.2] ;simp
+lemma IsIsoAlphaUpPtoQ : IsIso (AlphaUpPPtoQ C hpq):= by
+  apply ( NatTrans.isIso_iff_isIso_app _).2
+  intro _
+  apply ( NatTrans.isIso_iff_isIso_app _).2
+  intro K
+  have := @IsFinalOpKsubUPtoQ _ _ K.unop _ _ hpq axiomP _ V_spec--j'aimerais vraiment qu'il le devine
+  exact Functor.Final.colimit_pre_isIso (KsubUPtoQ _ hpq).op
 
-def IsoAlphaUpPtoQ : (AlphaUpStarP Q) ≅ (AlphaUpStarP P):= by
-  let h:= IsIsoAlphaUpPtoQ hpq V V_spec axiomP
-  apply asIso (AlphaUpPQtoP V V_spec axiomP )
+/-- The evidence that α_P and α_Q are isomorphics-/
+def IsoAlphaUpPtoQ : (AlphaUpStarP P) ≅ (@AlphaUpStarP _ _ C _ _ Q):= by
+  have:= IsIsoAlphaUpPtoQ C hpq axiomP _ V_spec
+  apply asIso (AlphaUpPPtoQ C hpq)
 
 end
 
 section --α^* variante avec seulement les U relativements comapcts
 
-
 variable (X)
 variable [LocallyCompactSpace X] [T2Space X]
---P
 
+--P
+/-- the condition of being relatively compact-/
 def relcCond : Opens X → Prop := fun (U:Opens X) => IsCompact (closure (U:Set X))
 --Q
 #check trueCond
 
-def AlphaUpStarRc : ((Opens X)ᵒᵖ ⥤ Ab) ⥤ (Compacts X)ᵒᵖ ⥤ Ab := AlphaUpStarP (relcCond X)
+/-- The functor α^* with condition on the opens of being relatively compact-/
+def AlphaUpStarRc : ((Opens X)ᵒᵖ ⥤ C) ⥤ (Compacts X)ᵒᵖ ⥤ C := AlphaUpStarP (relcCond X)
 
-
-
-lemma hpq : ∀ (U : Opens X), (relcCond X) U  → trueCond U := λ _ _ => rfl
+--hpq is trivial and #lint complain if an explicit proof is given
 
 lemma existsIntermed (h : K.carrier ⊆ U.carrier) : Nonempty ({ L //IsCompact L ∧ K.carrier ⊆ interior L ∧ L ⊆ U.carrier}) := by
   rcases (exists_compact_between K.isCompact U.isOpen h ) with ⟨L,hL⟩
   exact Nonempty.intro ⟨L,hL⟩
 
-def V K : KsubU_cat K (trueCond) → KsubU_cat K (@relcCond X _):= by
+/-- The V such that K sub V sub Vbar sub U for X localy comapcts-/
+def V K : KsubU_cat K (trueCond) → KsubU_cat K (@relcCond X _ ) := by
   intro U
   let L:=(Classical.choice (existsIntermed X K U.obj U.property.1)).val
   use ⟨interior L,@isOpen_interior X L _⟩
   constructor
   · exact (Classical.choice (existsIntermed X K U.obj U.property.1)).property.2.1
   · apply IsCompact.of_isClosed_subset
-    exact (Classical.choice (existsIntermed X K U.obj U.property.1)).property.1
-    apply isClosed_closure
-    intro _ ha
-    apply ha
-    constructor
-    · apply IsCompact.isClosed
-      exact (Classical.choice (existsIntermed X _ U.obj U.property.1)).property.1
-    · apply interior_subset
+    · exact (Classical.choice (existsIntermed X K U.obj U.property.1)).property.1
+    · apply isClosed_closure
+    · intro _ ha
+      apply ha
+      constructor
+      · apply IsCompact.isClosed
+        exact (Classical.choice (existsIntermed X _ U.obj U.property.1)).property.1
+      · apply interior_subset
 
 lemma V_spec : ∀ K,∀ U, (V X K U).obj.carrier ⊆ U.obj:= by
   intro _ U
@@ -216,20 +175,21 @@ lemma V_spec : ∀ K,∀ U, (V X K U).obj.carrier ⊆ U.obj:= by
   apply interior_subset
   exact (Classical.choice (existsIntermed X _ _ U.property.1)).property.2.2
 
-lemma axiomP : ∀ U₁ U₂, relcCond X U₁ → relcCond X U₂ → relcCond X (U₁ ⊔ U₂):= by
-  intro _ _ _ _
+lemma axiomP : ∀ U₁ U₂, relcCond X U₁ → relcCond X U₂ → relcCond X (U₁ ⊓  U₂):= by
+  intro U1 U2 h1 h2
   unfold relcCond
-  rw [ Opens.coe_sup, closure_union]
-  apply IsCompact.union
-  repeat assumption
+  apply IsCompact.of_isClosed_subset
+  · apply IsCompact.inter
+    · exact h1
+    · exact h2
+  · exact isClosed_closure
+  · rw [ Opens.coe_inf]
+    apply closure_inter_subset_inter_closure
 
-def AlphaUpStarToRc : AlphaUpStar ≅ AlphaUpStarRc X:= by
-  apply IsoAlphaUpPtoQ _ _ _ _
-  exact λ _ _ => rfl
-  exact V X
-  exact (V_spec X)
-  exact axiomP X
+/-- The evidence that AlphaUpStarRc X C  and AlphaUpStar are isomorphics -/
+def AlphaUpStarToRc :  AlphaUpStarRc X C ≅ AlphaUpStar :=  IsoAlphaUpPtoQ _ (λ _ _ => rfl) (axiomP X) (V X) (V_spec
+X)
+/-- The data of the adjunction betwee α^*RC and α_* deduced by the previous isomorphism and the adjunction of α^* and α_*-/
+def AdjAlphaStarRc : AlphaUpStarRc X C ⊣ AlphaDownStar := AdjAlphaStar.ofNatIsoLeft (AlphaUpStarToRc X C).symm
 
-def AdjAlphaStarRc : AlphaUpStarRc X ⊣ AlphaDownStar := Adjunction.ofNatIsoLeft AdjAlphaStar (AlphaUpStarToRc X)
-
---#lint
+#lint

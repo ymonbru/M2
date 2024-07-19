@@ -1,5 +1,4 @@
---import Mathlib
-import Mathlib.Topology.Separation
+
 import M2.Ksheaves
 import Mathlib.Topology.Sets.Opens
 
@@ -152,11 +151,10 @@ variable {F : (Opens X)ᵒᵖ⥤ C} {G : (Compacts X)ᵒᵖ ⥤ C} (τ : (AlphaU
 /-- The naturals maps from F(U) to the family of G(K) for K contained in U-/
 @[simps]
 def ConeFtoAG_NT : (Functor.const _ ).obj (F.obj (op U)) ⟶ GK U G where
-  app L := colimit.ι (FU (fullSubcategoryInclusion _ |>.op.obj L).unop F <| trueCond) (op ⟨U,L.unop.property,rfl⟩) ≫ τ.app _
+  app L := colimit.ι (FU (fullSubcategoryInclusion _ |>.op.obj _ ).unop _ <| trueCond) (op ⟨U,L.unop.property,rfl⟩) ≫ τ.app _
 
-  naturality K L _ := by
-    suffices colimit.ι (FU L.unop.obj F _ ) (op ⟨U , _ ⟩) ≫ τ.app (op _ ) =
-  colimit.ι (FU K.unop.obj F _ ) (op ⟨U , _ ⟩) ≫ τ.app (op _ ) ≫ G.map _ by simpa
+  naturality _ L _ := by
+    suffices _ = colimit.ι (FU _ _ _ ) (op ⟨U , _ ⟩) ≫ τ.app (op _ ) ≫ G.map _ by simpa
     rw [← (τ.naturality _)]
     simp [AlphaUpStar, K1subK2subU]
 
@@ -172,18 +170,16 @@ def FtoAG : F ⟶ (AlphaDownStar).obj G where
     --ext ne trouve pas limit.hom_ext
     apply limit.hom_ext
     intro _
-    suffices (FU _ _ _ ).map _ ≫
-    colimit.ι (FU _ _ _ ) (op ⟨V.unop, _ ⟩) ≫ _ =
-  colimit.ι (FU _ _ _ ) (op ⟨U.unop, _ ⟩) ≫ _ by simpa
+    suffices (FU _ _ _ ).map _ ≫ colimit.ι (FU _ _ _ ) (op ⟨V.unop, _ ⟩) ≫ _ = colimit.ι (FU _ _ _ ) (op ⟨U.unop, _ ⟩) ≫ _ by simpa
     rw [← Category.assoc, ← colimit.w_assoc, Category.assoc]
+
 
 /-- The naturals maps from the family of F(U) to  G(K) for U containing K -/
 @[simps]
 def CoconeAFtoG_NT : FU K F P ⟶ (Functor.const _ ).obj (G.obj (op K))  where
   app W := σ.app _ ≫ limit.π (GK _ _) (op ⟨K, W.unop.property.1⟩)
   naturality _ _ _:= by
-    suffices σ.app _ ≫ limit.π (GK _ _) (op ((U2supU1supK _ _ _).obj ⟨_, _ ⟩) ) =
-  σ.app (op _) ≫ limit.π (GK _ _) (op ⟨_,_⟩) by simpa --[FU]
+    suffices _ = σ.app _ ≫ limit.π (GK _ _) (op ⟨_,_⟩) by simpa
     rfl
 
 /-- The cocone induced by the natural transformation CoconeAFtoG_NT-/
@@ -197,7 +193,7 @@ def AFtoG : ( (AlphaUpStar).obj F ⟶  G) where
   naturality _ _ _ := by
     apply colimit.hom_ext
     intro _
-    suffices σ.app _ ≫ limit.π (GK _ _ ) (op _ ) = σ.app (op _ ) ≫ limit.π (GK _ _ ) (op _ ) ≫ G.map _ by simpa [AlphaUpStar]
+    suffices _ = σ.app _ ≫ limit.π (GK _ _ ) (op _ ) ≫ G.map _ by simpa [AlphaUpStar]
     rw [← limit.w _ _ ]
     rfl
 

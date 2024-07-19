@@ -2,7 +2,7 @@ import M2.Ksheaves
 
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite
 
-variable {X} [TopologicalSpace X] --[T2Space X]
+variable {X} [TopologicalSpace X]
 variable {C} [Category C] [HasPullbacks C] [HasColimits C] [HasZeroObject C]
 variable (p : X)
 
@@ -17,7 +17,6 @@ variable (F : (Compacts X)ᵒᵖ ⥤ C)
 def pinK : Set (Compacts X) := fun K => (p ∈ K)
 
 /-- the induced category by the property pinK-/
-
 def pinK_cat : Type := FullSubcategory (pinK p)
 
 instance : Category (pinK_cat p) := FullSubcategory.category (pinK p)
@@ -45,7 +44,7 @@ app W:= F.map <| op <| homOfLE <| by
   exact W.unop.property
 
 naturality  _ _ _:= by
-  suffices F.map _ ≫ F.map _ = F.map _ by simpa
+  suffices _ = F.map _ by simpa
   rw [← F.map_comp]
   rfl
 
@@ -82,13 +81,12 @@ def FpisCol : IsColimit (Fp p F) where
   uniq s m hm := by
     beta_reduce
     rw [← hm (op _ )]
-    suffices (Fp p F).ι.app (op (pC2 p)) = 𝟙 _ by
+    suffices (Fp _ _).ι.app (op (pC2 p)) = 𝟙 _ by
       rw [this]
       simp
     suffices F.map _ = 𝟙 (F.obj _) by simpa
     rw [← F.map_id]
     rfl
-
 
 /--The cone morphism from the stalk at p tp the cone with point F(p)-/
 @[simps]
@@ -96,7 +94,6 @@ def StalkToP : (colimit.cocone _ )⟶ (Fp p F) where
   hom := colimit.desc _ _
 
 instance IsIsoStalkToP : IsIso (StalkToP C p F) := IsColimit.hom_isIso ( colimit.isColimit _ ) (FpisCol _ _ _ ) _
-
 
 /-- The canonical natural transformation from the stalk functor to the functor evaluation in p-/
 @[simps]
@@ -108,7 +105,6 @@ instance : IsIso (StalkToPFunc C p):= by
   intro _
   rcases (IsIsoStalkToP C p _).out with ⟨i,hi⟩
   use i.hom
-
   unfold StalkToPFunc
   constructor
   · rw [← Cocone.category_comp_hom, hi.1]

@@ -43,7 +43,7 @@ def FUtoStalkι : FU (pC p) F (trueCond ) ⟶ (Functor.const _ ).obj (F.stalk p)
   app U := germ _ ⟨p, U.unop.property.1 (by rfl)⟩ ≫ F.stalkSpecializes (by rfl)
 
   naturality U V _ := by
-    suffices F.map _ ≫ F.germ ⟨_, V.unop.property.1 (by rfl)⟩ = F.germ ⟨_, U.unop.property.1 (by rfl)⟩ by simpa
+    suffices _ = F.germ ⟨_, U.unop.property.1 (by rfl)⟩ by simpa
     apply Presheaf.germ_res
 
 /-The cocone induced by FUtoStalkι-/
@@ -58,8 +58,7 @@ def CoconeFUpCtoOPenNhdspι :(OpenNhds.inclusion p).op ⋙ F ⟶ (Functor.const 
   naturality U V f := by
     have : ∀ (X Y : (KsubU_cat (pC p) trueCond)ᵒᵖ) (f : X ⟶ Y), F.map f.unop.op ≫ c.ι.app Y = c.ι.app X ≫ 𝟙 c.pt := by
       apply c.ι.naturality
-    suffices F.map _ ≫ c.ι.app (op ⟨V.unop.obj,_⟩) =
-  c.ι.app (op ⟨U.unop.obj,_⟩) ≫ 𝟙 c.pt by simpa
+    suffices _ = c.ι.app (op ⟨U.unop.obj, _ ⟩ ) ≫ 𝟙 c.pt by simpa
     rw [← this]
     apply congr
     repeat rfl
@@ -84,11 +83,11 @@ variable (C)
 def AlphaComStalkEval : (AlphaUpStar) ⋙ (EvalInP C p)⟶ @stalkFunctor _ _ _ (of X) p  where
   app F := colimit.desc _ (FUtoStalk _ _ _)
   naturality _ _ _ := by
-    suffices colimit.desc (FU _ _ _) ((Cocones.precompose (τres _ _ _ _ _)).obj (FUtoStalk _ _ _)) = colimit.desc (FU _ _ _) (FUtoStalk _ _ _) ≫ _ by simpa
+    suffices _ = colimit.desc (FU _ _ _) (FUtoStalk _ _ _) ≫ _ by simpa
     apply colimit.hom_ext
     intro _
     rw [← Category.assoc]
-    suffices  _ ≫ germ _ _ = germ _ _ ≫ _ by simpa
+    suffices  _ = germ _ _ ≫ _ by simpa
     rw [ Presheaf.stalkFunctor_map_germ]
 
 
@@ -101,7 +100,7 @@ instance : IsIso (AlphaComStalk X C p):= by
   --simp
   unfold AlphaComStalkEval
   simp
-  apply IsColimit.hom_isIso
+  --apply IsColimit.hom_isIso
   --IsColimit.hom_isIso (colimit.isColimit (FU _ _ _)) (IsColPtoQ _ _ hpq _ _ _ ) _
 
 

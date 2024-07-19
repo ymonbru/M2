@@ -43,7 +43,7 @@ app W:= F.map <| op <| homOfLE <| by
   apply (W.unop).property.1.trans
   simp [subset_closure]
 naturality _ _ _ := by
-  suffices F.map _ ≫ F.map _ = F.map _ by simpa
+  suffices _ = F.map _ by simpa
   rw [← F.map_comp]
   rfl
 

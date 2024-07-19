@@ -1,17 +1,23 @@
-import Mathlib
-import Mathlib.Topology.Separation
 import M2.Ksheaves
 import M2.alpha
+import Mathlib.Topology.Sheaves.Presheaf
+import Mathlib.Topology.Sheaves.Sheaf
+import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
+import Mathlib.CategoryTheory.Adjunction.Restrict
+import Mathlib.Topology.Sheaves.Stalks
 
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite TopCat TopCat.Presheaf
 open ZeroObject
 
 variable (X) [TopologicalSpace X] [T2Space X]
-variable (G:Ksheaf X) (F:Sheaf Ab (of X))
+variable (C) [Category C] [HasColimits C] [HasLimits C][HasZeroObject C]
+variable (G:Ksheaf X C) (F:Sheaf C (of X))
 
 noncomputable section
 
-theorem KshToSh: @Presheaf.IsSheaf _ _ (of X) ((AlphaDownStar X).obj (G.carrier):Presheaf _ (of X)):= by
+#check TopCat.Presheaf.IsSheaf ((AlphaDownStar).obj (G.carrier):Presheaf C (of X))
+
+theorem KshToSh: TopCat.Presheaf.IsSheaf  ((AlphaDownStar).obj (G.carrier):Presheaf C (of X)):= by
   apply (isSheaf_iff_isSheafOpensLeCover _).2
   unfold IsSheafOpensLeCover
   intro i U
@@ -20,7 +26,9 @@ theorem KshToSh: @Presheaf.IsSheaf _ _ (of X) ((AlphaDownStar X).obj (G.carrier)
   apply @IsLimit.mk _ _ _ _ _ _ _ _ _
 
   intro s
-  unfold SheafCondition.opensLeCoverCocone AlphaDownStar AlphaDownStarG --iSup
+  repeat sorry
+
+  /-unfold SheafCondition.opensLeCoverCocone AlphaDownStar AlphaDownStarG --iSup
   simp
 
   apply CategoryStruct.comp _
@@ -38,30 +46,28 @@ theorem KshToSh: @Presheaf.IsSheaf _ _ (of X) ((AlphaDownStar X).obj (G.carrier)
   simp at f
 
   sorry
-  repeat sorry
+  repeat sorry-/
 
 
 
-def shAlphaDownStarF : Sheaf Ab (of X) where
-  val:= (AlphaDownStar X).obj (G.carrier)
-  cond := (KshToSh X G)
+def shAlphaDownStarF : Sheaf C (of X) where
+  val:= (AlphaDownStar).obj (G.carrier)
+  cond := (KshToSh X C G)
 
 
-def shAlphaDownStar : (Ksheaf X) ⥤ Sheaf Ab (of X) where
-  obj G:= shAlphaDownStarF X G
-  map f:= Sheaf.Hom.mk ((AlphaDownStar X).map f)
-  map_id:= by
-    intro _
+def shAlphaDownStar : (Ksheaf X C) ⥤ Sheaf C (of X) where
+  obj _ := shAlphaDownStarF X C _
+  map f := Sheaf.Hom.mk ((AlphaDownStar).map f)
+  map_id _ := by
     apply Sheaf.Hom.ext
-    apply (AlphaDownStar X).map_id
-  map_comp:= by
-    intro _ _ _ _ _
+    apply (AlphaDownStar).map_id
+  map_comp _ _:= by
     apply Sheaf.Hom.ext
-    apply (AlphaDownStar X).map_comp
+    apply (AlphaDownStar).map_comp
 
 
-def shAlphaUpStarG : (Ksheaf X) where
-  carrier:= (AlphaUpStar X).obj ((Sheaf.forget _ _).obj F)
+def shAlphaUpStarG : (Ksheaf X C) where
+  carrier:= (AlphaUpStar).obj ((Sheaf.forget _ _).obj F)
   ksh1:= by
     unfold AlphaUpStar AlphaUpStarP AlphaUpStarF--FU KsubU
     simp
@@ -69,22 +75,24 @@ def shAlphaUpStarG : (Ksheaf X) where
       sorry
     rw [← this]
     sorry
-  ksh2:= sorry
+  ksh2:= by
+    sorry
   ksh3:= by
     sorry
 
 
-def shAlphaUpStar : Sheaf Ab (of X)⥤ (Ksheaf X)  where
-  obj G:= shAlphaUpStarG X G
-  map f:= (AlphaUpStar X).map ((Sheaf.forget _ _).map f)
+def shAlphaUpStar : Sheaf C (of X)⥤ (Ksheaf X C)  where
+  obj G:= shAlphaUpStarG X C G
+  map f:= (AlphaUpStar).map ((Sheaf.forget _ _).map f)
 
 
 --Restrict the adjunction
 
-def AdjShAlphaStar: (shAlphaUpStar X ) ⊣ (shAlphaDownStar X ) := by
-  apply (Adjunction.restrictFullyFaithful _ _ (AdjAlphaStar X) _ _)
+def AdjShAlphaStar: (shAlphaUpStar X C ) ⊣ (shAlphaDownStar X C) := by
+
+  apply (Adjunction.restrictFullyFaithful _  _ (@AdjAlphaStar (of X) _ C _ _ _) _ _)
   apply Sheaf.forget
-  apply (inducedFunctor (fun (F:Ksheaf X) => F.carrier))
+  apply (inducedFunctor (fun (F:Ksheaf X C) => F.carrier))
   apply @Functor.FullyFaithful.ofFullyFaithful _ _ _ _ _ (TopCat.Sheaf.forget_full _ _) (TopCat.Sheaf.forgetFaithful _ _)
 
   apply fullyFaithfulInducedFunctor
@@ -93,10 +101,10 @@ def AdjShAlphaStar: (shAlphaUpStar X ) ⊣ (shAlphaDownStar X ) := by
 
 --adjonction donne une équivalence de catégorie
 
-#check IsIso ((Adjunction.unit (AdjShAlphaStar X)).app F)
+#check IsIso ((Adjunction.unit (AdjShAlphaStar X C)).app F)
 
 
-theorem IsoAlphaCoUnit :IsIso ((AdjShAlphaStar X).unit.app F):= by
+theorem IsoAlphaCoUnit :IsIso ((AdjShAlphaStar X C).unit.app F):= by
   --apply @Presheaf.isIso_of_stalkFunctor_map_iso
   --apply asIso
 
@@ -106,21 +114,20 @@ theorem IsoAlphaCoUnit :IsIso ((AdjShAlphaStar X).unit.app F):= by
 
   sorry
 
-#check (AdjShAlphaStar X).counit.app G
+#check (AdjShAlphaStar X C).counit.app G
 
-theorem IsoAlphaUnit :IsIso ((AdjShAlphaStar X).counit.app G):= by
+theorem IsoAlphaUnit :IsIso ((AdjShAlphaStar X C).counit.app G):= by
   --unfold AdjShAlphaStar AlphaDownStar
   --simp
 
 
-  #check  Presheaf.isIso_of_stalkFunctor_map_iso
+  #check  TopCat.Presheaf.isIso_of_stalkFunctor_map_iso
   sorry
 
 
-set_option pp.universes true
-def KshIsoSh: (Sheaf Ab (of X)) ≃  (Ksheaf X) := by
+def KshIsoSh: (Sheaf C (of X)) ≌  (Ksheaf X C) := by
 
-   apply @Adjunction.toEquivalence _ _ _ _  _  _ (AdjShAlphaStar X) (IsoAlphaCoUnit X) (IsoAlphaUnit X)
+   apply @Adjunction.toEquivalence _ _ _ _  _  _ (AdjShAlphaStar X C) (IsoAlphaCoUnit X C) (IsoAlphaUnit X C)
 
 
   --sorry
