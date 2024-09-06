@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Abelian.Basic
 import Mathlib.Algebra.Category.ModuleCat.Adjunctions
 import Mathlib.AlgebraicTopology.ExtraDegeneracy
 
-open CategoryTheory SimplicialObject.Augmented
+open CategoryTheory SimplicialObject.Augmented Opposite
 
 noncomputable section
 
@@ -29,14 +29,8 @@ local notation "R" => Sieve.generate U
 
 def Y : Cᵒᵖ⥤Type v := ∐ (fun (Z : C) => ∐ (fun (_ : @U Z) => yoneda.obj Z))
 
-
 def tau_Z_f (Z:C) (f: @U Z): yoneda.obj Z ⟶ (Sieve.functor R) where
   app W a := ⟨(a ≫ f), Z, a, f, (f.2), by simp⟩
-  naturality A B C:= by
-    ext
-    simp--a changer
-    ext
-    simp
 
 def τ:  (Y X U) ⟶ (Sieve.functor R) := (Limits.Sigma.desc (fun (Z:C) => Limits.Sigma.desc fun (f : @U Z) => (tau_Z_f X U Z f)))
 
@@ -51,26 +45,66 @@ def τ:  (Y X U) ⟶ (Sieve.functor R) := (Limits.Sigma.desc (fun (Z:C) => Limit
 
   sorry-/
 
-def truc : SplitEpi (Arrow.mk (τ X U)).hom := by
+variable (V:C)
+
+#check (τ X U).app (op V)
+
+def truc_local : SplitEpi (Arrow.mk ((τ X U).app (op V))).hom := by
   sorry
+  --normalement c'est l'axiome du choix
+
+def CechObjAugmented_local : SimplicialObject.Augmented (Type v) := (Arrow.mk ((τ X U).app (op V))).augmentedCechNerve
+
+def ExtraDegeneracyCechObj_local : ExtraDegeneracy (CechObjAugmented_local X U V) := Arrow.AugmentedCechNerve.extraDegeneracy (Arrow.mk ((τ X U).app (op V))) (truc_local _ _ _)
+
+def CechAugmented_local : SimplicialObject.Augmented ( ModuleCat  A) := ((whiskering (Type v) (ModuleCat A)).obj (ModuleCat.free A)).obj (CechObjAugmented_local X U V)
+
+def ExtraDegeneracyCech_local : ExtraDegeneracy (CechAugmented_local X A U V) := ExtraDegeneracy.map  (ExtraDegeneracyCechObj_local X U V) (ModuleCat.free A)
+
+#check ExtraDegeneracy.homotopyEquiv (ExtraDegeneracyCech_local X A U V)
+
+def homotpyEquivLocal: HomotopyEquiv (AlgebraicTopology.AlternatingFaceMapComplex.obj (drop.obj (CechAugmented_local X A U V)))
+((ChainComplex.single₀ (ModuleCat A)).obj (point.obj (CechAugmented_local X A U V))) := ExtraDegeneracy.homotopyEquiv (ExtraDegeneracyCech_local X A U V)
+
+
+def truc : SplitEpi (Arrow.mk (τ X U)).hom := by
+  sorry--Il faut le prendre localement, sinon c'est faux, la suite c'est juste pour avoir un exemple qui marche
 
 def PresheafOfTypeToAMod : (Cᵒᵖ ⥤ Type v) ⥤ Cᵒᵖ ⥤ ModuleCat A := (whiskeringRight Cᵒᵖ  _ _).obj (ModuleCat.free A)
 
-def CechObj : SimplicialObject (Cᵒᵖ ⥤Type v) := (Arrow.mk (τ X U)).cechNerve
+--def CechObj : SimplicialObject (Cᵒᵖ ⥤Type v) := (Arrow.mk (τ X U)).cechNerve
 
 def CechObjAugmented : SimplicialObject.Augmented (Cᵒᵖ ⥤Type v) := (Arrow.mk (τ X U)).augmentedCechNerve
 
 def ExtraDegeneracyCechObj : ExtraDegeneracy (CechObjAugmented X U) := Arrow.AugmentedCechNerve.extraDegeneracy (Arrow.mk (τ X U)) (truc _ _)
 
-def Cech : SimplicialObject (Cᵒᵖ ⥤ ModuleCat  A) :=  ((whiskeringRight SimplexCategoryᵒᵖ  (Cᵒᵖ⥤ Type v) (Cᵒᵖ⥤ ModuleCat A)).obj (PresheafOfTypeToAMod A)).obj (CechObj X U)
+--def Cech : SimplicialObject (Cᵒᵖ ⥤ ModuleCat  A) :=  ((whiskeringRight SimplexCategoryᵒᵖ  (Cᵒᵖ⥤ Type v) (Cᵒᵖ⥤ ModuleCat A)).obj (PresheafOfTypeToAMod A)).obj (CechObj X U)
 
-def CechAugmented : SimplicialObject.Augmented (Cᵒᵖ ⥤ ModuleCat  A) :=((whiskering (Cᵒᵖ ⥤ Type v) (Cᵒᵖ ⥤ ModuleCat A)).obj (PresheafOfTypeToAMod A)).obj (Arrow.mk (τ X U)).augmentedCechNerve
+def CechAugmented : SimplicialObject.Augmented (Cᵒᵖ ⥤ ModuleCat  A) :=((whiskering (Cᵒᵖ ⥤ Type v) (Cᵒᵖ ⥤ ModuleCat A)).obj (PresheafOfTypeToAMod A)).obj (CechObjAugmented X U)
 
 def ExtraDegeneracyCech : ExtraDegeneracy (CechAugmented X A U) := ExtraDegeneracy.map  (ExtraDegeneracyCechObj X U) (PresheafOfTypeToAMod A)
 
 #check ExtraDegeneracy.homotopyEquiv (ExtraDegeneracyCech X A U)
 
 
+def plusdenom: AlgebraicTopology.AlternatingFaceMapComplex.obj (drop.obj (CechAugmented X A U)) ⟶
+  (ChainComplex.single₀ (Cᵒᵖ ⥤ ModuleCat A)).obj (point.obj (CechAugmented X A U)) where
+    f i:= by
+      simp
+      let g :=(homotpyEquivLocal X A U V).hom.f i
+      simp at g
+      sorry
+
+
+
+def bidule :HomotopyEquiv (AlgebraicTopology.AlternatingFaceMapComplex.obj (drop.obj (CechAugmented X A U)))
+  ((ChainComplex.single₀ (Cᵒᵖ ⥤ ModuleCat A)).obj (point.obj (CechAugmented X A U))) where
+    hom := by
+
+      sorry
+    inv := sorry
+    homotopyHomInvId := sorry
+    homotopyInvHomId := sorry
 
 
 
