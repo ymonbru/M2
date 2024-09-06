@@ -1,8 +1,8 @@
-variable (hom:Type) [DecidableEq hom] (andThen: hom → hom → hom)
+variable {hom:Type} [DecidableEq hom] (andThen: hom → hom → hom)
 
-variable (obj:Type) (dom codom: hom → obj)
+variable {obj:Type} (dom codom: hom → obj)
 
-
+@[ext]
 structure triangle where--f≫ g=h
   f: hom
   g: hom
@@ -19,7 +19,7 @@ structure triangle where--f≫ g=h
 
 
 -- le booléen est à true si on n'a rien changé et false si on à modifié un truc
-def applyTriangle (t:triangle hom andThen) (c:List hom ): Bool × List hom := match c with
+def applyTriangle (t:triangle andThen) (c:List hom ): Bool × List hom := match c with
   |[] => (true,c)
   |_ :: [] => (true,c)
   |a :: b :: cprime =>
@@ -27,16 +27,17 @@ def applyTriangle (t:triangle hom andThen) (c:List hom ): Bool × List hom := ma
     else let (b,newc):= applyTriangle t (b::cprime)
       (b,a::newc)
 
-
-def applyListTriangles (lt:List (triangle hom andThen)) (c:List hom ):List (triangle hom andThen)× List hom :=
+-- le booléen est à true si on n'a rien changé et false si on à modifié un truc
+def applyListTriangles (lt:List (triangle andThen)) (c:List hom ):Bool × List (triangle andThen) × List hom :=
   match lt with
-    |[] => ([],c)
-    |t::ltprime => let (b,newc) := applyTriangle hom andThen t c
-      let (newlt,newc) := applyListTriangles ltprime newc
-      if b then (t::newlt,newc)
-      else (newlt,newc)
+    |[] => (true,[],c)
+    |t::ltprime => let (b,newc) := applyTriangle andThen t c
+      let (newbool,newlt,newc) := applyListTriangles ltprime newc
+      if b then (true, t::newlt,newc)
+      else (newbool, newlt,newc)
 
-def expandTriangle (ok:Bool) (t:triangle hom andThen) (c:List hom ): Bool × List hom :=
+-- le booléen est à true si on n'a rien changé et false si on à modifié un truc
+def expandTriangle (ok:Bool) (t:triangle andThen) (c:List hom ): Bool × List hom :=
   if not ok then (false,c)
   else  match c with
     |[] => (ok,c)
@@ -44,10 +45,43 @@ def expandTriangle (ok:Bool) (t:triangle hom andThen) (c:List hom ): Bool × Lis
       if  t.h = a then (false,t.f :: t.g :: cprime)
       else (ok, a :: (expandTriangle  ok t cprime).2)
 
-def expandOneTriangle (lt:List (triangle hom andThen)) (c:List hom ): List (triangle hom andThen)× List hom := match lt with
-  |[]=> (lt,c)
+-- le booléen est à true si on n'a rien changé et false si on à modifié un truc
+def expandOneTriangle (lt:List (triangle andThen)) (c:List hom ): Bool × List (triangle andThen)× List hom := match lt with
+  |[]=> (true,lt,c)
   |t :: ltprime =>
-    let (b,newc):= expandTriangle hom andThen true t c
-    if b then let (ltprime,newc):=expandOneTriangle ltprime c
-      (t::ltprime,newc)
-    else (ltprime,newc)
+    let (b,newc):= expandTriangle andThen true t c
+    if b then let (newbool,ltprime,newc):=expandOneTriangle ltprime c
+      (newbool,t::ltprime,newc)
+    else (true,ltprime,newc)
+
+def IsValid (l:List hom): Prop:= match l with
+  |[]=> True
+  |_ :: [] => True
+  |f :: g :: lprime => (codom f = dom g) ∧ (IsValid (g :: lprime))
+
+partial def CommDiag (lt:List (triangle andThen)) (l : List hom ): List hom:=
+  let (_,newlt,newl) := applyListTriangles andThen lt l
+  let (newb,newt,newl) := expandOneTriangle andThen newlt newl
+
+  if not newb then
+    CommDiag newt newl
+  else newl
+
+variable (a b c d e: Nat)
+
+def t: triangle Nat.add where
+  f := a
+  g := b
+  h := c
+  trg_com := sorry
+
+
+#eval t 1 2 3
+
+def lt : List (triangle Nat.add):= (t 1 3 2) :: (t  3 4 5) :: List.nil
+
+def l : List Nat := 1 :: 5 :: List.nil
+
+#check lt
+
+#eval CommDiag Nat.add lt l
