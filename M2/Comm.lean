@@ -110,6 +110,11 @@ theorem diagIsComApplyT (t : triangle andThen) (lh : List hom): comp andThen id 
       by_cases hyp: (f=t.f ∧ g= t.g)
       · rw [decide_eq_true hyp, cond_true, comp, andThenAssoc,hyp.1,hyp.2, t.trg_com]
       · rw [decide_eq_false hyp, cond_false, comp, ← hr, comp]
+--Bouuuuuuuuuum
+
+
+
+
 
 theorem diagIsComApplyListT (lt : List (triangle andThen)) (lh : List hom): comp andThen id lh = comp andThen id (applyListTriangles andThen lt lh).2.2 := by
   induction lt with
