@@ -87,6 +87,7 @@ def AlphaUpPPtoQ : (AlphaUpStarP P)⟶ (@AlphaUpStarP _ _ C _ _ Q) where
 
     rw [this]
 
+include axiomP
 --Implicit argument are an issue for infering the instance
 /-- The evidence that the category (KsubU_cat K P)ᵒᵖ is filtered-/
 lemma IsFilteredKsubU: IsFilteredOrEmpty (KsubU_cat K P)ᵒᵖ where
@@ -99,6 +100,7 @@ lemma IsFilteredKsubU: IsFilteredOrEmpty (KsubU_cat K P)ᵒᵖ where
     use RightInInf K axiomP U1 U2
     rfl
 
+include V V_spec
 --Implicit argument are an issue for infering the instance
 /-- The evidence that the functor op (KsubUPtoQ K hpq) is final-/
 lemma IsFinalOpKsubUPtoQ: Functor.Final (Functor.op (KsubUPtoQ K hpq)) := by

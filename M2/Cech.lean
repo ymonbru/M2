@@ -50,9 +50,9 @@ variable (V:C)
 #check (τ X U).app (op V)
 
 
-def truc_local : SplitEpi (Arrow.mk ((τ X U).app (op V))).hom := by
-
-  sorry
+def truc_local : SplitEpi (Arrow.mk ((τ X U).app (op V))).hom where
+  section_ := sorry
+  id := sorry
   --normalement c'est l'axiome du choix
 
 def CechObjAugmented_local : SimplicialObject.Augmented (Type v) := (Arrow.mk ((τ X U).app (op V))).augmentedCechNerve

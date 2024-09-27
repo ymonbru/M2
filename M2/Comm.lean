@@ -149,15 +149,16 @@ theorem expandOneTriangleDecLength (lt:List (triangle andThen)) (c:List hom ): (
   let eot  := expandOneTriangle andThen alt.2.1 alt.2.2
 
   if hyp : not eot.1 then
-    have :  sizeOf eot.2.1 <  sizeOf lt:= by
-      calc sizeOf eot.2.1 < sizeOf alt.2.1  := by {
+    CommDiag eot.2.1 eot.2.2
+  else alt.2.2
+termination_by lt
+decreasing_by
+  calc sizeOf eot.2.1 < sizeOf alt.2.1  := by {
         apply expandOneTriangleDec
         apply Bool.not_inj_iff.mp
         rw [hyp]
         simp}
         _ ≤ sizeOf lt  := by apply applyListTrianglesDec
-    CommDiag eot.2.1 eot.2.2
-  else alt.2.2
 
 variable (a b c: Nat)
 
@@ -321,38 +322,38 @@ theorem diagIsComExpandOneT (lt:List (triangle andThen)): IsStableByComp andThen
 -- pourquoi ça ne marche pas sans
 def propAux: Nat → Prop := fun n => ∀  (lt: List (triangle andThen)) (lh : List hom), (hlt : List.length lt = n) →  comp andThen id lh = comp andThen id (CommDiag andThen lt lh)
 
-theorem diagIsComN (n: Nat): propAux andThen id n:= by
-  have init: propAux andThen id 0 := by
-    intro lt lh hlt
-    have : lt = []:= by
-      apply List.length_eq_zero.mp
-      linarith
-    rw [this, CommDiag]
-    suffices _ = comp andThen id (if _ then _ else _ ) by simpa
+theorem diagIsComN (k: Nat): propAux andThen id k:= by
+  apply Nat.strongRecOn
+  intro n hn lt lh hlt
+  match n with
+    | 0 =>
+      have : lt = []:= by
+        apply List.length_eq_zero.mp
+        linarith
+      rw [this, CommDiag]
+      suffices _ = comp andThen id (if _ then _ else _ ) by simpa
 
-    split_ifs with hyp
-    · rw [ applyListTriangles, expandOneTriangle] at hyp
-      cases hyp
-    · rfl
-  have inductionstep : ∀ (n : ℕ), (∀ m ≤ n, propAux andThen id m) → propAux andThen id (n + 1) := by
-    intro n hn lt lh hlt
-    rcases List.exists_cons_of_length_eq_add_one hlt with ⟨t,q,tconsqeqlt⟩
-    rw [tconsqeqlt, CommDiag]
-
-    split_ifs with hyp
-    · rw [← hn _ _]
-      · rw [← diagIsComExpandOneT andThen ,diagIsComApplyListT andThen]
+      split_ifs with hyp
+      · rw [ applyListTriangles, expandOneTriangle] at hyp
+        cases hyp
       · rfl
-      · refine Nat.le_of_lt_succ ?_
+    | n + 1 =>
+      rcases List.exists_cons_of_length_eq_add_one hlt with ⟨t,q,tconsqeqlt⟩
+      rw [tconsqeqlt, CommDiag]
 
-        calc List.length _ < List.length _  := by {
-        apply expandOneTriangleDecLength andThen
-        apply Bool.not_inj_iff.mp
-        rw [hyp]
-        simp}
-        _ ≤ (t :: q).length  := by apply applyListTrianglesDecLength
-        _ = n + 1 := by rw [ ← tconsqeqlt, hlt]
-    · rw [ ← diagIsComApplyListT]
+      split_ifs with hyp
+      · rw [← hn _ _]
+        · rw [← diagIsComExpandOneT andThen ,diagIsComApplyListT andThen]
+        · rfl
+        · calc List.length _ < List.length _  := by {
+            apply expandOneTriangleDecLength andThen
+            apply Bool.not_inj_iff.mp
+            rw [hyp]
+            simp}
+            _ ≤ (t :: q).length  := by apply applyListTrianglesDecLength
+            _ = n + 1 := by rw [ ← tconsqeqlt, hlt]
+      · rw [ ← diagIsComApplyListT]
+
 
 theorem diagIsCom (lt : List (triangle andThen)) : IsStableByComp andThen id (fun lh => CommDiag andThen lt lh) := by
   intro _

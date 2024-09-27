@@ -79,3 +79,22 @@ elab "cheat" : tactic => withMainContext do
 
 example : 1 = 2 := by
   cheat
+
+
+def match_eq (e : Expr) : MetaM <| Option (Expr × Expr) := do
+  let e ← whnf e
+  if e.isAppOf ``Eq then
+    return some (e.getArg! 1, e.getArg! 2)
+  else
+    return none
+
+def match_eq' (e : Expr) : MetaM <| Option (Expr × Expr × Expr) := do
+  let e ← whnf e
+  if e.isAppOf ``Eq then do
+    let e' := e.getArg! 1
+    if e'.isAppOf ``CategoryStruct.comp then
+      return some (e'.getArg! 5, e'.getArg! 6, e.getArg! 2)
+    else
+      return none
+  else
+    return none
