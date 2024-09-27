@@ -49,7 +49,9 @@ variable (V:C)
 
 #check (τ X U).app (op V)
 
+
 def truc_local : SplitEpi (Arrow.mk ((τ X U).app (op V))).hom := by
+
   sorry
   --normalement c'est l'axiome du choix
 
