@@ -41,14 +41,32 @@ theorem applyListTrianglesDec (lt:List (triangle andThen)): ∀ (lh:List hom ), 
   | cons t q hr =>
     intro lh
     rw [applyListTriangles]
-    simp
-    by_cases hyp: (applyTriangle andThen t lh).fst = true
-    · rw [← Bool.cond_decide, decide_eq_true hyp, cond_true, List.cons.sizeOf_spec, Nat.add_le_add_iff_left]
+    suffices sizeOf (if (applyTriangle andThen t lh).1 = true then
+          (true, t :: (applyListTriangles andThen q (applyTriangle andThen t lh).2).2.1,
+            (applyListTriangles andThen q (applyTriangle andThen t lh).2).2.2)
+        else applyListTriangles andThen q (applyTriangle andThen t lh).2).2.1 ≤
+  1 + sizeOf t + sizeOf q by simpa
+    split_ifs
+    · rw [List.cons.sizeOf_spec, Nat.add_le_add_iff_left]
       apply hr
-    · rw [← Bool.cond_decide, decide_eq_false hyp, cond_false,]
+    · linarith [hr ( applyTriangle andThen t lh).2]
 
-      linarith [hr ( applyTriangle andThen t lh).2]
-
+theorem applyListTrianglesDecLength (lt:List (triangle andThen)): ∀ (lh:List hom ), List.length (applyListTriangles andThen lt lh ).2.1 ≤ List.length lt  := by
+  induction lt with
+  | nil =>
+    intro
+    apply Nat.le_refl
+  | cons t q hr =>
+    intro lh
+    rw [applyListTriangles]
+    suffices List.length (if (applyTriangle andThen t lh).1 = true then
+          (true, t :: (applyListTriangles andThen q (applyTriangle andThen t lh).2).2.1,
+            (applyListTriangles andThen q (applyTriangle andThen t lh).2).2.2)
+        else applyListTriangles andThen q (applyTriangle andThen t lh).2).2.1 ≤
+  List.length q + 1by simpa
+    split_ifs
+    · exact Nat.le_add_of_sub_le (hr (applyTriangle andThen t lh).2)
+    · linarith [hr ( applyTriangle andThen t lh).2]
 
 
 -- le booléen est à true si on n'a rien changé et false si on à modifié un truc
@@ -80,18 +98,46 @@ theorem expandOneTriangleDec (lt:List (triangle andThen)) (c:List hom ): (expand
   |cons t q hr =>
     intro hyp
     rw [expandOneTriangle]
-    simp
-    by_cases hypp: ((expandTriangle andThen true t c).fst = true )
-    · rw [← Bool.cond_decide, decide_eq_true hypp, cond_true, List.cons.sizeOf_spec]
+    suffices sizeOf (if _ then _ else (false, q, (expandTriangle andThen true t c).2)).2.1 < 1 + sizeOf t + sizeOf q by simpa
+
+    split_ifs with hypp
+    · rw [ List.cons.sizeOf_spec]
       have : (expandOneTriangle andThen q c).fst = false := by
         rw [expandOneTriangle] at hyp
         simp only at hyp
-        rw [← Bool.cond_decide, decide_eq_true hypp, cond_true ] at hyp
+        split_ifs at hyp
         exact hyp
       linarith [hr this]
-    · rw [← Bool.cond_decide, decide_eq_false hypp, cond_false]
-      simp
+    · linarith
 
+
+/- Trouver une solution pour ne pas repter avec le code qui précède-/
+theorem expandOneTriangleDecLength (lt:List (triangle andThen)) (c:List hom ): (expandOneTriangle andThen lt c ).1 = false → List.length (expandOneTriangle andThen lt c ).2.1 < List.length lt  := by
+ induction lt with
+  | nil =>
+    intro hyp
+    rw [expandOneTriangle] at hyp
+    exfalso
+    exact (Bool.eq_not_self (true, [], c).fst).mp hyp
+  |cons t q hr =>
+    intro hyp
+    rw [expandOneTriangle]
+
+    suffices (if (expandTriangle andThen true t c).1 = true then
+          ((expandOneTriangle andThen q c).1, t :: (expandOneTriangle andThen q c).2.1,
+            (expandOneTriangle andThen q c).2.2)
+        else (false, q, (expandTriangle andThen true t c).2)).2.1.length <
+  q.length + 1 by simpa
+
+    split_ifs with hypp
+    · have : (expandOneTriangle andThen q c).fst = false := by
+        rw [expandOneTriangle] at hyp
+        simp only at hyp
+        split_ifs at hyp
+        assumption
+      rw [List.length_cons, add_lt_add_iff_right]
+      exact hr this
+    · linarith
 
 /--def IsValid (l:List hom): Prop:= match l with
   |[]=> True
@@ -103,15 +149,16 @@ theorem expandOneTriangleDec (lt:List (triangle andThen)) (c:List hom ): (expand
   let eot  := expandOneTriangle andThen alt.2.1 alt.2.2
 
   if hyp : not eot.1 then
-    have :  sizeOf eot.2.1 <  sizeOf lt:= by
-      calc sizeOf eot.2.1 < sizeOf alt.2.1  := by {
+    CommDiag eot.2.1 eot.2.2
+  else alt.2.2
+termination_by lt
+decreasing_by
+  calc sizeOf eot.2.1 < sizeOf alt.2.1  := by {
         apply expandOneTriangleDec
         apply Bool.not_inj_iff.mp
         rw [hyp]
         simp}
         _ ≤ sizeOf lt  := by apply applyListTrianglesDec
-    CommDiag eot.2.1 eot.2.2
-  else alt.2.2
 
 variable (a b c: Nat)
 
@@ -163,16 +210,15 @@ lemma applyTrianglesSpec (t:triangle andThen) (c:List hom ):  (applyTriangle and
     | g :: qq =>
       intro hyp
       rw [applyTriangle]
-      by_cases hypp: (f = t.f ∧ g = t.g)
-      · rw [applyTriangle, ← Bool.cond_decide, decide_eq_true hypp, cond_true] at hyp
-        exfalso
-        apply (Bool.eq_not_self (false, t.h :: qq).fst).mp hyp
-      · rw [ ← Bool.cond_decide, decide_eq_false hypp, cond_false]
-        rw [applyTriangle, ← Bool.cond_decide, decide_eq_false hypp, cond_false] at hyp
+      split_ifs with hypp
+      · rw [applyTriangle] at hyp
+        split_ifs at hyp
+      · rw [applyTriangle] at hyp
+        split_ifs at hyp
         suffices (applyTriangle andThen t (g :: qq)).2 = g :: qq by simpa
         exact hr hyp
 
-lemma expandOneTriangleToNil (lt: List (triangle andThen)): expandOneTriangle andThen lt [] = (true, lt, []) := by
+/-lemma expandOneTriangleToNil (lt: List (triangle andThen)): expandOneTriangle andThen lt [] = (true, lt, []) := by
   induction lt with
   | nil => rfl
   | cons t q hr =>
@@ -191,7 +237,7 @@ lemma applyListTrianglesToNil (lt: List (triangle andThen)): applyListTriangles 
     suffices (applyListTriangles andThen q []).2.1 = q ∧ (applyListTriangles andThen q []).2.2 = [] by simpa
     constructor
     · rw [hr]
-    · rw [hr]
+    · rw [hr]-/
 
 variable [Std.Associative andThen]
 
@@ -209,11 +255,10 @@ lemma diagIsComApplyT (t : triangle andThen): IsStableByComp andThen id (fun lh 
     | [] => rfl
     | g :: qq  =>
       beta_reduce
-      rw [comp, comp, applyTriangle, ← Bool.cond_decide]
-      by_cases hyp: (f = t.f ∧ g = t.g)
-      · rw [decide_eq_true hyp, cond_true, comp, andThenAssoc andThen, hyp.1, hyp.2, t.trg_com]
-      · rw [decide_eq_false hyp, cond_false, comp, ← hr, comp]
-
+      rw [comp, comp, applyTriangle]
+      split_ifs with hyp
+      · rw [ comp, andThenAssoc andThen, hyp.1, hyp.2, t.trg_com]
+      · rw [ comp, ← hr, comp]
 
 theorem diagIsComApplyListT (lt : List (triangle andThen)): IsStableByComp andThen id ( fun lh => (applyListTriangles andThen lt lh).2.2 ):= by
   induction lt with
@@ -225,16 +270,12 @@ theorem diagIsComApplyListT (lt : List (triangle andThen)): IsStableByComp andTh
     beta_reduce
     rw [applyListTriangles]
 
-
     suffices comp andThen id lh = comp andThen id (if _ then (true, t :: (applyListTriangles andThen q (applyTriangle andThen t lh).2).2.1, (applyListTriangles andThen q (applyTriangle andThen t lh).2).2.2)-- on doit pouvoir simplifier ça mais wip
         else _ ).2.2 by simpa
 
-    rw [← Bool.cond_decide]
-    by_cases hyp :((applyTriangle andThen t lh).1= true)
-    · rw [decide_eq_true hyp, cond_true, hr, applyTrianglesSpec _ _ _ hyp]
-    · rw [decide_eq_false hyp, cond_false]
-
-      apply ISBCComp _ _ _ _ _ hr
+    split_ifs with hyp
+    · rw [hr, applyTrianglesSpec _ _ _ hyp]
+    · apply ISBCComp _ _ _ _ _ hr
       apply diagIsComApplyT andThen id t
 
 theorem diagIsComExpandT (t:triangle andThen) (b:Bool): IsStableByComp andThen id (fun lh => (expandTriangle andThen b t lh).2) := by
@@ -253,10 +294,10 @@ theorem diagIsComExpandT (t:triangle andThen) (b:Bool): IsStableByComp andThen i
     · rfl
     · suffices comp andThen id (f :: q) = comp andThen id (if t.h = f then (false, t.f :: t.g :: q)
       else ((expandTriangle andThen true t q).1, f :: (expandTriangle andThen true t q).2)).2 by simpa
-      rw [ ← Bool.cond_decide]
-      by_cases hyp: (t.h=f)
-      · rw [decide_eq_true hyp, ← hyp, cond_true, comp, comp, comp, andThenAssoc andThen, t.trg_com ]
-      · rwa [decide_eq_false _, cond_false, comp, comp, hr]
+      split_ifs with hyp
+      · rw [← hyp, comp, comp, comp, andThenAssoc andThen, t.trg_com ]
+      · rw [ comp, comp, hr]
+
 
 theorem diagIsComExpandOneT (lt:List (triangle andThen)): IsStableByComp andThen id (fun lh => (expandOneTriangle andThen lt lh).2.2) := by
   induction lt with
@@ -271,118 +312,50 @@ theorem diagIsComExpandOneT (lt:List (triangle andThen)): IsStableByComp andThen
           ((expandOneTriangle andThen q lh).1, t :: (expandOneTriangle andThen q lh).2.1,
             (expandOneTriangle andThen q lh).2.2)
         else (false, q, (expandTriangle andThen true t lh).2)).2.2 by simpa
-      rw [ ← Bool.cond_decide]
-      by_cases hyp : ( (expandTriangle andThen true t lh).fst = true)
-      · rw [decide_eq_true hyp, cond_true, hr]
-      · rw [decide_eq_false hyp, cond_false]
-        rw [← diagIsComExpandT]
+
+      split_ifs with hyp
+      · rw [ hr]
+      · rw [← diagIsComExpandT]
 
 
 
 -- pourquoi ça ne marche pas sans
 def propAux: Nat → Prop := fun n => ∀  (lt: List (triangle andThen)) (lh : List hom), (hlt : List.length lt = n) →  comp andThen id lh = comp andThen id (CommDiag andThen lt lh)
 
-lemma init: propAux andThen id 0 := by
-  intro lt lh hlt
-  have : lt = []:= by
-    apply List.length_eq_zero.mp
-    linarith
-  rw [this, CommDiag]
-  suffices _ = comp andThen id (if _ then _ else _ ) by simpa
-
-  rw [ ← Bool.cond_decide, decide_eq_false, cond_false, applyListTriangles]
-  rw [applyListTriangles, expandOneTriangle]
-  exact Bool.true_eq_false_eq_False
-
-lemma inductionstep: ∀ (n : ℕ), (∀ m ≤ n, propAux andThen id m) → propAux andThen id (n + 1) := by
-
-  sorry
-
-#check @Nat.case_strong_induction_on (propAux andThen id) 3 (init andThen id) (inductionstep andThen id)
-
-theorem diagIsComN (n: Nat): propAux andThen id n:= by
-  have init: propAux andThen id 0 := by
-    intro lt lh hlt
-    have : lt = []:= by
-      apply List.length_eq_zero.mp
-      linarith
-    rw [this, CommDiag]
-    suffices _ = comp andThen id (if _ then _ else _ ) by simpa
-
-    rw [ ← Bool.cond_decide, decide_eq_false, cond_false, applyListTriangles]
-    --pourquoi en une fois ça ne marche pas?
-    rw [applyListTriangles, expandOneTriangle]
-    exact Bool.true_eq_false_eq_False
-  have inductionstep : ∀ (n : ℕ), (∀ m ≤ n, propAux andThen id m) → propAux andThen id (n + 1) := by
-    intro n hn lt lh hlt
-    rcases List.exists_cons_of_length_eq_add_one hlt with ⟨t,q,tconsqeqlt⟩
-    rw [tconsqeqlt, CommDiag]
-    simp
-    rw [ ← Bool.cond_decide]
-    by_cases hyp: (expandOneTriangle andThen (applyListTriangles andThen (t :: q) lh).2.1
-                (applyListTriangles andThen (t :: q) lh).2.2).1
-    · rw [decide_eq_false , cond_false, ← diagIsComApplyListT]
-      intro hypp
-      rw [hyp] at hypp
-      contradiction
-    · rw [decide_eq_true, cond_true]
-      unfold propAux at hn
-      rw [← hn _ _ ]
-      · rw [← diagIsComExpandOneT andThen ,diagIsComApplyListT andThen]
-      · rfl
-      · sorry--pareil que pour le sizeof du coup un truc à faire
-      · exact eq_false_of_ne_true hyp
-
-
-
-
-
-
---pourquoi des () au dernier?
-  exact @Nat.case_strong_induction_on (propAux andThen id) n init (inductionstep)
-
-
-  /-induction n with
-    | zero =>
-      intro lt lh hlt
+theorem diagIsComN (k: Nat): propAux andThen id k:= by
+  apply Nat.strongRecOn
+  intro n hn lt lh hlt
+  match n with
+    | 0 =>
       have : lt = []:= by
         apply List.length_eq_zero.mp
-        --linarith
-        sorry
+        linarith
       rw [this, CommDiag]
-      dsimp
-      rw [ ← Bool.cond_decide, decide_eq_false, cond_false, applyListTriangles]
-      rw [applyListTriangles, expandOneTriangle]
-      exact Bool.not_not_eq.mpr rfl
-    | succ n hr =>
-      intro lt lh lth
-      match lth with
-        |
+      suffices _ = comp andThen id (if _ then _ else _ ) by simpa
+
+      split_ifs with hyp
+      · rw [ applyListTriangles, expandOneTriangle] at hyp
+        cases hyp
+      · rfl
+    | n + 1 =>
+      rcases List.exists_cons_of_length_eq_add_one hlt with ⟨t,q,tconsqeqlt⟩
+      rw [tconsqeqlt, CommDiag]
+
+      split_ifs with hyp
+      · rw [← hn _ _]
+        · rw [← diagIsComExpandOneT andThen ,diagIsComApplyListT andThen]
+        · rfl
+        · calc List.length _ < List.length _  := by {
+            apply expandOneTriangleDecLength andThen
+            apply Bool.not_inj_iff.mp
+            rw [hyp]
+            simp}
+            _ ≤ (t :: q).length  := by apply applyListTrianglesDecLength
+            _ = n + 1 := by rw [ ← tconsqeqlt, hlt]
+      · rw [ ← diagIsComApplyListT]
 
 
-      sorry
-
-
-  /--
-    | nil =>
-      rw [comp, CommDiag, ]
-
-      simp
-      rw [ ← Bool.cond_decide, decide_eq_false, cond_false, applyListTrianglesToNil, comp]
--- les deux en un seul bloc ça ne passe pas
-      rw [applyListTrianglesToNil, expandOneTriangleToNil, Bool.true_eq_false, not_false_eq_true]
-      trivial
-    | cons f q hr =>
-      rw [ CommDiag,]
-      dsimp
-      rw [ ← Bool.cond_decide]
-      by_cases hyp: (expandOneTriangle andThen (applyListTriangles andThen lt (f :: q)).2.fst (applyListTriangles andThen lt (f :: q)).2.snd).fst = true
-      · rw [decide_eq_false , cond_false, ← diagIsComApplyListT, comp]
-        intro hypp
-        rw [hyp, Bool.not_true, Bool.false_eq_true] at hypp
-        exact hypp
-
-      · rw [decide_eq_true, cond_true]
-
-        dsimp
-        sorry
+theorem diagIsCom (lt : List (triangle andThen)) : IsStableByComp andThen id (fun lh => CommDiag andThen lt lh) := by
+  intro _
+  apply diagIsComN
+  rfl
