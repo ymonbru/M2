@@ -16,6 +16,8 @@ universe u v w
 
 variable {C : Type u} [Category.{v} C]  [Small.{v, u} C]
 
+--variable [Limits.HasCoproducts (Type v)]
+
 
 variable (X:C)
 
@@ -49,10 +51,67 @@ variable (V:C)
 
 #check (τ X U).app (op V)
 
+#check (yoneda.obj X).obj (op V)
+
+#check Limits.Sigma.ι
+
+
+
+lemma truc : Function.Surjective ((τ X U).app (op V)):= by
+  rintro ⟨f, W, h, g, hg, hf⟩
+
+
+  have : (∐ fun Z ↦ ∐ fun (x : @U Z) ↦ yoneda.obj Z).obj (op V) = (∐ fun Z ↦ ∐ fun (x : @U Z) ↦ ((yoneda.obj Z).obj (op V))) := by
+    --propriété universelle donc
+    sorry
+
+  let hey: (Y X U).obj (op V) := by
+    unfold Y
+    rw [this]
+
+    let gg := Limits.Sigma.ι ( fun (x: @U W) ↦ (yoneda.obj W).obj (op V)) ⟨g, hg⟩ h
+    let ggg:= Limits.Sigma.ι (fun Z ↦ ∐ fun (x : @U Z) ↦ (yoneda.obj Z).obj (op V)) W gg
+
+    exact ggg
+
+  use hey
+
+  --have : (Limits.Sigma.desc fun Z ↦ Limits.Sigma.desc fun f ↦ tau_Z_f X U Z f).app (op V) = Limits.Sigma.desc fun Z ↦ Limits.Sigma.desc fun f ↦ ((tau_Z_f X U Z f).app (op V)) := by
+  --  sorry
+  unfold τ
+  --simp
+  sorry
+
+
 
 def truc_local : SplitEpi (Arrow.mk ((τ X U).app (op V))).hom where
-  section_ := sorry
-  id := sorry
+  section_ := by
+    simp
+    intro g
+
+    choose y h using (truc X U V g)
+    exact y
+  id := by
+    simp
+    ext g
+    simp
+    choose y h using (truc X U V g)
+    congr
+
+    #check  Classical.choose (truc X U V g)
+    have : y = Classical.choose (truc X U V g) := by
+
+      sorry
+
+    rw [ ← h]
+    congr
+
+    apply?
+    congr
+    rfl
+    congr
+
+    sorry
   --normalement c'est l'axiome du choix
 
 def CechObjAugmented_local : SimplicialObject.Augmented (Type v) := (Arrow.mk ((τ X U).app (op V))).augmentedCechNerve
@@ -69,7 +128,7 @@ def homotpyEquivLocal: HomotopyEquiv (AlgebraicTopology.AlternatingFaceMapComple
 ((ChainComplex.single₀ (ModuleCat A)).obj (point.obj (CechAugmented_local X A U V))) := ExtraDegeneracy.homotopyEquiv (ExtraDegeneracyCech_local X A U V)
 
 
-def truc : SplitEpi (Arrow.mk (τ X U)).hom := by
+def truc2 : SplitEpi (Arrow.mk (τ X U)).hom := by
   sorry--Il faut le prendre localement, sinon c'est faux, la suite c'est juste pour avoir un exemple qui marche
 
 def PresheafOfTypeToAMod : (Cᵒᵖ ⥤ Type v) ⥤ Cᵒᵖ ⥤ ModuleCat A := (whiskeringRight Cᵒᵖ  _ _).obj (ModuleCat.free A)
@@ -78,7 +137,7 @@ def PresheafOfTypeToAMod : (Cᵒᵖ ⥤ Type v) ⥤ Cᵒᵖ ⥤ ModuleCat A := (
 
 def CechObjAugmented : SimplicialObject.Augmented (Cᵒᵖ ⥤Type v) := (Arrow.mk (τ X U)).augmentedCechNerve
 
-def ExtraDegeneracyCechObj : ExtraDegeneracy (CechObjAugmented X U) := Arrow.AugmentedCechNerve.extraDegeneracy (Arrow.mk (τ X U)) (truc _ _)
+def ExtraDegeneracyCechObj : ExtraDegeneracy (CechObjAugmented X U) := Arrow.AugmentedCechNerve.extraDegeneracy (Arrow.mk (τ X U)) (truc2 _ _)
 
 --def Cech : SimplicialObject (Cᵒᵖ ⥤ ModuleCat  A) :=  ((whiskeringRight SimplexCategoryᵒᵖ  (Cᵒᵖ⥤ Type v) (Cᵒᵖ⥤ ModuleCat A)).obj (PresheafOfTypeToAMod A)).obj (CechObj X U)
 
