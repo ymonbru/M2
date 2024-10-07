@@ -33,18 +33,26 @@ def bidule:= @Quiver.Hom Cat (@CategoryStruct.toQuiver Cat _)
 def match_comp (e: Expr) : MetaM <| Option (Expr × Expr × Expr) := do
   --let cat := mkConst ``Cat
 
-  let hom ←  mkFreshTypeMVar
-  let f ← mkFreshExprMVar hom
-  let g ← mkFreshExprMVar hom
-  let h ← mkFreshExprMVar hom
+  --let hom ←  mkFreshTypeMVar
+  --let f ← mkFreshExprMVar hom
+  --let g ← mkFreshExprMVar hom
+  --let h ← mkFreshExprMVar hom
 
   let t1 ← mkFreshTypeMVar
   let t2 ← mkFreshTypeMVar
   let t3 ← mkFreshTypeMVar
-  let t4 ← mkFreshTypeMVar
-  let t5 ← mkFreshTypeMVar
+  --let t4 ← mkFreshTypeMVar
+  --let t5 ← mkFreshTypeMVar
 
-  let comp ← mkAppM ``CategoryStruct.comp #[f,g]
+  let hom1 ← mkAppM ``Quiver.Hom #[t1, t2]
+  let hom2 ← mkAppM ``Quiver.Hom #[t2, t3]
+  let hom3 ← mkAppM ``Quiver.Hom #[t1, t3]
+
+  let f ← mkFreshExprMVar hom1
+  let g ← mkFreshExprMVar hom2
+  let h ← mkFreshExprMVar hom3
+
+  let comp ← mkAppM ``CategoryStruct.comp #[f, g]
   if (← isDefEq (← mkAppM ``Eq #[comp, h]) e) || (← isDefEq (← mkAppM ``Eq #[h, comp]) e) then
     return some (f,g,h)
   else
@@ -52,6 +60,7 @@ def match_comp (e: Expr) : MetaM <| Option (Expr × Expr × Expr) := do
 
 #check  Expr.app7?
 #check 1
+#check A ⟶ B
 
 
 elab "match_comp" : tactic => withMainContext do
@@ -71,3 +80,6 @@ elab "cheat" : tactic => withMainContext do
 
 example : 1 = 2 := by
   cheat
+
+
+example (h : A = B) : b = d := by sorry

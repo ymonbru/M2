@@ -68,7 +68,9 @@ def find_triangles_totrig (l : List (triangle String)) (e: Expr) : MetaM <|List 
 
 def find_triangles (l : List (Expr × Expr × Expr)) (e: Expr) : MetaM <|List (Expr × Expr × Expr) := do
   match ← is_triangle ( ← inferType e) with
-    | some (f , g, h) =>  return  (f, g, h) :: l
+    | some (f , g, h) =>
+      logInfo s!"{f}"
+      return  (f, g, h) :: l
     | none =>  return l
 
 elab "find_triangles" : tactic => withMainContext do
@@ -83,7 +85,6 @@ example : (c ≫ d) ≫ e = b ≫ e := by
 
   match_eq
   sorry
-
 
 --def andThen : Expr → Expr → Expr :=
 --  fun e => fun f => .app (.app (.const `CategoryStruct.comp []) e) f--probablement faux et à corriger plus tard
@@ -101,7 +102,7 @@ elab "GetPath" : tactic => withMainContext do
   --let l1 := (l1.map (fun e => s!"{e}"))
   let l2 := (l2.map (fun e => s!"{e}"))
   let res := CommDiag String ( ← list_triangles) l2
-  logInfo m!" the old path is { l1} the new path is { res} and the goal is { l2}"
+  logInfo s!" the old path is { l1} the new path is { res} and the goal is { l2}"
 
 
 
