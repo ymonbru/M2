@@ -117,3 +117,16 @@ lemma test (h1 : c ≫ d = b) (h2 : b ≫ e = a ≫ g) (h3 : d ≫ e = f ≫ h) 
   rw [←  h7, ← h6, ← h5, ← Category.assoc f h i, ←  h3, ← h4, ← Category.assoc a _ l, ← Category.assoc a g i,  ← h2, ← h1]
 
   repeat rw [Category.assoc]
+
+macro "rw_assoc" f:term g:term  : tactic => do
+  `(tactic| repeat (first | rw [ ← Category.assoc $f $g _ ] | rw [Category.assoc] ))
+
+lemma test2 (h1 : c ≫ d = b) : c ≫ d ≫ e = b ≫ e:= by
+
+  rw_assoc c d
+
+
+
+
+
+  sorry
