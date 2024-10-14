@@ -132,4 +132,17 @@ variable (a : A ⟶ B) (b : B ⟶ D) (c : C ⟶ D) (d: A ⟶ C) (e: C ⟶ B)
 
 lemma test3 (h1 : d ≫ e = a) (h2 : e ≫ b = c): a ≫ b = d ≫ c := by
   GetPath
-  sorry
+
+
+macro "rw_assoc" f:term g:term  : tactic => do
+  `(tactic| repeat (first | rw [ ← Category.assoc $f $g _ ] | rw [Category.assoc] ))
+
+--lemma test4 (h1 : c ≫ d = b) : c ≫ d ≫ e = b ≫ e:= by
+
+ --- rw_assoc c d
+
+
+
+
+
+--  sorry
