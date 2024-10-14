@@ -56,20 +56,22 @@ def is_triangle (e:Expr) : MetaM <| Option (Expr × Expr × Expr):= do
 #check inferType
 
 
-def toTrg (e : Expr × Expr × Expr) : triangle String where
-  f := s!"{e.1}"
-  g := s!"{e.2.1}"
-  h := s!"{e.2.2}"
+def toTrg (e : Expr × Expr × Expr) : MetaM (triangle String) := do
+  let f ← ppExpr e.1
+  let g ←  ppExpr e.2.1
+  let h ←  ppExpr e.2.2
+
+  return ⟨s!"{f}", s!"{g}", s!"{h}"⟩
 
 def find_triangles_totrig (l : List (triangle String)) (e: Expr) : MetaM <|List (triangle String) := do
   match ← is_triangle ( ← inferType e) with
-    | some (f , g, h) =>  return  (toTrg (f, g, h)) :: l
+    | some (f , g, h) =>  return  ( ← toTrg (f, g, h)) :: l
     | none =>  return l
 
 def find_triangles (l : List (Expr × Expr × Expr)) (e: Expr) : MetaM <|List (Expr × Expr × Expr) := do
   match ← is_triangle ( ← inferType e) with
     | some (f , g, h) =>
-      logInfo s!"{f}"
+      logInfo m!"one triangle is {f} ≫ {g} = {h}"
       return  (f, g, h) :: l
     | none =>  return l
 
@@ -86,23 +88,24 @@ example : (c ≫ d) ≫ e = b ≫ e := by
   match_eq
   sorry
 
+
 --def andThen : Expr → Expr → Expr :=
 --  fun e => fun f => .app (.app (.const `CategoryStruct.comp []) e) f--probablement faux et à corriger plus tard
 
-#check List.map
 
-instance : DecidableEq Expr := sorry
 
 elab "GetPath" : tactic => withMainContext do
   let hyp ← getLocalHyps
   let list_triangles :=  Array.foldlM (find_triangles_totrig) [] hyp
   let list_hom ← ← match_eq (← getMainTarget)
-  let l1 := list_hom.1
-  let l2 := list_hom.2
-  --let l1 := (l1.map (fun e => s!"{e}"))
-  let l2 := (l2.map (fun e => s!"{e}"))
-  let res := CommDiag String ( ← list_triangles) l2
-  logInfo s!" the old path is { l1} the new path is { res} and the goal is { l2}"
+  let l1 ←  (list_hom.1.mapM ppExpr : MetaM (List Format))
+  let l1 := (l1.map (fun e => s!"{e}"))
+  let res ←  CommDiag String ( ← list_triangles) l1
+
+  --let rs ← (res.mapM ppString : MetaM (List Format))
+  let l1 ←  (list_hom.1.mapM ppExpr : MetaM (List Format))
+  let l2 ← (list_hom.2.mapM ppExpr : MetaM (List Format))
+  logInfo m!" the old path is { l1} the new path is { res} and the goal is { l2}"
 
 
 
@@ -117,3 +120,16 @@ lemma test (h1 : c ≫ d = b) (h2 : b ≫ e = a ≫ g) (h3 : d ≫ e = f ≫ h) 
   rw [←  h7, ← h6, ← h5, ← Category.assoc f h i, ←  h3, ← h4, ← Category.assoc a _ l, ← Category.assoc a g i,  ← h2, ← h1]
 
   repeat rw [Category.assoc]
+
+
+variable (a : A ⟶ B) (b : A ⟶ C) (c : B ⟶ C) (d : B ⟶ D) (e : D ⟶ C) (f : C ⟶ E) (g : D ⟶ E) (h : E ⟶ F) (i : D ⟶ F) (j : D ⟶ G) (k : F ⟶ G)
+
+lemma test2 (h1 : a ≫ c = b ) (h2 : d ≫ e = c) (h3 : e ≫ f = g) (h4 : g ≫ h = i) (h5 : i ≫ k = j) : a ≫  d ≫ j = b ≫ f ≫ h ≫ k := by
+  GetPath
+  sorry
+
+variable (a : A ⟶ B) (b : B ⟶ D) (c : C ⟶ D) (d: A ⟶ C) (e: C ⟶ B)
+
+lemma test3 (h1 : d ≫ e = a) (h2 : e ≫ b = c): a ≫ b = d ≫ c := by
+  GetPath
+  sorry

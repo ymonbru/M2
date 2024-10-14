@@ -1,7 +1,10 @@
 import Mathlib.Tactic
 import Mathlib.Data.Nat.Defs
+import Lean
 
-variable (hom:Type) [DecidableEq hom] --(andThen: hom → hom → hom) --[Std.Associative  andThen]
+open Lean Meta Elab Tactic
+
+variable (hom:Type) [DecidableEq hom] [ToString hom]--(andThen: hom → hom → hom) --[Std.Associative  andThen]
 
 --(andThenAssoc: ∀ f g h, andThen f (andThen g h)= andThen (andThen f g) h)
 
@@ -9,31 +12,35 @@ variable (hom:Type) [DecidableEq hom] --(andThen: hom → hom → hom) --[Std.As
 
 @[ext]
 structure triangle where--f≫ g=h
-  f: hom
-  g: hom
-  h: hom
+  f : hom
+  g : hom
+  h : hom
   --trg_com: andThen f g = h
 deriving Repr
 
 -- le booléen est à true si on n'a rien changé et false si on à modifié un truc
-def applyTriangle (t:triangle hom) (c:List hom ): Bool × List hom := match c with
-  |[] => (true,c)
-  |_ :: [] => (true,c)
-  |a :: b :: cprime =>
-    if a = t.f ∧ b = t.g then (false,t.h :: cprime)
-    else let (b,newc):= applyTriangle t (b::cprime)
-      (b,a::newc)
+def applyTriangle (t : triangle hom) (c : List hom ): MetaM (Bool × List hom) := match c with
+  |[] => return (true, c)
+  |_ :: [] => return (true, c)
+  |a :: b :: cprime => do
+    if a = t.f ∧ b = t.g then
+      logInfo m!"the composition {t.f} ≫ {t.g} is replaced by {t.h}"
+      return (false, t.h :: cprime)
+    else
+      let (b,newc) ←  applyTriangle t (b::cprime)
+      return (b, a::newc)
 
 -- le booléen est à true si on n'a rien changé et false si on à modifié un truc
-def applyListTriangles (lt:List (triangle hom)) (c:List hom ):Bool × List (triangle hom) × List hom :=
+def applyListTriangles (lt : List (triangle hom)) (c : List hom ) : MetaM (Bool × List (triangle hom) × List hom) :=
   match lt with
-    |[] => (true,[],c)
-    |t::ltprime => let (b,newc) := applyTriangle hom t c
-      let (newbool,newlt,newc) := applyListTriangles ltprime newc
-      if b then (true, t::newlt,newc)
-      else (newbool, newlt,newc)
+    |[] => return (true, [], c)
+    |t::ltprime => do
+      let (b, newc) ←  applyTriangle hom t c
+      let (newbool, newlt, newc) ←  applyListTriangles ltprime newc
+      if b then return (true, t::newlt, newc)
+      else return (newbool, newlt, newc)
 
-theorem applyListTrianglesDec (lt:List (triangle hom)): ∀ (lh:List hom ), sizeOf (applyListTriangles hom lt lh ).2.1 ≤ sizeOf lt  := by
+/-theorem applyListTrianglesDec (lt:List (triangle hom)): ∀ (lh:List hom ), sizeOf (applyListTriangles hom lt lh ).2.1 ≤ sizeOf lt  := by
   induction lt with
   | nil =>
     intro
@@ -66,29 +73,34 @@ theorem applyListTrianglesDecLength (lt:List (triangle hom)): ∀ (lh:List hom )
   List.length q + 1by simpa
     split_ifs
     · exact Nat.le_add_of_sub_le (hr (applyTriangle hom t lh).2)
-    · linarith [hr ( applyTriangle hom t lh).2]
+    · linarith [hr ( applyTriangle hom t lh).2]-/
 
 
 -- le booléen est à true si on n'a rien changé et false si on à modifié un truc
-def expandTriangle (ok:Bool) (t:triangle hom) (c:List hom ): Bool × List hom :=
-  if not ok then (false,c)
+def expandTriangle (ok : Bool) (t : triangle hom) (c : List hom ) : MetaM (Bool × List hom ):=
+  if not ok then return (false, c)
   else  match c with
-    |[] => (ok,c)
-    |a :: cprime =>
-      if  (t.h = a) then (false,t.f :: t.g :: cprime)
-      else let (newok,newc):= expandTriangle  ok t cprime
-        (newok,a::newc)
+    |[] => return (ok,c)
+    |a :: cprime => do
+      if  (t.h = a) then
+      logInfo m!"the morphism {t.h} is replaced by the composition {t.f} ≫ {t.g}"
+      return (false, t.f :: t.g :: cprime)
+      else
+        let (newok, newc) ←  expandTriangle  ok t cprime
+        return (newok, a::newc)
 
 -- le booléen est à true si on n'a rien changé et false si on à modifié un truc
-def expandOneTriangle (lt:List (triangle hom)) (c:List hom ): Bool × List (triangle hom)× List hom := match lt with
-  |[]=> (true,lt,c)
-  |t :: ltprime =>
-    let (b,newc):= expandTriangle hom true t c
-    if b then let (newbool,ltprimeprime,newnewc):= expandOneTriangle ltprime c
-      (newbool, t::ltprimeprime, newnewc)
-    else (false,ltprime,newc)
+def expandOneTriangle (lt : List (triangle hom)) (c : List hom ) : MetaM (Bool × List (triangle hom)× List hom) := match lt with
+  |[]=> return (true, lt, c)
+  |t :: ltprime => do
+    let (b, newc) ←  expandTriangle hom true t c
+    if b then
+      let (newbool, ltprimeprime, newnewc) ←  expandOneTriangle ltprime c
+      return (newbool, t::ltprimeprime, newnewc)
+    else
+      return (false, ltprime,newc)
 
-theorem expandOneTriangleDec (lt:List (triangle hom)) (c:List hom ): (expandOneTriangle hom lt c ).1 = false → sizeOf (expandOneTriangle hom lt c ).2.1 < sizeOf lt  := by
+/-theorem expandOneTriangleDec (lt:List (triangle hom)) (c:List hom ): (expandOneTriangle hom lt c ).1 = false → sizeOf (expandOneTriangle hom lt c ).2.1 < sizeOf lt  := by
   induction lt with
   | nil =>
     intro hyp
@@ -108,57 +120,23 @@ theorem expandOneTriangleDec (lt:List (triangle hom)) (c:List hom ): (expandOneT
         split_ifs at hyp
         exact hyp
       linarith [hr this]
-    · linarith
+    · linarith-/
 
-
-/- Trouver une solution pour ne pas repter avec le code qui précède-/
-theorem expandOneTriangleDecLength (lt:List (triangle hom)) (c:List hom ): (expandOneTriangle hom lt c ).1 = false → List.length (expandOneTriangle hom lt c ).2.1 < List.length lt  := by
- induction lt with
-  | nil =>
-    intro hyp
-    rw [expandOneTriangle] at hyp
-    exfalso
-    exact (Bool.eq_not_self (true, [], c).fst).mp hyp
-  |cons t q hr =>
-    intro hyp
-    rw [expandOneTriangle]
-
-    suffices (if (expandTriangle hom true t c).1 = true then
-          ((expandOneTriangle hom q c).1, t :: (expandOneTriangle hom q c).2.1,
-            (expandOneTriangle hom q c).2.2)
-        else (false, q, (expandTriangle hom true t c).2)).2.1.length <
-  q.length + 1 by simpa
-
-    split_ifs with hypp
-    · have : (expandOneTriangle hom q c).fst = false := by
-        rw [expandOneTriangle] at hyp
-        simp only at hyp
-        split_ifs at hyp
-        assumption
-      rw [List.length_cons, add_lt_add_iff_right]
-      exact hr this
-    · linarith
-
-/--def IsValid (l:List hom): Prop:= match l with
-  |[]=> True
-  |_ :: [] => True
-  |f :: g :: lprime => (codom f = dom g) ∧ (IsValid (g :: lprime))--/
-
- def CommDiag (lt:List (triangle hom)) (lh : List hom ): List hom :=
-  let alt := applyListTriangles hom lt lh
-  let eot  := expandOneTriangle hom alt.2.1 alt.2.2
+ partial def CommDiag (lt:List (triangle hom)) (lh : List hom ): MetaM (List hom) := do
+  let alt ←  applyListTriangles hom lt lh
+  let eot ←  expandOneTriangle hom alt.2.1 alt.2.2
 
   if hyp : not eot.1 then
     CommDiag eot.2.1 eot.2.2
-  else alt.2.2
-termination_by lt
+  else return alt.2.2
+/-termination_by lt
 decreasing_by
   calc sizeOf eot.2.1 < sizeOf alt.2.1  := by {
         apply expandOneTriangleDec
         apply Bool.not_inj_iff.mp
         rw [hyp]
         simp}
-        _ ≤ sizeOf lt  := by apply applyListTrianglesDec
+        _ ≤ sizeOf lt  := by apply applyListTrianglesDec-/
 
 variable (a b c: Nat)
 
