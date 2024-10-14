@@ -5,7 +5,7 @@ import Mathlib.CategoryTheory.Category.Basic
 open CategoryTheory Lean Meta Elab Tactic
 
 
-variable (Cate : Type ) [Category Cate]  --[Small.{v, u} C]
+variable (Cate : Cat ) --[Category Cate]  --[Small.{v, u} C]
 
 
 
@@ -25,42 +25,27 @@ lemma test (h1 : c ≫ d = b) (h2 : b ≫ e = a ≫ g) (h3 : d ≫ e = f ≫ h) 
 
 #check (@CategoryStruct.toQuiver Cate _)
 
-def bidule:= @Quiver.Hom Cat (@CategoryStruct.toQuiver Cat _)
+def qhc:= @Quiver.Hom Cat (@CategoryStruct.toQuiver Cat _)
 
 #check @Quiver.Hom
 
 
 def match_comp (e: Expr) : MetaM <| Option (Expr × Expr × Expr) := do
-  --let cat ← mkConst ``Cate
-  let cat ← mkFreshTypeMVar
+  let cat := mkConst ``Cat [← mkFreshLevelMVar, ← mkFreshLevelMVar]
+  let cat ← mkFreshExprMVar cat
   let A ← mkFreshExprMVar cat
   let B ← mkFreshExprMVar cat
   let C ← mkFreshExprMVar cat
+  --let t ← mkFreshTypeMVar
 
-  let catCategory ← mkFreshTypeMVar
 
-  let hom1 ← mkAppM ``bidule #[ A, B]
-  let hom2 ← mkAppM ``bidule #[ B, C]
-  let hom3 ← mkAppM ``bidule #[ A, C]
+  let hom1 ← mkAppM ``qhc #[ A, B]
+  let hom2 ← mkAppM ``qhc #[ B, C]
+  let hom3 ← mkAppM ``qhc #[ A, C]
 
-  --let hom ←  mkFreshTypeMVar
-  --let f ← mkFreshExprMVar hom
-  --let g ← mkFreshExprMVar hom
-  --let h ← mkFreshExprMVar hom
-
-  let f ← mkFreshTypeMVar
-  let g ← mkFreshTypeMVar
-  let h ← mkFreshTypeMVar
-  --let t4 ← mkFreshTypeMVar
-  --let t5 ← mkFreshTypeMVar
-
-  --let hom1 ← mkAppM ``(@Quiver.Hom) #[t1, t2]
-  --let hom2 ← mkAppM ``Quiver.Hom #[t2, t3]
-  --let hom3 ← mkAppM ``Quiver.Hom #[t1, t3]
-
-  --let f ← mkFreshExprMVar hom1
-  --let g ← mkFreshExprMVar hom2
-  --let h ← mkFreshExprMVar hom3
+  let f ← mkFreshExprMVar hom1
+  let g ← mkFreshExprMVar hom2
+  let h ← mkFreshExprMVar hom3
 
   let comp ← mkAppM ``CategoryStruct.comp #[f, g]
   if (← isDefEq (← mkAppM ``Eq #[comp, h]) e) || (← isDefEq (← mkAppM ``Eq #[h, comp]) e) then
