@@ -1,11 +1,12 @@
 import Lean
 import Mathlib.Tactic
 import Mathlib.CategoryTheory.Category.Basic
+import Mathlib.Tactic.CategoryTheory.Slice
 
-open CategoryTheory Lean Meta Elab Tactic
+open CategoryTheory Lean Meta Elab Tactic Term
 
 
-variable (Cate : Cat ) --[Category Cate]  --[Small.{v, u} C]
+variable (Cate : Type  ) [Category Cate]  --[Small.{v, u} C]
 
 
 
@@ -25,23 +26,72 @@ lemma test (h1 : c ≫ d = b) (h2 : b ≫ e = a ≫ g) (h3 : d ≫ e = f ≫ h) 
 
 #check (@CategoryStruct.toQuiver Cate _)
 
-def qhc:= @Quiver.Hom Cat (@CategoryStruct.toQuiver Cat _)
+def qhc:= @Quiver.Hom Cate (@CategoryStruct.toQuiver Cate _)
 
 #check @Quiver.Hom
 
+#check (c : qhc Cate A B)
+
+#check (A : Cate)
+
+--variable (Truc: Type) [Category Truc] (A B : Truc)
+
+--#check Quiver.Hom A B
+--#check Category Truc
+
+def matchexpr (e : Expr) : MetaM <| Option (Expr × Expr):= do
+  --let cat := mkConst ``Cat [← mkFreshLevelMVar, ← mkFreshLevelMVar]
+  let cat ← mkFreshTypeMVar
+
+  --let inst ← mkAppM ``Category #[cat]
+
+
+  let c ← mkFreshExprMVar cat
+  let A ← mkFreshExprMVar c
+  let B ← mkFreshExprMVar c
+  let inst ← mkFreshTypeMVar
+
+
+  let hom1 ← mkAppM ``Quiver.Hom #[c, inst, A, B]
+
+  let f ← mkFreshExprMVar hom1
+  let g ← mkFreshExprMVar hom1
+
+  if (← isDefEq (← mkAppM ``Eq #[f, g]) e) then
+    return some (f,g)
+  else
+    return none
+
+elab "matchexpr" : tactic => withMainContext do
+  match ← matchexpr (← getMainTarget) with
+    | some (a, b) =>
+      logInfo m!"Matched composition f = g; f = {a}, g = {b}"
+    |none =>
+      logWarning m!"Main target not of the corect form"
+
+example : c ≫ d = b := by
+  matchexpr
+
+  sorry
+
 
 def match_comp (e: Expr) : MetaM <| Option (Expr × Expr × Expr) := do
-  let cat := mkConst ``Cat [← mkFreshLevelMVar, ← mkFreshLevelMVar]
-  let cat ← mkFreshExprMVar cat
-  let A ← mkFreshExprMVar cat
-  let B ← mkFreshExprMVar cat
-  let C ← mkFreshExprMVar cat
-  --let t ← mkFreshTypeMVar
+  --let cat := mkConst ``Cat [← mkFreshLevelMVar, ← mkFreshLevelMVar]
+  let cat ← mkFreshTypeMVar
+
+  --let inst ← mkAppM ``Category #[cat]
 
 
-  let hom1 ← mkAppM ``qhc #[ A, B]
-  let hom2 ← mkAppM ``qhc #[ B, C]
-  let hom3 ← mkAppM ``qhc #[ A, C]
+  let c ← mkFreshExprMVar cat
+  let A ← mkFreshExprMVar c
+  let B ← mkFreshExprMVar c
+  let C ← mkFreshExprMVar c
+  let inst ← mkFreshTypeMVar
+
+
+  let hom1 ← mkAppM ``Quiver.Hom #[c, inst, A, B]
+  let hom2 ← mkAppM ``Quiver.Hom #[c, inst, B, C]
+  let hom3 ← mkAppM ``Quiver.Hom #[c, inst, A, C]
 
   let f ← mkFreshExprMVar hom1
   let g ← mkFreshExprMVar hom2
@@ -78,3 +128,40 @@ example : 1 = 2 := by
 
 
 example (h : A = B) : b = d := by sorry
+
+
+elab "#expr" "[" t:term "]" : command =>
+  Command.liftTermElabM do
+  let t ← Term.elabTerm t none
+  let t ← instantiateMVars t
+  logInfo m!"Expression: {t}:\n{repr t}"
+  let t ← reduce t
+  let t ← instantiateMVars t
+  logInfo m!"Reduced: {t}:\n{repr t}"
+
+
+
+def checkTactic (target: Expr)(tac: Syntax):
+  TermElabM (Option Nat) := do
+    try
+      let goal ← mkFreshExprMVar target
+      let (goals, _) ←
+        withoutErrToSorry do
+        Elab.runTactic goal.mvarId! tac
+          (← read) (← get)
+      return some goals.length
+    catch _ =>
+      return none
+
+elab "check_tactic" tac:tacticSeq : tactic => do
+  let n? ← checkTactic (← getMainTarget) tac
+  match n? with
+  | some n =>
+    logInfo m!"Tactic succeeded; {n} goals remain"
+  | none =>
+    logWarning m!"Tactic failed"
+
+example : 2 ≤ 20 := by
+  check_tactic decide
+
+  simp

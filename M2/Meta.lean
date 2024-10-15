@@ -1,6 +1,7 @@
 import Lean
 import Mathlib.Tactic
 import Mathlib.CategoryTheory.Category.Basic
+import Mathlib.Tactic.CategoryTheory.Slice
 import M2.Comm_test
 
 open CategoryTheory Lean Meta Elab Tactic
@@ -115,28 +116,33 @@ lemma test (h1 : c ≫ d = b) (h2 : b ≫ e = a ≫ g) (h3 : d ≫ e = f ≫ h) 
 
   GetPath
 
+
   rw [←  h7, ← h6, ← h5, ← Category.assoc f h i, ←  h3, ← h4, ← Category.assoc a _ l, ← Category.assoc a g i,  ← h2, ← h1]
 
   repeat rw [Category.assoc]
 
-macro "rw_assoc" f:term g:term  h:term : tactic => do
-  `(tactic| repeat (first | rw [ ← Category.assoc $f $g, $h ] | rw [ Category.assoc] ))
+macro "rw_assoc" f:term " et" g:term "et" h:term : tactic => do
+  `(tactic| repeat (first | rw [ ← Category.assoc $f $g, $h:term ] | rw [ Category.assoc] ))
 
 lemma test4 (h1 : c ≫ d = b) : c ≫ d ≫ e = b ≫ e:= by
   --rw [←  Category.assoc c d]
-  rw_assoc c d h1
+  rw_assoc c et d et h1
 
-
-  sorry
-  sorry
 
 
 variable (a : A ⟶ B) (b : A ⟶ C) (c : B ⟶ C) (d : B ⟶ D) (e : D ⟶ C) (f : C ⟶ E) (g : D ⟶ E) (h : E ⟶ F) (i : D ⟶ F) (j : D ⟶ G) (k : F ⟶ G)
 
 lemma test2 (h1 : a ≫ c = b ) (h2 : d ≫ e = c) (h3 : e ≫ f = g) (h4 : g ≫ h = i) (h5 : i ≫ k = j) : a ≫  d ≫ j = b ≫ f ≫ h ≫ k := by
-  GetPath
-  sorry
 
+  GetPath
+
+  rw [← h5, ← h4, ← h3]
+  slice_lhs 2 3 =>
+    rw [h2]
+
+  slice_lhs 1 2 =>
+    rw [h1]
+  repeat rw [Category.assoc]
 
 variable (a : A ⟶ B) (b : B ⟶ D) (c : C ⟶ D) (d: A ⟶ C) (e: C ⟶ B)
 
@@ -146,6 +152,8 @@ lemma test3 (h1 : d ≫ e = a) (h2 : e ≫ b = c): a ≫ b = d ≫ c := by
   sorry
 
 
+
+#check (apply : TacticM Unit)
 
 
 
