@@ -2,7 +2,7 @@ import Lean
 import Mathlib.Tactic
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.Tactic.CategoryTheory.Slice
-import M2.Comm_test
+import M2.Comm_message
 
 open CategoryTheory Lean Meta Elab Tactic
 
@@ -111,6 +111,7 @@ elab "GetPath" : tactic => withMainContext do
 
 
 lemma test (h1 : c ≫ d = b) (h2 : b ≫ e = a ≫ g) (h3 : d ≫ e = f ≫ h) (h4 : g ≫ i = j) (h5 : h ≫ i = k) (h6 : f ≫ k = m ) (h7 : m ≫ l = n) : a ≫ j ≫ l = c ≫ n:= by
+
   match_eq
   find_triangles
 

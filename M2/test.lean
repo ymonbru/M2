@@ -141,27 +141,95 @@ elab "#expr" "[" t:term "]" : command =>
 
 
 
-def checkTactic (target: Expr)(tac: Syntax):
-  TermElabM (Option Nat) := do
-    try
-      let goal ← mkFreshExprMVar target
-      let (goals, _) ←
-        withoutErrToSorry do
-        Elab.runTactic goal.mvarId! tac
-          (← read) (← get)
-      return some goals.length
-    catch _ =>
-      return none
+def machinTactic (target: Expr)(tac: Syntax):
+  TermElabM (Option (Nat × Nat)) :=
+    withoutModifyingState do
 
-elab "check_tactic" tac:tacticSeq : tactic => do
-  let n? ← checkTactic (← getMainTarget) tac
-  match n? with
-  | some n =>
-    logInfo m!"Tactic succeeded; {n} goals remain"
-  | none =>
-    logWarning m!"Tactic failed"
+    return some (1, 2)
+
+syntax (name:= machin) "machin" tacticSeq : tactic
+
+--def as: TSyntax `Lean.Parser.Tactic.tacticSeq := assumption
+
+@[tactic machin] def machinImpl : Tactic :=
+  fun stx => do
+  match stx with
+  | `(tactic| machin $tac) =>
+    let n? ← machinTactic (← getMainTarget) tac
+    match n? with
+    | some (a, b) =>
+      logInfo m!"un message"
+      TryThis.addSuggestion stx tac
+    | none =>
+      logWarning m!"Tactic failed"
+  | _ => throwUnsupportedSyntax
+
+
+
+
 
 example : 2 ≤ 20 := by
-  check_tactic decide
+  machin decide
 
   simp
+
+/- the four morphism of the square 1≫ 2= 3≫ 4 of type 5-/
+def is_square (e:Expr) : MetaM <| Option (Expr × Expr × Expr × Expr × Expr):= do
+  --let e ← whnf e
+  if e.isAppOf ``Eq then
+    let e1 := e.getArg! 1
+    let e2 := e.getArg! 2
+    match e1.isAppOf ``CategoryStruct.comp , e2.isAppOf ``CategoryStruct.comp with
+      | true, true => return some (e1.getArg! 5, e1.getArg! 6, e2.getArg! 5, e2.getArg! 6, ← inferType e1)
+      | _, _ => return none -- un triangle ou autres chose
+  else
+    return none
+
+elab "split_square " h:ident " : " t:term : tactic => do
+  let hmap : Name := Name.str h.getId  "map"
+  let hleft : Name := Name.str h.getId  "map_eq_left"
+  let hright : Name := Name.str h.getId  "map_eq_right"
+
+  withMainContext do
+    let goal ← getMainGoal
+    let t ← elabType t
+
+    let (ta,tb,tc,td,homType) ← ← is_square t
+    let p ← mkFreshExprMVar homType MetavarKind.syntheticOpaque hmap
+    let (_, mvarIdNew) ← MVarId.intro1P $ ← goal.assert hmap homType p
+    replaceMainGoal [p.mvarId!, mvarIdNew]
+    closeMainGoal `exact (t.getArg! 1)
+
+
+    let LeftEq ← mkAppM `Eq #[ ← mkAppM ``CategoryStruct.comp #[ta,tb],t.getArg! 1]
+
+    let p ← mkFreshExprMVar LeftEq MetavarKind.syntheticOpaque hleft
+
+    let goal ← getMainGoal
+    let (_, mvarIdNew) ← MVarId.intro1P $ ← goal.assert hleft LeftEq p
+    replaceMainGoal [p.mvarId!, mvarIdNew]
+
+
+
+#check getMainGoal
+
+example : 1 + 1 = 2 := by
+  split_square h : c ≫ d =  c ≫ d
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  sorry
+  sorry
