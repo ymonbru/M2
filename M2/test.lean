@@ -2,6 +2,7 @@ import Lean
 import Mathlib.Tactic
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.Tactic.CategoryTheory.Slice
+import M2.Meta
 
 open CategoryTheory Lean Meta Elab Tactic Term
 
@@ -185,45 +186,78 @@ def is_square (e:Expr) : MetaM <| Option (Expr × Expr × Expr × Expr × Expr):
   else
     return none
 
-elab "split_square " h:ident " : " t:term : tactic => do
+elab "split_square" h:ident":" t:term : tactic => do
+
   let hmap : Name := Name.str h.getId  "map"
   let hleft : Name := Name.str h.getId  "map_eq_left"
   let hright : Name := Name.str h.getId  "map_eq_right"
+
+
 
   withMainContext do
     let goal ← getMainGoal
     let t ← elabType t
 
     let (ta,tb,tc,td,homType) ← ← is_square t
-    let p ← mkFreshExprMVar homType MetavarKind.syntheticOpaque hmap
-    let (_, mvarIdNew) ← MVarId.intro1P $ ← goal.assert hmap homType p
-    replaceMainGoal [p.mvarId!, mvarIdNew]
+    let diag ← mkFreshExprMVar homType MetavarKind.syntheticOpaque hmap
+
+    --withLocalDecl hmap .default homType (fun )
+
+    let (diagId, newGoal) ← MVarId.intro1P $ ← goal.assert hmap homType diag
+    replaceMainGoal [diag.mvarId!, newGoal]
     closeMainGoal `exact (t.getArg! 1)
 
+    withMainContext do
+    let diagDecl ←  diagId.getDecl
+    let leftEq ← mkAppM `Eq #[ ← mkAppM ``CategoryStruct.comp #[ta,tb], diagDecl.toExpr]--
 
-    let LeftEq ← mkAppM `Eq #[ ← mkAppM ``CategoryStruct.comp #[ta,tb],t.getArg! 1]
-
-    let p ← mkFreshExprMVar LeftEq MetavarKind.syntheticOpaque hleft
-
+    let leftEqMv ← mkFreshExprMVar leftEq MetavarKind.syntheticOpaque hleft
     let goal ← getMainGoal
-    let (_, mvarIdNew) ← MVarId.intro1P $ ← goal.assert hleft LeftEq p
-    replaceMainGoal [p.mvarId!, mvarIdNew]
+    let (_, newGoal) ← MVarId.intro1P $ ← goal.assert hleft leftEq leftEqMv
+    replaceMainGoal [leftEqMv.mvarId!, newGoal]
+    evalTactic $ ← `(tactic| sorry)
+
+    withMainContext do
+    let rightEq ← mkAppM `Eq #[ ← mkAppM ``CategoryStruct.comp #[tc,td],diagDecl.toExpr]--
+
+    let rightEqMv ← mkFreshExprMVar rightEq MetavarKind.syntheticOpaque hright
+    let goal ← getMainGoal
+    let (_, newGoal) ← MVarId.intro1P $ ← goal.assert hright rightEq rightEqMv
+    replaceMainGoal [rightEqMv.mvarId!, newGoal]
+    evalTactic $ ← `(tactic| sorry)
+
+#check elabTerm
+
+def find_triangles ( _ : Unit) (e: Expr) : TacticM Unit := withMainContext do
+  let txt := s!"{ ← ppExpr e } : { ← inferType e}"
+  evalTactic $ ← `(tactic | try split_square `( ← ppExpr e) : elabterm e )
+
+  return ()
+
+elab "split" : tactic => withMainContext do
+  let hyp ← getLocalHyps
+  let _ ←   Array.foldlM (find_triangles) () hyp
 
 
 
-#check getMainGoal
-
-example : 1 + 1 = 2 := by
-  split_square h : c ≫ d =  c ≫ d
+#check Array.foldlM
+#check liftMetaTactic
 
 
+variable (a: A ⟶ B) (b: B ⟶ C) (c: A ⟶ D ) (d : D ⟶ C)
 
-
-
-
+example (h : a ≫ b =  c ≫ d) : a ≫ b = c ≫ d := by
+  --split
 
 
 
+  split_square h:  a ≫ b = c ≫ d
+
+  rw [h.map_eq_left,h.map_eq_right]
+
+  --decide
+
+  --sorry
 
 
 
@@ -231,5 +265,28 @@ example : 1 + 1 = 2 := by
 
 
 
-  sorry
-  sorry
+
+
+
+
+
+
+
+
+
+
+
+
+
+  --sorry
+
+
+#check mkConst
+#expr [a]
+
+variable (A B C D E F G H : Cate) (a : A ⟶ D) (b : A ⟶ C) (c : A ⟶ B) (d : B ⟶ C) (e : C ⟶ E) (f : B ⟶ F) (h : F ⟶ E) (i : E ⟶ G) (j : D ⟶ G) (k : F ⟶ G) (l : G ⟶ H) (m : B ⟶ G) (n : B ⟶ H)
+
+
+lemma test (h1 : c ≫ d = b) (h2 : b ≫ e = a ≫ g) (h3 : d ≫ e = f ≫ h) (h4 : g ≫ i = j) (h5 : h ≫ i = k) (h6 : f ≫ k = m ) (h7 : m ≫ l = n) : a ≫ j ≫ l = c ≫ n:= by
+
+  GetPath

@@ -126,7 +126,7 @@ def expandOneTriangle (lt : List (triangle hom)) (c : List hom ) : MetaM (Bool �
   let alt ←  applyListTriangles hom lt lh
   let eot ←  expandOneTriangle hom alt.2.1 alt.2.2
 
-  if hyp : not eot.1 then
+  if not eot.1 then
     CommDiag eot.2.1 eot.2.2
   else return alt.2.2
 /-termination_by lt
