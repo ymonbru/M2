@@ -1,6 +1,7 @@
 import Mathlib.Tactic
 import Mathlib.Data.Nat.Defs
 import Lean
+import M2.rw_assoc
 
 open Lean Meta Elab Tactic
 
@@ -25,6 +26,10 @@ def applyTriangle (t : triangle) (c : List Expr ): TacticM (Bool × List Expr) :
   |_ :: [] => return (true, c)
   |a :: b :: cprime => do
     if (← isDefEq a t.f) ∧  (← isDefEq b t.g) then
+
+      let proofTerm ← Term.exprToSyntax t.proof
+      evalTactic $ ← `(tactic| rw_assoc $proofTerm )
+
       logInfo m!"the composition {← ppExpr t.f} ≫ {← ppExpr t.g} is replaced by {← ppExpr t.h}"
       return (false, t.h :: cprime)
     else
@@ -49,6 +54,10 @@ def expandTriangle (ok : Bool) (t : triangle) (c : List Expr ) : TacticM (Bool �
     |[] => return (ok,c)
     |a :: cprime => do
       if  ← isDefEq t.h a then
+
+      let proofTerm ← Term.exprToSyntax t.proof
+      evalTactic $ ← `(tactic| rw [← $proofTerm] )
+
       logInfo m!"the morphism {← ppExpr t.h} is replaced by the composition {← ppExpr t.f} ≫ {← ppExpr t.g}"
       return (false, t.f :: t.g :: cprime)
       else
