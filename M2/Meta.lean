@@ -107,12 +107,49 @@ elab "FindPath" : tactic => withMainContext do
   let l2 ← (list_hom.2.mapM ppExpr : MetaM (List Format))
   logInfo m!" the old path is { l1} the new path is { res} and the goal is { l2}"
 
+def truc: Syntax := Lean.Syntax.atom (Lean.SourceInfo.none) "hmap"
 
+
+
+
+--h: a ≫ b = c ≫ d
+elab "split_square" h:ident "with" c:term "and" d:term  : tactic => withMainContext do
+  let hmap := Name.str h.getId  "map"
+  let hleft : Name := Name.str h.getId  "map_eq_left"
+  let hright : Name := Name.str h.getId  "map_eq_right"
+
+  let hmap := `(← ppExpr (mkConst hmap))
+
+  evalTactic $ ← `(tactic|set $hmap := $c ≫ $d with ← hello)
+
+  --set h2.map := a ≫ g with ← h2.right
+  --rename' h2 => h2.left
+
+  --return ()
+
+#check Name.str
 
 lemma test (h1 : c ≫ d = b) (h2 : b ≫ e = a ≫ g) (h3 : d ≫ e = f ≫ h) (h4 : g ≫ i = j) (h5 : h ≫ i = k) (h6 : f ≫ k = m ) (h7 : m ≫ l = n) : a ≫ j ≫ l = c ≫ n:= by
-  match_eq
+  --match_eq
+  --find_triangles
+  --split_square hello with a and g
+  --split_square a
+
+
+  have heyho : 2+2=4 := by
+    sorry
+
+  set h2.map := a ≫ g with ← h2.right
+  rename' h2 => h2.left
+
+  set h3.map := f ≫ h with ← h3.right
+  rename' h3 => h3.left
+
   find_triangles
-  --FindPath
+
+  FindPath
+  FindPath--Truc bizzare sur pourquoi ça s'arrete
+  FindPath
 
 
   rw [←  h7, ← h6, ← h5, ← Category.assoc f h i, ←  h3, ← h4, ← Category.assoc a _ l, ← Category.assoc a g i,  ← h2, ← h1]
