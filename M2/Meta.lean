@@ -7,21 +7,14 @@ import M2.Comm_rw
 open CategoryTheory Lean Meta Elab Tactic
 
 
-variable (Cat : Type ) [Category Cat]
-
-variable (A B C D E F G H : Cat) (a : A ⟶ D) (b : A ⟶ C) (c : A ⟶ B) (d : B ⟶ C) (e : C ⟶ E) (f : B ⟶ F) (h : F ⟶ E) (i : E ⟶ G) (j : D ⟶ G) (k : F ⟶ G) (l : G ⟶ H) (m : B ⟶ G) (n : B ⟶ H)
-
+/-- check if an expression is a sequence of composition of morphisms and gives the list-/
 partial def match_comp (e : Expr) : MetaM <|(List Expr) := do
   if e.isAppOf ``CategoryStruct.comp then
     return (← match_comp (e.getArg! 5)) ++ (← match_comp (e.getArg! 6)) -- probablement pas optimal du tout
   else
     return [e]
---termination_by e
---decreasing_by
-  --ça devrait se faire tout seul non?
---  · sorry
---  · sorry
 
+/-- check if an expression is an equality of composition of morphisms and gives the two sequences-/
 def match_eq (e : Expr) : MetaM <| Option (List Expr × List Expr) := do
   let e ← whnf e
   if e.isAppOf ``Eq then
@@ -29,30 +22,7 @@ def match_eq (e : Expr) : MetaM <| Option (List Expr × List Expr) := do
   else
     return none
 
-#check MonadLCtx.getLCtx
-
-
-elab "match_eq" : tactic => withMainContext do
-  match ← match_eq (← getMainTarget) with
-    | some (a, b) =>
-      logInfo m!"It's an equality of compostion, the first sequence is = {a}, and the second one is {b}"
-    |none =>
-      logWarning m!"Main target not of the corect form"
-
-
-def is_triangle_and_square (e : Expr) : MetaM <| Option (Expr × Expr × Expr ⊕ Expr × Expr × Expr × Expr × Expr × Expr) := do
-  --let e ← whnf e
-  if e.isAppOf ``Eq then
-    let e1 := e.getArg! 1
-    let e2 := e.getArg! 2
-    match e1.isAppOf ``CategoryStruct.comp , e2.isAppOf ``CategoryStruct.comp with
-      | true, true => return some <| .inr (e1.getArg! 5, e1.getArg! 6, e2, e2.getArg! 5, e2.getArg! 6, e1)--a square
-      | true, _ => return some <| .inl (e1.getArg! 5, e1.getArg! 6, e2)
-      | _, true => return some <| .inl (e2.getArg! 5, e2.getArg! 6, e1)
-      | _, _ => return none
-  else
-    return none
-
+/-- check if the expression correspond to  a ≫ b = c or c = a ≫ b and gives the three morphisms involved -/
 def is_triangle (e : Expr) : MetaM <| Option (Expr × Expr × Expr) := do
   --let e ← whnf e
   if e.isAppOf ``Eq then
@@ -66,15 +36,31 @@ def is_triangle (e : Expr) : MetaM <| Option (Expr × Expr × Expr) := do
   else
     return none
 
+/-- check if the expression is of the form a ≫ b = c ≫ d and gives c and d-/
+def is_square_lhs (e : Expr) : MetaM <| Option ( Expr × Expr) := do
+  --let e ← whnf e
+  if e.isAppOf ``Eq then
+    let e1 := e.getArg! 1
+    let e2 := e.getArg! 2
+    match e1.isAppOf ``CategoryStruct.comp , e2.isAppOf ``CategoryStruct.comp with
+      | true, true => return (e2.getArg! 5, e2.getArg! 6)
+      | true, _ => return none
+      | _, true => return none
+      | _, _ => return none
+  else
+    return none
+
+/-- build a data structure triangle (from M2.Comm_rw) that represent the composition h : e.1 ≫ e.2.1 =e.2.2-/
 def toTrg (e : Expr × Expr × Expr ) (h : Expr) : MetaM (triangle):= do
   return ⟨e.1 ,e.2.1 ,e.2.2, h⟩
 
+/-- a step in FindPath that add to the list the triangle coresponding to e if it represents a triangle  -/
 def find_triangles_totrig (l : List triangle ) (e: Expr) : MetaM <|List triangle := do
   match ← is_triangle ( ← inferType e) with
     | some <| (f , g, h) =>  return  ( ← toTrg (f, g, h) e) :: l
     | none =>  return l
 
-def find_triangles (l : List (Expr × Expr × Expr)) (e: Expr) : MetaM <|List (Expr × Expr × Expr) := do
+/-def find_triangles (l : List (Expr × Expr × Expr)) (e: Expr) : MetaM <|List (Expr × Expr × Expr) := do
   match ← is_triangle ( ← inferType e) with
     | some <| (f , g, h) =>
       logInfo m!"one triangle is {f} ≫ {g} = {h}"
@@ -84,96 +70,67 @@ def find_triangles (l : List (Expr × Expr × Expr)) (e: Expr) : MetaM <|List (E
 elab "find_triangles" : tactic => withMainContext do
   let hyp ← getLocalHyps
   let list_triangles :=  Array.foldlM (find_triangles) [] hyp
-  logInfo m!" the triangles are { ← list_triangles}"
+  logInfo m!" the triangles are { ← list_triangles}"-/
 
 
-#check elabTerm
+/-- If e is of the form a ≫ b = c ≫ d the morphisme c ≫ d is renamed e.map and e is replaced by
+e.map_eq_right: a ≫ b = e.map and e.map_eq_left : c ≫ d = e.map-/
+def split_square_step (_ : Unit ) (e : Expr) : TacticM Unit := withMainContext do
+  match ← is_square_lhs (← inferType e) with
+    |some (c, d) =>
+      let hname := s!"{← ppExpr e}"
+      let hmap := Name.str hname.toName   "map"
+      let hleft  := Name.str hname.toName "map_eq_left"
+      let hright := Name.str hname.toName  "map_eq_right"
 
-example : (c ≫ d) ≫ e = b ≫ e := by
+      evalTactic $ ← `(tactic|set $(mkIdent hmap) := $( ← Term.exprToSyntax c) ≫ $( ← Term.exprToSyntax d) with ← $(mkIdent hright))
+      evalTactic $ ← `(tactic|rename' $(mkIdent hname.toName) => $(mkIdent hleft))
 
-  match_eq
-  sorry
+    | none => return ()
 
+/--Apply the split_squre_step to all the "squares in the local context"-/
+elab "split_square" : tactic => withMainContext do
+  let hyp ← getLocalHyps
+  let _ ←  Array.foldlM (split_square_step) () hyp
 
+/-- Split all the square if needed then find the triangles and use the algo CommDiag to show the goal-/
 elab "FindPath" : tactic => withMainContext do
+  evalTactic $ ← `(tactic| split_square)
+
+  withMainContext do-- beacause the context has changed
   let hyp ← getLocalHyps
   let list_triangles :=  Array.foldlM (find_triangles_totrig) [] hyp
   let list_hom ← ← match_eq (← getMainTarget)
-  let res ←  CommDiag  ( ← list_triangles) list_hom.1
+
+  let _ ←  CommDiag  ( ← list_triangles) list_hom.1
 
   evalTactic $ ← `(tactic| repeat rw [Category.assoc])
 
-  let l1 ←  (list_hom.1.mapM ppExpr : MetaM (List Format))
-  let l2 ← (list_hom.2.mapM ppExpr : MetaM (List Format))
-  logInfo m!" the old path is { l1} the new path is { res} and the goal is { l2}"
 
-def truc: Syntax := Lean.Syntax.atom (Lean.SourceInfo.none) "hmap"
+ /- Exemples -/
 
+variable (Cat : Type ) [Category Cat]
 
-
-
---h: a ≫ b = c ≫ d
-elab "split_square" h:ident "with" c:term "and" d:term  : tactic => withMainContext do
-  let hmap := Name.str h.getId  "map"
-  let hleft : Name := Name.str h.getId  "map_eq_left"
-  let hright : Name := Name.str h.getId  "map_eq_right"
-
-  let hmap := `(← ppExpr (mkConst hmap))
-
-  evalTactic $ ← `(tactic|set $hmap := $c ≫ $d with ← hello)
-
-  --set h2.map := a ≫ g with ← h2.right
-  --rename' h2 => h2.left
-
-  --return ()
-
-#check Name.str
+variable (A B C D E F G H : Cat) (a : A ⟶ D) (b : A ⟶ C) (c : A ⟶ B) (d : B ⟶ C) (e : C ⟶ E) (f : B ⟶ F) (h : F ⟶ E) (i : E ⟶ G) (j : D ⟶ G) (k : F ⟶ G) (l : G ⟶ H) (m : B ⟶ G) (n : B ⟶ H)
 
 lemma test (h1 : c ≫ d = b) (h2 : b ≫ e = a ≫ g) (h3 : d ≫ e = f ≫ h) (h4 : g ≫ i = j) (h5 : h ≫ i = k) (h6 : f ≫ k = m ) (h7 : m ≫ l = n) : a ≫ j ≫ l = c ≫ n:= by
-  --match_eq
-  --find_triangles
-  --split_square hello with a and g
-  --split_square a
-
-
-  have heyho : 2+2=4 := by
-    sorry
-
-  set h2.map := a ≫ g with ← h2.right
-  rename' h2 => h2.left
-
-  set h3.map := f ≫ h with ← h3.right
-  rename' h3 => h3.left
-
-  find_triangles
-
-  FindPath
-  FindPath--Truc bizzare sur pourquoi ça s'arrete
   FindPath
 
 
-  rw [←  h7, ← h6, ← h5, ← Category.assoc f h i, ←  h3, ← h4, ← Category.assoc a _ l, ← Category.assoc a g i,  ← h2, ← h1]
-  repeat rw [Category.assoc]
-
-
+  --rw [←  h7, ← h6, ← h5, ← Category.assoc f h i, ←  h3, ← h4, ← Category.assoc a _ l, ← Category.assoc a g i,  ← h2, ← h1]
+  --repeat rw [Category.assoc]
 
 variable (a : A ⟶ B) (b : A ⟶ C) (c : B ⟶ C) (d : B ⟶ D) (e : D ⟶ C) (f : C ⟶ E) (g : D ⟶ E) (h : E ⟶ F) (i : D ⟶ F) (j : D ⟶ G) (k : F ⟶ G)
 
-
-lemma test2 (h1 : a ≫ c = b ) (h2 : d ≫ e = c) (h3 : e ≫ f = g) (h4 : g ≫ h = i) (h5 :  i ≫ k = j ) : a ≫  d ≫ j = b ≫ f ≫ h ≫ k := by
-  set x := 2 with hx
-
+lemma test2 (h1 : a ≫ c  = b) (h2 : d ≫ e = c) (h3 : e ≫ f = g) (h4 : g ≫ h = i) (h5 :  i ≫ k = j ) : a ≫  d ≫ j = b ≫ f ≫ h ≫ k := by
   FindPath
 
-  rw [ ← h5, ← h4, ← h3]
-  rw_assoc h2
-  rw_assoc h1
-  repeat rw [Category.assoc]
+  --rw [ ← h5, ← h4, ← h3]
+  --rw_assoc h2
+  --rw_assoc h1
+  --repeat rw [Category.assoc]
 
 variable (a : A ⟶ B) (b : B ⟶ D) (c : C ⟶ D) (d: A ⟶ C) (e: C ⟶ B)
 
 lemma test3 (h1 : d ≫ e = a) (h2 : e ≫ b = c): a ≫ b = d ≫ c := by
-
   FindPath
-
-#check Eq.symm
