@@ -23,7 +23,7 @@ def applyTriangle (t : triangle) (c : List Expr ): TacticM (Bool × List Expr) :
     if (← isDefEq a t.f) ∧ (← isDefEq b t.g) then
 
       let proofTerm ← Term.exprToSyntax t.proof
-      evalTactic $ ← `(tactic| rw_assoc $proofTerm )
+      evalTactic $ ← `(tactic| rw_assoc2 $proofTerm )
 
       logInfo m!"the composition {← ppExpr t.f} ≫ {← ppExpr t.g} is replaced by {← ppExpr t.h}"
       return (false, t.h :: cprime)

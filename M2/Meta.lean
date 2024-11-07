@@ -22,23 +22,10 @@ def match_eq (e : Expr) : MetaM <| Option (List Expr × List Expr) := do
   else
     return none
 
-/-- check if the expression correspond to  a ≫ b = c or c = a ≫ b and gives the three morphisms involved -/
-def is_triangle (e : Expr) : MetaM <| Option (Expr × Expr × Expr) := do
-  --let e ← whnf e
-  if e.isAppOf ``Eq then
-    let e1 := e.getArg! 1
-    let e2 := e.getArg! 2
-    match e1.isAppOf ``CategoryStruct.comp , e2.isAppOf ``CategoryStruct.comp with
-      | true, true => return none
-      | true, _ => return (e1.getArg! 5, e1.getArg! 6, e2)
-      | _, true => return (e2.getArg! 5, e2.getArg! 6, e1)
-      | _, _ => return none
-  else
-    return none
 
 /-- check if the expression is of the form a ≫ b = c ≫ d and gives c and d-/
 def is_square_lhs (e : Expr) : MetaM <| Option ( Expr × Expr) := do
-  --let e ← whnf e
+  let e ← whnf e
   if e.isAppOf ``Eq then
     let e1 := e.getArg! 1
     let e2 := e.getArg! 2
@@ -103,6 +90,7 @@ elab "FindPath" : tactic => withMainContext do
   let list_hom ← ← match_eq (← getMainTarget)
 
   let _ ←  CommDiag  ( ← list_triangles) list_hom.1
+  --let _ ←  CommDiag  ( ← list_triangles) list_hom.2
 
   evalTactic $ ← `(tactic| repeat rw [Category.assoc])
 
@@ -114,7 +102,16 @@ variable (Cat : Type ) [Category Cat]
 variable (A B C D E F G H : Cat) (a : A ⟶ D) (b : A ⟶ C) (c : A ⟶ B) (d : B ⟶ C) (e : C ⟶ E) (f : B ⟶ F) (h : F ⟶ E) (i : E ⟶ G) (j : D ⟶ G) (k : F ⟶ G) (l : G ⟶ H) (m : B ⟶ G) (n : B ⟶ H)
 
 lemma test (h1 : c ≫ d = b) (h2 : b ≫ e = a ≫ g) (h3 : d ≫ e = f ≫ h) (h4 : g ≫ i = j) (h5 : h ≫ i = k) (h6 : f ≫ k = m ) (h7 : m ≫ l = n) : a ≫ j ≫ l = c ≫ n:= by
+  split_square
+
+  --rw [← h7, ← h6, ← h5,]
+  --rw_assoc2 h3.map_eq_right
+  --clear h7
+  --clear h6
+  --clear h5
+
   FindPath
+
 
 
   --rw [←  h7, ← h6, ← h5, ← Category.assoc f h i, ←  h3, ← h4, ← Category.assoc a _ l, ← Category.assoc a g i,  ← h2, ← h1]
@@ -122,8 +119,10 @@ lemma test (h1 : c ≫ d = b) (h2 : b ≫ e = a ≫ g) (h3 : d ≫ e = f ≫ h) 
 
 variable (a : A ⟶ B) (b : A ⟶ C) (c : B ⟶ C) (d : B ⟶ D) (e : D ⟶ C) (f : C ⟶ E) (g : D ⟶ E) (h : E ⟶ F) (i : D ⟶ F) (j : D ⟶ G) (k : F ⟶ G)
 
-lemma test2 (h1 : a ≫ c  = b) (h2 : d ≫ e = c) (h3 : e ≫ f = g) (h4 : g ≫ h = i) (h5 :  i ≫ k = j ) : a ≫  d ≫ j = b ≫ f ≫ h ≫ k := by
+lemma test23 (h1 : a ≫ c  = b) (h2 : d ≫ e = c) (h3 : e ≫ f = g) (h4 : g ≫ h = i) (h5 :  i ≫ k = j ) : a ≫  d ≫ j = b ≫ f ≫ h ≫ k := by
+
   FindPath
+
 
   --rw [ ← h5, ← h4, ← h3]
   --rw_assoc h2
