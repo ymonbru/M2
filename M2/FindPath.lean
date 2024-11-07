@@ -65,13 +65,13 @@ e.map_eq_right: a ≫ b = e.map and e.map_eq_left : c ≫ d = e.map-/
 def split_square_step (_ : Unit ) (e : Expr) : TacticM Unit := withMainContext do
   match ← is_square_lhs (← inferType e) with
     |some (c, d) =>
-      let hname := s!"{← ppExpr e}"
-      let hmap := Name.str hname.toName   "map"
-      let hleft  := Name.str hname.toName "map_eq_left"
-      let hright := Name.str hname.toName  "map_eq_right"
+      let hname  ← e.fvarId!.getUserName
+      let hmap := hname.str   "map"
+      let hleft := hname.str "map_eq_left"
+      let hright := hname.str "map_eq_right"
 
       evalTactic $ ← `(tactic|set $(mkIdent hmap) := $( ← Term.exprToSyntax c) ≫ $( ← Term.exprToSyntax d) with ← $(mkIdent hright))
-      evalTactic $ ← `(tactic|rename' $(mkIdent hname.toName) => $(mkIdent hleft))
+      evalTactic $ ← `(tactic|rename' $(mkIdent hname) => $(mkIdent hleft))
 
     | none => return ()
 

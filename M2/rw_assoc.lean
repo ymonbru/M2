@@ -78,7 +78,6 @@ partial def findAB (e a b: Expr) : MetaM <| Nat × Option Nat × Option Nat := d
       let (n1, aIn1?, bIn1?) ← ( findAB (e.getArg! 5 ) a b)
       let (n2, aIn2?, bIn2?) ← ( findAB (e.getArg! 6 ) a b)
 
-
       return (n1 + n2, ← or_option aIn1? aIn2? n1,← or_option bIn1? bIn2? n1)
     else
       if ← isDefEq e a then
@@ -97,7 +96,7 @@ elab "rw_assoc2" h:term : tactic => withMainContext do
   let hTerm ← elabTerm h none
   let hType ←  inferType hTerm
 
-  let (a, b, c) ← ← is_triangle hType
+  let (a, b, _) ← ← is_triangle hType
   let goal ← whnf (← getMainTarget)
 
   if goal.isAppOf ``Eq then
@@ -146,9 +145,9 @@ def iter (n:Nat) : A ⟶ A := match n with
   | 0 => a
   | n+1 => a ≫ iter n
 
-#check iter Cat A a 1000
+#check iter Cat A a 10
 
-example : iter Cat A a 2000 = (iter Cat A a 2000) ≫ b := by
+example : iter Cat A a 20 = (iter Cat A a 20) ≫ b := by
   repeat unfold iter
   repeat unfold iter
   repeat unfold iter
