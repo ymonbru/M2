@@ -2,7 +2,7 @@ import Lean
 import Mathlib.Tactic
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.Tactic.CategoryTheory.Slice
-import M2.Meta
+--import M2.Meta
 
 open CategoryTheory Lean Meta Elab Tactic Term
 
@@ -131,49 +131,6 @@ example : 1 = 2 := by
 example (h : A = B) : b = d := by sorry
 
 
-elab "#expr" "[" t:term "]" : command =>
-  Command.liftTermElabM do
-  let t ← Term.elabTerm t none
-  let t ← instantiateMVars t
-  logInfo m!"Expression: {t}:\n{repr t}"
-  let t ← reduce t
-  let t ← instantiateMVars t
-  logInfo m!"Reduced: {t}:\n{repr t}"
-
-
-
-def machinTactic (target: Expr)(tac: Syntax):
-  TermElabM (Option (Nat × Nat)) :=
-    withoutModifyingState do
-
-    return some (1, 2)
-
-syntax (name:= machin) "machin" tacticSeq : tactic
-
---def as: TSyntax `Lean.Parser.Tactic.tacticSeq := assumption
-
-@[tactic machin] def machinImpl : Tactic :=
-  fun stx => do
-  match stx with
-  | `(tactic| machin $tac) =>
-    let n? ← machinTactic (← getMainTarget) tac
-    match n? with
-    | some (a, b) =>
-      logInfo m!"un message"
-      TryThis.addSuggestion stx tac
-    | none =>
-      logWarning m!"Tactic failed"
-  | _ => throwUnsupportedSyntax
-
-
-
-
-
-example : 2 ≤ 20 := by
-  machin decide
-
-  simp
-
 /- the four morphism of the square 1≫ 2= 3≫ 4 of type 5-/
 def is_square (e:Expr) : MetaM <| Option (Expr × Expr × Expr × Expr × Expr):= do
   --let e ← whnf e
@@ -206,6 +163,7 @@ elab "split_square" h:ident":" t:term : tactic => do
     let (diagId, newGoal) ← MVarId.intro1P $ ← goal.assert hmap homType diag
     replaceMainGoal [diag.mvarId!, newGoal]
     closeMainGoal `exact (t.getArg! 1)
+    --evalTactic $ ← `(tactic| rotate_left)
 
     withMainContext do
     let diagDecl ←  diagId.getDecl
@@ -249,16 +207,17 @@ variable (a: A ⟶ B) (b: B ⟶ C) (c: A ⟶ D ) (d : D ⟶ C)
 example (h : a ≫ b =  c ≫ d) : a ≫ b = c ≫ d := by
   --split
 
-
+  set x:= 3 with hx
 
   split_square h:  a ≫ b = c ≫ d
+  have hello : 1+1=2 := sorry
+
 
   rw [h.map_eq_left,h.map_eq_right]
 
   --decide
 
   --sorry
-
 
 
 
