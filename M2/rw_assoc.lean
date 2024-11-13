@@ -5,6 +5,8 @@ import Mathlib.Tactic.CategoryTheory.Slice
 
 open CategoryTheory Lean Meta Elab Tactic
 
+/- rwassoc2  seems to be more eficient than rwassoc -/
+
 /--Compute the length of a sequence of composition-/
 partial def compLength (e : Expr) : MetaM Nat := do
   if e.isAppOf ``CategoryStruct.comp then
@@ -93,96 +95,51 @@ partial def findAB (e a b: Expr) : MetaM <| Nat × Option Nat × Option Nat := d
 
 
 elab "rw_assoc2" h:term : tactic => withMainContext do
-  let hTerm ← elabTerm h none
-  let hType ←  inferType hTerm
-
-  let (a, b, _) ← ← is_triangle hType
   let goal ← whnf (← getMainTarget)
 
   if goal.isAppOf ``Eq then
-    let e1 := goal.getArg! 1
-    let e2 := goal.getArg! 2
+    let hTerm ← elabTerm h none
+    let hType ← inferType hTerm
 
-    let (x1,aInl?,bInl?) ← findAB e1 a b
-    let (x2,aInr?,bInr?) ← findAB e2 a b
+    match (← is_triangle hType) with-- avec Option.mapM ?
+      | none => return ()
+      | some (a, b, _) =>
+        let e1 := goal.getArg! 1
+        let e2 := goal.getArg! 2
 
+        let (x1,aInl?,bInl?) ← findAB e1 a b
+        let (x2,aInr?,bInr?) ← findAB e2 a b
 
-    let s ← saveState
-    try
-      let a ← aInl?
-      let b ← bInl?
-      if b = a + 1 then
-          let aLit := Syntax.mkNumLit <| toString a
-          let bLit := Syntax.mkNumLit <| toString b
+        let s ← saveState
+        try
+          match aInl?, bInl? with
+            | none, _ => throwError " a not found"
+            | _, none => throwError " b not found"
+            | some a, some b =>
+              if b = a + 1 then
+                let aLit := Syntax.mkNumLit <| toString a
+                let bLit := Syntax.mkNumLit <| toString b
 
-          evalTactic $ ← `(tactic |  slice_lhs $aLit $bLit => first | rw [ ($h)] | rw [ ← ($h)])
-          return
-      else throwError "it does not work"
-    catch _ => restoreState s
+                evalTactic $ ← `(tactic |  slice_lhs $aLit $bLit => first | rw [ ($h)] | rw [ ← ($h)])
+                return
+              else throwError "a and b not next to each other"
+        catch _ => restoreState s
 
-    try
-      let a ← aInr?
-      let b ← bInr?
-      if b = a + 1 then
-          let aLit := Syntax.mkNumLit <| toString a
-          let bLit := Syntax.mkNumLit <| toString b
+        try
+          match aInr?, bInr? with
+            | none, _ => throwError " a not found"
+            | _, none => throwError " b not found"
+            | some a, some b =>
+              if b = a + 1 then
+                let aLit := Syntax.mkNumLit <| toString a
+                let bLit := Syntax.mkNumLit <| toString b
 
-          evalTactic $ ← `(tactic |  slice_rhs $aLit $bLit => first | rw [ ($h)] | rw [ ← ($h)])
-          return
-      else throwError "it does not work"
-    catch _ => restoreState s
+                evalTactic $ ← `(tactic |  slice_rhs $aLit $bLit => first | rw [ ($h)] | rw [ ← ($h)])
+                return
+              else throwError "a and b not next to each other"
+        catch _ => restoreState s
 
-    logInfo m!"{x1},{x2} {aInl?},{bInl?},{aInr?},{bInr?}"
-  else
-    return ()
-
-
-/- Experiments-/
-
-variable (Cat : Type ) [Category Cat] (A :Cat) ( a b: A ⟶ A)
-
-def iter (n:Nat) : A ⟶ A := match n with
-  | 0 => a
-  | n+1 => a ≫ iter n
-
-#check iter Cat A a 10
-
-example : iter Cat A a 20 = (iter Cat A a 20) ≫ b := by
-  repeat unfold iter
-  repeat unfold iter
-  repeat unfold iter
-  repeat unfold iter
-  repeat unfold iter
-  repeat unfold iter
-  repeat unfold iter
-  repeat unfold iter
-  repeat unfold iter
-  repeat unfold iter
-  repeat unfold iter
-  repeat unfold iter
-  repeat unfold iter
-  repeat unfold iter
-  repeat unfold iter
-  repeat unfold iter
-  repeat unfold iter
-  repeat unfold iter
-
-
-
-  have h : a ≫ b = a := by sorry
-  rw_assoc2 h
-  rw_assoc h
-
-  sorry
-
-variable (A B C D E F G : Cat)
-
-variable (a : A ⟶ B) (b : A ⟶ C) (c : B ⟶ C) (d : B ⟶ D) (e : D ⟶ C) (f : C ⟶ E) (g : D ⟶ E) (h : E ⟶ F) (i : D ⟶ F) (j : D ⟶ G) (k : F ⟶ G)
-
-lemma test2 (h1 : a ≫ c  = b) (h2 : d ≫ e = c) (h3 : e ≫ f = g) (h4 : g ≫ h = i) (h5 :  i ≫ k = j ) : a ≫  d ≫ j = b ≫ f ≫ h ≫ k := by
-
-  rw [ ← h5, ← h4, ← h3]
-  rw_assoc2 h2
-  rw_assoc2 h1
-  repeat rw [Category.assoc]
-  --slice_lhs 1 2 => rw []
+        --logInfo m!"{x1},{x2} {aInl?},{bInl?},{aInr?},{bInr?}"
+        return ()
+      else
+        return ()
