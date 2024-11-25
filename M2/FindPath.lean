@@ -178,3 +178,15 @@ lemma test4 (h1 : a ≫ b = g)  (h2 : c ≫ d = g) (h3: e ≫ f = g) : a ≫ b =
   --FindPath
 
   --sorry
+
+
+/-
+✖ [413/2503] Building proofwidgets/widgetJsAll
+trace: ././.lake/packages/proofwidgets/widget> npm clean-install
+trace: stderr:
+could not execute external process 'npm'
+error: external command 'npm' exited with code 255
+Some required builds logged failures:
+- proofwidgets/widgetJsAll
+error: build failed
+-/
