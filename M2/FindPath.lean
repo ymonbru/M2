@@ -111,6 +111,7 @@ elab "essai" : tactic => withMainContext do
   let _ ← FindPath
 
 elab "essai2" : tactic => withMainContext do
+
   evalTactic $ ← `(tactic| split_square)
 
   withMainContext do
@@ -135,8 +136,10 @@ variable (Cat : Type ) [Category Cat]
 variable (A B C D E F G H : Cat) (a : A ⟶ D) (b : A ⟶ C) (c : A ⟶ B) (d : B ⟶ C) (e : C ⟶ E) (f : B ⟶ F) (h : F ⟶ E) (i : E ⟶ G) (j : D ⟶ G) (k : F ⟶ G) (l : G ⟶ H) (m : B ⟶ G) (n : B ⟶ H)
 
 lemma test (h7 : m ≫ l = n) (h6 : f ≫ k = m ) (h1 : c ≫ d = b) (h2 : b ≫ e = a ≫ g) (h3 : d ≫ e = f ≫ h) (h4 : g ≫ i = j) (h5 : h ≫ i = k)   : a ≫ j ≫ l = c ≫ n:= by
+  hint
   rw [← h7, ← h6, ← h5]
   essai2
+
   --FindPath
   /-split_square
   rw [← h7, ← h6, ← h5,]
@@ -153,6 +156,7 @@ variable (a : A ⟶ B) (b : A ⟶ C) (c : B ⟶ C) (d : B ⟶ D) (e : D ⟶ C) (
 
 -- (h6 : h ≫ k = l )
 lemma test23  (h1 : a ≫ c  = b) (h2 : d ≫ e = c) (h3 : e ≫ f = g) (h4 : g ≫ h = i) (h5 :  i ≫ k = j ) : a ≫  d ≫ j = b ≫ f ≫ h ≫ k := by
+
   essai2
   --FindPath
   --rw [ ← h5, ← h4, ← h3]

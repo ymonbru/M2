@@ -138,6 +138,9 @@ def isFinished (hom homEnd : List Expr) : MetaM Bool :=
   | _, _ => return false
 
 partial def FindPath2 (lt : List triangle) (hom homEnd : List Expr): TacticM <| List <| TSyntax `tactic := withMainContext do-- beacause the context has changed
+
+
+
   let (newHom, lastUsedTriangle, TODO) ←  CommDiag lt none hom []
     if not (← isFinished newHom homEnd) then
       --let (newHomEnd, newLastUsedTriangle, newTODO) ← CommDiag lt lastUsedTriangle homEnd TODO
