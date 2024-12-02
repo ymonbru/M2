@@ -8,6 +8,7 @@ import M2.split_square
 open CategoryTheory Lean Meta Elab Tactic
 
 def evalTacticList (todo: List <| TSyntax `tactic) : TacticM Unit := withMainContext do
+  logInfo m!"{← getMainTarget}"
   match todo with
     |[] => return ()
     | tac :: [] =>
@@ -78,7 +79,7 @@ elab "FindPath" : tactic => withMainContext do
 
 
 
-partial def FindPath : TacticM Unit := withMainContext do-- beacause the context has changed
+/-partial def FindPath : TacticM Unit := withMainContext do-- beacause the context has changed
   let s0 ← saveState
   let hyp ← getLocalHyps
   let list_triangles :=  Array.foldlM (find_triangles_totrig) [] hyp
@@ -108,7 +109,7 @@ elab "essai" : tactic => withMainContext do
   evalTactic $ ← `(tactic| split_square)
 
   withMainContext do
-  let _ ← FindPath
+  let _ ← FindPath-/
 
 elab "essai2" : tactic => withMainContext do
   evalTactic $ ← `(tactic| split_square)
@@ -119,7 +120,8 @@ elab "essai2" : tactic => withMainContext do
   match ← match_eq (← getMainTarget) with
     | none => return
     | some list_hom =>
-    let TODO ←  FindPath2  ( ← list_triangles)  list_hom.1 list_hom.2
+    logInfo m!"{list_hom.1} et  {list_hom.2}"
+    let TODO ←  FindPath  ( ← list_triangles)  list_hom.1 list_hom.2
 
     evalTacticList TODO
     evalTactic $ ← `(tactic| first | repeat rw [Category.assoc] | skip)
@@ -134,9 +136,11 @@ variable (Cat : Type ) [Category Cat]
 
 variable (A B C D E F G H : Cat) (a : A ⟶ D) (b : A ⟶ C) (c : A ⟶ B) (d : B ⟶ C) (e : C ⟶ E) (f : B ⟶ F) (h : F ⟶ E) (i : E ⟶ G) (j : D ⟶ G) (k : F ⟶ G) (l : G ⟶ H) (m : B ⟶ G) (n : B ⟶ H)
 
-lemma test (h7 : m ≫ l = n) (h6 : f ≫ k = m ) (h1 : c ≫ d = b) (h2 : b ≫ e = a ≫ g) (h3 : d ≫ e = f ≫ h) (h4 : g ≫ i = j) (h5 : h ≫ i = k)   : a ≫ j ≫ l = c ≫ n:= by
+lemma test (h7 : m ≫ l = n) (h6 : f ≫ k = m ) (h1 : c ≫ d = b) (h2 : b ≫ e = a ≫ g) (h3 : d ≫ e = f ≫ h) (h4 : g ≫ i = j) (h5 : h ≫ i = k) : a ≫ j ≫ l = c ≫ n:= by
   rw [← h7, ← h6, ← h5]
   essai2
+
+
   --FindPath
   /-split_square
   rw [← h7, ← h6, ← h5,]
@@ -152,7 +156,7 @@ lemma test (h7 : m ≫ l = n) (h6 : f ≫ k = m ) (h1 : c ≫ d = b) (h2 : b ≫
 variable (a : A ⟶ B) (b : A ⟶ C) (c : B ⟶ C) (d : B ⟶ D) (e : D ⟶ C) (f : C ⟶ E) (g : D ⟶ E) (h : E ⟶ F) (i : D ⟶ F) (j : D ⟶ G) (k : F ⟶ G) (l : E ⟶ G)
 
 -- (h6 : h ≫ k = l )
-lemma test23  (h1 : a ≫ c  = b) (h2 : d ≫ e = c) (h3 : e ≫ f = g) (h4 : g ≫ h = i) (h5 :  i ≫ k = j ) : a ≫  d ≫ j = b ≫ f ≫ h ≫ k := by
+lemma test2  (h1 : a ≫ c  = b) (h2 : d ≫ e = c) (h3 : e ≫ f = g) (h4 : g ≫ h = i) (h5 :  i ≫ k = j ) : a ≫  d ≫ j = b ≫ f ≫ h ≫ k := by
   essai2
   --FindPath
   --rw [ ← h5, ← h4, ← h3]
@@ -179,14 +183,19 @@ lemma test4 (h1 : a ≫ b = g)  (h2 : c ≫ d = g) (h3: e ≫ f = g) : a ≫ b =
 
   --sorry
 
+lemma test5 (h1 : a ≫ b = g)  (h2 : c ≫ d = g) (h3: e ≫ f = g) : a ≫ b = a ≫ b := by
+  --rw_assoc h1
+  --rw_assoc h1
+  essai2
 
-/-
-✖ [413/2503] Building proofwidgets/widgetJsAll
-trace: ././.lake/packages/proofwidgets/widget> npm clean-install
-trace: stderr:
-could not execute external process 'npm'
-error: external command 'npm' exited with code 255
-Some required builds logged failures:
-- proofwidgets/widgetJsAll
-error: build failed
--/
+  --FindPath
+
+  --sorry
+
+lemma test6  : a ≫ b = a ≫ b := by
+  essai2
+
+  rfl
+  --FindPath
+
+  --sorry

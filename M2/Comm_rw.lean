@@ -100,20 +100,7 @@ partial def CommDiag (lt : List triangle) (lastUsed : Option triangle) (Hom : Li
     CommDiag nnewLt nnewLastUsed nnewHom nnewTacticTODO
   else
     return (nnewHom, nnewLastUsed, nnewTacticTODO.reverse)
-    --reverse is for being in the right order
-    /-if not (← isFinished nnewHom HomEnd) then
-    -- si ce n'est pas au bout, il faut défaire des trucs déja faits
-      match nnewLtUsed with
-        | [] => return nnewHom
-        | t :: ltUsedPrime =>
 
-        --undo t: vraiment aussi dans la liste des homs
-          let proofTerm ← Term.exprToSyntax t.proof
-          evalTactic $ ← `(tactic| first | rw [← $proofTerm] | rw [ ($proofTerm) ] | rw_assoc2 $proofTerm | skip )
-
-          CommDiag  (t::nnewLt).reverse ltUsedPrime nnewHom HomEnd
-    else
-      return nnewHom-/
 --The algo terminates because it continues while the length of lt is decreasing
 
 
@@ -137,8 +124,9 @@ def isFinished (hom homEnd : List Expr) : MetaM Bool :=
       return false
   | _, _ => return false
 
-partial def FindPath2 (lt : List triangle) (hom homEnd : List Expr): TacticM <| List <| TSyntax `tactic := withMainContext do-- beacause the context has changed
-  let (newHom, lastUsedTriangle, TODO) ←  CommDiag lt none hom []
+partial def CommDiagWithRestart (lt : List triangle) (hom homEnd : List Expr) (TODO : List <| TSyntax `tactic): TacticM <| List <| TSyntax `tactic := do
+
+  let (newHom, lastUsedTriangle, newTODO) ←  CommDiag lt none hom TODO
     if not (← isFinished newHom homEnd) then
       --let (newHomEnd, newLastUsedTriangle, newTODO) ← CommDiag lt lastUsedTriangle homEnd TODO
       --if not (← isFinished newHom newHomEnd) then
@@ -148,8 +136,54 @@ partial def FindPath2 (lt : List triangle) (hom homEnd : List Expr): TacticM <| 
           | none => pure []
           | some t  =>
               let newLt ←  clear t lt
-              FindPath2 newLt hom homEnd
+              CommDiagWithRestart newLt hom homEnd TODO
       --else
         --return newTODO
     else
+      return newTODO
+
+partial def FindPath (lt : List triangle) (hom homEnd : List Expr): TacticM <| List <| TSyntax `tactic := do
+  let TODO ← CommDiagWithRestart lt hom homEnd []
+  match TODO with
+    | [] => let (newHomEnd, _, newTODO) ← CommDiag lt none homEnd []
+            CommDiagWithRestart lt hom newHomEnd newTODO
+
+    | _ => return TODO
+
+
+
+
+
+/- bien tenté mais ça ne marche pas super
+partial def FindPath2 (lt : List triangle) (hom homEnd : List Expr) (lastUsedTriangle : Option triangle) (TODO : List <| TSyntax `tactic): TacticM <| List <| TSyntax `tactic := do
+    logInfo m!"{hom} et {homEnd}"
+    if not (← isFinished hom homEnd) then
+        logInfo m!"START AGAIN and eliminate rules"
+        match lastUsedTriangle with
+          | none =>
+            logInfo m!"FAIILLED"
+            pure []
+          | some t  =>
+              let newLt ←  clear t lt
+              let (newHom, newLastUsedTriangle, newTODO) ← CommDiag newLt none hom TODO
+              FindPath2 newLt newHom homEnd newLastUsedTriangle newTODO
+
+    else
+      logInfo m!"work is done"
       return TODO
+
+
+partial def FindPath3 (lt : List triangle) (hom homEnd : List Expr): TacticM <| List <| TSyntax `tactic :=  do
+  logInfo m!"Start here"
+
+  let (newHom, lastUsedTriangle, TODO) ←  CommDiag lt none hom []
+  logInfo m!"{newHom} et {homEnd}"
+    if not (← isFinished newHom homEnd) then
+      logInfo m! " reduce the right hand side"
+      let (newHomEnd, _, newTODO) ← CommDiag lt none homEnd TODO
+
+      FindPath2 lt newHom newHomEnd lastUsedTriangle newTODO
+
+
+    else
+      return TODO-/

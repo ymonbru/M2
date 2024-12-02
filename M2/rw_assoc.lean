@@ -101,7 +101,7 @@ elab "rw_assoc2" h:term : tactic => withMainContext do
     let hTerm ← elabTerm h none
     let hType ← inferType hTerm
 
-    match (← is_triangle hType) with-- avec Option.mapM ?
+    match (← is_triangle hType) with
       | none => return ()
       | some (a, b, _) =>
         let e1 := goal.getArg! 1
@@ -139,7 +139,6 @@ elab "rw_assoc2" h:term : tactic => withMainContext do
               else throwError "a and b not next to each other"
         catch _ => restoreState s
 
-        --logInfo m!"{x1},{x2} {aInl?},{bInl?},{aInr?},{bInr?}"
         return ()
       else
         return ()
