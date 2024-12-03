@@ -20,6 +20,8 @@ def evalTacticList (todo: List <| TSyntax `tactic) : TacticM Unit := withMainCon
       evalTacticList todoQ
 
 
+
+
 /-- check if an expression is a sequence of composition of morphisms and gives the list-/
 partial def match_comp (e : Expr) : MetaM <|(List Expr) := do
   if e.isAppOf ``CategoryStruct.comp then
@@ -74,7 +76,7 @@ elab "FindPath" : tactic => withMainContext do
     | some list_hom =>
     let (_,_, TODO) ←  CommDiag  ( ← list_triangles) none list_hom.1 []
 
-    evalTacticList TODO
+    evalTacticList TODO.reverse
     evalTactic $ ← `(tactic| repeat rw [Category.assoc])
 
 
@@ -138,7 +140,6 @@ variable (Cat : Type ) [Category Cat]
 variable (A B C D E F G H : Cat) (a : A ⟶ D) (b : A ⟶ C) (c : A ⟶ B) (d : B ⟶ C) (e : C ⟶ E) (f : B ⟶ F) (h : F ⟶ E) (i : E ⟶ G) (j : D ⟶ G) (k : F ⟶ G) (l : G ⟶ H) (m : B ⟶ G) (n : B ⟶ H)
 
 lemma test (h7 : m ≫ l = n) (h6 : f ≫ k = m ) (h1 : c ≫ d = b) (h2 : b ≫ e = a ≫ g) (h3 : d ≫ e = f ≫ h) (h4 : g ≫ i = j) (h5 : h ≫ i = k) : a ≫ j ≫ l = c ≫ n:= by
-  hint
   rw [← h7, ← h6, ← h5]
   essai2
   --FindPath
@@ -195,7 +196,11 @@ lemma test5 (h1 : a ≫ b = g)  (h2 : c ≫ d = g) (h3: e ≫ f = g) : a ≫ b =
 lemma test6  : a ≫ b = a ≫ b := by
   essai2
 
-  rfl
   --FindPath
 
   --sorry
+
+variable (a: A ⟶ B) (b : A ⟶ C) (c: B ⟶ C) (d: B⟶ D) (e: D ⟶ C) (f: D ⟶ E) (g h : C⟶ E)
+
+lemma test7 (h1: a≫ c =b) (h2: d≫ e =c) (h3 : e≫ g =f) (h4: e≫ h =f) : a≫ d ≫ f= b≫ g := by
+  essai2
