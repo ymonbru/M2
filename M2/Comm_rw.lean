@@ -48,7 +48,7 @@ def applyListTriangles (lt : List triangle) ( lastUsed : Option triangle) (hom :
         return (newbool, t :: newlt, newLastUsed, newHom, newTacticTODO)
       else
         let proofTerm ← Term.exprToSyntax t.proof
-        let tac ← `(tactic| first | rw_assoc2 $proofTerm )--| skip  )
+        let tac ← `(tactic| first | rw_assoc2 $proofTerm | skip  )
         return (false, newlt, some t , nnewHom, tac :: newTacticTODO)
 
 
@@ -85,7 +85,7 @@ def expandOneTriangle (lt : List triangle) (lastUsed : Option triangle) (hom : L
       return (expanded?, newLastUsed, t::newLt, nnewHom, newTacticTODO)
     else
       let proofTerm ← Term.exprToSyntax t.proof
-      let tac ← `(tactic| first | repeat rw [← $proofTerm] | rw [ ($proofTerm) ])--| skip )
+      let tac ← `(tactic| first | repeat rw [← $proofTerm] | rw [ ($proofTerm) ]| skip )
 
       return (false, some t, ltQ, newHom, tac :: tacticTODO)
 
@@ -147,16 +147,28 @@ partial def CommDiagWithRestart (lt : List triangle) (hom homEnd : List Expr) (T
         return newTODO
 
 partial def FindPath (lt : List triangle) (hom homEnd : List Expr): TacticM <| List <| TSyntax `tactic := do
-  let TODO ← CommDiagWithRestart lt hom homEnd []
-  match TODO with
-    | [] => logInfo m!"Try to reduce the left hand side"
-            let (newHomEnd, _, newTODO) ← CommDiag lt none homEnd []
+  match lt with
+    |[] => return []
+    | _ =>
+    let TODO ← CommDiagWithRestart lt hom homEnd []
+    match TODO with
+      | [] =>
+        logInfo m!"Try to reduce the left hand side"
+        let (newHomEnd, lastUsedTriangle, newTODO) ← CommDiag lt none homEnd []
 
-            logInfo m!"start again with the new end"
-            CommDiagWithRestart lt hom newHomEnd newTODO
+        logInfo m!"start again with the new end"
+        let nnewTODO ← CommDiagWithRestart lt hom newHomEnd newTODO
+        match nnewTODO with
+          |[] =>
+            match lastUsedTriangle with
+              | none => return []
+              | some t =>
+                let newLt ← clear t lt
+                logInfo m!"REAL Restart"
+                FindPath newLt hom homEnd
+          | _ => return nnewTODO
 
-    | _ => return TODO
-
+      | _ => return TODO
 
 
 

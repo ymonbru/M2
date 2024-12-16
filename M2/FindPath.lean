@@ -8,7 +8,7 @@ import M2.split_square
 open CategoryTheory Lean Meta Elab Tactic
 
 def evalTacticList (todo: List <| TSyntax `tactic) : TacticM Unit := withMainContext do
-  logInfo m!"{← getMainTarget}"
+  logInfo m!"{← getMainTarget}, {todo.length}"
   match todo with
     |[] => return ()
     | tac :: [] =>
@@ -126,7 +126,7 @@ elab "essai2" : tactic => withMainContext do
     logInfo m!"{list_hom.1} et  {list_hom.2}"
     let TODO ←  FindPath  ( ← list_triangles)  list_hom.1 list_hom.2
 
-    evalTacticList TODO
+    evalTacticList TODO.reverse
     evalTactic $ ← `(tactic| first | repeat rw [Category.assoc] | skip)
 
 
@@ -140,7 +140,7 @@ variable (Cat : Type ) [Category Cat]
 variable (A B C D E F G H : Cat) (a : A ⟶ D) (b : A ⟶ C) (c : A ⟶ B) (d : B ⟶ C) (e : C ⟶ E) (f : B ⟶ F) (h : F ⟶ E) (i : E ⟶ G) (j : D ⟶ G) (k : F ⟶ G) (l : G ⟶ H) (m : B ⟶ G) (n : B ⟶ H)
 
 lemma test (h7 : m ≫ l = n) (h6 : f ≫ k = m ) (h1 : c ≫ d = b) (h2 : b ≫ e = a ≫ g) (h3 : d ≫ e = f ≫ h) (h4 : g ≫ i = j) (h5 : h ≫ i = k) : a ≫ j ≫ l = c ≫ n:= by
-  rw [← h7, ← h6, ← h5]
+  --rw [← h7, ← h6, ← h5]
   essai2
   --FindPath
   /-split_square
@@ -200,7 +200,9 @@ lemma test6  : a ≫ b = a ≫ b := by
 
   --sorry
 
-variable (a: A ⟶ B) (b : A ⟶ C) (c: B ⟶ C) (d: B⟶ D) (e: D ⟶ C) (f: D ⟶ E) (g h : C⟶ E)
+variable (a: A ⟶ B) (b : A ⟶ C) (c: B ⟶ C) (d e: B⟶ D) (f: D ⟶ C) (g: D ⟶ E) (h i : C⟶ E)
 
-lemma test7 (h1: a≫ c =b) (h2: d≫ e =c) (h3 : e≫ g =f) (h4: e≫ h =f) : a≫ d ≫ f= b≫ g := by
+lemma test7  (h1 : b = a ≫ c) (h2 : f ≫ h = g) (h3 : f ≫ i =g) (h4 : d ≫ f = c) (h5 : e ≫ f = c ) : a ≫ c ≫ i= a ≫ c ≫ h := by
+  split_square
+
   essai2
