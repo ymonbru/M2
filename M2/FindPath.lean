@@ -65,7 +65,7 @@ elab "find_triangles" : tactic => withMainContext do
 
 /-- Split all the square if needed then find the triangles and use the algo CommDiag to solve the goal-/
 
-elab "FindPath" : tactic => withMainContext do
+/-elab "FindPath" : tactic => withMainContext do
   evalTactic $ ← `(tactic| split_square)
 
   withMainContext do-- beacause the context has changed
@@ -77,7 +77,7 @@ elab "FindPath" : tactic => withMainContext do
     let (_,_, TODO) ←  CommDiag  ( ← list_triangles) none list_hom.1 []
 
     evalTacticList TODO.reverse
-    evalTactic $ ← `(tactic| repeat rw [Category.assoc])
+    evalTactic $ ← `(tactic| repeat rw [Category.assoc])-/
 
 
 
@@ -203,8 +203,12 @@ lemma test6  : a ≫ b = a ≫ b := by
 
 variable (a: A ⟶ B) (b : A ⟶ C) (c: B ⟶ C) (d e: B⟶ D) (f: D ⟶ C) (g: D ⟶ E) (h i : C⟶ E)
 
-lemma test7  (h1 : b = a ≫ c) (h2 : f ≫ h = g) (h3 : f ≫ i =g) (h4 : d ≫ f = c) (h5 : e ≫ f = c ) : a ≫ c ≫ i= a ≫ c ≫ h := by
-  split_square
+lemma test7  (h1 : b = a ≫ c) (h2 : f ≫ h = g) (h3 : f ≫ i = g) (h4 : d ≫ f = c) (h5 : e ≫ f = c ) : a ≫ c ≫ i= a ≫ c ≫ h := by
+  --split_square
+  --conv => rhs; rw[← h5]
+  --rw_assoc2 h2
+
+
 
   essai2
 

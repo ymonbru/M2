@@ -91,9 +91,9 @@ def expandOneTriangle (lt : List triangle) (lastUsed : Option triangle) (hom : L
       let proofTerm ← Term.exprToSyntax t.proof
 
       let tac ←  if left then
-        `(tactic| rw_assoc_lhs $proofTerm)
+        `(tactic| conv => lhs; first | rw [($proofTerm)] | rw [← ($proofTerm)])
         else
-        `(tactic| rw_assoc_rhs $proofTerm)
+        `(tactic| conv => rhs; first | rw [($proofTerm)] | rw [← ($proofTerm)])
 
       return (false, some t, ltQ, newHom, tac :: tacticTODO)
 
