@@ -136,7 +136,7 @@ variable (Cat : Type ) [Category Cat]
 variable (A B C D E F G H : Cat) (a : A ⟶ D) (b : A ⟶ C) (c : A ⟶ B) (d : B ⟶ C) (e : C ⟶ E) (f : B ⟶ F) (h : F ⟶ E) (i : E ⟶ G) (j : D ⟶ G) (k : F ⟶ G) (l : G ⟶ H) (m : B ⟶ G) (n : B ⟶ H)
 
 lemma test (h7 : m ≫ l = n) (h6 : f ≫ k = m ) (h1 : c ≫ d = b) (h2 : b ≫ e = a ≫ g) (h3 : d ≫ e = f ≫ h) (h4 : g ≫ i = j) (h5 : h ≫ i = k)   : a ≫ j ≫ l = c ≫ n:= by
-  hint
+
   rw [← h7, ← h6, ← h5]
   essai2
 
@@ -182,6 +182,23 @@ lemma test4 (h1 : a ≫ b = g)  (h2 : c ≫ d = g) (h3: e ≫ f = g) : a ≫ b =
   --FindPath
 
   --sorry
+
+variable (a:A⟶  B) (b: B⟶  C) (y : A⟶ C) (c d : C⟶  D)
+
+lemma test567 (h1: a≫ b = y) : y ≫ c= y ≫ d := by
+  essai2
+  --rw [← h1]
+  conv => lhs ; rw [← h1]
+
+
+
+variable (a ap: A ⟶ B) (b bp: B ⟶ C ) (x xp : A ⟶ C) (y yp : B ⟶ D) (c cp d  : C ⟶ D)
+
+lemma FinDesHaricot (h1 : a ≫ b = x) (h2 : ap ≫ bp =x) (h3: b ≫ c =y) (h4 : bp ≫ cp = yp) (h5 : b ≫ d = y) (h6 : bp ≫ d = yp ) : a ≫ b ≫ c = ap ≫ bp ≫ cp := by
+  essai2
+
+
+
 
 
 /-
