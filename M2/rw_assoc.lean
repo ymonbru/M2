@@ -101,7 +101,7 @@ elab "rw_assoc2" h:term : tactic => withMainContext do
     let hTerm ← elabTerm h none
     let hType ← inferType hTerm
 
-    match (← is_triangle hType) with-- avec Option.mapM ?
+    match (← is_triangle hType) with
       | none => return ()
       | some (a, b, _) =>
         let e1 := goal.getArg! 1
@@ -139,7 +139,76 @@ elab "rw_assoc2" h:term : tactic => withMainContext do
               else throwError "a and b not next to each other"
         catch _ => restoreState s
 
-        --logInfo m!"{x1},{x2} {aInl?},{bInl?},{aInr?},{bInr?}"
+        return ()
+      else
+        return ()
+
+elab "rw_assoc_lhs" h:term : tactic => withMainContext do
+  let goal ← whnf (← getMainTarget)
+
+  if goal.isAppOf ``Eq then
+    let hTerm ← elabTerm h none
+    let hType ← inferType hTerm
+
+    match (← is_triangle hType) with
+      | none => return ()
+      | some (a, b, _) =>
+        let e1 := goal.getArg! 1
+        let e2 := goal.getArg! 2
+
+        let (x1,aInl?,bInl?) ← findAB e1 a b
+        let (x2,aInr?,bInr?) ← findAB e2 a b
+
+        let s ← saveState
+        try
+          match aInl?, bInl? with
+            | none, _ => throwError " a not found"
+            | _, none => throwError " b not found"
+            | some a, some b =>
+              if b = a + 1 then
+                let aLit := Syntax.mkNumLit <| toString a
+                let bLit := Syntax.mkNumLit <| toString b
+
+                evalTactic $ ← `(tactic |  slice_lhs $aLit $bLit => first | rw [ ($h)] | rw [ ← ($h)])
+                return
+              else throwError "a and b not next to each other"
+        catch _ => restoreState s
+
+        return ()
+      else
+        return ()
+
+elab "rw_assoc_rhs" h:term : tactic => withMainContext do
+  let goal ← whnf (← getMainTarget)
+
+  if goal.isAppOf ``Eq then
+    let hTerm ← elabTerm h none
+    let hType ← inferType hTerm
+
+    match (← is_triangle hType) with
+      | none => return ()
+      | some (a, b, _) =>
+        let e1 := goal.getArg! 1
+        let e2 := goal.getArg! 2
+
+        let (x1,aInl?,bInl?) ← findAB e1 a b
+        let (x2,aInr?,bInr?) ← findAB e2 a b
+
+        let s ← saveState
+        try
+          match aInl?, bInl? with
+            | none, _ => throwError " a not found"
+            | _, none => throwError " b not found"
+            | some a, some b =>
+              if b = a + 1 then
+                let aLit := Syntax.mkNumLit <| toString a
+                let bLit := Syntax.mkNumLit <| toString b
+
+                evalTactic $ ← `(tactic |  slice_rhs $aLit $bLit => first | rw [ ($h)] | rw [ ← ($h)])
+                return
+              else throwError "a and b not next to each other"
+        catch _ => restoreState s
+
         return ()
       else
         return ()
