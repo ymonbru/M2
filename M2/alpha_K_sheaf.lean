@@ -89,8 +89,8 @@ def shAlphaUpStar : Sheaf C (of X)⥤ (Ksheaf X C)  where
 --Restrict the adjunction
 
 def AdjShAlphaStar: (shAlphaUpStar X C ) ⊣ (shAlphaDownStar X C) := by
+  apply (Adjunction.restrictFullyFaithful  (@AdjAlphaStar (of X) _ C _ _ _) _ _) _ _
 
-  apply (Adjunction.restrictFullyFaithful _  _ (@AdjAlphaStar (of X) _ C _ _ _) _ _)
   apply Sheaf.forget
   apply (inducedFunctor (fun (F:Ksheaf X C) => F.carrier))
   apply @Functor.FullyFaithful.ofFullyFaithful _ _ _ _ _ (TopCat.Sheaf.forget_full _ _) (TopCat.Sheaf.forgetFaithful _ _)

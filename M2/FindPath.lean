@@ -40,7 +40,7 @@ def match_eq (e : Expr) : MetaM <| Option (List Expr × List Expr) := do
 
 /-- build a data structure triangle (from M2.Comm_rw) that represent the composition h : e.1 ≫ e.2.1 =e.2.2-/
 def toTrg (e : Expr × Expr × Expr ) (h : Expr) : MetaM (triangle):= do
-  return ⟨e.1 ,e.2.1 ,e.2.2 , h⟩
+  return ⟨e.1 ,e.2.1 ,e.2.2, h⟩
 
 /-- a step in FindPath that add to the list the triangle coresponding to e if it represents a triangle  -/
 def find_triangles_totrig (l : List triangle ) (e: Expr) : MetaM <|List triangle := do
@@ -61,9 +61,6 @@ elab "find_triangles" : tactic => withMainContext do
   logInfo m!" the triangles are { ← list_triangles}"-/
 
 
-
-
-/-- Split all the square if needed then find the triangles and use the algo CommDiag to solve the goal-/
 
 /-elab "FindPath" : tactic => withMainContext do
   evalTactic $ ← `(tactic| split_square)
@@ -113,7 +110,8 @@ elab "essai" : tactic => withMainContext do
   withMainContext do
   let _ ← FindPath-/
 
-elab "essai2" : tactic => withMainContext do
+/-- Split all the square if needed then find the triangles and use the algo CommDiag to solve the goal-/
+elab "findPath" : tactic => withMainContext do
 
   evalTactic $ ← `(tactic| split_square)
 
@@ -123,7 +121,7 @@ elab "essai2" : tactic => withMainContext do
   match ← match_eq (← getMainTarget) with
     | none => return
     | some list_hom =>
-    logInfo m!"{list_hom.1} et  {list_hom.2}"
+    --logInfo m!"{list_hom.1} et  {list_hom.2}"
     let TODO ←  FindPath  ( ← list_triangles)  list_hom.1 list_hom.2
 
     evalTacticList TODO.reverse
@@ -141,9 +139,9 @@ variable (A B C D E F G H : Cat) (a : A ⟶ D) (b : A ⟶ C) (c : A ⟶ B) (d : 
 
 lemma test (h7 : m ≫ l = n) (h6 : f ≫ k = m ) (h1 : c ≫ d = b) (h2 : b ≫ e = a ≫ g) (h3 : d ≫ e = f ≫ h) (h4 : g ≫ i = j) (h5 : h ≫ i = k) : a ≫ j ≫ l = c ≫ n:= by
   --rw [← h7, ← h6, ← h5]
-  essai2
-  --FindPath
-  /-split_square
+  findPath
+
+  /-
   rw [← h7, ← h6, ← h5,]
   rw_assoc2 h3.map_eq_right
   rw [← h3.map_eq_left]
@@ -158,7 +156,7 @@ variable (a : A ⟶ B) (b : A ⟶ C) (c : B ⟶ C) (d : B ⟶ D) (e : D ⟶ C) (
 
 -- (h6 : h ≫ k = l )
 lemma test23  (h1 : a ≫ c  = b) (h2 : d ≫ e = c) (h3 : e ≫ f = g) (h4 : g ≫ h = i) (h5 :  i ≫ k = j ) : a ≫  d ≫ j = b ≫ f ≫ h ≫ k := by
-  essai2
+  findPath
   --FindPath
   --rw [ ← h5, ← h4, ← h3]
   --rw_assoc h2
@@ -171,7 +169,7 @@ lemma test3 (h1 : d ≫ e = a) (h2 : e ≫ b = c): a ≫ b = d ≫ c := by
   --FindPath
   --rw [← h1]
   --rw_assoc2 h2
-  essai2
+  findPath
   --FindPath
 
 
@@ -179,15 +177,12 @@ variable (a : A ⟶ B) (b : B ⟶ C) (c : A ⟶ D) (d: D ⟶ C) (e: A ⟶ E) (f:
 
 
 lemma test4 (h1 : a ≫ b = g)  (h2 : c ≫ d = g) (h3: e ≫ f = g) : a ≫ b = c ≫ d := by
-  essai2
-  --FindPath
-
-  --sorry
+  findPath
 
 variable (a:A⟶  B) (b: B⟶  C) (y : A⟶ C) (c d : C⟶  D)
 
 lemma test567 (h1: a≫ b = y) : y ≫ c= y ≫ d := by
-  essai2
+  findPath
   --rw [← h1]
   conv => lhs ; rw [← h1]
 
@@ -196,7 +191,7 @@ lemma test567 (h1: a≫ b = y) : y ≫ c= y ≫ d := by
 variable (a ap: A ⟶ B) (b bp: B ⟶ C ) (x xp : A ⟶ C) (y yp : B ⟶ D) (c cp d  : C ⟶ D)
 
 lemma FinDesHaricot (h1 : a ≫ b = x) (h2 : ap ≫ bp =x) (h3: b ≫ c =y) (h4 : bp ≫ cp = yp) (h5 : b ≫ d = y) (h6 : bp ≫ d = yp ) : a ≫ b ≫ c = ap ≫ bp ≫ cp := by
-  essai2
+  findPath
   rw [h3, h4, ← h6, ← h5]
 
   rw_assoc h1
@@ -211,36 +206,19 @@ lemma FinDesHaricot (h1 : a ≫ b = x) (h2 : ap ≫ bp =x) (h3: b ≫ c =y) (h4 
 
 
 lemma test5 (h1 : a ≫ b = g)  (h2 : c ≫ d = g) (h3: e ≫ f = g) : a ≫ b = a ≫ b := by
-  --rw_assoc h1
-  --rw_assoc h1
-  essai2
-
-  --FindPath
-
-  --sorry
+  findPath
 
 lemma test6  : a ≫ b = a ≫ b := by
-  essai2
-
-
-  --FindPath
-
-  --sorry
+  findPath
 
 variable (a: A ⟶ B) (b : A ⟶ C) (c: B ⟶ C) (d e: B⟶ D) (f: D ⟶ C) (g: D ⟶ E) (h i : C⟶ E)
 
 lemma test7  (h1 : b = a ≫ c) (h2 : f ≫ h = g) (h3 : f ≫ i = g) (h4 : d ≫ f = c) (h5 : e ≫ f = c ) : a ≫ c ≫ i= a ≫ c ≫ h := by
-  --split_square
-  --conv => rhs; rw[← h5]
-  --rw_assoc2 h2
-
-
-
-  essai2
+  findPath
 
 
 variable (A B C D : Cat)
 variable (x : A ⟶ B) (y u : B ⟶ C) (z : A ⟶ C) (b : B ⟶ D) (a : C ⟶ D)
 
 lemma test8 (h1 : x ≫ y = z) (h2: b = u ≫ a) (h3 : y ≫ a = b) (h4 : z = x ≫ u): x ≫ y ≫ a = x ≫ u ≫ a := by
-  essai2
+  findPath

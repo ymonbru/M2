@@ -7,7 +7,7 @@ open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Comp
 variable {X} [TopologicalSpace X]
 variable {C} [Category C] [HasColimits C] [HasLimits C]
 
-attribute [local aesop safe (rule_sets := [CategoryTheory])] colimit.hom_ext limit.hom_ext
+--attribute [local aesop safe (rule_sets := [CategoryTheory])] colimit.hom_ext limit.hom_ext
 
 --α^*
 noncomputable section

@@ -6,7 +6,7 @@ variable {X} [TopologicalSpace X]
 variable {C} [Category C] [HasPullbacks C] [HasColimits C] [HasZeroObject C]
 variable (p : X)
 
-attribute [local aesop safe (rule_sets := [CategoryTheory])] colimit.hom_ext limit.hom_ext
+--attribute [local aesop safe (rule_sets := [CategoryTheory])] colimit.hom_ext limit.hom_ext
 
 noncomputable section
 

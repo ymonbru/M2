@@ -194,4 +194,4 @@ X)
 /-- The data of the adjunction betwee α^*RC and α_* deduced by the previous isomorphism and the adjunction of α^* and α_*-/
 def AdjAlphaStarRc : AlphaUpStarRc X C ⊣ AlphaDownStar := AdjAlphaStar.ofNatIsoLeft (AlphaUpStarToRc X C).symm
 
-#lint
+--#lint

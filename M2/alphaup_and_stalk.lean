@@ -25,11 +25,7 @@ def NhdsToPsubU : (@OpenNhds (of X) p) ⥤ (KsubU_cat (pC p) trueCond) where
 /-- The natural maps from F(U) (fo U containing p) to the stalk of F at p-/
 @[simps]
 def FUtoStalkι : FU (pC p) F (trueCond ) ⟶ (Functor.const _ ).obj (F.stalk p) where
-  app U := germ _ ⟨p, U.unop.property.1 (by rfl)⟩ ≫ F.stalkSpecializes (by rfl)
-
-  naturality U V _ := by
-    suffices _ = F.germ ⟨_, U.unop.property.1 (by rfl)⟩ by simpa
-    apply Presheaf.germ_res
+  app U := germ _ U.unop.obj p (U.unop.property.1 (by rfl)) ≫ F.stalkSpecializes (by rfl)
 
 /-- The cocone induced by FUtoStalkι -/
 @[simps]
@@ -78,13 +74,6 @@ def ColimitToFUstalk :(colimit.cocone (FU (pC p) F trueCond)) ⟶ (FUtoStalk X p
 /-- The natural transformation from α ≫ evaluation in p to the stalk functor-/
 def AlphaComStalkEval : (AlphaUpStar) ⋙ (EvalInP C p)⟶ @stalkFunctor _ _ _ (of X) p  where
   app F := (ColimitToFUstalk X C p F).hom
-  naturality F1 F2 τ := by
-    suffices _ = colimit.desc (FU _ _ _) (FUtoStalk _ _ _) ≫ _ by simpa
-    apply colimit.hom_ext
-    intro _
-    rw [← Category.assoc]
-    suffices  _ = germ _ _ ≫ _ by simpa
-    rw [ Presheaf.stalkFunctor_map_germ]
 
 /-- The natural transformation from α ≫ stalk in p to the stalk functor. It's induced by AlphaComStalkEval and the isomorphism of evaluation in p and stalk in p for K-presheaves -/
 def AlphaComStalk : (AlphaUpStar) ⋙ (KstalkFunctor p)⟶ @stalkFunctor C _ _ (of X) p := whiskerLeft _ (IsoAlphaUpPtoQ C p).hom ≫ AlphaComStalkEval _ _ _
@@ -108,6 +97,7 @@ instance : IsIso (AlphaComStalk X C p):= by
   apply IsColimit.hom_isIso
   · exact colimit.isColimit _
   · exact IsColimitFUtoStalk X p F
+
 /-- bla-/
 def IsoAlphaComStalk: (AlphaUpStar) ⋙ (KstalkFunctor p) ≅ @stalkFunctor C _ _ (of X) p:= asIso (AlphaComStalk X C p)
 
