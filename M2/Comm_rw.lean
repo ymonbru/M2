@@ -27,7 +27,7 @@ match hom with
       --let proofTerm ← Term.exprToSyntax t.proof
       --evalTactic $ ← `(tactic| first | rw_assoc2 $proofTerm | skip  )
 
-      logInfo m!"the composition {← ppExpr t.f} ≫ {← ppExpr t.g} is replaced by {← ppExpr t.h}"
+      --logInfo m!"the composition {← ppExpr t.f} ≫ {← ppExpr t.g} is replaced by {← ppExpr t.h}"
 
       return (false, t.h :: homPrime)
     else
@@ -70,7 +70,7 @@ def expandTriangle (ok : Bool) (t : triangle) (hom : List Expr ) : TacticM (Bool
       --evalTactic $ ← `(tactic| first | rw [← $proofTerm] | rw [ ($proofTerm) ]| skip )
 
       -- rw term in both direction to avoid problem when the triangle is on the other direction in the context.
-      logInfo m!"the morphism {← ppExpr t.h} is replaced by the composition {← ppExpr t.f} ≫ {← ppExpr t.g}"
+      --logInfo m!"the morphism {← ppExpr t.h} is replaced by the composition {← ppExpr t.f} ≫ {← ppExpr t.g}"
 
       return (false, t.f :: t.g :: homQ)
       else
@@ -143,7 +143,7 @@ partial def CommDiagWithRestart (lt : List triangle) (hom homEnd : List Expr) (T
       --let (newHomEnd, newLastUsedTriangle, newTODO) ← CommDiag lt lastUsedTriangle homEnd TODO
       --if not (← isFinished newHom newHomEnd) then
 
-        logInfo m!"START AGAIN"
+        --logInfo m!"START AGAIN"
         match lastUsedTriangle with
           | none => pure []
           | some t  =>
@@ -161,10 +161,10 @@ partial def FindPath (lt : List triangle) (hom homEnd : List Expr): TacticM <| L
     let TODO ← CommDiagWithRestart lt hom homEnd [] true
     match TODO with
       | [] =>
-        logInfo m!"Try to reduce the left hand side"
+        --logInfo m!"Try to reduce the left hand side"
         let (newHomEnd, lastUsedTriangle, newTODO) ← CommDiag lt none homEnd [] false
 
-        logInfo m!"start again with the new end"
+        --logInfo m!"start again with the new end"
         let nnewTODO ← CommDiagWithRestart lt hom newHomEnd newTODO true
         match nnewTODO with
           |[] =>
@@ -172,7 +172,7 @@ partial def FindPath (lt : List triangle) (hom homEnd : List Expr): TacticM <| L
               | none => return []
               | some t =>
                 let newLt ← clear t lt
-                logInfo m!"REAL Restart"
+                --logInfo m!"REAL Restart"
                 FindPath newLt hom homEnd
           | _ => return nnewTODO
 
