@@ -8,7 +8,7 @@ import M2.split_square
 open CategoryTheory Lean Meta Elab Tactic
 
 def evalTacticList (todo: List <| TSyntax `tactic) : TacticM Unit := withMainContext do
-  logInfo m!"{← getMainTarget}, {todo.length}"
+  --logInfo m!"{← getMainTarget}, {todo.length}"
   match todo with
     |[] => return ()
     | tac :: [] =>
@@ -166,11 +166,9 @@ lemma test23  (h1 : a ≫ c  = b) (h2 : d ≫ e = c) (h3 : e ≫ f = g) (h4 : g 
 variable (a : A ⟶ B) (b : B ⟶ D) (c : C ⟶ D) (d: A ⟶ C) (e: C ⟶ B)
 
 lemma test3 (h1 : d ≫ e = a) (h2 : e ≫ b = c): a ≫ b = d ≫ c := by
-  --FindPath
   --rw [← h1]
   --rw_assoc2 h2
   findPath
-  --FindPath
 
 
 variable (a : A ⟶ B) (b : B ⟶ C) (c : A ⟶ D) (d: D ⟶ C) (e: A ⟶ E) (f: E ⟶ C) (g: A ⟶ C)
@@ -183,7 +181,9 @@ variable (a:A⟶  B) (b: B⟶  C) (y : A⟶ C) (c d : C⟶  D)
 
 lemma test567 (h1: a≫ b = y) : y ≫ c= y ≫ d := by
   findPath
-
+  --rw [← h1]
+  conv => lhs ; rw [← h1]
+  sorry
 
 
 
@@ -191,11 +191,10 @@ variable (a ap: A ⟶ B) (b bp: B ⟶ C ) (x xp : A ⟶ C) (y yp : B ⟶ D) (c c
 
 lemma FinDesHaricot (h1 : a ≫ b = x) (h2 : ap ≫ bp =x) (h3: b ≫ c =y) (h4 : bp ≫ cp = yp) (h5 : b ≫ d = y) (h6 : bp ≫ d = yp ) : a ≫ b ≫ c = ap ≫ bp ≫ cp := by
   findPath
-  rw [h3, h4, ← h6, ← h5]
 
+  rw [h3, h4, ← h6, ← h5]
   rw_assoc h1
   rw_assoc h2
-
 
 
 /-https://q.uiver.app/#q=WzAsNCxbMCwwLCJBIl0sWzIsMCwiQiJdLFsyLDIsIkMiXSxbNCwwLCJEIl0sWzAsMSwiYSIsMV0sWzEsMiwiYiIsMV0sWzAsMSwiYSciLDEseyJjdXJ2ZSI6LTJ9XSxbMSwyLCJiJyIsMSx7ImN1cnZlIjotMn1dLFswLDIsIngiLDEseyJjdXJ2ZSI6Mn1dLFswLDIsIngnIiwxLHsiY3VydmUiOjV9XSxbMSwzLCJ5IiwxXSxbMSwzLCJ5JyIsMSx7ImN1cnZlIjotMn1dLFsyLDMsImQiLDFdLFsyLDMsImMiLDEseyJjdXJ2ZSI6Mn1dLFsyLDMsImMnIiwxLHsiY3VydmUiOjV9XV0=-/
