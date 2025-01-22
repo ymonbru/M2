@@ -134,7 +134,7 @@ def isFinished (hom homEnd : List Expr) : MetaM Bool :=
 
 partial def CommDiagWithRestart (lt : List triangle) (hom homEnd : List Expr) (TODO : List <| TSyntax `tactic) (left : Bool): TacticM <| List <| TSyntax `tactic := do
   if ← isFinished hom homEnd then
-    let rfl ← `(tactic| rfl )
+    let rfl ← `(tactic| first | rfl | skip )
 
     return rfl :: TODO
   else

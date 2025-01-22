@@ -48,67 +48,6 @@ def find_triangles_totrig (l : List triangle ) (e: Expr) : MetaM <|List triangle
     | some <| (f , g, h) =>  return  ( ← toTrg (f, g, h) e) :: l
     | none =>  return l
 
-/-def find_triangles (l : List (Expr × Expr × Expr)) (e: Expr) : MetaM <|List (Expr × Expr × Expr) := do
-  match ← is_triangle ( ← inferType e) with
-    | some <| (f , g, h) =>
-      logInfo m!"one triangle is {f} ≫ {g} = {h}"
-      return  (f, g, h) :: l
-    | none =>  return l
-
-elab "find_triangles" : tactic => withMainContext do
-  let hyp ← getLocalHyps
-  let list_triangles :=  Array.foldlM (find_triangles) [] hyp
-  logInfo m!" the triangles are { ← list_triangles}"-/
-
-
-
-/-elab "FindPath" : tactic => withMainContext do
-  evalTactic $ ← `(tactic| split_square)
-
-  withMainContext do-- beacause the context has changed
-  let hyp ← getLocalHyps
-  let list_triangles :=  Array.foldlM (find_triangles_totrig) [] hyp
-  match ← match_eq (← getMainTarget) with
-    | none => return
-    | some list_hom =>
-    let (_,_, TODO) ←  CommDiag  ( ← list_triangles) none list_hom.1 []
-
-    evalTacticList TODO.reverse
-    evalTactic $ ← `(tactic| repeat rw [Category.assoc])-/
-
-
-
-/-partial def FindPath : TacticM Unit := withMainContext do-- beacause the context has changed
-  let s0 ← saveState
-  let hyp ← getLocalHyps
-  let list_triangles :=  Array.foldlM (find_triangles_totrig) [] hyp
-  match ← match_eq (← getMainTarget) with
-    | none => return
-    | some list_hom =>
-    let (_, lastUsedTriangle, TODO) ←  CommDiag  ( ← list_triangles) none list_hom.1 []
-
-    evalTacticList TODO
-    evalTactic $ ← `(tactic| first | repeat rw [Category.assoc] | skip)
-
-    if not (← getGoals).isEmpty then
-
-      SavedState.restore s0
-      logInfo m!"START AGAIN"
-      match lastUsedTriangle with
-        | none => pure ()
-        | some t  =>
-                let h ← t.proof.fvarId!.getUserName
-                evalTactic $ ← `(tactic| clear $(mkIdent h ))
-                FindPath
-    else
-      return ()
-
-
-elab "essai" : tactic => withMainContext do
-  evalTactic $ ← `(tactic| split_square)
-
-  withMainContext do
-  let _ ← FindPath-/
 
 /-- Split all the square if needed then find the triangles and use the algo CommDiag to solve the goal-/
 elab "findPath" : tactic => withMainContext do
@@ -209,9 +148,10 @@ lemma test5 (h1 : a ≫ b = g)  (h2 : c ≫ d = g) (h3: e ≫ f = g) : a ≫ b =
 lemma test6  : a ≫ b = a ≫ b := by
   findPath
 
-variable (a: A ⟶ B) (b : A ⟶ C) (c: B ⟶ C) (d e: B⟶ D) (f: D ⟶ C) (g: D ⟶ E) (h i : C⟶ E)
+variable (a: A ⟶ B) (b : A ⟶ C) (c: B ⟶ C) (d e x: B⟶ D) (f: D ⟶ C) (g: D ⟶ E) (h i y : C ⟶ E)
 
-lemma test7  (h1 : b = a ≫ c) (h2 : f ≫ h = g) (h3 : f ≫ i = g) (h4 : d ≫ f = c) (h5 : e ≫ f = c ) : a ≫ c ≫ i= a ≫ c ≫ h := by
+lemma test7  (h1 : b = a ≫ c) (h2 : f ≫ h = g) (h3 : f ≫ i = g) (h4 : d ≫ f = c)
+(h5 : e ≫ f = c ) (h6 : x ≫ f = c) (h7 : f ≫ y = g): a ≫ c ≫ y= a ≫ c ≫ i := by
   findPath
 
 
@@ -219,4 +159,20 @@ variable (A B C D : Cat)
 variable (x : A ⟶ B) (y u : B ⟶ C) (z : A ⟶ C) (b : B ⟶ D) (a : C ⟶ D)
 
 lemma test8 (h1 : x ≫ y = z) (h2: b = u ≫ a) (h3 : y ≫ a = b) (h4 : z = x ≫ u): x ≫ y ≫ a = x ≫ u ≫ a := by
+  findPath
+
+variable (A B C D E F G H I : Cat)
+variable (x : B ⟶ C) (y : A ⟶ C) (a : A ⟶ B) (b : C ⟶ D) (c : B ⟶ D) (d : D ⟶ E) (e : A ⟶ D) (f : A ⟶ E) (g : C ⟶ E) (xp : F ⟶ G) (yp : E ⟶ G) (ap : E ⟶ F) (bp : G ⟶ H) (cp : F ⟶ H) (dp : H ⟶ I) (ep : E ⟶ H) (fp : E ⟶ I) (gp : G ⟶ I)
+
+lemma test9 (h1 : a ≫ x = y) (h2 : x ≫ b = c) (h3 : a ≫ c = e)
+(h4 : e ≫ d = f) (h5 : y ≫ g = f) (h6 : ap ≫ xp = yp) (h7 : xp ≫ bp = cp) (h8 : ap ≫ cp = ep) (h9 : ep ≫ dp = fp) (h10 : yp ≫ gp = fp) : a ≫ x ≫ b ≫ d ≫ ap ≫ xp ≫ gp = a ≫ x ≫ g ≫ ap ≫ xp ≫ bp ≫ dp := by
+  findPath
+
+  rw_assoc h2
+  findPath
+
+--https://q.uiver.app/#q=WzAsOSxbMCw0LCJBIl0sWzIsNCwiQiJdLFszLDYsIkMiXSxbMywzLCJEIl0sWzQsMiwiRSJdLFs2LDIsIkYiXSxbNyw0LCJHIl0sWzcsMSwiSCJdLFs4LDAsIkkiXSxbMCwxLCJhIiwxXSxbMSwyLCJ4IiwxXSxbMiwzLCJiIiwxXSxbMyw0LCJkIiwxXSxbMCwyLCJ5IiwxXSxbMSwzLCJjIiwxXSxbMCwzLCJlIiwxXSxbMCw0LCJmIiwxXSxbMiw0LCJnIiwxXSxbNCw1LCJhJyIsMV0sWzQsNiwieSciLDFdLFs1LDYsIngnIiwxXSxbNiw3LCJiJyIsMV0sWzUsNywiYyciLDFdLFs0LDcsImUnIiwxXSxbNyw4LCJkJyIsMV0sWzQsOCwiZiciLDFdLFs2LDgsImcnIiwxXV0=
+
+lemma test10 (h1 : a ≫ x = y) (h2 : x ≫ b = c) (h3 : a ≫ c = e)
+(h4 : e ≫ d = f) (h5 : y ≫ g = f) : a ≫ x ≫ b ≫ d = a ≫ x ≫ g := by
   findPath
