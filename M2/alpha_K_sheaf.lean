@@ -103,20 +103,54 @@ def AdjShAlphaStar: (shAlphaUpStar X C ) ⊣ (shAlphaDownStar X C) := by
 
 #check IsIso ((Adjunction.unit (AdjShAlphaStar X C)).app F)
 
+variable  [ConcreteCategory C] [(forget C).ReflectsIsomorphisms ] [PreservesLimits (forget C)] [PreservesFilteredColimits (forget C)]
+/- sur d'avoir besoin de tout ça?, en tout cas pour stalk iso functeur oui-/
 
-theorem IsoAlphaCoUnit :IsIso ((AdjShAlphaStar X C).unit.app F):= by
-  --apply @Presheaf.isIso_of_stalkFunctor_map_iso
+/- c'est l'autre qu'il faut faire en premier-/
+theorem IsoAlphaUnit :IsIso ((AdjShAlphaStar X C).unit.app F):= by
+
+
+
+  have truc : ∀ (x : ↑(of X)), IsIso ((stalkFunctor C x).map ((AdjShAlphaStar X C).unit.app F).val):= by
+    intro p
+    rw [← Adjunction.homEquiv_id]
+    simp
+
+    sorry
+
+  apply Presheaf.isIso_of_stalkFunctor_map_iso
+
+
+  --rw [← Adjunction.homEquiv_id]
+  --#check (AdjShAlphaStar X C).unit.app F
+
+  --#check ((𝟭 (TopCat.Sheaf C (of X))).obj F : Functor _ _)
+  --#check NatTrans.isIso_iff_isIso_app ((AdjShAlphaStar X C).unit.app F)
+
+  --sorry
+
+
+
+
+   #check @
   --apply asIso
 
   --unfold AdjShAlphaStar AdjAlphaStar
   --simp
   --#check (NatTrans.isIso_iff_isIso_app ((Adjunction.unit (AdjShAlphaStar X)).app F)).2
 
-  sorry
+def machin : (𝟭 (Ksheaf X C)).obj G ⟶ (shAlphaDownStar X C ⋙ shAlphaUpStar X C).obj G  where
+  app K := by
+    simp
+    sorry
+
+
+
 
 #check (AdjShAlphaStar X C).counit.app G
 
-theorem IsoAlphaUnit :IsIso ((AdjShAlphaStar X C).counit.app G):= by
+theorem IsoAlphaCoUnit :IsIso ((AdjShAlphaStar X C).counit.app G):= by
+
   --unfold AdjShAlphaStar AlphaDownStar
   --simp
 
@@ -126,9 +160,4 @@ theorem IsoAlphaUnit :IsIso ((AdjShAlphaStar X C).counit.app G):= by
 
 
 def KshIsoSh: (Sheaf C (of X)) ≌  (Ksheaf X C) := by
-
-   apply @Adjunction.toEquivalence _ _ _ _  _  _ (AdjShAlphaStar X C) (IsoAlphaCoUnit X C) (IsoAlphaUnit X C)
-
-
-  --sorry
-  --pourquoi ça ne convient pas? problème d'univers
+   apply @Adjunction.toEquivalence _ _ _ _  _  _ (AdjShAlphaStar X C) (IsoAlphaUnit X C) (IsoAlphaCoUnit X C)

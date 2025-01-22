@@ -13,7 +13,7 @@ partial def compLength (e : Expr) : MetaM Nat := do
     return 0
 
 /--Compute the maximal length of an equality of sequence of composition-/
-def eqLength (e : Expr) : MetaM Nat := do
+def reqLength (e : Expr) : MetaM Nat := do
   let e ← whnf e
   if e.isAppOf ``Eq then
     return max (← compLength (e.getArg! 1)) (← compLength (e.getArg! 2))

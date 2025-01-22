@@ -4,11 +4,6 @@ import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 import Mathlib.Topology.Sets.Compacts
 
 
-
---import Mathlib.Tactic.Widget.CommDiag
---import ProofWidgets.Component.Panel.SelectionPanel
---import ProofWidgets.Component.Panel.GoalTypePanel
-
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite
 
 variable (X) [TopologicalSpace X] [T2Space X]
@@ -136,7 +131,7 @@ structure Ksheaf where
   ksh1 : carrier.obj (op (⊥ : Compacts _)) = 0
   /--There is a pullback square -/
   ksh2 : ∀ K₁ K₂ :Compacts X, IsLimit (SquareSuptoInf carrier K₁ K₂ )
-  /--A continuity condition that state that a "regula function on K" is defined at the neighbourhood of K-/
+  /--A continuity condition that state that a "regular function on K" is defined at the neighbourhood of K-/
   ksh3 : ∀ K : Compacts X, (IsIso (colimit.desc (FUbar _ K carrier) (FK _ _ _)))
 
 #check Ksheaf

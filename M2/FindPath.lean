@@ -183,8 +183,7 @@ variable (a:A⟶  B) (b: B⟶  C) (y : A⟶ C) (c d : C⟶  D)
 
 lemma test567 (h1: a≫ b = y) : y ≫ c= y ≫ d := by
   findPath
-  --rw [← h1]
-  conv => lhs ; rw [← h1]
+
 
 
 
@@ -196,7 +195,7 @@ lemma FinDesHaricot (h1 : a ≫ b = x) (h2 : ap ≫ bp =x) (h3: b ≫ c =y) (h4 
 
   rw_assoc h1
   rw_assoc h2
-  rw [Category.assoc]
+
 
 
 /-https://q.uiver.app/#q=WzAsNCxbMCwwLCJBIl0sWzIsMCwiQiJdLFsyLDIsIkMiXSxbNCwwLCJEIl0sWzAsMSwiYSIsMV0sWzEsMiwiYiIsMV0sWzAsMSwiYSciLDEseyJjdXJ2ZSI6LTJ9XSxbMSwyLCJiJyIsMSx7ImN1cnZlIjotMn1dLFswLDIsIngiLDEseyJjdXJ2ZSI6Mn1dLFswLDIsIngnIiwxLHsiY3VydmUiOjV9XSxbMSwzLCJ5IiwxXSxbMSwzLCJ5JyIsMSx7ImN1cnZlIjotMn1dLFsyLDMsImQiLDFdLFsyLDMsImMiLDEseyJjdXJ2ZSI6Mn1dLFsyLDMsImMnIiwxLHsiY3VydmUiOjV9XV0=-/
