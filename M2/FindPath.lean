@@ -19,9 +19,6 @@ def evalTacticList (todo: List <| TSyntax `tactic) : TacticM Unit := withMainCon
       evalTactic $ tac
       evalTacticList todoQ
 
-
-
-
 /-- check if an expression is a sequence of composition of morphisms and gives the list-/
 partial def match_comp (e : Expr) : MetaM <|(List Expr) := do
   if e.isAppOf ``CategoryStruct.comp then
@@ -68,6 +65,36 @@ elab "findPath" : tactic => withMainContext do
 
 
 
+  #check List.toArray
+
+def SuggestPath (stx : Syntax) : TacticM Unit := withMainContext do
+  evalTactic $ ← `(tactic| split_square)
+
+  withMainContext do
+  let hyp ← getLocalHyps
+  let list_triangles :=  Array.foldlM (find_triangles_totrig) [] hyp
+  logInfo m!"{(← list_triangles).length}"
+  match ← match_eq (← getMainTarget) with
+    | none => return
+    | some list_hom =>
+    --logInfo m!"{list_hom.1} et  {list_hom.2}"
+    let TODO ←  FindPath  ( ← list_triangles)  list_hom.1 list_hom.2
+
+    let TODO:= TODO.reverse
+
+    let results ← TODO.mapA fun t : TSyntax `tactic => do
+      return  ← Mathlib.Tactic.Hint.suggestion t
+
+    let results := results.toArray
+
+    TryThis.addSuggestions stx results
+
+syntax (name := FindPathStx) "findPath?" : tactic
+
+elab_rules : tactic
+  | `(tactic| findPath?%$tk) => SuggestPath tk
+
+
  /- Exemples -/
 set_option trace.profiler true
 
@@ -78,7 +105,8 @@ variable (A B C D E F G H : Cat) (a : A ⟶ D) (b : A ⟶ C) (c : A ⟶ B) (d : 
 
 lemma test (h7 : m ≫ l = n) (h6 : f ≫ k = m ) (h1 : c ≫ d = b) (h2 : b ≫ e = a ≫ g) (h3 : d ≫ e = f ≫ h) (h4 : g ≫ i = j) (h5 : h ≫ i = k) : a ≫ j ≫ l = c ≫ n:= by
   --rw [← h7, ← h6, ← h5]
-  findPath
+
+  findPath?
 
   /-
   rw [← h7, ← h6, ← h5,]
@@ -166,6 +194,7 @@ variable (x : B ⟶ C) (y : A ⟶ C) (a : A ⟶ B) (b : C ⟶ D) (c : B ⟶ D) (
 
 lemma test9 (h1 : a ≫ x = y) (h2 : x ≫ b = c) (h3 : a ≫ c = e)
 (h4 : e ≫ d = f) (h5 : y ≫ g = f) (h6 : ap ≫ xp = yp) (h7 : xp ≫ bp = cp) (h8 : ap ≫ cp = ep) (h9 : ep ≫ dp = fp) (h10 : yp ≫ gp = fp) : a ≫ x ≫ b ≫ d ≫ ap ≫ xp ≫ gp = a ≫ x ≫ g ≫ ap ≫ xp ≫ bp ≫ dp := by
+  hint
   findPath
 
   rw_assoc h2
