@@ -9,7 +9,7 @@ structure triangle where--f ≫ g = h
   f : Expr
   g : Expr
   h : Expr
-  --used : Bool
+  dir : Bool -- true if f ≫ g is on the letf side
   proof : Expr
 deriving Repr
 
@@ -47,7 +47,7 @@ def applyListTriangles (lt : List triangle) ( lastUsed : Option triangle) (hom :
       if b then
         return (newbool, t :: newlt, newLastUsed, newHom, newTacticTODO)
       else
-        let proofTerm ← Term.exprToSyntax t.proof
+        let proofTerm ← TryThis.delabToRefinableSyntax t.proof
         let tac ←  if left then
           `(tactic| rw_assoc_lhs $proofTerm )
         else
@@ -88,12 +88,20 @@ def expandOneTriangle (lt : List triangle) (lastUsed : Option triangle) (hom : L
       let (expanded?, newLastUsed, newLt, nnewHom, newTacticTODO) ←  expandOneTriangle ltQ lastUsed newHom tacticTODO left
       return (expanded?, newLastUsed, t::newLt, nnewHom, newTacticTODO)
     else
-      let proofTerm ← Term.exprToSyntax t.proof
 
-      let tac ←  if left then
+      let proofTerm ← TryThis.delabToRefinableSyntax t.proof
+
+      let tac ← match left, t.dir with
+        | true, true => `(tactic| conv => lhs; rw [← $proofTerm] )
+        | true, false => `(tactic| conv => lhs; rw [($proofTerm)] )
+        | false, true => `(tactic| conv => rhs; rw [← $proofTerm] )
+        | false, false => `(tactic| conv => rhs; rw [($proofTerm)] )
+
+
+      /-if left then
         `(tactic| conv => lhs; first | rw [($proofTerm)] | rw [← ($proofTerm)])
         else
-        `(tactic| conv => rhs; first | rw [($proofTerm)] | rw [← ($proofTerm)])
+        `(tactic| conv => rhs; first | rw [($proofTerm)] | rw [← ($proofTerm)])-/
 
       return (false, some t, ltQ, newHom, tac :: tacticTODO)
 

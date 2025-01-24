@@ -21,15 +21,15 @@ def reqLength (e : Expr) : MetaM Nat := do
     return 0
 
 /-- check if the expression correspond to  a ≫ b = c or c = a ≫ b and gives the three morphisms involved -/
-def is_triangle (e : Expr) : MetaM <| Option ( Expr × Expr × Expr) := do
+def is_triangle (e : Expr) : MetaM <| Option ( Expr × Expr × Expr × Bool) := do
   let e ← whnf e
   if e.isAppOf ``Eq then
     let e1 := e.getArg! 1
     let e2 := e.getArg! 2
     match e1.isAppOf ``CategoryStruct.comp , e2.isAppOf ``CategoryStruct.comp with
       | true, true => return none
-      | true, _ => return (e1.getArg! 5, e1.getArg! 6, e2)
-      | _, true => return (e2.getArg! 5, e2.getArg! 6, e1)
+      | true, _ => return (e1.getArg! 5, e1.getArg! 6, e2, true)
+      | _, true => return (e2.getArg! 5, e2.getArg! 6, e1, false)
       | _, _ => return none
   else
     return none
@@ -77,8 +77,8 @@ elab "rw_assoc" h:term : tactic => withMainContext do
         let e1 := goal.getArg! 1
         let e2 := goal.getArg! 2
 
-        let (x1,aInl?,bInl?) ← findAB e1 a b
-        let (x2,aInr?,bInr?) ← findAB e2 a b
+        let (_, aInl?,bInl?) ← findAB e1 a b
+        let (_, aInr?,bInr?) ← findAB e2 a b
 
         let s ← saveState
         try

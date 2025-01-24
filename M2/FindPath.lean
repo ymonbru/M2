@@ -19,6 +19,14 @@ def evalTacticList (todo: List <| TSyntax `tactic) : TacticM Unit := withMainCon
       evalTactic $ tac
       evalTacticList todoQ
 
+def combineTacticList (todo : List <| TSyntax `tactic) : TacticM <| TSyntax `tactic := withMainContext do
+  match todo with
+    | [] => return `(tactic| skip)
+    | tac :: [] => return tac
+    | tac :: todoQ =>
+      let tacQ ← combineTacticList todoQ
+      return `(tactic| $tac; $tacQ)
+
 /-- check if an expression is a sequence of composition of morphisms and gives the list-/
 partial def match_comp (e : Expr) : MetaM <|(List Expr) := do
   if e.isAppOf ``CategoryStruct.comp then
@@ -35,14 +43,14 @@ def match_eq (e : Expr) : MetaM <| Option (List Expr × List Expr) := do
     return none
 
 
-/-- build a data structure triangle (from M2.Comm_rw) that represent the composition h : e.1 ≫ e.2.1 =e.2.2-/
+/- build a data structure triangle (from M2.Comm_rw) that represent the composition h : e.1 ≫ e.2.1 =e.2.2
 def toTrg (e : Expr × Expr × Expr ) (h : Expr) : MetaM (triangle):= do
-  return ⟨e.1 ,e.2.1 ,e.2.2, h⟩
+  return ⟨e.1 ,e.2.1 ,e.2.2, true, h⟩--/
 
 /-- a step in FindPath that add to the list the triangle coresponding to e if it represents a triangle  -/
 def find_triangles_totrig (l : List triangle ) (e: Expr) : MetaM <|List triangle := do
   match ← is_triangle ( ← inferType e) with
-    | some <| (f , g, h) =>  return  ( ← toTrg (f, g, h) e) :: l
+    | some <| (f , g, h, b) =>  return ⟨f, g, h, b, e⟩  :: l
     | none =>  return l
 
 
@@ -65,7 +73,6 @@ elab "findPath" : tactic => withMainContext do
 
 
 
-  #check List.toArray
 
 def SuggestPath (stx : Syntax) : TacticM Unit := withMainContext do
   evalTactic $ ← `(tactic| split_square)
@@ -80,6 +87,7 @@ def SuggestPath (stx : Syntax) : TacticM Unit := withMainContext do
     --logInfo m!"{list_hom.1} et  {list_hom.2}"
     let TODO ←  FindPath  ( ← list_triangles)  list_hom.1 list_hom.2
 
+    let TODO := ( ← `(tactic| first | repeat rw [Category.assoc] | skip)) :: TODO
     let TODO:= TODO.reverse
 
     let results ← TODO.mapA fun t : TSyntax `tactic => do
@@ -87,7 +95,19 @@ def SuggestPath (stx : Syntax) : TacticM Unit := withMainContext do
 
     let results := results.toArray
 
+    let tac1 ← `(tactic| rfl)
+    let tac2 ← `(tactic| split_square)
+
+    let combinedTac ← `(tactic| $tac2; $tac2; $tac2)
+    let machin ← `(tactic| $tac1;  seq:($combinedTac))
+
+
+
+    TryThis.addSuggestion stx machin
+
     TryThis.addSuggestions stx results
+
+
 
 syntax (name := FindPathStx) "findPath?" : tactic
 
@@ -103,8 +123,10 @@ variable (Cat : Type ) [Category Cat]
 
 variable (A B C D E F G H : Cat) (a : A ⟶ D) (b : A ⟶ C) (c : A ⟶ B) (d : B ⟶ C) (e : C ⟶ E) (f : B ⟶ F) (h : F ⟶ E) (i : E ⟶ G) (j : D ⟶ G) (k : F ⟶ G) (l : G ⟶ H) (m : B ⟶ G) (n : B ⟶ H)
 
-lemma test (h7 : m ≫ l = n) (h6 : f ≫ k = m ) (h1 : c ≫ d = b) (h2 : b ≫ e = a ≫ g) (h3 : d ≫ e = f ≫ h) (h4 : g ≫ i = j) (h5 : h ≫ i = k) : a ≫ j ≫ l = c ≫ n:= by
+lemma test (h1 : c ≫ d = b) (h2 : b ≫ e = a ≫ g) (h3 : d ≫ e = f ≫ h) (h4 : g ≫ i = j) (h5 : h ≫ i = k) (h6 : f ≫ k = m ) (h7 : m ≫ l = n) : a ≫ j ≫ l = c ≫ n:= by
   --rw [← h7, ← h6, ← h5]
+  aesopTactic?
+
 
   findPath?
 
