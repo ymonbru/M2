@@ -19,13 +19,16 @@ def evalTacticList (todo: List <| TSyntax `tactic) : TacticM Unit := withMainCon
       evalTactic $ tac
       evalTacticList todoQ
 
-def combineTacticList (todo : List <| TSyntax `tactic) : TacticM <| TSyntax `tactic := withMainContext do
+def combineTacticList (todo : List <| TSyntax `tactic) : TacticM <| TSyntax `Lean.Parser.Tactic.tacticSeq := withMainContext do
   match todo with
-    | [] => return `(tactic| skip)
-    | tac :: [] => return tac
+    | [] => `(tacticSeq| skip)
+    | tac :: [] => `(tacticSeq| $tac:tactic)
     | tac :: todoQ =>
       let tacQ ← combineTacticList todoQ
-      return `(tactic| $tac; $tacQ)
+
+      `(tacticSeq|
+      $tac
+      ($tacQ))
 
 /-- check if an expression is a sequence of composition of morphisms and gives the list-/
 partial def match_comp (e : Expr) : MetaM <|(List Expr) := do
@@ -87,25 +90,28 @@ def SuggestPath (stx : Syntax) : TacticM Unit := withMainContext do
     --logInfo m!"{list_hom.1} et  {list_hom.2}"
     let TODO ←  FindPath  ( ← list_triangles)  list_hom.1 list_hom.2
 
-    let TODO := ( ← `(tactic| first | repeat rw [Category.assoc] | skip)) :: TODO
+    --let TODO := ( ← `(tactic| first | repeat rw [(Category.assoc)] | skip)) :: TODO
     let TODO:= TODO.reverse
 
-    let results ← TODO.mapA fun t : TSyntax `tactic => do
-      return  ← Mathlib.Tactic.Hint.suggestion t
+    --let results ← TODO.mapA fun t : TSyntax `tactic => do
+    --  return  ← Mathlib.Tactic.Hint.suggestion t
 
-    let results := results.toArray
+    /-let results := results.toArray
 
     let tac1 ← `(tactic| rfl)
     let tac2 ← `(tactic| split_square)
 
-    let combinedTac ← `(tactic| $tac2; $tac2; $tac2)
-    let machin ← `(tactic| $tac1;  seq:($combinedTac))
+    let combinedTac ← `(tacticSeq| $tac2; $tac2; $tac2)
+    let machin ← `(tacticSeq| $tac1;  ($combinedTac))
 
 
 
-    TryThis.addSuggestion stx machin
+    TryThis.addSuggestion stx machin-/
 
-    TryThis.addSuggestions stx results
+    let TODO ← combineTacticList TODO
+    TryThis.addSuggestion stx TODO
+
+    --TryThis.addSuggestions stx results
 
 
 
@@ -125,10 +131,17 @@ variable (A B C D E F G H : Cat) (a : A ⟶ D) (b : A ⟶ C) (c : A ⟶ B) (d : 
 
 lemma test (h1 : c ≫ d = b) (h2 : b ≫ e = a ≫ g) (h3 : d ≫ e = f ≫ h) (h4 : g ≫ i = j) (h5 : h ≫ i = k) (h6 : f ≫ k = m ) (h7 : m ≫ l = n) : a ≫ j ≫ l = c ≫ n:= by
   --rw [← h7, ← h6, ← h5]
-  aesopTactic?
+    split_square
+    conv => lhs; rw [← h4]
+    ( rw_assoc_lhs h2.map_eq_right
+      ( conv => lhs; rw [← h2.map_eq_left]
+        ( conv => lhs; rw [← h1]
+          ( rw_assoc_lhs h3.map_eq_left
+            ( conv => lhs; rw [← h3.map_eq_right]
+              ( rw_assoc_lhs h5
+                ( rw_assoc_lhs h6
+                  (rw_assoc_lhs h7))))))))
 
-
-  findPath?
 
   /-
   rw [← h7, ← h6, ← h5,]
@@ -145,7 +158,17 @@ variable (a : A ⟶ B) (b : A ⟶ C) (c : B ⟶ C) (d : B ⟶ D) (e : D ⟶ C) (
 
 -- (h6 : h ≫ k = l )
 lemma test23  (h1 : a ≫ c  = b) (h2 : d ≫ e = c) (h3 : e ≫ f = g) (h4 : g ≫ h = i) (h5 :  i ≫ k = j ) : a ≫  d ≫ j = b ≫ f ≫ h ≫ k := by
-  findPath
+
+        conv => lhs; rw [← h5]
+        ( conv => lhs; rw [← h4]
+          ( conv => lhs; rw [← h3]
+            ( rw_assoc_lhs h2
+              ( rw_assoc_lhs h1
+                (first
+                  | repeat rw [(Category.assoc✝)]
+                  | skip)))))
+
+
   --FindPath
   --rw [ ← h5, ← h4, ← h3]
   --rw_assoc h2

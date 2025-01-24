@@ -47,7 +47,7 @@ def applyListTriangles (lt : List triangle) ( lastUsed : Option triangle) (hom :
       if b then
         return (newbool, t :: newlt, newLastUsed, newHom, newTacticTODO)
       else
-        let proofTerm ← TryThis.delabToRefinableSyntax t.proof
+        let proofTerm ← PrettyPrinter.delab t.proof
         let tac ←  if left then
           `(tactic| rw_assoc_lhs $proofTerm )
         else
