@@ -4,27 +4,10 @@ import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.Tactic.CategoryTheory.Slice
 import M2.Comm_rw
 import M2.split_square
---import M2.IsUselessTactic -- truc bizzare à l'import de ce fichier
+import M2.IsUselessTactic -- truc bizzare à l'import de ce fichier
 
 open CategoryTheory Lean Meta Elab Tactic
 
--- copié de M2.IsUselessTactic
-def IsUseless? (target: Expr)(tac: Syntax):
-  TermElabM Bool :=
-    withoutModifyingState do
-    try
-      let goal ← mkFreshExprMVar target
-      let (goals, _) ←
-        Term.withoutErrToSorry do
-        Elab.runTactic goal.mvarId! tac (← read) (← get)
-
-      match goals with
-        | [] => return false
-        | [newGoal] => return goal.mvarId! == newGoal
-        | _ => return false
-
-    catch _ => -- the first tactic closes the goal
-      return true
 
 def evalTacticList (todo: List <| TSyntax `tactic) : TacticM Unit := withMainContext do
   --logInfo m!"{← getMainTarget}, {todo.length}"
