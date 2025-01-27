@@ -142,29 +142,22 @@ def isFinished (hom homEnd : List Expr) : MetaM Bool :=
 
 partial def CommDiagWithRestart (lt : List triangle) (hom homEnd : List Expr) (TODO : List <| TSyntax `tactic) (left : Bool): TacticM <| List <| TSyntax `tactic := do
   if ← isFinished hom homEnd then
-    let rfl ← `(tactic| first | rfl | skip )
-
-    return rfl :: TODO
+    return  TODO
   else
     let (newHom, lastUsedTriangle, newTODO) ←  CommDiag lt none hom TODO left
       if not (← isFinished newHom homEnd) then
-      --let (newHomEnd, newLastUsedTriangle, newTODO) ← CommDiag lt lastUsedTriangle homEnd TODO
-      --if not (← isFinished newHom newHomEnd) then
-
         --logInfo m!"START AGAIN"
         match lastUsedTriangle with
           | none => pure []
           | some t  =>
               let newLt ←  clear t lt
               CommDiagWithRestart newLt hom homEnd TODO left
-      --else
-        --return newTODO
       else
         return newTODO
 
 partial def FindPath (lt : List triangle) (hom homEnd : List Expr): TacticM <| List <| TSyntax `tactic := do
   match lt with
-    |[] => return [← `(tactic| first | rfl | skip )]
+    |[] => return []
     | _ =>
     let TODO ← CommDiagWithRestart lt hom homEnd [] true
     match TODO with

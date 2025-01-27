@@ -4,8 +4,27 @@ import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.Tactic.CategoryTheory.Slice
 import M2.Comm_rw
 import M2.split_square
+--import M2.IsUselessTactic -- truc bizzare à l'import de ce fichier
 
 open CategoryTheory Lean Meta Elab Tactic
+
+-- copié de M2.IsUselessTactic
+def IsUseless? (target: Expr)(tac: Syntax):
+  TermElabM Bool :=
+    withoutModifyingState do
+    try
+      let goal ← mkFreshExprMVar target
+      let (goals, _) ←
+        Term.withoutErrToSorry do
+        Elab.runTactic goal.mvarId! tac (← read) (← get)
+
+      match goals with
+        | [] => return false
+        | [newGoal] => return goal.mvarId! == newGoal
+        | _ => return false
+
+    catch _ => -- the first tactic closes the goal
+      return true
 
 def evalTacticList (todo: List <| TSyntax `tactic) : TacticM Unit := withMainContext do
   --logInfo m!"{← getMainTarget}, {todo.length}"
@@ -19,16 +38,27 @@ def evalTacticList (todo: List <| TSyntax `tactic) : TacticM Unit := withMainCon
       evalTactic $ tac
       evalTacticList todoQ
 
+/-honteusement volé sur zulip-/
+def mkTacticSeqAppend (ts : TSyntax `Lean.Parser.Tactic.tacticSeq) (t : TSyntax `tactic) : TermElabM (TSyntax `Lean.Parser.Tactic.tacticSeq) :=
+  match ts with
+  | `(tacticSeq| { $[$tacs:tactic]* }) =>
+    `(tacticSeq| { $[$(tacs.push t)]* })
+  | `(tacticSeq| $[$tacs:tactic]*) =>
+    `(tacticSeq| $[$(tacs.push t)]*)
+  | _ => throwError "unknown syntax"
+
+
 def combineTacticList (todo : List <| TSyntax `tactic) : TacticM <| TSyntax `Lean.Parser.Tactic.tacticSeq := withMainContext do
   match todo with
     | [] => `(tacticSeq| skip)
     | tac :: [] => `(tacticSeq| $tac:tactic)
     | tac :: todoQ =>
       let tacQ ← combineTacticList todoQ
+      mkTacticSeqAppend tacQ tac
 
-      `(tacticSeq|
-      $tac
-      ($tacQ))
+      --`(tacticSeq|
+      --$tac
+      --($tacQ))
 
 /-- check if an expression is a sequence of composition of morphisms and gives the list-/
 partial def match_comp (e : Expr) : MetaM <|(List Expr) := do
@@ -56,6 +86,9 @@ def find_triangles_totrig (l : List triangle ) (e: Expr) : MetaM <|List triangle
     | some <| (f , g, h, b) =>  return ⟨f, g, h, b, e⟩  :: l
     | none =>  return l
 
+/-- try to close a goal correct up to associativity-/
+macro "repeat_assoc" : tactic => `(tactic| first |rfl | repeat rw [Category.assoc] | skip)
+
 
 /-- Split all the square if needed then find the triangles and use the algo CommDiag to solve the goal-/
 elab "findPath" : tactic => withMainContext do
@@ -71,47 +104,51 @@ elab "findPath" : tactic => withMainContext do
     --logInfo m!"{list_hom.1} et  {list_hom.2}"
     let TODO ←  FindPath  ( ← list_triangles)  list_hom.1 list_hom.2
 
+    --let assoc←
     evalTacticList TODO.reverse
-    evalTactic $ ← `(tactic| first | repeat rw [Category.assoc] | skip)
-
-
+    evalTactic $ ← `(tactic| repeat_assoc)
 
 
 def SuggestPath (stx : Syntax) : TacticM Unit := withMainContext do
-  evalTactic $ ← `(tactic| split_square)
+  let split_square  ← `(tactic| split_square)
+  let useless_split_square? ← IsUseless? (← getMainTarget) split_square
+
+  --no need to compute it if is useless
+  if not useless_split_square? then evalTactic $ split_square
 
   withMainContext do
   let hyp ← getLocalHyps
   let list_triangles :=  Array.foldlM (find_triangles_totrig) [] hyp
-  logInfo m!"{(← list_triangles).length}"
+
   match ← match_eq (← getMainTarget) with
     | none => return
     | some list_hom =>
     --logInfo m!"{list_hom.1} et  {list_hom.2}"
     let TODO ←  FindPath  ( ← list_triangles)  list_hom.1 list_hom.2
 
-    --let TODO := ( ← `(tactic| first | repeat rw [(Category.assoc)] | skip)) :: TODO
-    let TODO:= TODO.reverse
 
-    --let results ← TODO.mapA fun t : TSyntax `tactic => do
-    --  return  ← Mathlib.Tactic.Hint.suggestion t
+    let s0 ← saveState
+    try
+      let partialTODO ← combineTacticList TODO
+      evalTactic $ partialTODO
+      let repeat_assoc ← `(tactic| repeat_assoc)
+      let useless_repeat_assoc? ← IsUseless? (← getMainTarget) repeat_assoc
 
-    /-let results := results.toArray
+      restoreState s0
 
-    let tac1 ← `(tactic| rfl)
-    let tac2 ← `(tactic| split_square)
+      let TODO := if not useless_repeat_assoc? then
+          repeat_assoc :: TODO
+        else TODO
 
-    let combinedTac ← `(tacticSeq| $tac2; $tac2; $tac2)
-    let machin ← `(tacticSeq| $tac1;  ($combinedTac))
+      let TODO := if useless_split_square? then TODO else split_square :: TODO
 
+      let TODO ← combineTacticList TODO
+      TryThis.addSuggestion stx TODO
+      catch _ => -- it closes the goal then repaet assoc is not needed
+        let TODO := if useless_split_square? then TODO else TODO ++ [split_square] -- c'est pas fou mais pas pire que les reverse que j'enlève avec la version de concatenantion de tacticSeq de zulip
+        let TODO ← combineTacticList TODO
+        TryThis.addSuggestion stx TODO
 
-
-    TryThis.addSuggestion stx machin-/
-
-    let TODO ← combineTacticList TODO
-    TryThis.addSuggestion stx TODO
-
-    --TryThis.addSuggestions stx results
 
 
 
@@ -130,56 +167,17 @@ variable (Cat : Type ) [Category Cat]
 variable (A B C D E F G H : Cat) (a : A ⟶ D) (b : A ⟶ C) (c : A ⟶ B) (d : B ⟶ C) (e : C ⟶ E) (f : B ⟶ F) (h : F ⟶ E) (i : E ⟶ G) (j : D ⟶ G) (k : F ⟶ G) (l : G ⟶ H) (m : B ⟶ G) (n : B ⟶ H)
 
 lemma test (h1 : c ≫ d = b) (h2 : b ≫ e = a ≫ g) (h3 : d ≫ e = f ≫ h) (h4 : g ≫ i = j) (h5 : h ≫ i = k) (h6 : f ≫ k = m ) (h7 : m ≫ l = n) : a ≫ j ≫ l = c ≫ n:= by
-  --rw [← h7, ← h6, ← h5]
-    split_square
-    conv => lhs; rw [← h4]
-    ( rw_assoc_lhs h2.map_eq_right
-      ( conv => lhs; rw [← h2.map_eq_left]
-        ( conv => lhs; rw [← h1]
-          ( rw_assoc_lhs h3.map_eq_left
-            ( conv => lhs; rw [← h3.map_eq_right]
-              ( rw_assoc_lhs h5
-                ( rw_assoc_lhs h6
-                  (rw_assoc_lhs h7))))))))
-
-
-  /-
-  rw [← h7, ← h6, ← h5,]
-  rw_assoc2 h3.map_eq_right
-  rw [← h3.map_eq_left]
-  rw_assoc2 h1
-  rw_assoc2 h2.map_eq_left
-  rw[← h2.map_eq_right]
-  rw_assoc h4-/
-  --rw [←  h7, ← h6, ← h5, ← Category.assoc f h i, ←  h3, ← h4, ← Category.assoc a _ l, ← Category.assoc a g i,  ← h2, ← h1]
-  --repeat rw [Category.assoc]
+  findPath
 
 variable (a : A ⟶ B) (b : A ⟶ C) (c : B ⟶ C) (d : B ⟶ D) (e : D ⟶ C) (f : C ⟶ E) (g : D ⟶ E) (h : E ⟶ F) (i : D ⟶ F) (j : D ⟶ G) (k : F ⟶ G) (l : E ⟶ G)
 
 -- (h6 : h ≫ k = l )
 lemma test23  (h1 : a ≫ c  = b) (h2 : d ≫ e = c) (h3 : e ≫ f = g) (h4 : g ≫ h = i) (h5 :  i ≫ k = j ) : a ≫  d ≫ j = b ≫ f ≫ h ≫ k := by
-
-        conv => lhs; rw [← h5]
-        ( conv => lhs; rw [← h4]
-          ( conv => lhs; rw [← h3]
-            ( rw_assoc_lhs h2
-              ( rw_assoc_lhs h1
-                (first
-                  | repeat rw [(Category.assoc✝)]
-                  | skip)))))
-
-
-  --FindPath
-  --rw [ ← h5, ← h4, ← h3]
-  --rw_assoc h2
-  --rw_assoc h1
-  --repeat rw [Category.assoc]
+  findPath
 
 variable (a : A ⟶ B) (b : B ⟶ D) (c : C ⟶ D) (d: A ⟶ C) (e: C ⟶ B)
 
 lemma test3 (h1 : d ≫ e = a) (h2 : e ≫ b = c): a ≫ b = d ≫ c := by
-  --rw [← h1]
-  --rw_assoc2 h2
   findPath
 
 
@@ -192,9 +190,7 @@ lemma test4 (h1 : a ≫ b = g)  (h2 : c ≫ d = g) (h3: e ≫ f = g) : a ≫ b =
 variable (a:A⟶  B) (b: B⟶  C) (y : A⟶ C) (c d : C⟶  D)
 
 lemma test567 (h1: a≫ b = y) : y ≫ c= y ≫ d := by
-  findPath
-  --rw [← h1]
-  conv => lhs ; rw [← h1]
+
   sorry
 
 
@@ -202,7 +198,7 @@ lemma test567 (h1: a≫ b = y) : y ≫ c= y ≫ d := by
 variable (a ap: A ⟶ B) (b bp: B ⟶ C ) (x xp : A ⟶ C) (y yp : B ⟶ D) (c cp d  : C ⟶ D)
 
 lemma FinDesHaricot (h1 : a ≫ b = x) (h2 : ap ≫ bp =x) (h3: b ≫ c =y) (h4 : bp ≫ cp = yp) (h5 : b ≫ d = y) (h6 : bp ≫ d = yp ) : a ≫ b ≫ c = ap ≫ bp ≫ cp := by
-  findPath
+  findPath?
 
   rw [h3, h4, ← h6, ← h5]
   rw_assoc h1
@@ -239,8 +235,8 @@ variable (x : B ⟶ C) (y : A ⟶ C) (a : A ⟶ B) (b : C ⟶ D) (c : B ⟶ D) (
 
 lemma test9 (h1 : a ≫ x = y) (h2 : x ≫ b = c) (h3 : a ≫ c = e)
 (h4 : e ≫ d = f) (h5 : y ≫ g = f) (h6 : ap ≫ xp = yp) (h7 : xp ≫ bp = cp) (h8 : ap ≫ cp = ep) (h9 : ep ≫ dp = fp) (h10 : yp ≫ gp = fp) : a ≫ x ≫ b ≫ d ≫ ap ≫ xp ≫ gp = a ≫ x ≫ g ≫ ap ≫ xp ≫ bp ≫ dp := by
-  hint
-  findPath
+  --hint
+  findPath?
 
   rw_assoc h2
   findPath
