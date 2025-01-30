@@ -1,15 +1,16 @@
 import Mathlib.Tactic
 import Mathlib.Data.Nat.Defs
 import Lean
-import M2.rw_assoc
+import M2.CommDiagTactic.rw_assoc
+/- Bon alors du coup dans ce fichier l'algo est correct mais est trop loin d'être complet...-/
 
 open Lean Meta Elab Tactic
 @[ext]
 structure triangle where--f ≫ g = h
-  f : Expr
-  g : Expr
-  h : Expr
-  dir : Bool -- true if f ≫ g is on the letf side
+  f : Nat--id of f
+  g : Nat
+  h : Nat
+  dir : Bool -- true if f ≫ g is on the letf side of the equation in the context
   proof : Expr
 deriving Repr
 
@@ -17,12 +18,12 @@ deriving Repr
 /-- hom represent the sequence of morphisms, the algo try to rewrite the rule coresponding to the triangle t
 
 The boolean is true if nothing is changed and false otherwise-/
-def applyTriangle (t : triangle) (hom : List Expr ) : TacticM (Bool × List Expr) := withMainContext do
+def applyTriangle (t : triangle) (hom : List Nat ) : TacticM (Bool × List Nat) := withMainContext do
 match hom with
   | [] => return (true, hom)
   | _ :: [] => return (true, hom)
   | a :: b :: homPrime =>
-    if (← isDefEq a t.f) ∧ (← isDefEq b t.g) then
+    if (a = t.f) ∧ (b = t.g) then
 
       --let proofTerm ← Term.exprToSyntax t.proof
       --evalTactic $ ← `(tactic| first | rw_assoc2 $proofTerm | skip  )
@@ -37,7 +38,7 @@ match hom with
 /-- The algo try every rewriting rule of the list lt to the sequence of morphisms.
 
 The boolean is true if nothing is changed and false otherwise-/
-def applyListTriangles (lt : List triangle) ( lastUsed : Option triangle) (hom : List Expr ) (tacticTODO: List <| TSyntax `tactic) (left : Bool): TacticM (Bool × List triangle × Option triangle × List Expr × (List <| TSyntax `tactic)) :=
+def applyListTriangles (lt : List triangle) ( lastUsed : Option triangle) (hom : List Nat) (tacticTODO: List <| TSyntax `tactic) (left : Bool): TacticM (Bool × List triangle × Option triangle × List Nat × (List <| TSyntax `tactic)) :=
   match lt with
     | [] => return (true, [], lastUsed, hom, tacticTODO)
     | t :: ltQ => do
@@ -59,12 +60,12 @@ def applyListTriangles (lt : List triangle) ( lastUsed : Option triangle) (hom :
 /-- The algo try to expand the rule t in the sequence c (expanding means that if t: f ≫ g = h and h is in c then h is replaced by f≫ g).
 
 The boolean is true if nothing is changed and false otherwise-/
-def expandTriangle (ok : Bool) (t : triangle) (hom : List Expr ) : TacticM (Bool × List Expr ):= withMainContext do
+def expandTriangle (ok : Bool) (t : triangle) (hom : List Nat ) : TacticM (Bool × List Nat ):= withMainContext do
   if not ok then return (false, hom)
   else  match hom with
     |[] => return (ok, hom)
     |a :: homQ =>
-      if  ← isDefEq t.h a then
+      if t.h = a then
 
       --let proofTerm ← Term.exprToSyntax t.proof
       --evalTactic $ ← `(tactic| first | rw [← $proofTerm] | rw [ ($proofTerm) ]| skip )
@@ -80,7 +81,7 @@ def expandTriangle (ok : Bool) (t : triangle) (hom : List Expr ) : TacticM (Bool
 /-- The algo try to expand the one rule of lt (and stops when it's done) in the sequence hom .
 
 The boolean is true if nothing is changed and false otherwise-/
-def expandOneTriangle (lt : List triangle) (lastUsed : Option triangle) (hom : List Expr ) (tacticTODO: List <| TSyntax `tactic) (left : Bool): TacticM (Bool × Option triangle × List triangle × List Expr × (List <| TSyntax `tactic) ) := match lt with
+def expandOneTriangle (lt : List triangle) (lastUsed : Option triangle) (hom : List Nat ) (tacticTODO: List <| TSyntax `tactic) (left : Bool): TacticM (Bool × Option triangle × List triangle × List Nat × (List <| TSyntax `tactic) ) := match lt with
   | []=> return (true, lastUsed, lt, hom, tacticTODO)
   | t :: ltQ => do
     let (b, newHom) ←  expandTriangle true t hom
@@ -107,7 +108,7 @@ def expandOneTriangle (lt : List triangle) (lastUsed : Option triangle) (hom : L
 
 
 /-- Apply all the reduction rules that can be applied, rewrite one backwards and continue while something has changed.-/
-partial def CommDiag (lt : List triangle) (lastUsed : Option triangle) (Hom : List Expr ) (tacticTODO: List <| TSyntax `tactic) (left : Bool): TacticM <| List Expr × Option triangle × (List <| TSyntax `tactic) := do
+partial def CommDiag (lt : List triangle) (lastUsed : Option triangle) (Hom : List Nat) (tacticTODO: List <| TSyntax `tactic) (left : Bool): TacticM <| List Nat × Option triangle × (List <| TSyntax `tactic) := do
 
   let (modif?aplt, newLt, newLastUsed, newHom, newTacticTODO) ←  applyListTriangles lt lastUsed Hom tacticTODO left
   let (modif?eot, nnewLastUsed, nnewLt, nnewHom, nnewTacticTODO) ←  expandOneTriangle newLt newLastUsed newHom newTacticTODO left
@@ -119,8 +120,6 @@ partial def CommDiag (lt : List triangle) (lastUsed : Option triangle) (Hom : Li
 
 --The algo terminates because it continues while the length of lt is decreasing
 
-
-
 def clear (usedT : triangle) (lt : List triangle) : MetaM <| List triangle :=
   match lt with
     | [] => return []
@@ -130,22 +129,22 @@ def clear (usedT : triangle) (lt : List triangle) : MetaM <| List triangle :=
       else
         return t :: (← clear usedT q)
 
-def isFinished (hom homEnd : List Expr) : MetaM Bool :=
+/-def isFinished (hom homEnd : List Nat) : MetaM Bool :=
   match hom, homEnd with
   | [], [] => return true
   | h1 :: homQ, h2 :: homEndQ => do
-    if (← isDefEq h1 h2) then
+    if ( h1 = h2) then
       isFinished homQ homEndQ
     else
       return false
-  | _, _ => return false
+  | _, _ => return false-/
 
-partial def CommDiagWithRestart (lt : List triangle) (hom homEnd : List Expr) (TODO : List <| TSyntax `tactic) (left : Bool): TacticM <| List <| TSyntax `tactic := do
-  if ← isFinished hom homEnd then
+partial def CommDiagWithRestart (lt : List triangle) (hom homEnd : List Nat) (TODO : List <| TSyntax `tactic) (left : Bool): TacticM <| List <| TSyntax `tactic := do
+  if hom = homEnd then
     return  TODO
   else
     let (newHom, lastUsedTriangle, newTODO) ←  CommDiag lt none hom TODO left
-      if not (← isFinished newHom homEnd) then
+      if not (newHom = homEnd) then
         --logInfo m!"START AGAIN"
         match lastUsedTriangle with
           | none => pure []
@@ -155,15 +154,15 @@ partial def CommDiagWithRestart (lt : List triangle) (hom homEnd : List Expr) (T
       else
         return newTODO
 
-partial def FindPath (lt : List triangle) (hom homEnd : List Expr): TacticM <| List <| TSyntax `tactic := do
+partial def FindPath (dep : List <| TSyntax `tactic) (lt : List triangle) (hom homEnd : List Nat): TacticM <| List <| TSyntax `tactic := do
   match lt with
     |[] => return []
     | _ =>
-    let TODO ← CommDiagWithRestart lt hom homEnd [] true
+    let TODO ← CommDiagWithRestart lt hom homEnd dep true
     match TODO with
       | [] =>
         --logInfo m!"Try to reduce the left hand side"
-        let (newHomEnd, lastUsedTriangle, newTODO) ← CommDiag lt none homEnd [] false
+        let (newHomEnd, lastUsedTriangle, newTODO) ← CommDiag lt none homEnd dep false
 
         --logInfo m!"start again with the new end"
         let nnewTODO ← CommDiagWithRestart lt hom newHomEnd newTODO true
@@ -174,7 +173,7 @@ partial def FindPath (lt : List triangle) (hom homEnd : List Expr): TacticM <| L
               | some t =>
                 let newLt ← clear t lt
                 --logInfo m!"REAL Restart"
-                FindPath newLt hom homEnd
+                FindPath dep newLt hom homEnd
           | _ => return nnewTODO
 
       | _ => return TODO

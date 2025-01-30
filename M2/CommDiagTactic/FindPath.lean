@@ -2,9 +2,10 @@ import Lean
 import Mathlib.Tactic
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.Tactic.CategoryTheory.Slice
-import M2.Comm_rw
-import M2.split_square
-import M2.IsUselessTactic -- truc bizzare à l'import de ce fichier
+import M2.CommDiagTactic.Comm_rw
+import M2.CommDiagTactic.split_square
+import M2.CommDiagTactic.IsUselessTactic
+--import Egg
 
 open CategoryTheory Lean Meta Elab Tactic
 
@@ -24,8 +25,9 @@ def evalTacticList (todo: List <| TSyntax `tactic) : TacticM Unit := withMainCon
 /-honteusement volé sur zulip-/
 def mkTacticSeqAppend (ts : TSyntax `Lean.Parser.Tactic.tacticSeq) (t : TSyntax `tactic) : TermElabM (TSyntax `Lean.Parser.Tactic.tacticSeq) :=
   match ts with
-  | `(tacticSeq| { $[$tacs:tactic]* }) =>
-    `(tacticSeq| { $[$(tacs.push t)]* })
+  -- this patern is not used in the code but it is in the original code
+  --| `(tacticSeq| { $[$tacs:tactic]* }) =>
+  --  `(tacticSeq| { $[$(tacs.push t)]* })
   | `(tacticSeq| $[$tacs:tactic]*) =>
     `(tacticSeq| $[$(tacs.push t)]*)
   | _ => throwError "unknown syntax"
@@ -64,10 +66,46 @@ def toTrg (e : Expr × Expr × Expr ) (h : Expr) : MetaM (triangle):= do
   return ⟨e.1 ,e.2.1 ,e.2.2, true, h⟩--/
 
 /-- a step in FindPath that add to the list the triangle coresponding to e if it represents a triangle  -/
-def find_triangles_totrig (l : List triangle ) (e: Expr) : MetaM <|List triangle := do
+def find_triangles_totrig (l : List <| Expr × Expr × Expr × Bool × Expr ) (e: Expr) : MetaM <|List <| Expr × Expr × Expr × Bool × Expr := do
   match ← is_triangle ( ← inferType e) with
-    | some <| (f , g, h, b) =>  return ⟨f, g, h, b, e⟩  :: l
+    | some <| (f , g, h, b) =>  return (f, g, h, b, e)  :: l
     | none =>  return l
+
+
+--def find (names : List <| Nat × Expr) (lHom: List Expr) : MetaM <| List <| Option Nat := sorry
+
+def nameOne (names : List (Nat × Expr)) (nextN : Nat) (hom : Expr) : MetaM <| Nat × Nat × List (Nat × Expr) := do
+  let nh ← names.findM? (fun (_, hom2) => isDefEq hom hom2)
+  match nh with
+    | none => return (nextN + 1, nextN, (nextN, hom) :: names)
+    | some (n, _) => return (nextN, n, names)
+
+def nameList (names : List (Nat × Expr)) (nextN : Nat) (lHom : List Expr) : MetaM <| Nat × List (Nat × Expr) × List Nat := match lHom with
+  | [] => return (nextN, names, [])
+  | h :: q => do
+    let (nextN, n, names) ← nameOne names nextN h
+    let (nextN, names, l) ← nameList names nextN q
+    return (nextN, names, n :: l)
+
+def step (names : List (Nat × Expr)) (nextN : Nat) (t : Expr × Expr × Expr × Bool × Expr) : MetaM <| Nat × (List (Nat × Expr)) × triangle := do
+  let (f, g, h, b, e) := t
+  let (nextN, nf, names) ← nameOne names nextN f
+  let (nextN, ng, names) ← nameOne names nextN g
+  let (nextN, nh, names) ← nameOne names nextN h
+
+  let tTrig := ⟨nf, ng, nh, b, e⟩
+  return (nextN, names, tTrig)
+
+
+
+
+def nameInTriangle ( l : List <| Expr × Expr × Expr × Bool × Expr) : MetaM <| Nat × (List (Nat × Expr)) × (List triangle) :=
+  match l with
+    | [] => return (1, [], [])-- it's one to have 0 as an error value
+    | t :: q => do
+      let (nextN, names, tIdList) ← nameInTriangle q
+      let (newNextN, newNames, tId) ← step names nextN t
+      return (newNextN, newNames, tId :: tIdList)
 
 /-- try to close a goal correct up to associativity-/
 macro "repeat_assoc" : tactic => `(tactic| first |rfl | repeat rw [Category.assoc] | skip)
@@ -80,21 +118,26 @@ elab "findPath" : tactic => withMainContext do
 
   withMainContext do
   let hyp ← getLocalHyps
-  let list_triangles :=  Array.foldlM (find_triangles_totrig) [] hyp
+  let list_triangles := Array.foldlM (find_triangles_totrig) [] hyp
+  let (nextN, names, list_triangles) ← nameInTriangle (← list_triangles)
+
   match ← match_eq (← getMainTarget) with
     | none => return
     | some list_hom =>
+      let (nextN, names, lh1) ←  nameList names nextN list_hom.1
+      let (_, _, lh2) ← nameList names nextN list_hom.2
     --logInfo m!"{list_hom.1} et  {list_hom.2}"
-    let TODO ←  FindPath  ( ← list_triangles)  list_hom.1 list_hom.2
+      let TODO ←  FindPath  [] list_triangles lh1 lh2
 
     --let assoc←
-    evalTacticList TODO.reverse
-    evalTactic $ ← `(tactic| repeat_assoc)
+      evalTacticList TODO.reverse
+      evalTactic $ ← `(tactic| repeat_assoc)
 
 
 def SuggestPath (stx : Syntax) : TacticM Unit := withMainContext do
   let split_square  ← `(tactic| split_square)
   let useless_split_square? ← IsUseless? (← getMainTarget) split_square
+  let TODO := if useless_split_square? then [] else [split_square]
 
   --no need to compute it if is useless
   if not useless_split_square? then evalTactic $ split_square
@@ -102,33 +145,36 @@ def SuggestPath (stx : Syntax) : TacticM Unit := withMainContext do
   withMainContext do
   let hyp ← getLocalHyps
   let list_triangles :=  Array.foldlM (find_triangles_totrig) [] hyp
+  let (nextN, names, list_triangles) ← nameInTriangle (← list_triangles)
 
   match ← match_eq (← getMainTarget) with
     | none => return
     | some list_hom =>
+      let (nextN, names, lh1) ←  nameList names nextN list_hom.1
+      let (_, _, lh2) ← nameList names nextN list_hom.2
     --logInfo m!"{list_hom.1} et  {list_hom.2}"
-    let TODO ←  FindPath  ( ← list_triangles)  list_hom.1 list_hom.2
+      let TODO ←  FindPath  TODO list_triangles lh1 lh2
 
 
-    let s0 ← saveState
-    try
-      let partialTODO ← combineTacticList TODO
-      evalTactic $ partialTODO
-      let repeat_assoc ← `(tactic| repeat_assoc)
-      let useless_repeat_assoc? ← IsUseless? (← getMainTarget) repeat_assoc
+      let s0 ← saveState
+      try
+        let partialTODO ← combineTacticList TODO
+        evalTactic $ partialTODO
+        let repeat_assoc ← `(tactic| repeat_assoc)
+        let useless_repeat_assoc? ← IsUseless? (← getMainTarget) repeat_assoc
 
-      restoreState s0
+        restoreState s0
 
-      let TODO := if not useless_repeat_assoc? then
+        let TODO := if not useless_repeat_assoc? then
           repeat_assoc :: TODO
-        else TODO
+          else TODO
 
-      let TODO := if useless_split_square? then TODO else split_square :: TODO
+      /-let TODO := if useless_split_square? then TODO else split_square :: TODO-/
 
-      let TODO ← combineTacticList TODO
-      TryThis.addSuggestion stx TODO
+        let TODO ← combineTacticList TODO
+        TryThis.addSuggestion stx TODO
       catch _ => -- it closes the goal then repaet assoc is not needed
-        let TODO := if useless_split_square? then TODO else TODO ++ [split_square] -- c'est pas fou mais pas pire que les reverse que j'enlève avec la version de concatenantion de tacticSeq de zulip
+        --let TODO := if useless_split_square? then TODO else TODO ++ [split_square] -- c'est pas fou mais pas pire que les reverse que j'enlève avec la version de concatenantion de tacticSeq de zulip
         let TODO ← combineTacticList TODO
         TryThis.addSuggestion stx TODO
 
@@ -170,7 +216,7 @@ variable (a : A ⟶ B) (b : B ⟶ C) (c : A ⟶ D) (d: D ⟶ C) (e: A ⟶ E) (f:
 lemma test4 (h1 : a ≫ b = g)  (h2 : c ≫ d = g) (h3: e ≫ f = g) : a ≫ b = c ≫ d := by
   findPath
 
-variable (a:A⟶  B) (b: B⟶  C) (y : A⟶ C) (c d : C⟶  D)
+variable (a:A ⟶ B) (b: B ⟶ C) (y : A ⟶ C) (c d : C ⟶ D)
 
 lemma test567 (h1: a≫ b = y) : y ≫ c= y ≫ d := by
 
@@ -204,7 +250,7 @@ variable (a: A ⟶ B) (b : A ⟶ C) (c: B ⟶ C) (d e x: B⟶ D) (f: D ⟶ C) (g
 
 lemma test7  (h1 : b = a ≫ c) (h2 : f ≫ h = g) (h3 : f ≫ i = g) (h4 : d ≫ f = c)
 (h5 : e ≫ f = c ) (h6 : x ≫ f = c) (h7 : f ≫ y = g): a ≫ c ≫ y= a ≫ c ≫ i := by
-  findPath
+    findPath
 
 
 variable (A B C D : Cat)
@@ -229,3 +275,19 @@ lemma test9 (h1 : a ≫ x = y) (h2 : x ≫ b = c) (h3 : a ≫ c = e)
 lemma test10 (h1 : a ≫ x = y) (h2 : x ≫ b = c) (h3 : a ≫ c = e)
 (h4 : e ≫ d = f) (h5 : y ≫ g = f) : a ≫ x ≫ b ≫ d = a ≫ x ≫ g := by
   findPath
+
+variable (A B C D E F G : Cat)
+variable (a : A ⟶ B) (b : B ⟶ C) (c : C ⟶ D) (d : D ⟶ E) (e : E ⟶ F) (x: A ⟶ C) (xp: A ⟶ G) (y : C ⟶ E) (yp : G ⟶ F) (u : B ⟶ G) (v : G ⟶ E)
+
+-- si on retire h1 (qui n'est pas utilisé) ça marche
+lemma test11 (h1 : a ≫ b = x) (h2 : b ≫ y = u ≫ v) (h3 : y = c ≫ d) (h4 : a ≫ u = xp) (h5 : v ≫ e = yp) : a ≫ b ≫ c ≫ d ≫ e = a ≫ u ≫ yp := by
+  findPath?
+
+  rw_assoc h3
+  rw_assoc_rhs h4
+  conv => rhs; rw [← h5]
+  rw_assoc_lhs h2.map_eq_left
+  conv => lhs; rw [← h2.map_eq_right]
+  rw_assoc_lhs h4
+  repeat_assoc
+--https://q.uiver.app/#q=WzAsMTUsWzAsMSwiQSJdLFsyLDEsIkIiXSxbMywwLCJDIl0sWzUsMCwiRCJdLFs0LDEsIkUiXSxbNSwyLCJGIl0sWzMsMiwiRyJdLFs3LDAsImFiY2RlIl0sWzksMCwiYWJ5ZSJdLFs3LDIsInhjZGUiXSxbOSwyLCJ4eWUiXSxbMTEsMCwiYXV2ZSJdLFsxMSwyLCJ4J3ZlIl0sWzEzLDIsIngneSciXSxbMTMsMCwiYXV5JyJdLFswLDEsImEiLDFdLFsxLDIsImIiLDFdLFswLDIsIngiLDFdLFsyLDMsImMiLDFdLFszLDQsImQiLDFdLFsyLDQsInkiLDFdLFs0LDUsImUiLDFdLFsxLDYsInUiLDFdLFs2LDQsInYiLDFdLFswLDYsIngnIiwxXSxbNiw1LCJ5JyIsMV0sWzcsOCwiMyIsMV0sWzcsOSwiMSIsMV0sWzksMTAsIjMiLDFdLFs4LDEwLCIxIiwxXSxbOCwxMSwiMiIsMV0sWzExLDEyLCI0IiwxXSxbMTIsMTMsIjUiLDFdLFsxMSwxNCwiNSIsMV0sWzE0LDEzLCI0IiwxXV0=
