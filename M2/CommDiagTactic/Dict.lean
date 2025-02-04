@@ -10,9 +10,6 @@ structure Dict (α β : Type) where
 
 namespace Dict
 
-
-
-
 def empty : Dict α β :=
   ⟨[]⟩
 

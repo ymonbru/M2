@@ -90,7 +90,7 @@ def expandOneTriangle (lt : List triangle) (lastUsed : Option triangle) (hom : L
       return (expanded?, newLastUsed, t::newLt, nnewHom, newTacticTODO)
     else
 
-      let proofTerm ← TryThis.delabToRefinableSyntax t.proof
+      let proofTerm ← PrettyPrinter.delab t.proof
 
       let tac ← match left, t.dir with
         | true, true => `(tactic| conv => lhs; rw [← $proofTerm] )

@@ -2,7 +2,8 @@ import Lean
 import Mathlib.Tactic
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.Tactic.CategoryTheory.Slice
-import M2.CommDiagTactic.Comm_rw
+--import M2.CommDiagTactic.Comm_rw
+import M2.CommDiagTactic.BFS
 import M2.CommDiagTactic.split_square
 import M2.CommDiagTactic.IsUselessTactic
 --import Egg
@@ -127,7 +128,7 @@ elab "findPath" : tactic => withMainContext do
       let (nextN, names, lh1) ←  nameList names nextN list_hom.1
       let (_, _, lh2) ← nameList names nextN list_hom.2
     --logInfo m!"{list_hom.1} et  {list_hom.2}"
-      let TODO ←  FindPath  [] list_triangles lh1 lh2
+      let TODO ←  findPathBFS  [] list_triangles lh1 lh2
 
     --let assoc←
       evalTacticList TODO.reverse
@@ -153,7 +154,7 @@ def SuggestPath (stx : Syntax) : TacticM Unit := withMainContext do
       let (nextN, names, lh1) ←  nameList names nextN list_hom.1
       let (_, _, lh2) ← nameList names nextN list_hom.2
     --logInfo m!"{list_hom.1} et  {list_hom.2}"
-      let TODO ←  FindPath  TODO list_triangles lh1 lh2
+      let TODO ←  findPathBFS  TODO list_triangles lh1 lh2
 
 
       let s0 ← saveState

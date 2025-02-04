@@ -60,10 +60,6 @@ partial def findAB (e a b: Expr) : MetaM <| Nat × Option Nat × Option Nat := d
         else
           return (1, none,  none)
 
-
-
-
-
 elab "rw_assoc" h:term : tactic => withMainContext do
   let goal ← whnf (← getMainTarget)
 
