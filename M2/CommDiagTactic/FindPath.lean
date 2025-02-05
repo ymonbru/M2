@@ -128,7 +128,7 @@ elab "findPath" : tactic => withMainContext do
       let (nextN, names, lh1) ←  nameList names nextN list_hom.1
       let (_, _, lh2) ← nameList names nextN list_hom.2
     --logInfo m!"{list_hom.1} et  {list_hom.2}"
-      let TODO ←  findPathBFS  [] list_triangles lh1 lh2
+      let TODO := (←  findPathBFS list_triangles lh1 lh2).reverse
 
     --let assoc←
       evalTacticList TODO.reverse
@@ -138,7 +138,6 @@ elab "findPath" : tactic => withMainContext do
 def SuggestPath (stx : Syntax) : TacticM Unit := withMainContext do
   let split_square  ← `(tactic| split_square)
   let useless_split_square? ← IsUseless? (← getMainTarget) split_square
-  let TODO := if useless_split_square? then [] else [split_square]
 
   --no need to compute it if is useless
   if not useless_split_square? then evalTactic $ split_square
@@ -154,8 +153,11 @@ def SuggestPath (stx : Syntax) : TacticM Unit := withMainContext do
       let (nextN, names, lh1) ←  nameList names nextN list_hom.1
       let (_, _, lh2) ← nameList names nextN list_hom.2
     --logInfo m!"{list_hom.1} et  {list_hom.2}"
-      let TODO ←  findPathBFS  TODO list_triangles lh1 lh2
-
+      let TODO ←  findPathBFS  list_triangles lh1 lh2
+      let TODO := if not useless_split_square? then
+        (split_square :: TODO).reverse
+      else
+        TODO.reverse
 
       let s0 ← saveState
       try
@@ -174,8 +176,8 @@ def SuggestPath (stx : Syntax) : TacticM Unit := withMainContext do
 
         let TODO ← combineTacticList TODO
         TryThis.addSuggestion stx TODO
-      catch _ => -- it closes the goal then repaet assoc is not needed
-        --let TODO := if useless_split_square? then TODO else TODO ++ [split_square] -- c'est pas fou mais pas pire que les reverse que j'enlève avec la version de concatenantion de tacticSeq de zulip
+      catch _ => -- if it closes the goal then repaet assoc is not needed
+
         let TODO ← combineTacticList TODO
         TryThis.addSuggestion stx TODO
 
@@ -189,6 +191,7 @@ elab_rules : tactic
 
 
  /- Exemples -/
+-- most of the time of computation seems to be due to rw_assoc: TODO improove the suggestion part
 set_option trace.profiler true
 
 
@@ -197,12 +200,12 @@ variable (Cat : Type ) [Category Cat]
 variable (A B C D E F G H : Cat) (a : A ⟶ D) (b : A ⟶ C) (c : A ⟶ B) (d : B ⟶ C) (e : C ⟶ E) (f : B ⟶ F) (h : F ⟶ E) (i : E ⟶ G) (j : D ⟶ G) (k : F ⟶ G) (l : G ⟶ H) (m : B ⟶ G) (n : B ⟶ H)
 
 lemma test (h1 : c ≫ d = b) (h2 : b ≫ e = a ≫ g) (h3 : d ≫ e = f ≫ h) (h4 : g ≫ i = j) (h5 : h ≫ i = k) (h6 : f ≫ k = m ) (h7 : m ≫ l = n) : a ≫ j ≫ l = c ≫ n:= by
-  findPath
+  findPath?
 
 variable (a : A ⟶ B) (b : A ⟶ C) (c : B ⟶ C) (d : B ⟶ D) (e : D ⟶ C) (f : C ⟶ E) (g : D ⟶ E) (h : E ⟶ F) (i : D ⟶ F) (j : D ⟶ G) (k : F ⟶ G) (l : E ⟶ G)
 
 -- (h6 : h ≫ k = l )
-lemma test23  (h1 : a ≫ c  = b) (h2 : d ≫ e = c) (h3 : e ≫ f = g) (h4 : g ≫ h = i) (h5 :  i ≫ k = j ) : a ≫  d ≫ j = b ≫ f ≫ h ≫ k := by
+lemma test2  (h1 : a ≫ c  = b) (h2 : d ≫ e = c) (h3 : e ≫ f = g) (h4 : g ≫ h = i) (h5 :  i ≫ k = j ) : a ≫  d ≫ j = b ≫ f ≫ h ≫ k := by
   findPath
 
 variable (a : A ⟶ B) (b : B ⟶ D) (c : C ⟶ D) (d: A ⟶ C) (e: C ⟶ B)
@@ -219,20 +222,12 @@ lemma test4 (h1 : a ≫ b = g)  (h2 : c ≫ d = g) (h3: e ≫ f = g) : a ≫ b =
 
 variable (a:A ⟶ B) (b: B ⟶ C) (y : A ⟶ C) (c d : C ⟶ D)
 
-lemma test567 (h1: a≫ b = y) : y ≫ c= y ≫ d := by
-
-  sorry
-
-
+--lemma test567 (h1: a≫ b = y) : y ≫ c= y ≫ d := by sorry
 
 variable (a ap: A ⟶ B) (b bp: B ⟶ C ) (x xp : A ⟶ C) (y yp : B ⟶ D) (c cp d  : C ⟶ D)
 
 lemma FinDesHaricot (h1 : a ≫ b = x) (h2 : ap ≫ bp =x) (h3: b ≫ c =y) (h4 : bp ≫ cp = yp) (h5 : b ≫ d = y) (h6 : bp ≫ d = yp ) : a ≫ b ≫ c = ap ≫ bp ≫ cp := by
-  findPath?
-
-  rw [h3, h4, ← h6, ← h5]
-  rw_assoc h1
-  rw_assoc h2
+  findPath
 
 
 /-https://q.uiver.app/#q=WzAsNCxbMCwwLCJBIl0sWzIsMCwiQiJdLFsyLDIsIkMiXSxbNCwwLCJEIl0sWzAsMSwiYSIsMV0sWzEsMiwiYiIsMV0sWzAsMSwiYSciLDEseyJjdXJ2ZSI6LTJ9XSxbMSwyLCJiJyIsMSx7ImN1cnZlIjotMn1dLFswLDIsIngiLDEseyJjdXJ2ZSI6Mn1dLFswLDIsIngnIiwxLHsiY3VydmUiOjV9XSxbMSwzLCJ5IiwxXSxbMSwzLCJ5JyIsMSx7ImN1cnZlIjotMn1dLFsyLDMsImQiLDFdLFsyLDMsImMiLDEseyJjdXJ2ZSI6Mn1dLFsyLDMsImMnIiwxLHsiY3VydmUiOjV9XV0=-/
@@ -241,7 +236,7 @@ lemma FinDesHaricot (h1 : a ≫ b = x) (h2 : ap ≫ bp =x) (h3: b ≫ c =y) (h4 
 
 
 
-lemma test5 (h1 : a ≫ b = g)  (h2 : c ≫ d = g) (h3: e ≫ f = g) : a ≫ b = a ≫ b := by
+lemma test5 (h1 : a ≫ b = g)  (h3: e ≫ f = g) : a ≫ b = a ≫ b := by
   findPath
 
 lemma test6  : a ≫ b = a ≫ b := by
@@ -265,11 +260,17 @@ variable (x : B ⟶ C) (y : A ⟶ C) (a : A ⟶ B) (b : C ⟶ D) (c : B ⟶ D) (
 
 lemma test9 (h1 : a ≫ x = y) (h2 : x ≫ b = c) (h3 : a ≫ c = e)
 (h4 : e ≫ d = f) (h5 : y ≫ g = f) (h6 : ap ≫ xp = yp) (h7 : xp ≫ bp = cp) (h8 : ap ≫ cp = ep) (h9 : ep ≫ dp = fp) (h10 : yp ≫ gp = fp) : a ≫ x ≫ b ≫ d ≫ ap ≫ xp ≫ gp = a ≫ x ≫ g ≫ ap ≫ xp ≫ bp ≫ dp := by
-  --hint
-  findPath?
-
-  rw_assoc h2
-  findPath
+    rw_assoc_lhs h6
+    rw_assoc_lhs h10
+    conv => lhs; rw [← (h9)]
+    conv => lhs; rw [← (h8)]
+    conv => lhs; rw [← (h7)]
+    rw_assoc_lhs h2
+    rw_assoc_lhs h3
+    rw_assoc_lhs h4
+    conv => lhs; rw [← (h5)]
+    conv => lhs; rw [← (h1)]
+    repeat_assoc
 
 --https://q.uiver.app/#q=WzAsOSxbMCw0LCJBIl0sWzIsNCwiQiJdLFszLDYsIkMiXSxbMywzLCJEIl0sWzQsMiwiRSJdLFs2LDIsIkYiXSxbNyw0LCJHIl0sWzcsMSwiSCJdLFs4LDAsIkkiXSxbMCwxLCJhIiwxXSxbMSwyLCJ4IiwxXSxbMiwzLCJiIiwxXSxbMyw0LCJkIiwxXSxbMCwyLCJ5IiwxXSxbMSwzLCJjIiwxXSxbMCwzLCJlIiwxXSxbMCw0LCJmIiwxXSxbMiw0LCJnIiwxXSxbNCw1LCJhJyIsMV0sWzQsNiwieSciLDFdLFs1LDYsIngnIiwxXSxbNiw3LCJiJyIsMV0sWzUsNywiYyciLDFdLFs0LDcsImUnIiwxXSxbNyw4LCJkJyIsMV0sWzQsOCwiZiciLDFdLFs2LDgsImcnIiwxXV0=
 
@@ -282,13 +283,5 @@ variable (a : A ⟶ B) (b : B ⟶ C) (c : C ⟶ D) (d : D ⟶ E) (e : E ⟶ F) (
 
 -- si on retire h1 (qui n'est pas utilisé) ça marche
 lemma test11 (h1 : a ≫ b = x) (h2 : b ≫ y = u ≫ v) (h3 : y = c ≫ d) (h4 : a ≫ u = xp) (h5 : v ≫ e = yp) : a ≫ b ≫ c ≫ d ≫ e = a ≫ u ≫ yp := by
-  findPath?
-
-  rw_assoc h3
-  rw_assoc_rhs h4
-  conv => rhs; rw [← h5]
-  rw_assoc_lhs h2.map_eq_left
-  conv => lhs; rw [← h2.map_eq_right]
-  rw_assoc_lhs h4
-  repeat_assoc
+  findPath
 --https://q.uiver.app/#q=WzAsMTUsWzAsMSwiQSJdLFsyLDEsIkIiXSxbMywwLCJDIl0sWzUsMCwiRCJdLFs0LDEsIkUiXSxbNSwyLCJGIl0sWzMsMiwiRyJdLFs3LDAsImFiY2RlIl0sWzksMCwiYWJ5ZSJdLFs3LDIsInhjZGUiXSxbOSwyLCJ4eWUiXSxbMTEsMCwiYXV2ZSJdLFsxMSwyLCJ4J3ZlIl0sWzEzLDIsIngneSciXSxbMTMsMCwiYXV5JyJdLFswLDEsImEiLDFdLFsxLDIsImIiLDFdLFswLDIsIngiLDFdLFsyLDMsImMiLDFdLFszLDQsImQiLDFdLFsyLDQsInkiLDFdLFs0LDUsImUiLDFdLFsxLDYsInUiLDFdLFs2LDQsInYiLDFdLFswLDYsIngnIiwxXSxbNiw1LCJ5JyIsMV0sWzcsOCwiMyIsMV0sWzcsOSwiMSIsMV0sWzksMTAsIjMiLDFdLFs4LDEwLCIxIiwxXSxbOCwxMSwiMiIsMV0sWzExLDEyLCI0IiwxXSxbMTIsMTMsIjUiLDFdLFsxMSwxNCwiNSIsMV0sWzE0LDEzLCI0IiwxXV0=
