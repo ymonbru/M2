@@ -60,10 +60,6 @@ partial def findAB (e a b: Expr) : MetaM <| Nat × Option Nat × Option Nat := d
         else
           return (1, none,  none)
 
-
-
-
-
 elab "rw_assoc" h:term : tactic => withMainContext do
   let goal ← whnf (← getMainTarget)
 
@@ -178,3 +174,36 @@ elab "rw_assoc_rhs" h:term : tactic => withMainContext do
         return ()
       else
         return ()
+
+def rw_assoc_lhs_suggest (h : Term) : TacticM <| Option <| TSyntax `tactic := withMainContext do
+  let goal ← whnf (← getMainTarget)
+
+
+  if goal.isAppOf ``Eq then
+    let hTerm ← elabTerm h none
+    let hType ← inferType hTerm
+
+
+    match (← is_triangle hType) with
+      | none => return none
+      | some (a, b, _) =>
+
+        let e1 := goal.getArg! 1
+
+
+        let (_, aInl?, bInl?) ← findAB e1 a b
+        logInfo m!"alalalolo"
+        match aInl?, bInl? with
+          | none, _ => logInfo m!" a not found"
+          | _, none =>  logInfo m!" b not found"
+          | some a, some b =>
+            if b = a + 1 then
+              let aLit := Syntax.mkNumLit <| toString a                let bLit := Syntax.mkNumLit <| toString b
+
+              return some (← `(tactic |  slice_lhs $aLit $bLit => first | rw [ ($h)] | rw [ ← ($h)]))
+
+            else throwError "a and b not next to each other"
+
+        return none
+      else
+        return none

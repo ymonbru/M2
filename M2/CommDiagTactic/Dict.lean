@@ -10,9 +10,6 @@ structure Dict (α β : Type) where
 
 namespace Dict
 
-
-
-
 def empty : Dict α β :=
   ⟨[]⟩
 
@@ -34,5 +31,6 @@ def findAux (d : List <| α × β) (key : α) : Option β := match d with
 def find (d : Dict α β) (key : α) : Option β :=
   findAux d.data key
 
+def affKeys (d : Dict α β) : List <| α × β := d.data
 
 end Dict
