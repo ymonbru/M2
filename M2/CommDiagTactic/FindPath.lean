@@ -6,7 +6,7 @@ import Mathlib.Tactic.CategoryTheory.Slice
 import M2.CommDiagTactic.BFS
 import M2.CommDiagTactic.split_square
 import M2.CommDiagTactic.IsUselessTactic
---import Egg
+
 
 /-TODO: improove the time (????) by dealing with square-/
 open CategoryTheory Lean Meta Elab Tactic

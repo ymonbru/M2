@@ -1,4 +1,5 @@
 import M2.CommDiagTactic.FindPath
+--import Egg
 
 open CategoryTheory
 
@@ -10,15 +11,7 @@ variable (Cat : Type ) [Category Cat]
 variable (A B C D E F G H : Cat) (a : A ⟶ D) (b : A ⟶ C) (c : A ⟶ B) (d : B ⟶ C) (e : C ⟶ E) (f : B ⟶ F) (h : F ⟶ E) (i : E ⟶ G) (j : D ⟶ G) (k : F ⟶ G) (l : G ⟶ H) (m : B ⟶ G) (n : B ⟶ H)
 
 lemma test (h1 : c ≫ d = b) (h2 : b ≫ e = a ≫ g) (h3 : d ≫ e = f ≫ h) (h4 : g ≫ i = j) (h5 : h ≫ i = k) (h6 : f ≫ k = m ) (h7 : m ≫ l = n) : a ≫ j ≫ l = c ≫ n:= by
-    --split_square
-    conv => lhs; rw [← h4]
-    slice_lhs 1 2 => rw [← h2]
-    conv => lhs; rw [← h1]
-    slice_lhs 2 3 => rw [(h3)]
-    --conv => lhs; rw [← h3.map_eq_right]
-    slice_lhs 3 4 => rw [(h5)]
-    slice_lhs 2 3 => rw [(h6)]
-    slice_lhs 2 3 => rw [(h7)]
+    findPath
 
 
 variable (a : A ⟶ B) (b : A ⟶ C) (c : B ⟶ C) (d : B ⟶ D) (e : D ⟶ C) (f : C ⟶ E) (g : D ⟶ E) (h : E ⟶ F) (i : D ⟶ F) (j : D ⟶ G) (k : F ⟶ G) (l : E ⟶ G)
