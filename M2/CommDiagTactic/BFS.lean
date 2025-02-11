@@ -1,109 +1,133 @@
 import Mathlib.Tactic
 import Mathlib.Data.Nat.Defs
 import Lean
-import M2.CommDiagTactic.rw_assoc
 import M2.CommDiagTactic.Dict
 
 open Lean Meta Elab Tactic Std
 
+variable (α : Type) [DecidableEq α]
+
+/-- the data structure that remenber the info about a triangle relation in context-/
 @[ext]
 structure triangle where--f ≫ g = h
-  f : Nat
-  g : Nat
-  h : Nat
+  f : α
+  g : α
+  h : α
   dir : Bool -- true if f ≫ g is on the letf side of the equation in the context
   proof : Expr
 deriving Repr
 
+/-- an extension of triangle that remember how it must be used in the context-/
 @[ext]
-structure rwTriangle extends triangle where
-  red : Bool-- true if the rulle is used in the form f ≫ g ⟶  h, false if it's used on the form
+structure rwTriangle extends triangle α where
+  dep : Option Nat -- the position of the morphisme f in the sequence,  some if the rulle is used in the form f ≫ g ⟶  h, none if it's used on the form
 
-def toTactic (t : rwTriangle) : TacticM <| TSyntax `tactic := do
+/-- translate a rwTriangle into an executable tactic-/
+def toTactic (t : rwTriangle α) : TacticM <| TSyntax `tactic := withMainContext do
   let proofTerm ← PrettyPrinter.delab t.proof
-  match t.dir, t.red with
-    -- ou peut être l'autre sens
-    | false, false => `(tactic| conv => lhs; rw [($proofTerm)] )
-    | true, false => `(tactic| conv => lhs; rw [← ($proofTerm)] )
-    | _, true =>
-      let tac ← rw_assoc_lhs_suggest proofTerm
-      match tac with
-        | none => `(tactic| skip)
-        | some tac => return tac
+  match t.dep with
+    | none => match t.dir with
+      | false => `(tactic | conv => lhs; rw [($proofTerm)] )
+      | true => `(tactic | conv => lhs; rw [← $proofTerm] )
+    | some pos =>
+      let posLit := Syntax.mkNumLit <| toString pos
+      let posLitS := Syntax.mkNumLit <| toString (pos + 1)
+      match t.dir with
+      | false => `(tactic | slice_lhs $posLit $posLitS => rw [← $proofTerm] )
+      | true => `(tactic | slice_lhs $posLit $posLitS => rw [ ($proofTerm) ] )
 
+/- From here the function of the BFS exploration
+The BFS algo will be performed by using a Dict remembering the explore states and the last step that lead to this state.
 
-    --`(tactic| rw_assoc_lhs $proofTerm )
-    --TODO: implementer une version de rw_assoc ou on passe la direction en argument
+The date structure of Dict is very naive (with list) but the time  is manly due to excecution of tactic and not the data structure manipulation.-/
 
+/-- the state of exploration is before ++ head ++ after = oldState, check if the triangle t can be expande from this position, and if it's the case add the path (if the new position is no new to the explored positions)
 
-def expand? (t : triangle) (head : Nat) (before after oldState : List Nat) (explored : Dict (List Nat) (Option <| (List Nat) × rwTriangle)) (storedStates : Queue (List Nat)): Queue (List Nat) × Dict (List Nat) (Option <| List Nat × rwTriangle) :=
+if a new state is found thenit's added to the queue in ordr to explore it later
+
+if the state endState is found then an error containing the current explored states is raised
+-/
+def expand? (t : triangle α) (head : α) (before after oldState endState: List α) (explored : Dict (List α) (Option <| (List α) × rwTriangle α)) (storedStates : Queue (List α)) : Except (Dict (List α) (Option (List α × rwTriangle α))) (Queue (List α) × Dict (List α) (Option <| (List α) × rwTriangle α)) :=
   if t.h = head then
     let newState := before ++ t.f :: t.g :: after
-    let (new?, newExplored) := Dict.add explored newState (some ⟨oldState, t, false⟩)
-    if new? then
-      (storedStates.enqueue newState, newExplored)
+    let (new?, newExplored) := Dict.add explored newState (some ⟨oldState, t, none⟩)
+    if newState = endState then
+      Except.error newExplored
     else
-      (storedStates, explored)
-  else
-    (storedStates, explored)
+      if new? then
+        Except.ok (storedStates.enqueue newState, newExplored)
+      else
+        Except.ok (storedStates, explored)
+    else
+      Except.ok (storedStates, explored)
 
-def apply?  (t : triangle) (head1 head2 : Nat) (before after oldState: List Nat) (explored : Dict (List Nat) (Option <| (List Nat) × rwTriangle)) (storedStates : Queue (List Nat)): Queue (List Nat) × Dict (List Nat) (Option <| (List Nat) × rwTriangle) :=
+/-- Same as expand? but the rule f ≫ g → h-/
+def apply?  (t : triangle α) (head1 head2 : α) (pos : Nat) (before after oldState endState: List α) (explored : Dict (List α) (Option <| (List α) × rwTriangle α)) (storedStates : Queue (List α)): Except (Dict (List α) (Option (List α × rwTriangle α))) (Queue (List α) × Dict (List α) (Option <| (List α) × rwTriangle α)) :=
   if t.f = head1 ∧ t.g = head2 then
     let newState := before ++ t.h :: after
-    let (new?, newExplored) := Dict.add explored newState (some ⟨oldState, t, true⟩)
-    if new? then
-      (storedStates.enqueue newState, newExplored)
+    let (new?, newExplored) := Dict.add explored newState (some ⟨oldState, t, some pos⟩)
+    if newState = endState then
+      Except.error newExplored
     else
-      (storedStates, explored)
+      if new? then
+        Except.ok (storedStates.enqueue newState, newExplored)
+      else
+        Except.ok (storedStates, explored)
   else
-    (storedStates, explored)
+    Except.ok (storedStates, explored)
 
+/-- compute inductively all the states that can be accessed from the curent state with only one triangle
 
-def nextTriangle? (before curentState oldState : List Nat) (explored : Dict (List Nat) (Option <| List Nat × rwTriangle) ) (t : triangle) (storedStates : Queue (List (Nat))) : Queue (List Nat) × Dict (List Nat) (Option <| List Nat × rwTriangle) :=  match curentState with
-  | [] => (storedStates, explored)
-  | [a] => let (newStates, newExplored) := expand? t a before [] oldState explored storedStates
-           (newStates, newExplored)
-  | a :: b :: tail =>
-    let (newStoredStates,newExplored) := nextTriangle? (before ++ [a]) (b :: tail) oldState explored t storedStates
-    let (newStoredStates, newExplored) := expand? t a before (b :: tail) oldState newExplored newStoredStates
-    apply? t a b before tail oldState newExplored newStoredStates
+pos is an invariant that remember the length of before in order to give rw triangle properly-/
+def nextTriangle? (pos : Nat) (before curentState oldState endState: List α) (explored : Dict (List α) (Option <| List α × rwTriangle α) ) (t : triangle α) (storedStates : Queue (List α)) : Except (Dict (List α) (Option (List α × rwTriangle α))) (Queue (List α) × Dict (List α) (Option <| (List α) × rwTriangle α)) :=  match curentState with
+  | [] => Except.ok (storedStates, explored)
+  | [a] => do
+    let (newStates, newExplored) ←  expand? α t a before [] oldState endState explored storedStates
+    Except.ok (newStates, newExplored)
+  | a :: b :: tail => do
+    let (newStoredStates,newExplored) ←  nextTriangle? (pos + 1) (before ++ [a]) (b :: tail) oldState endState explored t storedStates
+    let (newStoredStates, newExplored) ←  expand? α t a before (b :: tail) oldState endState newExplored newStoredStates
+    apply? α t a b pos before tail oldState endState newExplored newStoredStates
 
-def explore (state : List Nat) (explored : Dict (List Nat) (Option <| (List Nat) × rwTriangle) ) (lt : List triangle) (storedStates : Queue (List Nat)): Queue (List Nat) × Dict (List Nat) (Option <| (List Nat) × rwTriangle) := match lt with
-  | [] => (storedStates, explored)
-  | t :: q =>
-    let (newStoredStates, newExplored) := nextTriangle? [] state state explored t storedStates
-    explore state newExplored q newStoredStates
+/-- explore all the states that can be accessed from the current state by using any triangle on the list lt-/
+def explore (state endState: List α) (explored : Dict (List α) (Option <| (List α) × rwTriangle α) ) (lt : List (triangle α)) (storedStates : Queue (List α)) : Except (Dict (List α) (Option (List α × rwTriangle α))) (Queue (List α) × Dict (List α) (Option <| (List α) × rwTriangle α)) := match lt with
+  | [] => Except.ok (storedStates, explored)
+  | t :: q => do
+    let (newStoredStates, newExplored) ← nextTriangle? α 1 [] state state endState explored t storedStates
+    explore state endState newExplored q newStoredStates
 
-partial def BFS_step (stateStored : Queue (List Nat)) (lt : List triangle) (explored : Dict (List Nat) (Option <| (List Nat) × rwTriangle)): Dict (List Nat) (Option <| (List Nat) × rwTriangle) :=
+/-- algo BFS: if there is a state to explore in the queue, apply the function explore to it.
+
+if an "error" is raised, then the final state is found so the path can be found by exploring explored otherwise try to perform an other step
+
+it finishes because there is a finite number of states to explore and the can only be queued once-/
+partial def BFS_step (stateStored : Queue (List α)) (lt : List (triangle α)) (endState : List α) (explored : Dict (List α) (Option <| List α × rwTriangle α)) : Dict (List α) (Option <| List α × rwTriangle α) :=
   match stateStored.dequeue? with
   | none => explored
   | some (state, stateStored) =>
-    let (newStoredStates, newExplored) := explore state explored lt stateStored
-    BFS_step newStoredStates lt newExplored
+    match explore α state endState explored lt stateStored with
+      | Except.error newExplored => newExplored
+      | Except.ok (newStoredStates, newExplored) => BFS_step newStoredStates lt endState newExplored
 
-def BFS (dep : List Nat ) (lt : List triangle) : Dict (List Nat) (Option <| (List Nat) × rwTriangle) :=
+/-- apply BFS_step to get the Dict with the explored path until finding endState-/
+def BFS (depState endState: List α ) (lt : List (triangle α)) : Dict (List α) (Option <| List α × rwTriangle α) :=
 
-  let stateStored := Queue.empty.enqueue dep
-  let explored := (Dict.empty.add dep (none : Option <| (List Nat) × rwTriangle)).2
-  BFS_step stateStored lt explored
+  let stateStored := Queue.empty.enqueue depState
+  let explored := (Dict.empty.add depState none).2
+  BFS_step α stateStored lt endState explored
 
-def aff (d : List ℕ × Option (List ℕ × rwTriangle)): List ℕ × Option (List ℕ ):=
-  match d with
-  | (a, none) => (a, none)
-  | (a, some (b, _)) => (a, some b)
-
-partial def findPathAux (explored : Dict (List Nat) (Option (List Nat × rwTriangle))) (state : List Nat) (currentPath : List <| TSyntax `tactic): TacticM (List <| TSyntax `tactic) :=
+/-- explore the Dict explored to find a path frome "state" to a reccord where there is no previous step to apply to get there. In other words the starting state-/
+partial def findPathAux (explored : Dict (List α) (Option (List α × rwTriangle α))) (state : List α) (currentPath : List <| TSyntax `tactic): TacticM (List <| TSyntax `tactic) :=
     let previous := explored.find state
     match previous with
     | none => do throwError m!"No path found"
     | some none => return currentPath -- the only some none case is the dep state
-    | some (some (prevState, t )) => do
-      let newCurrentPath := (← toTactic t) :: currentPath
+    | some (some (prevState, t )) => withMainContext do
+      let newCurrentPath := (← toTactic α t) :: currentPath
       findPathAux explored prevState newCurrentPath
 
-def findPathBFS (lt : List triangle) (dep fin : List Nat)  : TacticM (List <| TSyntax `tactic) := do
-  let explored := BFS  dep lt
+/-- combine BFS and findPathAux to give bac the list of tactic to do in order to solve the goal.-/
+def findPathBFS (lt : List (triangle α)) (dep fin : List α)  : TacticM (List <| TSyntax `tactic) := withMainContext do
+  let explored := BFS α dep fin lt
 
-  --logInfo m!"explored: {explored.affKeys.map aff}"
-
-  findPathAux explored fin []
+  findPathAux α explored fin []

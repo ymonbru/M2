@@ -190,9 +190,8 @@ def rw_assoc_lhs_suggest (h : Term) : TacticM <| Option <| TSyntax `tactic := wi
 
         let e1 := goal.getArg! 1
 
-
         let (_, aInl?, bInl?) ← findAB e1 a b
-        logInfo m!"alalalolo"
+        logInfo m!"{← ppExpr e1}, {a}, {b}"
         match aInl?, bInl? with
           | none, _ => logInfo m!" a not found"
           | _, none =>  logInfo m!" b not found"
