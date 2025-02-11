@@ -1,4 +1,4 @@
-import Mathlib.Tactic
+--import Mathlib.Tactic
 import Mathlib.Data.Nat.Defs
 import Lean
 import M2.CommDiagTactic.Dict
