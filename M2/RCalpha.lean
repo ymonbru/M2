@@ -1,4 +1,5 @@
 import M2.alpha
+import M2.KsubU
 import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.Filtered.Final
 import Mathlib.Order.Lattice
@@ -18,16 +19,6 @@ section
 
 variable {P Q : Opens X → Prop} (hpq : ∀ (U : Opens X), P U → Q U) (axiomP : ∀ U1 U2, P U1 → P U2 → P (U1 ⊓ U2))
 --variable {K1 K2 : Compacts X} (f : K1 ⟶ K2)
-
-/-- U1⊓ U2 as an element of (KsubU_cat K P)ᵒᵖ-/
-@[simps]
-def InfKsubU (U1 U2 :(KsubU_cat K P)ᵒᵖ ): (KsubU_cat K P)ᵒᵖ:= ⟨( U1.unop.obj ⊓ U2.unop.obj), ⟨le_inf U1.unop.property.1 U2.unop.property.1, axiomP _ _ U1.unop.property.2 U2.unop.property.2⟩ ⟩
-
-/-- The morphisme U1 ⟶ U1 ⊓ U2 for elements of (KsubU_cat K P)ᵒᵖ-/
-def LeftInInf (U1 U2 :(KsubU_cat K P)ᵒᵖ ): U1 ⟶ (InfKsubU K axiomP U1 U2):= op (homOfLE (by simp))
-
-/-- The morphisme U2 ⟶ U1 ⊓ U2 for elements of (KsubU_cat K P)ᵒᵖ-/
-def RightInInf (U1 U2 :(KsubU_cat K P)ᵒᵖ ): U2 ⟶ (InfKsubU K axiomP U1 U2):= op (homOfLE (by simp))
 
 /-- The functor induced by P -> Q from the category of opens that contains K and satiffy P to the one that satisfy Q-/
 @[simps!]
@@ -87,36 +78,25 @@ def AlphaUpPPtoQ : (AlphaUpStarP P)⟶ (@AlphaUpStarP _ _ C _ _ Q) where
 
     rw [this]
 
-include axiomP
---Implicit argument are an issue for infering the instance
-/-- The evidence that the category (KsubU_cat K P)ᵒᵖ is filtered-/
-lemma IsFilteredKsubU: IsFilteredOrEmpty (KsubU_cat K P)ᵒᵖ where
-  cocone_objs U1 U2 := by
-    use InfKsubU K axiomP U1 U2
-    use LeftInInf K axiomP U1 U2
-    use RightInInf K axiomP U1 U2
-  cocone_maps U1 U2 _ _:= by
-    use InfKsubU K axiomP U1 U2
-    use RightInInf K axiomP U1 U2
-    rfl
-
-include V V_spec
+include axiomP V V_spec
 --Implicit argument are an issue for infering the instance
 /-- The evidence that the functor op (KsubUPtoQ K hpq) is final-/
 lemma IsFinalOpKsubUPtoQ: Functor.Final (Functor.op (KsubUPtoQ K hpq)) := by
-  have := @IsFilteredKsubU _ _ K _ axiomP
-  apply ( Functor.final_iff_of_isFiltered _ ).2
-  constructor
-  · intro U
-    use op ( V K U.unop)
-    apply Nonempty.intro
-    apply op
-    apply homOfLE
-    apply V_spec
-  · intro _ U2 _ _
-    use U2
-    use 𝟙 _
-    rfl
+  have := @IsCofilteredKsubU _ _ K _ axiomP
+
+  have : (KsubUPtoQ K hpq).Initial := by
+    apply (Functor.initial_iff_of_isCofiltered _).2
+    constructor
+    · intro U
+      use ( V K U)
+      apply Nonempty.intro
+      apply homOfLE
+      apply V_spec
+    · intro _ U _ _
+      use U
+      use 𝟙 _
+      rfl
+  apply Functor.final_op_of_initial
 
 lemma IsIsoAlphaUpPtoQ : IsIso (AlphaUpPPtoQ C hpq):= by
   apply ( NatTrans.isIso_iff_isIso_app _).2
@@ -137,12 +117,6 @@ section --α^* variante avec seulement les U relativements comapcts
 
 variable (X)
 variable [LocallyCompactSpace X] [T2Space X]
-
---P
-/-- the condition of being relatively compact-/
-def relcCond : Opens X → Prop := fun (U:Opens X) => IsCompact (closure (U:Set X))
---Q
-#check trueCond
 
 /-- The functor α^* with condition on the opens of being relatively compact-/
 def AlphaUpStarRc : ((Opens X)ᵒᵖ ⥤ C) ⥤ (Compacts X)ᵒᵖ ⥤ C := AlphaUpStarP (relcCond X)
@@ -177,19 +151,8 @@ lemma V_spec : ∀ K,∀ U, (V X K U).obj.carrier ⊆ U.obj:= by
   apply interior_subset
   exact (Classical.choice (existsIntermed X _ _ U.property.1)).property.2.2
 
-lemma axiomP : ∀ U₁ U₂, relcCond X U₁ → relcCond X U₂ → relcCond X (U₁ ⊓  U₂):= by
-  intro U1 U2 h1 h2
-  unfold relcCond
-  apply IsCompact.of_isClosed_subset
-  · apply IsCompact.inter
-    · exact h1
-    · exact h2
-  · exact isClosed_closure
-  · rw [ Opens.coe_inf]
-    apply closure_inter_subset_inter_closure
-
 /-- The evidence that AlphaUpStarRc X C  and AlphaUpStar are isomorphics -/
-def AlphaUpStarToRc :  AlphaUpStarRc X C ≅ AlphaUpStar :=  IsoAlphaUpPtoQ _ (λ _ _ => rfl) (axiomP X) (V X) (V_spec
+def AlphaUpStarToRc :  AlphaUpStarRc X C ≅ AlphaUpStar :=  IsoAlphaUpPtoQ _ (λ _ _ => rfl) (axiomPrc X) (V X) (V_spec
 X)
 /-- The data of the adjunction betwee α^*RC and α_* deduced by the previous isomorphism and the adjunction of α^* and α_*-/
 def AdjAlphaStarRc : AlphaUpStarRc X C ⊣ AlphaDownStar := AdjAlphaStar.ofNatIsoLeft (AlphaUpStarToRc X C).symm

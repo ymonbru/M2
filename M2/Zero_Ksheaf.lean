@@ -18,7 +18,6 @@ def FZero : (Compacts X)ᵒᵖ ⥤ C where-- := 0 does not allow aesop to deduce
   obj _ := 0
   map _ := 0
 
-
 /--The cocone of the diagram FUbar given by the zero maps-/
 @[simps]
 def zC:Cocone <| FUbar _ K (FZero C):=Cocone.mk 0 0
@@ -48,12 +47,18 @@ def ZKsheaf : Ksheaf X C where
       apply IsZero.eq_zero_of_tgt (isZero_zero _)
     · intro s m _
       apply IsZero.eq_zero_of_tgt (isZero_zero _)
-  ksh3 _ := by
-    apply isIso_of_source_target_iso_zero
-    apply colimit.isoColimitCocone (zeroCocone _ _)
-    rfl
+  ksh3 K := by
+    constructor
+    · intro _ _
+      exact HasZeroObject.from_zero_ext_iff.mpr trivial
+    · intro _ _ _
+      exact HasZeroObject.from_zero_ext_iff.mpr trivial
+    · intro _
+      exact 0
 
 instance : Inhabited (Ksheaf X C) where
   default := ZKsheaf C
+
+#check colimit.isoColimitCocone
 
 #lint

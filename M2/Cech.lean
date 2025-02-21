@@ -25,7 +25,7 @@ variable (A: Type  v) [Ring A]
 
 variable (F:C ᵒᵖ ⥤ ModuleCat A)
 
-variable (U:Presieve X)
+variable (U : Presieve X)
 
 local notation "R" => Sieve.generate U
 

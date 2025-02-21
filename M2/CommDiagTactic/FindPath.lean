@@ -9,7 +9,7 @@ import M2.CommDiagTactic.IsUselessTactic
 
 
 /-TODO: improove the time (????) by dealing with square-/
-open CategoryTheory Lean Meta Elab Tactic
+open CategoryTheory Lean Meta Elab Tactic trg
 
 /-- take a list of tactics and evaluate then-/
 def evalTacticList (todo: List <| TSyntax `tactic) : TacticM Unit := withMainContext do
@@ -18,7 +18,6 @@ def evalTacticList (todo: List <| TSyntax `tactic) : TacticM Unit := withMainCon
     | tac :: [] =>
       -- to avoid trying a tactic when the goal is closed.
       evalTactic $ tac
-
     | tac :: todoQ =>
       evalTactic $ tac
       evalTacticList todoQ

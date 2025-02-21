@@ -3,7 +3,7 @@ import M2.CommDiagTactic.FindPath
 
 open CategoryTheory
 
-set_option trace.profiler true
+--set_option trace.profiler true
 
 
 variable (Cat : Type ) [Category Cat]

@@ -10,14 +10,29 @@ open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Comp
 open ZeroObject
 
 variable (X) [TopologicalSpace X] [T2Space X]
-variable (C) [Category C] [HasColimits C] [HasLimits C][HasZeroObject C]
+variable (C) [Category C] [HasColimits C] [HasLimits C] [HasZeroObject C]
 variable (G:Ksheaf X C) (F:Sheaf C (of X))
 
 noncomputable section
 
 #check TopCat.Presheaf.IsSheaf ((AlphaDownStar).obj (G.carrier):Presheaf C (of X))
 
-theorem KshToSh: TopCat.Presheaf.IsSheaf  ((AlphaDownStar).obj (G.carrier):Presheaf C (of X)):= by
+theorem KshToSh: TopCat.Presheaf.IsSheaf  ((AlphaDownStar).obj (G.carrier) : Presheaf C (of X)):= by
+  --probablement mieux d'utiliser isSheaf_iff_isSheafPairwiseIntersections
+  apply (isSheaf_iff_isSheafPairwiseIntersections _).2
+  unfold IsSheafPairwiseIntersections
+  intro i U
+  apply Nonempty.intro
+  constructor
+  · intro s j
+    sorry
+  · sorry
+  · sorry
+
+
+
+
+
   apply (isSheaf_iff_isSheafOpensLeCover _).2
   unfold IsSheafOpensLeCover
   intro i U
@@ -65,15 +80,16 @@ def shAlphaDownStar : (Ksheaf X C) ⥤ Sheaf C (of X) where
     apply Sheaf.Hom.ext
     apply (AlphaDownStar).map_comp
 
-
 def shAlphaUpStarG : (Ksheaf X C) where
   carrier:= (AlphaUpStar).obj ((Sheaf.forget _ _).obj F)
   ksh1:= by
-    unfold AlphaUpStar AlphaUpStarP AlphaUpStarF--FU KsubU
+
+    unfold AlphaUpStar AlphaUpStarP AlphaUpStarF --FU KsubU fullSubcategoryInclusion inducedFunctor
     simp
     have :((Sheaf.forget _ _).obj F).obj (op (⊥:Opens X)) = 0:= by
       sorry
     rw [← this]
+
     sorry
   ksh2:= by
     sorry

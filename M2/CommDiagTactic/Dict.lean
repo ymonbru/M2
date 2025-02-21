@@ -1,6 +1,6 @@
 import Lean
 
-open Lean Meta Elab Tactic
+open Lean Std Data
 
 
 variable {α : Type} {β : Type } [DecidableEq α]
@@ -12,6 +12,7 @@ structure Dict (α β : Type) where
 namespace Dict
 
 /-- the empty dictionary-/
+--Std.HashMap.empty
 def empty : Dict α β :=
   ⟨[]⟩
 
@@ -23,6 +24,7 @@ def addAux (d : List <| α × β) (key : α) (value : β) : Bool × (List <| α 
                         let (b, newD) :=  addAux tail key value
                         (b, (k, v) :: newD)
 
+--
 /-- same as addAux but with dictionary and not lists-/
 def add (d : Dict α β) (key : α ) (value : β) : Bool × Dict α β :=
   let (b, newD) :=  addAux d.data key value

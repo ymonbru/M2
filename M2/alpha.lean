@@ -1,5 +1,5 @@
-
 import M2.Ksheaves
+import M2.KsubU
 import Mathlib.Topology.Sets.Opens
 
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite
@@ -13,24 +13,7 @@ variable {C} [Category C] [HasColimits C] [HasLimits C]
 noncomputable section
 variable (K : Compacts X)
 variable (F : (Opens X)ᵒᵖ ⥤ C)
-variable (P : Opens X → Prop)-- true for the  le alpha normal et IsCompact (closure U.carrier) pour la version relativement compacte
-
-/--The property of containing K and satisfying P-/
-def KsubU : Set (Opens X) := fun (U:Opens _) => (K.carrier ⊆ U) ∧ P U
-
-/--The full subcategory induced by the property KsubU-/
-def KsubU_cat : Type := FullSubcategory (KsubU K P)
-
-/-instance : SetLike (KsubU_cat K P) X where
-  coe U:= U.obj.carrier
-
-  coe_injective':= fun ⟨_ , _ ⟩ ⟨_, _⟩ h => by
-    apply FullSubcategory.ext
-    simp at h
-    exact h-/
-
-
-instance : Category (KsubU_cat K P) := FullSubcategory.category (KsubU K P)
+variable (P : Opens X → Prop)
 
 /-- The diagram obtained by restricting F to the category KsubU-/
 @[simps!]
@@ -145,7 +128,7 @@ end
 
 noncomputable section
 
-variable {F : (Opens X)ᵒᵖ⥤ C} {G : (Compacts X)ᵒᵖ ⥤ C} (τ : (AlphaUpStar).obj F ⟶ G) (σ : F⟶ (AlphaDownStar).obj G) (K : Compacts X) (U : Opens X)
+variable {F : (Opens X)ᵒᵖ⥤ C} {G : (Compacts X)ᵒᵖ ⥤ C} (τ : (AlphaUpStar).obj F ⟶ G) (σ : F ⟶ (AlphaDownStar).obj G) (K : Compacts X) (U : Opens X)
 
 
 /-- The naturals maps from F(U) to the family of G(K) for K contained in U-/
@@ -198,7 +181,6 @@ def AFtoG : ( (AlphaUpStar).obj F ⟶  G) where
     rfl
 
 /-- The bijection between hom(αF, G) and hom(F,αG) -/
---@[simps!] --#lint does not like it
 def homEquiv: (AlphaUpStar.obj F ⟶ G) ≃ ( F ⟶ AlphaDownStar.obj G) where
   toFun := fun τ => FtoAG τ
   invFun := fun σ  => AFtoG σ

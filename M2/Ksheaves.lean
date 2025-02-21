@@ -2,25 +2,19 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 import Mathlib.Topology.Sets.Compacts
+import Mathlib.CategoryTheory.Filtered.Basic
+import M2.KsubU
 
 
-open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite
+open CategoryTheory Limits TopologicalSpace Compacts Opposite
 
 variable (X) [TopologicalSpace X] [T2Space X]
 variable (K : Compacts X)
 variable {C} [Category C] [HasPullbacks C] [HasColimits C] [HasZeroObject C]
-variable {A} [Ring A]
+--variable {A} [Ring A]
 variable (F : (Compacts X)ᵒᵖ ⥤ C) (K₁ :Compacts X) (K₂:Compacts X)
 
 -- definiing the limit limit that apear in the axiom Ksh3
-
-/-- The Propriety of being a relatively compact neighbouhood of K-/
-def RelCN : Set (Opens X) := fun (U : Opens X) => (K.carrier ⊆ U.carrier) ∧ IsCompact (closure U : Set X)
-
-/-- The category obtained by ordering by inclusion the opens satifying the previous property -/
-def RelCN_cat : Type := FullSubcategory (RelCN X K)
-
-instance : Category (RelCN_cat X K) := FullSubcategory.category (RelCN X K)
 
 /-- Taking the closure of a relatively compact subset gives a map from RelCN_cat to Compacts that is increasing, and the defines a functor on the underling categories-/
 @[simps]
@@ -44,7 +38,7 @@ naturality _ _ _ := by
 
 /-- The cocone of the diagram FUbar given by F(K) and the canonical maps-/
 @[simps]
-def FK : Cocone (FUbar X K F):= Cocone.mk _ <| (FK_transNat X K F)  ≫ (Functor.constComp _ _ _).hom
+def FK : Cocone (FUbar X K F) := Cocone.mk _ <| (FK_transNat X K F)  ≫ (Functor.constComp _ _ _).hom
 
 --the pullback square that gives a complex sheaf like in some good cases in the axiom of K-sheaf
 
@@ -105,7 +99,6 @@ def plusFtoFcap := biprod.fst ≫ F.map (fromInfLeft K₁ K₂) - biprod.snd ≫
 def complex : ComposableArrows (ModuleCat A) 3:= CategoryTheory.ComposableArrows.mk₃ (ZtoFcup F K₁ K₂)  (FcuptoplusF F K₁ K₂) (plusFtoFcap F K₁ K₂)
 open ProofWidgets
 
---#Lint does not like it
 lemma FisCplx : (complex F K₁ K₂).IsComplex where
   zero := by
     intros i hi
@@ -132,12 +125,14 @@ structure Ksheaf where
   /--There is a pullback square -/
   ksh2 : ∀ K₁ K₂ :Compacts X, IsLimit (SquareSuptoInf carrier K₁ K₂ )
   /--A continuity condition that state that a "regular function on K" is defined at the neighbourhood of K-/
-  ksh3 : ∀ K : Compacts X, (IsIso (colimit.desc (FUbar _ K carrier) (FK _ _ _)))
+  ksh3 : ∀ K : Compacts X, (IsColimit (FK _ K carrier))
+
 
 #check Ksheaf
 
 instance :  Category (Ksheaf X C) := InducedCategory.category (·.carrier)
 
 #check (inducedFunctor fun (F : Ksheaf X C) ↦ F.carrier : (Ksheaf X C )⥤ _ )
+
 
 #lint
