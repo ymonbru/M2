@@ -5,7 +5,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 import Mathlib.Topology.Sets.Compacts
 import Mathlib.Topology.Maps.Proper.Basic
 import Mathlib.Topology.Sheaves.Functors
-import M2.RCalpha
+--import M2.RCalpha
 
 open CategoryTheory Limits TopologicalSpace Compacts Opposite Functor TopCat
 
