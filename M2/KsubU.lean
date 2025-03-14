@@ -12,6 +12,7 @@ variable (K : Compacts X)
 variable (P : Opens X → Prop)-- true for the usual alpha and IsCompact (closure U.carrier) for the relatively compact version
 
 /--The property of containing K and satisfying P-/
+@[simp]
 def KsubU : Set (Opens X) := fun (U:Opens _) => (K.carrier ⊆ U) ∧ P U
 
 /--The full subcategory induced by the property KsubU-/
@@ -30,15 +31,15 @@ instance : Category (KsubU_cat K P) := FullSubcategory.category (KsubU K P)
 variable {P : Opens X → Prop } (axiomP : ∀ U1 U2, P U1 → P U2 → P (U1 ⊓ U2))
 include axiomP
 
-/-- U1 ⊓ U2 as an element of (KsubU_cat K P)ᵒᵖ-/
+/-- U1 ⊓ U2 as an element of (KsubU_cat K P)-/
 @[simps]
 def InfKsubU (U1 U2 : KsubU_cat K P) : (KsubU_cat K P) := ⟨( U1.obj ⊓ U2.obj), ⟨le_inf U1.property.1 U2.property.1, axiomP _ _ U1.property.2 U2.property.2⟩ ⟩
 
-/-- The morphisme U1 ⟶ U1 ⊓ U2 for elements of (KsubU_cat K P)ᵒᵖ-/
-def InfInLeft (U1 U2 : KsubU_cat K P): (InfKsubU K axiomP U1 U2) ⟶ U1:= homOfLE (by simp)
+/-- The morphisme  U1 ⊓ U2 ⟶ U1 for elements of (KsubU_cat K P)-/
+def InfInLeftKSU (U1 U2 : KsubU_cat K P): (InfKsubU K axiomP U1 U2) ⟶ U1:= homOfLE (by simp)
 
-/-- The morphisme U2 ⟶ U1 ⊓ U2 for elements of (KsubU_cat K P)ᵒᵖ-/
-def InfInRight (U1 U2 : KsubU_cat K P ): (InfKsubU K axiomP U1 U2) ⟶ U2 := homOfLE (by simp)
+/-- The morphisme U1 ⊓ U2 ⟶ U2 for elements of (KsubU_cat K P)-/
+def InfInRightKSU (U1 U2 : KsubU_cat K P ): (InfKsubU K axiomP U1 U2) ⟶ U2 := homOfLE (by simp)
 
 include axiomP
 
@@ -46,11 +47,11 @@ include axiomP
 lemma IsCofilteredKsubU : IsCofilteredOrEmpty (KsubU_cat K P) where
   cone_objs U1 U2 := by
     use InfKsubU K axiomP U1 U2
-    use InfInLeft K axiomP U1 U2
-    use InfInRight K axiomP U1 U2
+    use InfInLeftKSU K axiomP U1 U2
+    use InfInRightKSU K axiomP U1 U2
   cone_maps U1 U2 _ _:= by
     use InfKsubU K axiomP U1 U2
-    use InfInLeft K axiomP U1 U2
+    use InfInLeftKSU K axiomP U1 U2
     rfl
 
 end
@@ -114,13 +115,58 @@ lemma supSupKtoSupK (L : supSupK_cat K) : K.carrier ⊆ L.obj.carrier := by
 
 instance : Category (supSupK_cat K ) := FullSubcategory.category (supSupK K)
 
-instance : IsCofilteredOrEmpty (supSupK_cat K) := by sorry
+/-- L1 ⊓ L2 as an element of (supSupK_cat K)-/
+@[simps]
+def InfSupSupK (L1 L2 : supSupK_cat K ) : (supSupK_cat K ) := ⟨(L1.obj) ⊓ (L2.obj), by
+  rcases L1.property with ⟨U1,hU11,hU12⟩
+  rcases L2.property with ⟨U2,hU21,hU22⟩
 
-variable [LocallyCompactSpace X] -- the locally compact is here for the non emptyness of RelCN_cat
+  use U1 ⊓ U2
 
-instance : Nonempty (supSupK_cat K) := by sorry
+  constructor
+  · simp_all only [carrier_eq_coe, Opens.carrier_eq_coe, Opens.coe_inf, Set.subset_inter_iff, and_self]
+  · suffices _ ∧ _ by simpa
+    apply And.intro
+    · apply subset_trans _ hU12
+      exact Set.inter_subset_left
+    · apply subset_trans _ hU22
+      exact Set.inter_subset_right ⟩
+
+/-- The morphisme L1 ⊓ L2 ⟶ L1 for elements of (supSupK_cat K)-/
+def InfInLeftSSK (L1 L2 : supSupK_cat K ): (InfSupSupK K L1 L2) ⟶ L1 := homOfLE (by simp)
+
+/-- The morphisme L1 ⊓ L2 ⟶ L2 for elements of (supSupK_cat K)-/
+def InfInRightSSK (L1 L2 : supSupK_cat K ): (InfSupSupK K L1 L2) ⟶ L2 := homOfLE (by simp)
+
+instance : IsCofilteredOrEmpty (supSupK_cat K) where
+  cone_objs := by
+    intro L1 L2
+    use InfSupSupK K L1 L2
+    use InfInLeftSSK K L1 L2
+    use InfInRightSSK K L1 L2
+  cone_maps := by
+    intro L1 L2 i j
+    use InfSupSupK K L1 L2
+    use InfInLeftSSK K L1 L2
+    rfl
+
+
+variable [LocallyCompactSpace X]
+
+instance : Nonempty (supSupK_cat K) := by
+  have : IsOpen (⊤ : Set X)  := isOpen_univ
+  have this2 : K.carrier ⊆ ⊤ := by
+    intro _ _
+    trivial
+  rcases (exists_compact_between K.isCompact this this2 ) with ⟨L,hL⟩
+  use ⟨L, hL.1⟩
+  use ⟨interior L,@isOpen_interior X L _⟩
+  constructor
+  · exact hL.2.1
+  · exact interior_subset
 
 #check (fullSubcategoryInclusion (supSupK K) : (supSupK_cat K) ⥤ (Compacts X))
+
 @[simp]
 def closureFuncK : RelCN_cat K ⥤ supSupK_cat K where
   obj U := ⟨⟨closure U.obj, U.property.2⟩, by
@@ -130,6 +176,7 @@ def closureFuncK : RelCN_cat K ⥤ supSupK_cat K where
     exact subset_closure ⟩
   map _ :=  homOfLE <| closure_mono <| leOfHom _
 
+omit [LocallyCompactSpace X] in
 lemma containClosure (U : Opens X) (L : Compacts X) (h : U.carrier ⊆ L.carrier) : closure U.carrier ⊆ L.carrier := by
   apply closure_minimal h
   apply IsCompact.isClosed

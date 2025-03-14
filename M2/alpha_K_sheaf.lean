@@ -1,10 +1,12 @@
 import M2.Ksheaves
 import M2.alpha
+--import M2.HasLimitOverInitial
 import Mathlib.Topology.Sheaves.Presheaf
 import Mathlib.Topology.Sheaves.Sheaf
 import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
 import Mathlib.CategoryTheory.Adjunction.Restrict
 import Mathlib.Topology.Sheaves.Stalks
+
 
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite TopCat TopCat.Presheaf
 open ZeroObject
@@ -17,6 +19,7 @@ noncomputable section
 
 #check TopCat.Presheaf.IsSheaf ((AlphaDownStar).obj (G.carrier):Presheaf C (of X))
 
+@[simp]
 theorem KshToSh: TopCat.Presheaf.IsSheaf  ((AlphaDownStar).obj (G.carrier) : Presheaf C (of X)):= by
   --probablement mieux d'utiliser isSheaf_iff_isSheafPairwiseIntersections
   apply (isSheaf_iff_isSheafPairwiseIntersections _).2
@@ -33,7 +36,7 @@ theorem KshToSh: TopCat.Presheaf.IsSheaf  ((AlphaDownStar).obj (G.carrier) : Pre
 
 
 
-  apply (isSheaf_iff_isSheafOpensLeCover _).2
+  /-apply (isSheaf_iff_isSheafOpensLeCover _).2
   unfold IsSheafOpensLeCover
   intro i U
   simp
@@ -41,7 +44,7 @@ theorem KshToSh: TopCat.Presheaf.IsSheaf  ((AlphaDownStar).obj (G.carrier) : Pre
   apply @IsLimit.mk _ _ _ _ _ _ _ _ _
 
   intro s
-  repeat sorry
+  repeat sorry-/
 
   /-unfold SheafCondition.opensLeCoverCocone AlphaDownStar AlphaDownStarG --iSup
   simp
@@ -64,12 +67,12 @@ theorem KshToSh: TopCat.Presheaf.IsSheaf  ((AlphaDownStar).obj (G.carrier) : Pre
   repeat sorry-/
 
 
-
+@[simps]
 def shAlphaDownStarF : Sheaf C (of X) where
   val:= (AlphaDownStar).obj (G.carrier)
   cond := (KshToSh X C G)
 
-
+@[simps]
 def shAlphaDownStar : (Ksheaf X C) ⥤ Sheaf C (of X) where
   obj _ := shAlphaDownStarF X C _
   map f := Sheaf.Hom.mk ((AlphaDownStar).map f)
@@ -80,24 +83,37 @@ def shAlphaDownStar : (Ksheaf X C) ⥤ Sheaf C (of X) where
     apply Sheaf.Hom.ext
     apply (AlphaDownStar).map_comp
 
+@[simps!]
+def TerminalOpBotsubU : IsTerminal (op ⟨⊥ , by simp⟩ : (KsubU_cat (⊥ : Compacts X) trueCond)ᵒᵖ ) := by
+  apply terminalOpOfInitial
+  apply IsInitial.ofUniqueHom
+  · intro _ _
+    apply eq_of_comp_right_eq
+    intro _ _
+    rfl
+  · intro
+    apply homOfLE
+    intro x hx
+    rcases hx
+
+
+@[simps!]
 def shAlphaUpStarG : (Ksheaf X C) where
   carrier:= (AlphaUpStar).obj ((Sheaf.forget _ _).obj F)
   ksh1:= by
-
-    unfold AlphaUpStar AlphaUpStarP AlphaUpStarF --FU KsubU fullSubcategoryInclusion inducedFunctor
-    simp
-    have :((Sheaf.forget _ _).obj F).obj (op (⊥:Opens X)) = 0:= by
-      sorry
-    rw [← this]
-
-    sorry
+    have : IsTerminal ((F.val).obj (op (⊥ : Opens X))) := by
+      apply Sheaf.isTerminalOfBotCover F (⊥ : Opens X)
+      intro _ hx
+      rcases hx
+    apply IsTerminal.ofIso this
+    apply @asIso _ _ _ _ _ (isIso_ι_of_isTerminal (TerminalOpBotsubU X) (FU ⊥ ((Sheaf.forget C (of X)).obj F) trueCond))
   ksh2:= by
     sorry
   ksh3:= by
     sorry
 
-
-def shAlphaUpStar : Sheaf C (of X)⥤ (Ksheaf X C)  where
+@[simps]
+def shAlphaUpStar : Sheaf C (of X) ⥤ (Ksheaf X C)  where
   obj G:= shAlphaUpStarG X C G
   map f:= (AlphaUpStar).map ((Sheaf.forget _ _).map f)
 
@@ -119,7 +135,7 @@ def AdjShAlphaStar: (shAlphaUpStar X C ) ⊣ (shAlphaDownStar X C) := by
 
 #check IsIso ((Adjunction.unit (AdjShAlphaStar X C)).app F)
 
-variable  [ConcreteCategory C] [(forget C).ReflectsIsomorphisms ] [PreservesLimits (forget C)] [PreservesFilteredColimits (forget C)]
+--variable  [ConcreteCategory C] [(forget C).ReflectsIsomorphisms ] [PreservesLimits (forget C)] [PreservesFilteredColimits (forget C)]
 /- sur d'avoir besoin de tout ça?, en tout cas pour stalk iso functeur oui-/
 
 /- c'est l'autre qu'il faut faire en premier-/
@@ -133,8 +149,9 @@ theorem IsoAlphaUnit :IsIso ((AdjShAlphaStar X C).unit.app F):= by
     simp
 
     sorry
+  sorry
 
-  apply Presheaf.isIso_of_stalkFunctor_map_iso
+  --apply Presheaf.isIso_of_stalkFunctor_map_iso
 
 
   --rw [← Adjunction.homEquiv_id]
@@ -148,7 +165,7 @@ theorem IsoAlphaUnit :IsIso ((AdjShAlphaStar X C).unit.app F):= by
 
 
 
-   #check @
+
   --apply asIso
 
   --unfold AdjShAlphaStar AdjAlphaStar
@@ -171,7 +188,7 @@ theorem IsoAlphaCoUnit :IsIso ((AdjShAlphaStar X C).counit.app G):= by
   --simp
 
 
-  #check  TopCat.Presheaf.isIso_of_stalkFunctor_map_iso
+  --#check  TopCat.Presheaf.isIso_of_stalkFunctor_map_iso
   sorry
 
 

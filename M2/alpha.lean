@@ -22,7 +22,7 @@ def FU : (KsubU_cat K P)ᵒᵖ ⥤ C := Functor.comp (fullSubcategoryInclusion (
 variable (K₁ K₂ : Compacts X) (f : K₁ ⟶ K₂) --K1 ⊆ K2
 
 /-- The functor that sends opens that containt K2 to opens that contains K1-/
-@[simps]
+@[simps!]
 def K1subK2subU : (KsubU_cat K₂ P) ⥤ (KsubU_cat K₁ P ) where
   obj W := (⟨W.obj,Set.Subset.trans (leOfHom _ ) W.property.1 , W.property.2⟩ : KsubU_cat _ _)
   map  _ := homOfLE (leOfHom _)
@@ -58,6 +58,7 @@ def AlphaUpStarP : ((Opens X)ᵒᵖ ⥤ C) ⥤ (Compacts X)ᵒᵖ ⥤ C where
 
 
 /-- The condition that is always true -/
+@[simp]
 def trueCond :Opens X → Prop:= λ _ => true
 
 /-- The first version of α^* -/
@@ -119,7 +120,7 @@ def AlphaDownStarSigma : (AlphaDownStarG G₁) ⟶ (AlphaDownStarG G₂) where
 /-- The functor α_*-/
 @[simps]
 def AlphaDownStar : ((Compacts X)ᵒᵖ ⥤ C) ⥤ (Opens X)ᵒᵖ ⥤ C where
-  obj _:= AlphaDownStarG _
+  obj _ := AlphaDownStarG _
   map := AlphaDownStarSigma _ _
 
 end
@@ -139,7 +140,7 @@ def ConeFtoAG_NT : (Functor.const _ ).obj (F.obj (op U)) ⟶ GK U G where
   naturality _ L _ := by
     suffices _ = colimit.ι (FU _ _ _ ) (op ⟨U , _ ⟩) ≫ τ.app (op _ ) ≫ G.map _ by simpa
     rw [← (τ.naturality _)]
-    simp [AlphaUpStar, K1subK2subU]
+    simp [ K1subK2subU]
 
 /-- The cone of the diragram GK U with point F(U)-/
 @[simps]
@@ -161,9 +162,6 @@ def FtoAG : F ⟶ (AlphaDownStar).obj G where
 @[simps]
 def CoconeAFtoG_NT : FU K F P ⟶ (Functor.const _ ).obj (G.obj (op K))  where
   app W := σ.app _ ≫ limit.π (GK _ _) (op ⟨K, W.unop.property.1⟩)
-  naturality _ _ _:= by
-    suffices _ = σ.app _ ≫ limit.π (GK _ _) (op ⟨_,_⟩) by simpa
-    rfl
 
 /-- The cocone induced by the natural transformation CoconeAFtoG_NT-/
 @[simps]
@@ -176,7 +174,7 @@ def AFtoG : ( (AlphaUpStar).obj F ⟶  G) where
   naturality _ _ _ := by
     apply colimit.hom_ext
     intro _
-    suffices _ = σ.app _ ≫ limit.π (GK _ _ ) (op _ ) ≫ G.map _ by simpa [AlphaUpStar]
+    suffices _ = σ.app _ ≫ limit.π (GK _ _ ) (op _ ) ≫ G.map _ by simpa
     rw [← limit.w _ _ ]
     rfl
 

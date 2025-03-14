@@ -58,7 +58,7 @@ naturality K L f:= by
 
 /-- The morphism from α_P to α_Q induced by the natural transformation AlphaUpFPtoQ -/
 @[simps]
-def AlphaUpPPtoQ : (AlphaUpStarP P)⟶ (@AlphaUpStarP _ _ C _ _ Q) where
+def AlphaUpPPtoQ : (AlphaUpStarP P) ⟶ (@AlphaUpStarP _ _ C _ _ Q) where
   app _ := AlphaUpFPtoQ C _  hpq
   naturality F1 F2 _ := by
     ext _
@@ -119,7 +119,7 @@ variable (X)
 variable [LocallyCompactSpace X] [T2Space X]
 
 /-- The functor α^* with condition on the opens of being relatively compact-/
-def AlphaUpStarRc : ((Opens X)ᵒᵖ ⥤ C) ⥤ (Compacts X)ᵒᵖ ⥤ C := AlphaUpStarP (relcCond X)
+def AlphaUpStarRc : ((Opens X)ᵒᵖ ⥤ C) ⥤ (Compacts X)ᵒᵖ ⥤ C := AlphaUpStarP (relcCond)
 
 --hpq is trivial and #lint complain if an explicit proof is given
 
@@ -152,7 +152,7 @@ lemma V_spec : ∀ K,∀ U, (V X K U).obj.carrier ⊆ U.obj:= by
   exact (Classical.choice (existsIntermed X _ _ U.property.1)).property.2.2
 
 /-- The evidence that AlphaUpStarRc X C  and AlphaUpStar are isomorphics -/
-def AlphaUpStarToRc :  AlphaUpStarRc X C ≅ AlphaUpStar :=  IsoAlphaUpPtoQ _ (λ _ _ => rfl) (axiomPrc X) (V X) (V_spec
+def AlphaUpStarToRc :  AlphaUpStarRc X C ≅ AlphaUpStar :=  IsoAlphaUpPtoQ _ (λ _ _ => rfl) (axiomPrc ) (V X) (V_spec
 X)
 /-- The data of the adjunction betwee α^*RC and α_* deduced by the previous isomorphism and the adjunction of α^* and α_*-/
 def AdjAlphaStarRc : AlphaUpStarRc X C ⊣ AlphaDownStar := AdjAlphaStar.ofNatIsoLeft (AlphaUpStarToRc X C).symm

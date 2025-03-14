@@ -1,15 +1,16 @@
-import M2.Ksheaves
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 import Mathlib.Topology.Sets.Compacts
 import Mathlib.Topology.Maps.Proper.Basic
 import Mathlib.Topology.Sheaves.Functors
+--import M2.Ksheaves
+import M2.alpha_K_sheaf
 --import M2.RCalpha
 
 open CategoryTheory Limits TopologicalSpace Compacts Opposite Functor TopCat
 
-variable {C} [Category C] [HasPullbacks C] [HasColimits C] [HasZeroObject C]
+
 variable {X Y} [TopologicalSpace X] [T2Space X] [TopologicalSpace Y] [T2Space Y]
 
 variable {f : X → Y} (proper_f : IsProperMap f)
@@ -22,41 +23,12 @@ def preimageCompact : Compacts Y ⥤ Compacts X where
 @[simps!]
 def preimageOpen : Opens Y ⥤ Opens X := (Opens.map (ofHom ( ContinuousMap.mk f proper_f.toContinuous)) )
 
-@[simps!]
-def fDownStar : ((Compacts X)ᵒᵖ ⥤ C) ⥤ ((Compacts Y)ᵒᵖ ⥤ C) := (whiskeringLeft _ _ _ ).obj (preimageCompact proper_f).op
-
-#check (Opens.map (ofHom ⟨f, proper_f.toContinuous⟩ ) : Opens  Y ⥤ Opens X)
 
 open ZeroObject
-variable (C) ( F : (Compacts X)ᵒᵖ ⥤ C) (K : Compacts X) [LocallyCompactSpace X]-- the locally compact is here for the non emptyness of RelCN_cat
+variable {C} [Category C]
+variable ( F : (Compacts X)ᵒᵖ ⥤ C) (K : Compacts Y) [LocallyCompactSpace X]
 
-instance : Nonempty (RelCN_cat K) := by
-  have : IsOpen (⊤ : Set X)  := isOpen_univ
-  have this2 : K.carrier ⊆ ⊤ := by
-    intro _ _
-    trivial
-  rcases (exists_compact_between K.isCompact this this2 ) with ⟨L,hL⟩
-  use ⟨interior L,@isOpen_interior X L _⟩
-  constructor
-  · exact hL.2.1
-  · apply IsCompact.of_isClosed_subset hL.1 (isClosed_closure )
-    intro a ha
-    apply ha
-    constructor
-    · exact IsCompact.isClosed hL.1
-    · apply interior_subset
-
-
-
-omit [HasPullbacks C] [HasColimits C] [LocallyCompactSpace X] in
-lemma fDS_ksh1 (hyp : F.obj (op (⊥ : Compacts _)) = 0) : ((fDownStar proper_f).obj F).obj (op (⊥ : Compacts _)) = 0 := hyp
-
-def fDS_ksh2 (hyp : ∀ K₁ K₂ : Compacts X, IsLimit (SquareSuptoInf F K₁ K₂ )) ( K₁ K₂ :Compacts Y): IsLimit (SquareSuptoInf ((fDownStar proper_f).obj F) K₁ K₂ ) := hyp ((preimageCompact proper_f).obj K₁) ((preimageCompact proper_f).obj K₂)
-
-#check IsColimit.hom_isIso
-variable (K:Compacts Y)
-
-def preimageRes : RelCN_cat K ⥤ RelCN_cat ((preimageCompact proper_f).obj K) where
+/-def preimageRes : RelCN_cat K ⥤ RelCN_cat ((preimageCompact proper_f).obj K) where
   obj U := by
     use (preimageOpen proper_f).obj U.obj
 
@@ -74,8 +46,9 @@ instance : (preimageRes proper_f K).Initial := by
     · intro _ U _ _
       use U
       use 𝟙 _
-      rfl
+      rfl-/
 
+@[simps]
 def preimageResSubSub : supSupK_cat K ⥤ supSupK_cat ((preimageCompact proper_f).obj K) where
   obj L := by
     use (preimageCompact proper_f).obj L.obj
@@ -91,36 +64,156 @@ def preimageResSubSub : supSupK_cat K ⥤ supSupK_cat ((preimageCompact proper_f
 instance : (preimageResSubSub proper_f K).Initial := by
     apply (Functor.initial_iff_of_isCofiltered _).2
     constructor
-    · intro U
+    · intro L
     --lemme de topologie de Pardon
+    --visiblement c'est plus compliqué que juste appliquer le lemme..
+
       sorry
     · intro _ U _ _
       use U
       use 𝟙 _
       rfl
 
-#check colimit.pre (FUbar _ F ) (Functor.op (preimageRes proper_f K))
+variable [HasPullbacks C] [HasLimits C] [HasColimits C] [HasZeroObject C]
 
-def fDS_ksh3' (hyp : ∀ K : Compacts X, (IsColimit (FUbarToFK K F))) :  ∀ K : Compacts Y, (IsColimit (FUbarToFK K ((fDownStar proper_f).obj F))) := by
+@[simp]
+noncomputable def fDownStarF (F : Ksheaf X C) : Ksheaf Y C where
+  carrier := ((whiskeringLeft _ _ _ ).obj (preimageCompact proper_f).op).obj F.carrier
+  ksh1 := by
+    exact F.ksh1
+  ksh2 := by
+    intro _ _
+    exact F.ksh2 ((preimageCompact proper_f).obj _) ((preimageCompact proper_f).obj _)
+  ksh3 := by
+    intro K
+    let K' := (preimageCompact proper_f).obj K
+    exact (Functor.Final.isColimitWhiskerEquiv ((preimageResSubSub proper_f K).op) ((FLToFK K' F.carrier))).invFun (F.ksh3 K')
 
-  intro K
-  let Ka := (preimageCompact proper_f).obj K
-
-  have : _ := (Functor.Final.isColimitWhiskerEquiv ((preimageRes proper_f K).op)  ((FUbarToFK Ka F))).invFun (hyp Ka)
-  -- les deux ne sont pas égaux mais on doit pouvoir trouver un lien...
-
-  sorry
-
-def fDS_ksh3 (hyp : ∀ K : Compacts X, (IsColimit (FLToFK K F))) :  ∀ K : Compacts Y, (IsColimit (FLToFK K ((fDownStar proper_f).obj F))) := by
-
-  intro K
-  let Ka := (preimageCompact proper_f).obj K
-  #check (hyp Ka)
+@[simps]
+noncomputable def KsheafPushforward : (Ksheaf X C ) ⥤ (Ksheaf Y C) where
+  obj := fDownStarF proper_f
+  map := by
+    intro _ _ τ
+    constructor
+    intro _ _ _
+    apply τ.naturality
 
 
-  let machin := (Functor.Final.isColimitWhiskerEquiv ((preimageRes proper_f K).op) ((FLToFK Ka F))).invFun (hyp Ka)
+def preimageRes : KsubU_cat K trueCond ⥤ KsubU_cat ((preimageCompact proper_f).obj K) trueCond where
+  obj U := by
+    use (preimageOpen proper_f).obj U.obj
+
+    constructor
+    exact Set.preimage_mono U.property.1
+    rfl
+  map _ := (preimageOpen proper_f).map _
+
+instance : (preimageRes proper_f K).Initial := by
+    have :  IsCofilteredOrEmpty (KsubU_cat K trueCond) := by
+      apply IsCofilteredKsubU
+      simp
+    apply (Functor.initial_iff_of_isCofiltered _).2
+    constructor
+    · intro U
+      -- lemme de topologie de Pardon
+      sorry
+    · intro _ U _ _
+      use U
+      use 𝟙 _
+      rfl
 
 
-  -- les deux ne sont pas égaux mais on doit pouvoir trouver un lien...
 
-  sorry
+variable (F : TopCat.Sheaf C (of X))
+#check (Functor.Final.colimitIso (preimageRes proper_f (K)).op (FU ((preimageCompact proper_f).obj (K)) ((Sheaf.forget C (of X)).obj F) trueCond))
+
+variable (K1 K2 : Compacts Y ) (i : K1 ⟶ K2)
+
+
+lemma heyho : (K1subK2subU trueCond K1 K2 i).comp (preimageRes proper_f K1) = (preimageRes proper_f K2).comp (K1subK2subU trueCond _ _ ((preimageCompact proper_f).map i)) := by
+  rfl
+  --sorry
+
+noncomputable def truc0 (F : TopCat.Sheaf C (of X)) : ((Sheaf.pushforward C (ofHom ⟨_ , proper_f.toContinuous⟩)).comp (shAlphaUpStar (of Y) C)).obj F ⟶ ((shAlphaUpStar (of X) C).comp (KsheafPushforward proper_f)).obj F where
+  app K := (Functor.Final.colimitIso (preimageRes proper_f (unop K)).op (FU ((preimageCompact proper_f).obj (unop K)) ((Sheaf.forget C (of X)).obj F) trueCond)).hom
+  naturality := by
+    intro K1 K2 i
+    simp
+    repeat rw [Functor.Final.colimitIso_hom]
+    apply colimit.hom_ext
+    intro U
+    simp
+
+    #check colimit.ι_pre (FU ((preimageCompact proper_f).obj (unop K1)) ((Sheaf.forget C (of X)).obj F) trueCond) (preimageRes proper_f (unop K2)).op (op ((K1subK2subU trueCond (unop K2) (unop K1) i.unop).obj (unop U)))
+
+
+
+
+
+    rw [← Category.assoc]
+
+
+
+
+    rw [← CategoryTheory.Limits.colimit.ι_pre]
+
+
+
+
+
+    sorry
+
+def truc1 : (Sheaf.pushforward C (ofHom ⟨_ , proper_f.toContinuous⟩)).comp (shAlphaUpStar (of Y) C) ⟶ (shAlphaUpStar (of X) C).comp (KsheafPushforward proper_f) where
+  app F : _ := by
+    simp
+    --
+    --constructor
+    --intro
+
+    simp
+    unfold shAlphaUpStar shAlphaUpStarG AlphaUpStar AlphaUpStarP AlphaUpStarF
+    simp
+
+    sorry
+  naturality := sorry
+
+
+lemma truc : (KsheafPushforward proper_f).comp (shAlphaDownStar (of Y) C) = (shAlphaDownStar (of X) C).comp (Sheaf.pushforward C (ofHom ⟨_ , proper_f.toContinuous⟩)) := by
+  #check (Sheaf.forget C ( of X) )
+  have : ((KsheafPushforward proper_f).comp (shAlphaDownStar (of Y) C)).comp (Sheaf.forget C ( of Y) ) = ((shAlphaDownStar (of X) C).comp (Sheaf.pushforward C (ofHom ⟨_ , proper_f.toContinuous⟩))).comp (Sheaf.forget C ( of Y) ) := by sorry
+
+  aesop?
+  apply CategoryTheory.Functor.ext
+  · intro F G τ
+    apply Sheaf.Hom.ext
+    ext U
+    --unfold shAlphaDownStar
+    simp
+    sorry
+  · intro F
+
+    --simp
+
+    sorry
+
+lemma hey (F  G : Sheaf C (of X)) (h : F.val = G.val): F = G := by
+  aesop
+
+    /-
+  ext
+  apply CategoryTheory.Functor.ext
+  #check (KsheafPushforward proper_f ⋙ shAlphaDownStar (↑(of Y)) C).map τ
+
+  simp
+  unfold shAlphaDownStar shAlphaDownStarF AlphaDownStar AlphaDownStarG
+  simp
+  unfold AlphaDownStarSigma KsheafPushforward
+  simp
+
+
+  sorry-/
+
+def machine : (of X) ⟶ (of Y) := by
+  apply ofHom ⟨_ , proper_f.toContinuous⟩
+
+  --sorry

@@ -11,14 +11,14 @@ open CategoryTheory Limits TopologicalSpace Compacts Opposite
 
 variable {X} [TopologicalSpace X] [T2Space X]
 variable (K : Compacts X)
-variable {C} [Category C] [HasPullbacks C] [HasColimits C] [HasZeroObject C]
+variable {C} [Category C] [HasPullbacks C] [HasColimits C] --[HasZeroObject C]
 --variable {A} [Ring A]
 variable (F : (Compacts X)ᵒᵖ ⥤ C) (K₁ :Compacts X) (K₂:Compacts X)
 
 -- definiing the limit that apear in the axiom Ksh3
 
 /-- Taking the closure of a relatively compact subset gives a map from RelCN_cat to Compacts that is increasing, and the defines a functor on the underling categories-/
-@[simps]
+@[simps!]
 def closureFunc : RelCN_cat K ⥤ (Compacts X)  := (closureFuncK K).comp (fullSubcategoryInclusion (supSupK K))
 
 /-- The Functor that represent the diagram composed of the F(overline{U}) together with the canonical maps-/
@@ -26,6 +26,7 @@ def closureFunc : RelCN_cat K ⥤ (Compacts X)  := (closureFuncK K).comp (fullSu
 def FUbar : (RelCN_cat K)ᵒᵖ ⥤ C := (closureFunc K).op.comp  F
 
 /-- The natural transformation that allows to define F(K) as a cocone of the diagram FUbar-/
+@[simps]
 def FUbarToFK_transNat: (FUbar K F) ⟶ (Functor.const _ ).obj (op K) |>.comp F where
 app W:= F.map <| op <| homOfLE <| by
   apply (W.unop).property.1.trans
@@ -44,6 +45,7 @@ def FUbarToFK : Cocone (FUbar K F) := Cocone.mk _ <| (FUbarToFK_transNat K F)  �
 def FresSSK : (supSupK_cat K)ᵒᵖ ⥤ C := (fullSubcategoryInclusion (supSupK K)).op.comp F
 
 /-- The natural transformation that allows to define F(K) as a cocone of the diagram FresSSK-/
+@[simps]
 def FLToFK_transNat: (FresSSK K F) ⟶ (Functor.const _ ).obj (op K) |>.comp F where
 app W:= F.map <| op <| homOfLE <| by
   apply supSupKtoSupK
@@ -56,6 +58,8 @@ naturality _ _ _ := by
 @[simps]
 def FLToFK : Cocone (FresSSK K F) := Cocone.mk _ <| (FLToFK_transNat K F)  ≫ (Functor.constComp _ _ _).hom
 
+variable [LocallyCompactSpace X]
+
 /-- The evidence that the colimit can be computed in two diferent ways-/
 noncomputable def FUbarEquivFL : IsColimit (FUbarToFK K F) ≃ IsColimit (FLToFK K F) := by
   exact Functor.Final.isColimitWhiskerEquiv (closureFuncK K).op  (FLToFK K F)
@@ -63,7 +67,7 @@ noncomputable def FUbarEquivFL : IsColimit (FUbarToFK K F) ≃ IsColimit (FLToFK
 
 --the pullback square that gives a complex sheaf like in some good cases in the axiom of K-sheaf
 
-open ZeroObject
+--open ZeroObject
 noncomputable section
 
 
@@ -96,6 +100,7 @@ def FSuptoFLeft : F.obj (op (K₁ ⊔  K₂)) ⟶ F.obj (op K₁) := F.map (opHo
 def FSuptoFRight : F.obj (op (K₁ ⊔  K₂)) ⟶ F.obj (op K₂) := F.map (opHomOfLE le_sup_right)
 
 /-- The commutative square F(K₁ ⊔  K₂) ⟶ F(K₁) ⟶ F(K₁ ⊓ K₂) = F(K₁ ⊔  K₂) ⟶ F(K₂) ⟶ F(K₁ ⊓ K₂) as a pullback cone -/
+@[simps!]
 def SquareSuptoInf : PullbackCone (FtoFInfLeft F K₁ K₂) ( FtoFInfRight _ _ _):= by
   apply PullbackCone.mk (FSuptoFLeft _ _ _) (FSuptoFRight _ _ _)
   repeat erw [← F.map_comp]
@@ -141,7 +146,7 @@ structure Ksheaf where
   /-- The K-preshaef that has the property of being a sheaf-/
   carrier : (Compacts X)ᵒᵖ ⥤ C
   /--The empty set is sent to 0_C-/
-  ksh1 : carrier.obj (op (⊥ : Compacts _)) = 0
+  ksh1 : IsTerminal (carrier.obj (op (⊥ : Compacts _)))
   /--There is a pullback square -/
   ksh2 : ∀ K₁ K₂ :Compacts X, IsLimit (SquareSuptoInf carrier K₁ K₂ )
   /--A continuity condition that state that a "regular function on K" is defined at the neighbourhood of K-/
