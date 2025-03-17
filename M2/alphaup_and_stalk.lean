@@ -76,7 +76,7 @@ def AlphaComStalkEval : (AlphaUpStar) ⋙ (EvalInP C p)⟶ @stalkFunctor _ _ _ (
   app F := (ColimitToFUstalk X C p F).hom
 
 /-- The natural transformation from α ≫ stalk in p to the stalk functor. It's induced by AlphaComStalkEval and the isomorphism of evaluation in p and stalk in p for K-presheaves -/
-def AlphaComStalk : (AlphaUpStar) ⋙ (KstalkFunctor p)⟶ @stalkFunctor C _ _ (of X) p := whiskerLeft _ (IsoAlphaUpPtoQ C p).hom ≫ AlphaComStalkEval _ _ _
+def AlphaComStalk : (AlphaUpStar) ⋙ (KstalkFunctor p)⟶ @stalkFunctor C _ _ (of X) p := whiskerLeft _ (StalkToPFunc C p) ≫ AlphaComStalkEval _ _ _
 
 instance : IsIso (AlphaComStalk X C p):= by
   suffices IsIso (AlphaComStalkEval X C p) by apply IsIso.comp_isIso
@@ -98,7 +98,7 @@ instance : IsIso (AlphaComStalk X C p):= by
   · exact colimit.isColimit _
   · exact IsColimitFUtoStalk X p F
 
-/-- bla-/
+/-- the evidence that the functor α*≫ Kstalk and stalk are isomorphics -/
 def IsoAlphaComStalk: (AlphaUpStar) ⋙ (KstalkFunctor p) ≅ @stalkFunctor C _ _ (of X) p:= asIso (AlphaComStalk X C p)
 
 #lint

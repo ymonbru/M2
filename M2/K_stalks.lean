@@ -3,10 +3,8 @@ import M2.Ksheaves
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite
 
 variable {X} [TopologicalSpace X]
-variable {C} [Category C] [HasPullbacks C] [HasColimits C] [HasZeroObject C]
+variable {C} [Category C] [HasPullbacks C] [HasColimits C]
 variable (p : X)
-
---attribute [local aesop safe (rule_sets := [CategoryTheory])] colimit.hom_ext limit.hom_ext
 
 noncomputable section
 
@@ -66,12 +64,14 @@ def EvalInP : ((Compacts X)ᵒᵖ ⥤ C ) ⥤ C where
 def pC2 : (pinK_cat p) := ⟨pC p,rfl⟩
 
 /-- The induced morphism from pC2 to any compact of pinK-/
+@[simps!]
 def PsubOfpinK (K:pinK_cat p) : (pC2 p) ⟶ K :=  homOfLE ( by
   intro _ h
   rw [h]
   exact K.property)
 
 /-- The evidence that the cocone (Fp p F) is a colimit cocone -/
+@[simps]
 def FpisCol : IsColimit (Fp p F) where
   desc s :=  s.ι.app <| op (pC2 _)
   fac s K :=  by
@@ -90,7 +90,7 @@ def FpisCol : IsColimit (Fp p F) where
 
 /--The cone morphism from the stalk at p tp the cone with point F(p)-/
 @[simps]
-def StalkToP : (colimit.cocone _ )⟶ (Fp p F) where
+def StalkToP : (colimit.cocone _ ) ⟶ (Fp p F) where
   hom := colimit.desc _ _
 
 instance IsIsoStalkToP : IsIso (StalkToP C p F) := IsColimit.hom_isIso ( colimit.isColimit _ ) (FpisCol _ _ _ ) _
@@ -112,8 +112,23 @@ instance : IsIso (StalkToPFunc C p):= by
   · rw [← Cocone.category_comp_hom, hi.2]
     rfl
 
-/--The isomorphisme of functor between taking the stalks and evaluating in p for K-preshaves-/
-def IsoAlphaUpPtoQ : (KstalkFunctor p) ≅ (EvalInP C p ) := asIso (StalkToPFunc C p)
+/--The isomorphism of functor between taking the stalks and evaluating in p for K-preshaves-/
+def IsoKstalkEvalP : (KstalkFunctor p) ≅ (EvalInP C p ) := asIso (StalkToPFunc C p)
+
+variable [T2Space X]
+
+/-- The Kstalk Functor on Ksheaves -/
+--@[simps!]
+def KstalkFunctorSh : (Ksheaf X C) ⥤ C := (inducedFunctor fun (F : Ksheaf X C) ↦ F.carrier ).comp (KstalkFunctor p)
+
+/-- The EvalInP functor on Ksheaves -/
+--@[simps!]
+def EvalInPSh : (Ksheaf X C) ⥤ C:= (inducedFunctor fun (F : Ksheaf X C) ↦ F.carrier ).comp (EvalInP C p)
+
+/--The isomorphism of functor between taking the stalks and evaluating in p for Kshaves-/
+def IsoKstalkEvalPSh : (KstalkFunctorSh C p) ≅ (EvalInPSh C p ) := isoWhiskerLeft _ (IsoKstalkEvalP C p)
+
+
 
 end
 

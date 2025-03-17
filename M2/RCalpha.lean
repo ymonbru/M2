@@ -7,7 +7,7 @@ import Mathlib.Order.Lattice
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite
 
 variable {X} [TopologicalSpace X] --[T2Space X]
-variable (C) [Category C] [HasPullbacks C] [HasColimits C] [HasLimits C] [HasZeroObject C]
+variable (C) [Category C]
 
 
 noncomputable section
@@ -24,6 +24,7 @@ variable {P Q : Opens X → Prop} (hpq : ∀ (U : Opens X), P U → Q U) (axiomP
 @[simps!]
 def KsubUPtoQ : (KsubU_cat K P) ⥤  (KsubU_cat K Q ):= FullSubcategory.map (fun _ => fun hP => ⟨hP.1, hpq _ hP.2⟩)
 
+--omit [HasPullbacks C] [HasColimits C] [HasLimits C]
 @[simp]
 lemma KsubPtoQCompFQEqFP : (KsubUPtoQ K hpq).op ⋙ FU K F Q = FU K F P := by rfl
 
@@ -31,6 +32,7 @@ variable (V : ∀ K, KsubU_cat K Q → KsubU_cat K P)
 
 variable (V_spec : ∀ K,∀ U, (V K U).obj.carrier ⊆ U.obj.carrier)
 
+variable [HasColimits C] [HasLimits C]
 /-- The morphisme from α_P F to α_Q F induced by the inclusion of (KsubU_cat K P) into (KsubU_cat K Q )-/
 @[simps]
 def AlphaUpFPtoQ : (AlphaUpStarF F P) ⟶ (AlphaUpStarF F Q) where
@@ -98,6 +100,7 @@ lemma IsFinalOpKsubUPtoQ: Functor.Final (Functor.op (KsubUPtoQ K hpq)) := by
       rfl
   apply Functor.final_op_of_initial
 
+omit [HasLimits C] in
 lemma IsIsoAlphaUpPtoQ : IsIso (AlphaUpPPtoQ C hpq):= by
   apply ( NatTrans.isIso_iff_isIso_app _).2
   intro _
@@ -115,14 +118,15 @@ end
 
 section --α^* variante avec seulement les U relativements comapcts
 
-variable (X)
-variable [LocallyCompactSpace X] [T2Space X]
+variable (X) [LocallyCompactSpace X] [T2Space X]
+variable [HasColimits C] [HasLimits C]
 
 /-- The functor α^* with condition on the opens of being relatively compact-/
 def AlphaUpStarRc : ((Opens X)ᵒᵖ ⥤ C) ⥤ (Compacts X)ᵒᵖ ⥤ C := AlphaUpStarP (relcCond)
 
 --hpq is trivial and #lint complain if an explicit proof is given
 
+omit [T2Space X] in
 lemma existsIntermed (h : K.carrier ⊆ U.carrier) : Nonempty ({ L //IsCompact L ∧ K.carrier ⊆ interior L ∧ L ⊆ U.carrier}) := by
   rcases (exists_compact_between K.isCompact U.isOpen h ) with ⟨L,hL⟩
   exact Nonempty.intro ⟨L,hL⟩

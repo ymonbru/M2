@@ -10,6 +10,7 @@ variable (C) [Category C] [HasPullbacks C] [HasColimits C] [HasZeroObject C] [Ha
 --TODO: improve the example for the case where there is just a terminal object
 noncomputable section
 
+/-
 @[simps]
 def FTop : (Compacts X)ᵒᵖ ⥤ C where
   obj _ := ⊤_C
@@ -42,7 +43,7 @@ def TopKsheaf : Ksheaf X C where
       --surement faux du coup non
       sorry, by
       intro _ _ hm
-      simp [ ← (hm _), terminal.hom_ext (terminal.from (⊤_ C)) (𝟙 (⊤_ C))]⟩
+      simp [ ← (hm _), terminal.hom_ext (terminal.from (⊤_ C)) (𝟙 (⊤_ C))]⟩-/
 --
 open ZeroObject Zero
 

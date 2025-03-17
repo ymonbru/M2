@@ -15,18 +15,20 @@ variable {X Y} [TopologicalSpace X] [T2Space X] [TopologicalSpace Y] [T2Space Y]
 
 variable {f : X → Y} (proper_f : IsProperMap f)
 
-@[simps!]
+/-- The inverse image of a proper map as functor over compacts -/
+@[simps]
 def preimageCompact : Compacts Y ⥤ Compacts X where
   obj K := ⟨f ⁻¹' K.carrier , IsProperMap.isCompact_preimage  proper_f K.isCompact'⟩
   map i := homOfLE (fun  _ ha => leOfHom i ha)
 
+/-- The inverse image of a proper map as functor over compacts -/
 @[simps!]
 def preimageOpen : Opens Y ⥤ Opens X := (Opens.map (ofHom ( ContinuousMap.mk f proper_f.toContinuous)) )
 
 
-open ZeroObject
+
 variable {C} [Category C]
-variable ( F : (Compacts X)ᵒᵖ ⥤ C) (K : Compacts Y) [LocallyCompactSpace X]
+variable ( F : (Compacts X)ᵒᵖ ⥤ C) (K : Compacts Y) --[LocallyCompactSpace X]
 
 /-def preimageRes : RelCN_cat K ⥤ RelCN_cat ((preimageCompact proper_f).obj K) where
   obj U := by
@@ -48,6 +50,7 @@ instance : (preimageRes proper_f K).Initial := by
       use 𝟙 _
       rfl-/
 
+/-- The inverse image of a proper map as functor over compacts that contain K in their interior -/
 @[simps]
 def preimageResSubSub : supSupK_cat K ⥤ supSupK_cat ((preimageCompact proper_f).obj K) where
   obj L := by
@@ -60,6 +63,7 @@ def preimageResSubSub : supSupK_cat K ⥤ supSupK_cat ((preimageCompact proper_f
     · intro _ ha
       exact hU2 ha
   map _ := (preimageCompact proper_f).map _
+
 
 instance : (preimageResSubSub proper_f K).Initial := by
     apply (Functor.initial_iff_of_isCofiltered _).2
@@ -74,11 +78,16 @@ instance : (preimageResSubSub proper_f K).Initial := by
       use 𝟙 _
       rfl
 
-variable [HasPullbacks C] [HasLimits C] [HasColimits C] [HasZeroObject C]
+variable [HasLimits C] [HasColimits C]
 
-@[simp]
-noncomputable def fDownStarF (F : Ksheaf X C) : Ksheaf Y C where
-  carrier := ((whiskeringLeft _ _ _ ).obj (preimageCompact proper_f).op).obj F.carrier
+/-- the pushforward of a K-presheaf-/
+def fDownStar: ((Compacts X)ᵒᵖ ⥤ C) ⥤ (Compacts Y)ᵒᵖ ⥤ C :=
+((whiskeringLeft _ _ _ ).obj (preimageCompact proper_f).op)
+
+/-- the pushforward of a KSheaf-/
+@[simps]
+noncomputable def fDownStarFsh (F : Ksheaf X C) : Ksheaf Y C where
+  carrier := (fDownStar proper_f).obj F.carrier
   ksh1 := by
     exact F.ksh1
   ksh2 := by
@@ -89,16 +98,18 @@ noncomputable def fDownStarF (F : Ksheaf X C) : Ksheaf Y C where
     let K' := (preimageCompact proper_f).obj K
     exact (Functor.Final.isColimitWhiskerEquiv ((preimageResSubSub proper_f K).op) ((FLToFK K' F.carrier))).invFun (F.ksh3 K')
 
+/-- Pushforward of KSheaf as a functor-/
 @[simps]
 noncomputable def KsheafPushforward : (Ksheaf X C ) ⥤ (Ksheaf Y C) where
-  obj := fDownStarF proper_f
+  obj := fDownStarFsh proper_f
   map := by
     intro _ _ τ
     constructor
     intro _ _ _
     apply τ.naturality
 
-
+/-- The inverse image of a proper map as functor over neighbourhods of a compact K -/
+@[simps]
 def preimageRes : KsubU_cat K trueCond ⥤ KsubU_cat ((preimageCompact proper_f).obj K) trueCond where
   obj U := by
     use (preimageOpen proper_f).obj U.obj
@@ -124,6 +135,52 @@ instance : (preimageRes proper_f K).Initial := by
 
 
 
+-- A partir de la c'est des expériences
+
+variable (F : (Opens X)ᵒᵖ ⥤ C)
+
+noncomputable def truc  : ((Presheaf.pushforward C (ofHom ⟨_ , proper_f.toContinuous⟩)).comp AlphaUpStar ).obj F ⟶ ((AlphaUpStar ).comp (fDownStar proper_f)).obj F  where
+app K := (Functor.Final.colimitIso (preimageRes proper_f (unop K)).op (FU ((preimageCompact proper_f).obj (unop K)) (F) trueCond)).hom
+naturality K1 K2 i:= by
+  simp
+  repeat rw [Functor.Final.colimitIso_hom]
+  apply colimit.hom_ext
+  intro U
+  simp
+
+  #check colimit.ι_pre (FU ((preimageCompact proper_f).obj (unop K1)) (F) trueCond) ((preimageRes proper_f (unop K2)).comp (K1subK2subU trueCond _ _ _)).op (op ((K1subK2subU trueCond (unop K2) (unop K1) i.unop).obj (unop U)))
+
+
+
+
+
+  rw [← Category.assoc]
+
+
+
+
+  --rw [← CategoryTheory.Limits.colimit.ι_pre]
+  sorry
+
+def truc  : (fDownStar.comp ((AlphaUpStar (of Y) C)).obj F) ⟶ (AlphaUpStar (of X) C).comp (fDownStarF F) := by
+
+  #check (Functor.Final.colimitIso (preimageRes proper_f (unop K)).op (FU ((preimageCompact proper_f).obj (unop K)) ((Sheaf.forget C (of X)).obj F) trueCond)).hom
+
+  sorry
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 variable (F : TopCat.Sheaf C (of X))
 #check (Functor.Final.colimitIso (preimageRes proper_f (K)).op (FU ((preimageCompact proper_f).obj (K)) ((Sheaf.forget C (of X)).obj F) trueCond))
 
@@ -144,7 +201,7 @@ noncomputable def truc0 (F : TopCat.Sheaf C (of X)) : ((Sheaf.pushforward C (ofH
     intro U
     simp
 
-    #check colimit.ι_pre (FU ((preimageCompact proper_f).obj (unop K1)) ((Sheaf.forget C (of X)).obj F) trueCond) (preimageRes proper_f (unop K2)).op (op ((K1subK2subU trueCond (unop K2) (unop K1) i.unop).obj (unop U)))
+    --#check colimit.ι_pre (FU ((preimageCompact proper_f).obj (unop K1)) ((Sheaf.forget C (of X)).obj F) trueCond) (preimageRes proper_f (unop K2)).op (op ((K1subK2subU trueCond (unop K2) (unop K1) i.unop).obj (unop U)))
 
 
 
@@ -155,7 +212,7 @@ noncomputable def truc0 (F : TopCat.Sheaf C (of X)) : ((Sheaf.pushforward C (ofH
 
 
 
-    rw [← CategoryTheory.Limits.colimit.ι_pre]
+    --rw [← CategoryTheory.Limits.colimit.ι_pre]
 
 
 
@@ -165,13 +222,6 @@ noncomputable def truc0 (F : TopCat.Sheaf C (of X)) : ((Sheaf.pushforward C (ofH
 
 def truc1 : (Sheaf.pushforward C (ofHom ⟨_ , proper_f.toContinuous⟩)).comp (shAlphaUpStar (of Y) C) ⟶ (shAlphaUpStar (of X) C).comp (KsheafPushforward proper_f) where
   app F : _ := by
-    simp
-    --
-    --constructor
-    --intro
-
-    simp
-    unfold shAlphaUpStar shAlphaUpStarG AlphaUpStar AlphaUpStarP AlphaUpStarF
     simp
 
     sorry
@@ -198,6 +248,7 @@ lemma truc : (KsheafPushforward proper_f).comp (shAlphaDownStar (of Y) C) = (shA
 
 lemma hey (F  G : Sheaf C (of X)) (h : F.val = G.val): F = G := by
   aesop
+  sorry
 
     /-
   ext
