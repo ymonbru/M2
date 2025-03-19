@@ -6,8 +6,10 @@ import Mathlib.Order.Lattice
 
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite
 
-variable {X} [TopologicalSpace X] --[T2Space X]
-variable (C) [Category C]
+universe u v w
+
+variable {X : Type w} [TopologicalSpace X]
+variable (C : Type u) [Category.{v, u} C]
 
 
 noncomputable section
@@ -15,7 +17,6 @@ variable (K : Compacts X) (U : Opens X)
 variable (F : (Opens X)ᵒᵖ ⥤ C)
 
 --a^* P et a^*Q are naturaly isomorphic if P et Q are nice enough
-section
 
 variable {P Q : Opens X → Prop} (hpq : ∀ (U : Opens X), P U → Q U) (axiomP : ∀ U1 U2, P U1 → P U2 → P (U1 ⊓ U2))
 --variable {K1 K2 : Compacts X} (f : K1 ⟶ K2)
@@ -32,7 +33,7 @@ variable (V : ∀ K, KsubU_cat K Q → KsubU_cat K P)
 
 variable (V_spec : ∀ K,∀ U, (V K U).obj.carrier ⊆ U.obj.carrier)
 
-variable [HasColimits C] [HasLimits C]
+variable [HasColimitsOfSize.{w, w} C] [HasLimitsOfSize.{w, w} C]
 /-- The morphisme from α_P F to α_Q F induced by the inclusion of (KsubU_cat K P) into (KsubU_cat K Q )-/
 @[simps]
 def AlphaUpFPtoQ : (AlphaUpStarF F P) ⟶ (AlphaUpStarF F Q) where
@@ -100,7 +101,7 @@ lemma IsFinalOpKsubUPtoQ: Functor.Final (Functor.op (KsubUPtoQ K hpq)) := by
       rfl
   apply Functor.final_op_of_initial
 
-omit [HasLimits C] in
+omit [HasLimitsOfSize.{w, w} C] in
 lemma IsIsoAlphaUpPtoQ : IsIso (AlphaUpPPtoQ C hpq):= by
   apply ( NatTrans.isIso_iff_isIso_app _).2
   intro _
@@ -115,11 +116,12 @@ def IsoAlphaUpPtoQ : (AlphaUpStarP P) ≅ (@AlphaUpStarP _ _ C _ _ Q):= by
   apply asIso (AlphaUpPPtoQ C hpq)
 
 end
+ --α^* variante avec seulement les U relativements comapcts
+noncomputable section
 
-section --α^* variante avec seulement les U relativements comapcts
+variable (X : Type w) [TopologicalSpace X] [LocallyCompactSpace.{w} X] [T2Space X] (K : Compacts X) (U : Opens X)
 
-variable (X) [LocallyCompactSpace X] [T2Space X]
-variable [HasColimits C] [HasLimits C]
+variable [HasColimitsOfSize.{w, w} C] [HasLimitsOfSize.{w, w} C]
 
 /-- The functor α^* with condition on the opens of being relatively compact-/
 def AlphaUpStarRc : ((Opens X)ᵒᵖ ⥤ C) ⥤ (Compacts X)ᵒᵖ ⥤ C := AlphaUpStarP (relcCond)
@@ -156,9 +158,9 @@ lemma V_spec : ∀ K,∀ U, (V X K U).obj.carrier ⊆ U.obj:= by
   exact (Classical.choice (existsIntermed X _ _ U.property.1)).property.2.2
 
 /-- The evidence that AlphaUpStarRc X C  and AlphaUpStar are isomorphics -/
-def AlphaUpStarToRc :  AlphaUpStarRc X C ≅ AlphaUpStar :=  IsoAlphaUpPtoQ _ (λ _ _ => rfl) (axiomPrc ) (V X) (V_spec
+def AlphaUpStarToRc :  AlphaUpStarRc C X ≅ AlphaUpStar :=  IsoAlphaUpPtoQ _ (λ _ _ => rfl) (axiomPrc ) (V X) (V_spec
 X)
 /-- The data of the adjunction betwee α^*RC and α_* deduced by the previous isomorphism and the adjunction of α^* and α_*-/
-def AdjAlphaStarRc : AlphaUpStarRc X C ⊣ AlphaDownStar := AdjAlphaStar.ofNatIsoLeft (AlphaUpStarToRc X C).symm
+def AdjAlphaStarRc : AlphaUpStarRc C X ⊣ AlphaDownStar := AdjAlphaStar.ofNatIsoLeft (AlphaUpStarToRc C X).symm
 
---#lint
+#lint

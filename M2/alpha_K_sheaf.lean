@@ -1,6 +1,5 @@
 import M2.Ksheaves
 import M2.alpha
---import M2.HasLimitOverInitial
 import Mathlib.Topology.Sheaves.Presheaf
 import Mathlib.Topology.Sheaves.Sheaf
 import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
@@ -11,9 +10,12 @@ import Mathlib.Topology.Sheaves.Stalks
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite TopCat TopCat.Presheaf
 open ZeroObject
 
-variable (X) [TopologicalSpace X] [T2Space X]
-variable (C) [Category C] [HasColimits C] [HasLimits C] [HasZeroObject C]
-variable (G:Ksheaf X C) (F:Sheaf C (of X))
+universe u v w-- Pas de w à cause des faisceaux
+
+variable (X: Type w) [TopologicalSpace X] [T2Space X]
+variable (C : Type u) [Category.{v, u} C] [HasColimitsOfSize.{w,w} C] [HasLimitsOfSize.{w,w} C] [HasColimits C]
+
+variable (G: Ksheaf X C) (F:Sheaf C (of X))
 
 noncomputable section
 
@@ -140,15 +142,12 @@ def AdjShAlphaStar: (shAlphaUpStar X C ) ⊣ (shAlphaDownStar X C) := by
 
 /- c'est l'autre qu'il faut faire en premier-/
 theorem IsoAlphaUnit :IsIso ((AdjShAlphaStar X C).unit.app F):= by
-
-
-
-  have truc : ∀ (x : ↑(of X)), IsIso ((stalkFunctor C x).map ((AdjShAlphaStar X C).unit.app F).val):= by
+  /-have truc : ∀ (x : ↑(of X)), IsIso ((stalkFunctor C x).map ((AdjShAlphaStar X C).unit.app F).val):= by
     intro p
     rw [← Adjunction.homEquiv_id]
     simp
 
-    sorry
+    sorry-/ -- soucis d'univers mais il faudrait se passer des stalks cf argument de joel riou
   sorry
 
   --apply Presheaf.isIso_of_stalkFunctor_map_iso

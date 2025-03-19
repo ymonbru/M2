@@ -4,10 +4,10 @@ import Mathlib.Topology.Sets.Opens
 
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite
 
-variable {X} [TopologicalSpace X]
-variable {C} [Category C] [HasColimits C] [HasLimits C]
+universe u v w
 
---attribute [local aesop safe (rule_sets := [CategoryTheory])] colimit.hom_ext limit.hom_ext
+variable {X : Type w} [TopologicalSpace X]
+variable {C : Type u} [Category.{v, u} C] [HasColimitsOfSize.{w, w} C] [HasLimitsOfSize.{w, w} C]
 
 --α^*
 noncomputable section
@@ -22,7 +22,7 @@ def FU : (KsubU_cat K P)ᵒᵖ ⥤ C := Functor.comp (fullSubcategoryInclusion (
 variable (K₁ K₂ : Compacts X) (f : K₁ ⟶ K₂) --K1 ⊆ K2
 
 /-- The functor that sends opens that containt K2 to opens that contains K1-/
-@[simps!]
+@[simps]
 def K1subK2subU : (KsubU_cat K₂ P) ⥤ (KsubU_cat K₁ P ) where
   obj W := (⟨W.obj,Set.Subset.trans (leOfHom _ ) W.property.1 , W.property.2⟩ : KsubU_cat _ _)
   map  _ := homOfLE (leOfHom _)
@@ -76,7 +76,7 @@ variable (U : Opens X) (G : (Compacts X)ᵒᵖ ⥤ C)
 def UsupK : Set (Compacts X) := fun (K:Compacts X) => (K : Set X) ⊆ U
 
 /-- The category induced by UsupK -/
-def UsupK_cat : Type := FullSubcategory (UsupK U)
+def UsupK_cat : Type w := FullSubcategory (UsupK U)
 
 instance : Category (UsupK_cat U) := FullSubcategory.category (UsupK U)
 

@@ -6,13 +6,14 @@ import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.CategoryTheory.Limits.Final
 import M2.KsubU
 
-
 open CategoryTheory Limits TopologicalSpace Compacts Opposite
 
-variable {X} [TopologicalSpace X] [T2Space X]
+universe u v w
+
+variable {X :Type w} [TopologicalSpace.{w} X] [T2Space.{w} X]
 variable (K : Compacts X)
-variable {C} [Category C] [HasPullbacks C] [HasColimits C] --[HasZeroObject C]
---variable {A} [Ring A]
+
+variable {C : Type u} [Category.{v, u} C]
 variable (F : (Compacts X)ᵒᵖ ⥤ C) (K₁ :Compacts X) (K₂:Compacts X)
 
 -- definiing the limit that apear in the axiom Ksh3
@@ -152,12 +153,14 @@ structure Ksheaf where
   /--A continuity condition that state that a "regular function on K" is defined at the neighbourhood of K-/
   ksh3 : ∀ K : Compacts X, (IsColimit (FLToFK K carrier))
 
-
-#check Ksheaf
-
 instance :  Category (Ksheaf X C) := InducedCategory.category (·.carrier)
 
-#check (inducedFunctor fun (F : Ksheaf X C) ↦ F.carrier : (Ksheaf X C )⥤ _ )
+/-- the forget functor from Ksheaf to K-presheaf-/
+@[simps!]
+def KsheafToPre : (Ksheaf X C ) ⥤ (Compacts X)ᵒᵖ ⥤ C := inducedFunctor fun (F : Ksheaf X C) ↦ F.carrier
+
+/--The evidence that KsheafToPre is fullyfaithful-/
+def KsheafToPreIsFF: (KsheafToPre X C).FullyFaithful  := fullyFaithfulInducedFunctor fun (F : Ksheaf X C) ↦ F.carrier
 
 
 #lint

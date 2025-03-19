@@ -4,11 +4,15 @@ import Mathlib.CategoryTheory.Limits.Connected
 
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite
 
-variable {X} [TopologicalSpace X] [LocallyCompactSpace X] [T2Space X]
-variable (C) [Category C] [HasPullbacks C] [HasColimits C] [HasZeroObject C] [HasZeroMorphisms C]
+universe u v w
+
+variable {X : Type w } [TopologicalSpace X] [T2Space X]
+variable (C : Type u) [Category.{v, u} C]  [HasZeroObject C] [HasZeroMorphisms C]
 --the condition of having 0 map is a consequence of having a 0:C but the mathlib page of hasZeroMorphism says it's better to do that
---TODO: improve the example for the case where there is just a terminal object
+--TODO: improve the example for the case where there is just a terminal object -> it does not work
 noncomputable section
+
+
 
 /-
 @[simps]

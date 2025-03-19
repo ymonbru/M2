@@ -1,19 +1,18 @@
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
-import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
-import Mathlib.Topology.Sets.Compacts
 import Mathlib.Topology.Maps.Proper.Basic
 import Mathlib.Topology.Sheaves.Functors
---import M2.Ksheaves
 import M2.alpha_K_sheaf
---import M2.RCalpha
+
+
+universe u v w
 
 open CategoryTheory Limits TopologicalSpace Compacts Opposite Functor TopCat
 
 
-variable {X Y} [TopologicalSpace X] [T2Space X] [TopologicalSpace Y] [T2Space Y]
+variable {X Y : Type w} [TopologicalSpace X] [T2Space X] [TopologicalSpace Y] [T2Space Y]
 
 variable {f : X → Y} (proper_f : IsProperMap f)
+
+variable {C : Type u} [Category.{v, u} C]
 
 /-- The inverse image of a proper map as functor over compacts -/
 @[simps]
@@ -25,9 +24,6 @@ def preimageCompact : Compacts Y ⥤ Compacts X where
 @[simps!]
 def preimageOpen : Opens Y ⥤ Opens X := (Opens.map (ofHom ( ContinuousMap.mk f proper_f.toContinuous)) )
 
-
-
-variable {C} [Category C]
 variable ( F : (Compacts X)ᵒᵖ ⥤ C) (K : Compacts Y) --[LocallyCompactSpace X]
 
 /-def preimageRes : RelCN_cat K ⥤ RelCN_cat ((preimageCompact proper_f).obj K) where
@@ -78,15 +74,18 @@ instance : (preimageResSubSub proper_f K).Initial := by
       use 𝟙 _
       rfl
 
-variable [HasLimits C] [HasColimits C]
+variable [HasLimitsOfSize.{w, w} C] [HasColimitsOfSize.{w, w} C]
 
 /-- the pushforward of a K-presheaf-/
+@[simps!]
 def fDownStar: ((Compacts X)ᵒᵖ ⥤ C) ⥤ (Compacts Y)ᵒᵖ ⥤ C :=
 ((whiskeringLeft _ _ _ ).obj (preimageCompact proper_f).op)
 
+noncomputable section
+
 /-- the pushforward of a KSheaf-/
 @[simps]
-noncomputable def fDownStarFsh (F : Ksheaf X C) : Ksheaf Y C where
+def fDownStarFsh (F : Ksheaf X C) : Ksheaf Y C where
   carrier := (fDownStar proper_f).obj F.carrier
   ksh1 := by
     exact F.ksh1
@@ -100,7 +99,7 @@ noncomputable def fDownStarFsh (F : Ksheaf X C) : Ksheaf Y C where
 
 /-- Pushforward of KSheaf as a functor-/
 @[simps]
-noncomputable def KsheafPushforward : (Ksheaf X C ) ⥤ (Ksheaf Y C) where
+def KsheafPushforward : (Ksheaf X C ) ⥤ (Ksheaf Y C) where
   obj := fDownStarFsh proper_f
   map := by
     intro _ _ τ
@@ -133,138 +132,116 @@ instance : (preimageRes proper_f K).Initial := by
       use 𝟙 _
       rfl
 
-
-
--- A partir de la c'est des expériences
-
 variable (F : (Opens X)ᵒᵖ ⥤ C)
 
-noncomputable def truc  : ((Presheaf.pushforward C (ofHom ⟨_ , proper_f.toContinuous⟩)).comp AlphaUpStar ).obj F ⟶ ((AlphaUpStar ).comp (fDownStar proper_f)).obj F  where
+/--For F a presheaf the natural transformation from f* α* F to α* f* F -/
+@[simps]
+def PushforwardCommAlphaUpF  : ((Presheaf.pushforward C (ofHom ⟨_ , proper_f.toContinuous⟩)).comp AlphaUpStar ).obj F ⟶ ((AlphaUpStar ).comp (fDownStar proper_f)).obj F  where
 app K := (Functor.Final.colimitIso (preimageRes proper_f (unop K)).op (FU ((preimageCompact proper_f).obj (unop K)) (F) trueCond)).hom
 naturality K1 K2 i:= by
-  simp
-  repeat rw [Functor.Final.colimitIso_hom]
   apply colimit.hom_ext
   intro U
-  simp
 
-  #check colimit.ι_pre (FU ((preimageCompact proper_f).obj (unop K1)) (F) trueCond) ((preimageRes proper_f (unop K2)).comp (K1subK2subU trueCond _ _ _)).op (op ((K1subK2subU trueCond (unop K2) (unop K1) i.unop).obj (unop U)))
-
-
-
-
-
-  rw [← Category.assoc]
-
-
+  suffices colimit.ι (FU (unop K2) ((Presheaf.pushforward C (ofHom { toFun := f, continuous_toFun := _ })).obj F) trueCond)
+      (op ((K1subK2subU trueCond (unop K2) (unop K1) i.unop).obj (unop U))) ≫
+    (Final.colimitIso (preimageRes proper_f (unop K2)).op
+        (FU ((preimageCompact proper_f).obj (unop K2)) F trueCond)).hom =
+  colimit.ι (FU (unop K1) ((Presheaf.pushforward C (ofHom { toFun := f, continuous_toFun := _ })).obj F) trueCond) U ≫
+    (Final.colimitIso (preimageRes proper_f (unop K1)).op
+          (FU ((preimageCompact proper_f).obj (unop K1)) F trueCond)).hom ≫
+      colimMap _ ≫ colimit.pre _ _ by simpa
 
 
-  --rw [← CategoryTheory.Limits.colimit.ι_pre]
-  sorry
+  repeat rw [Functor.Final.colimitIso_hom]
 
-def truc  : (fDownStar.comp ((AlphaUpStar (of Y) C)).obj F) ⟶ (AlphaUpStar (of X) C).comp (fDownStarF F) := by
+  have : colimit.ι ((preimageRes proper_f (unop K2)).op ⋙ FU ((preimageCompact proper_f).obj (unop K2)) F trueCond) = colimit.ι (FU (unop K2) ((Presheaf.pushforward C (ofHom ⟨_ , proper_f.toContinuous⟩)).obj F) trueCond) := by
+    rfl
+  rw [← this, colimit.ι_pre, ← Category.assoc]
 
-  #check (Functor.Final.colimitIso (preimageRes proper_f (unop K)).op (FU ((preimageCompact proper_f).obj (unop K)) ((Sheaf.forget C (of X)).obj F) trueCond)).hom
+  have : colimit.ι (FU (unop K1) ((Presheaf.pushforward C (ofHom ⟨_ , proper_f.toContinuous⟩)).obj F) trueCond) = colimit.ι ((preimageRes proper_f (unop K1)).op ⋙ FU ((preimageCompact proper_f).obj (unop K1)) F trueCond) := by
+    rfl
 
-  sorry
+  rw [this, colimit.ι_pre]
 
+  --aesop? --suggestion bizare?
+  suffices colimit.ι _ (op ((preimageRes proper_f (unop K2)).obj ((K1subK2subU trueCond (unop K2) (unop K1) i.unop).obj (unop U)))) = colimit.ι _ (op ((K1subK2subU trueCond ((preimageCompact proper_f).obj (unop K2)) ((preimageCompact proper_f).obj (unop K1)) (homOfLE _ )).obj ((preimageRes proper_f (unop K1)).obj (unop U)))) by simpa
 
-
-
-
-
-
-
-
-
-
-
-
-
-variable (F : TopCat.Sheaf C (of X))
-#check (Functor.Final.colimitIso (preimageRes proper_f (K)).op (FU ((preimageCompact proper_f).obj (K)) ((Sheaf.forget C (of X)).obj F) trueCond))
-
-variable (K1 K2 : Compacts Y ) (i : K1 ⟶ K2)
-
-
-lemma heyho : (K1subK2subU trueCond K1 K2 i).comp (preimageRes proper_f K1) = (preimageRes proper_f K2).comp (K1subK2subU trueCond _ _ ((preimageCompact proper_f).map i)) := by
   rfl
-  --sorry
 
-noncomputable def truc0 (F : TopCat.Sheaf C (of X)) : ((Sheaf.pushforward C (ofHom ⟨_ , proper_f.toContinuous⟩)).comp (shAlphaUpStar (of Y) C)).obj F ⟶ ((shAlphaUpStar (of X) C).comp (KsheafPushforward proper_f)).obj F where
-  app K := (Functor.Final.colimitIso (preimageRes proper_f (unop K)).op (FU ((preimageCompact proper_f).obj (unop K)) ((Sheaf.forget C (of X)).obj F) trueCond)).hom
-  naturality := by
-    intro K1 K2 i
-    simp
-    repeat rw [Functor.Final.colimitIso_hom]
+instance : IsIso (PushforwardCommAlphaUpF proper_f F) := by
+  have : ∀ (K : (Compacts ↑(of Y))ᵒᵖ), IsIso ((PushforwardCommAlphaUpF proper_f F).app K) := by
+    intro K
+    exact Iso.isIso_hom _
+  apply  NatIso.isIso_of_isIso_app
+
+variable (C)
+
+/--The natural transformation from f* α* to α* f* over presheaves -/
+@[simps]
+def PushforwardCommAlphaUp  : (Presheaf.pushforward C (ofHom ⟨_ , proper_f.toContinuous⟩)).comp AlphaUpStar  ⟶ (AlphaUpStar ).comp (fDownStar proper_f) where
+  app := PushforwardCommAlphaUpF proper_f
+  naturality F G τ:= by
+    apply NatTrans.ext
+    ext K
     apply colimit.hom_ext
     intro U
+    suffices τ.app (op ((Opens.map (ofHom { toFun := f, continuous_toFun := _ })).obj (unop U).obj)) ≫
+    colimit.ι (FU (unop K) ((Presheaf.pushforward C (ofHom { toFun := f, continuous_toFun := _ })).obj G) trueCond) U ≫
+      (Final.colimitIso (preimageRes proper_f (unop K)).op
+          (FU ((preimageCompact proper_f).obj (unop K)) G trueCond)).hom =
+  colimit.ι (FU (unop K) ((Presheaf.pushforward C (ofHom { toFun := f, continuous_toFun := _ })).obj F) trueCond) U ≫
+    (Final.colimitIso (preimageRes proper_f (unop K)).op
+          (FU ((preimageCompact proper_f).obj (unop K)) F trueCond)).hom ≫
+      colimMap _ by simpa
+
+    repeat rw [Functor.Final.colimitIso_hom]
+
+    have : colimit.ι (FU (unop K) ((Presheaf.pushforward C (ofHom ⟨_ , proper_f.toContinuous⟩)).obj G) trueCond) = colimit.ι ((preimageRes proper_f (unop K)).op ⋙ FU ((preimageCompact proper_f).obj (unop K)) G trueCond) := by rfl
+
+    rw [this, colimit.ι_pre]
+
+    have : colimit.ι (FU (unop K) ((Presheaf.pushforward C (ofHom ⟨_ , proper_f.toContinuous⟩)).obj F) trueCond) = colimit.ι ((preimageRes proper_f (unop K)).op ⋙ FU ((preimageCompact proper_f).obj (unop K)) F trueCond) := by rfl
+
+    rw [this, ← Category.assoc, colimit.ι_pre]
+
     simp
+    rfl
 
-    --#check colimit.ι_pre (FU ((preimageCompact proper_f).obj (unop K1)) ((Sheaf.forget C (of X)).obj F) trueCond) (preimageRes proper_f (unop K2)).op (op ((K1subK2subU trueCond (unop K2) (unop K1) i.unop).obj (unop U)))
+instance : IsIso (PushforwardCommAlphaUp proper_f C) := by
+  have : ∀ (F : Presheaf C (of X)), IsIso ((PushforwardCommAlphaUp proper_f C).app F) := by
+    intro F
+    suffices IsIso (PushforwardCommAlphaUpF proper_f F) by simpa
+    exact instIsIsoFunctorOppositeCompactsCarrierOfPushforwardCommAlphaUpF proper_f F
+  exact NatIso.isIso_of_isIso_app _
 
+/--The natural transformation from f* α* to α* f* for sheaves -/
+@[simps]
+def PushforwardCommAlphaUpShHom : (Sheaf.pushforward C (ofHom ⟨_ , proper_f.toContinuous⟩)).comp (shAlphaUpStar Y C) ⟶ (shAlphaUpStar X C).comp (KsheafPushforward proper_f) where
+  app F := (whiskerLeft (Sheaf.forget C (of X)) (PushforwardCommAlphaUp proper_f C)).app F
+  naturality F G τ := by
+    apply (PushforwardCommAlphaUp proper_f C).naturality
 
+/--The inverse natural transformation from α* f* to f* α* for sheaves -/
+@[simps]
+def PushforwardCommAlphaUpShInv : (shAlphaUpStar X C).comp (KsheafPushforward proper_f) ⟶ (Sheaf.pushforward C (ofHom ⟨_ , proper_f.toContinuous⟩)).comp (shAlphaUpStar Y C) where
+  app F := (whiskerLeft (Sheaf.forget C (of X)) ( inv (PushforwardCommAlphaUp proper_f C))).app F
+  naturality F G τ := by
+    apply (inv (PushforwardCommAlphaUp proper_f C)).naturality
 
+/--The natural isomorphism between  α* f* and f* α* for -/
+@[simps]
+def PushforwardCommAlphaUpSh : (Sheaf.pushforward C (ofHom ⟨_ , proper_f.toContinuous⟩)).comp (shAlphaUpStar Y C) ≅ (shAlphaUpStar X C).comp (KsheafPushforward proper_f) where
+  hom := PushforwardCommAlphaUpShHom proper_f C
+  inv := PushforwardCommAlphaUpShInv proper_f C
+  hom_inv_id := by
+    ext
+    suffices PushforwardCommAlphaUpF proper_f _ ≫ inv _ = 𝟙 _ by simpa
+    apply (comp_inv_eq_id _ ).mpr
+    rfl
+  inv_hom_id := by
+    ext
+    suffices inv _ ≫ PushforwardCommAlphaUpF proper_f _  = 𝟙 _ by simpa
+    apply (inv_comp_eq_id _ ).mpr
+    rfl
 
-
-    rw [← Category.assoc]
-
-
-
-
-    --rw [← CategoryTheory.Limits.colimit.ι_pre]
-
-
-
-
-
-    sorry
-
-def truc1 : (Sheaf.pushforward C (ofHom ⟨_ , proper_f.toContinuous⟩)).comp (shAlphaUpStar (of Y) C) ⟶ (shAlphaUpStar (of X) C).comp (KsheafPushforward proper_f) where
-  app F : _ := by
-    simp
-
-    sorry
-  naturality := sorry
-
-
-lemma truc : (KsheafPushforward proper_f).comp (shAlphaDownStar (of Y) C) = (shAlphaDownStar (of X) C).comp (Sheaf.pushforward C (ofHom ⟨_ , proper_f.toContinuous⟩)) := by
-  #check (Sheaf.forget C ( of X) )
-  have : ((KsheafPushforward proper_f).comp (shAlphaDownStar (of Y) C)).comp (Sheaf.forget C ( of Y) ) = ((shAlphaDownStar (of X) C).comp (Sheaf.pushforward C (ofHom ⟨_ , proper_f.toContinuous⟩))).comp (Sheaf.forget C ( of Y) ) := by sorry
-
-  aesop?
-  apply CategoryTheory.Functor.ext
-  · intro F G τ
-    apply Sheaf.Hom.ext
-    ext U
-    --unfold shAlphaDownStar
-    simp
-    sorry
-  · intro F
-
-    --simp
-
-    sorry
-
-lemma hey (F  G : Sheaf C (of X)) (h : F.val = G.val): F = G := by
-  aesop
-  sorry
-
-    /-
-  ext
-  apply CategoryTheory.Functor.ext
-  #check (KsheafPushforward proper_f ⋙ shAlphaDownStar (↑(of Y)) C).map τ
-
-  simp
-  unfold shAlphaDownStar shAlphaDownStarF AlphaDownStar AlphaDownStarG
-  simp
-  unfold AlphaDownStarSigma KsheafPushforward
-  simp
-
-
-  sorry-/
-
-def machine : (of X) ⟶ (of Y) := by
-  apply ofHom ⟨_ , proper_f.toContinuous⟩
-
-  --sorry
+#lint

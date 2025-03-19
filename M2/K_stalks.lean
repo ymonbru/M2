@@ -2,8 +2,10 @@ import M2.Ksheaves
 
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite
 
-variable {X} [TopologicalSpace X]
-variable {C} [Category C] [HasPullbacks C] [HasColimits C]
+universe u v w
+
+variable {X : Type w} [TopologicalSpace X]
+variable {C : Type u} [Category.{v, u} C] [HasColimitsOfSize.{w, w} C]
 variable (p : X)
 
 noncomputable section
@@ -15,7 +17,7 @@ variable (F : (Compacts X)ᵒᵖ ⥤ C)
 def pinK : Set (Compacts X) := fun K => (p ∈ K)
 
 /-- the induced category by the property pinK-/
-def pinK_cat : Type := FullSubcategory (pinK p)
+def pinK_cat : Type w := FullSubcategory (pinK p)
 
 instance : Category (pinK_cat p) := FullSubcategory.category (pinK p)
 
@@ -127,8 +129,6 @@ def EvalInPSh : (Ksheaf X C) ⥤ C:= (inducedFunctor fun (F : Ksheaf X C) ↦ F.
 
 /--The isomorphism of functor between taking the stalks and evaluating in p for Kshaves-/
 def IsoKstalkEvalPSh : (KstalkFunctorSh C p) ≅ (EvalInPSh C p ) := isoWhiskerLeft _ (IsoKstalkEvalP C p)
-
-
 
 end
 

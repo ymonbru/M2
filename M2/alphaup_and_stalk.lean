@@ -6,8 +6,10 @@ import Mathlib.Topology.Sheaves.Stalks
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite TopCat TopCat.Presheaf
 open ZeroObject
 
-variable (X) [TopologicalSpace X] [T2Space X]
-variable {C} [Category C] [HasPullbacks C] [HasColimits C] [HasZeroObject C]
+universe u v
+
+variable (X : Type v) [TopologicalSpace.{v} X] [T2Space X]
+variable {C : Type u} [Category.{v, u} C] [HasColimits C]
 variable (p: of X) (F:Presheaf C (of X))
 
 

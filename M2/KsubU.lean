@@ -6,8 +6,12 @@ import Mathlib.CategoryTheory.Filtered.Final
 
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite
 
+universe u
+
+variable {X : Type u} [TopologicalSpace X]
+
 noncomputable section
-variable {X} [TopologicalSpace X]
+
 variable (K : Compacts X)
 variable (P : Opens X → Prop)-- true for the usual alpha and IsCompact (closure U.carrier) for the relatively compact version
 
@@ -16,7 +20,7 @@ variable (P : Opens X → Prop)-- true for the usual alpha and IsCompact (closur
 def KsubU : Set (Opens X) := fun (U:Opens _) => (K.carrier ⊆ U) ∧ P U
 
 /--The full subcategory induced by the property KsubU-/
-def KsubU_cat : Type := FullSubcategory (KsubU K P)
+def KsubU_cat : Type u := FullSubcategory (KsubU K P)
 
 /-instance : SetLike (KsubU_cat K P) X where
   coe U:= U.obj.carrier
@@ -56,12 +60,13 @@ lemma IsCofilteredKsubU : IsCofilteredOrEmpty (KsubU_cat K P) where
 
 end
 
+
 section
-variable {X} [TopologicalSpace X] [T2Space X]
+variable [T2Space X]
 variable (K : Compacts X)
 
 /-- the condition of being relatively compact-/
-def relcCond : Opens X → Prop := fun (U:Opens X) => IsCompact (closure (U:Set X))
+def relcCond : Opens X → Prop := fun (U : Opens X) => IsCompact (closure (U : Set X))
 
 lemma axiomPrc : ∀ (U₁ U₂ : Opens X), relcCond U₁ → relcCond U₂ → relcCond (U₁ ⊓  U₂):= by
   intro U1 U2 h1 h2
@@ -71,7 +76,7 @@ lemma axiomPrc : ∀ (U₁ U₂ : Opens X), relcCond U₁ → relcCond U₂ → 
   · rw [ Opens.coe_inf]
     apply closure_inter_subset_inter_closure
 
-def RelCN_cat : Type := (KsubU_cat K (relcCond))
+def RelCN_cat : Type u := (KsubU_cat K (relcCond))
 
 instance : Category (RelCN_cat K) := instCategoryKsubU_cat K (relcCond)
 
@@ -100,12 +105,12 @@ instance : Nonempty (RelCN_cat K) := by
 end
 
 section
-variable {X} [TopologicalSpace X] [T2Space X]
+variable [T2Space.{u} X]
 variable (K : Compacts X)
 
 def supSupK : Set (Compacts X) := fun (L : Compacts _) => (∃ (U: Opens _), (K.carrier ⊆ U.carrier) ∧ (U.carrier ⊆ L.carrier))
 
-def supSupK_cat : Type := FullSubcategory (supSupK K )
+def supSupK_cat : Type u:= FullSubcategory (supSupK K )
 
 omit [T2Space X] in
 lemma supSupKtoSupK (L : supSupK_cat K) : K.carrier ⊆ L.obj.carrier := by
