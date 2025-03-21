@@ -5,6 +5,8 @@ import Mathlib.Topology.Sheaves.Sheaf
 import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
 import Mathlib.CategoryTheory.Adjunction.Restrict
 import Mathlib.Topology.Sheaves.Stalks
+import Mathlib.CategoryTheory.Limits.Fubini
+import Mathlib.CategoryTheory.Limits.Final
 
 
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite TopCat TopCat.Presheaf
@@ -99,6 +101,7 @@ def TerminalOpBotsubU : IsTerminal (op ⟨⊥ , by simp⟩ : (KsubU_cat (⊥ : C
     rcases hx
 
 
+
 @[simps!]
 def shAlphaUpStarG : (Ksheaf X C) where
   carrier:= (AlphaUpStar).obj ((Sheaf.forget _ _).obj F)
@@ -111,8 +114,49 @@ def shAlphaUpStarG : (Ksheaf X C) where
     apply @asIso _ _ _ _ _ (isIso_ι_of_isTerminal (TerminalOpBotsubU X) (FU ⊥ ((Sheaf.forget C (of X)).obj F) trueCond))
   ksh2:= by
     sorry
-  ksh3:= by
+  ksh3 K := by
+    --apply (Functor.Final.isColimitWhiskerEquiv _ _).toFun
+
+    #check FresSSK K (AlphaUpStar.obj ((Sheaf.forget C (of X)).obj F))
+
+
+
+
+    let Fp := (Sheaf.forget C (of X)).obj F
+    let truc  := ((Functor.const _).obj (FU K Fp trueCond) : (supSupK_cat K)ᵒᵖ  ⥤ (KsubU_cat K trueCond)ᵒᵖ ⥤ C)
+
+    let machin := colimitUncurryIsoColimitCompColim truc
+
+
     sorry
+
+
+
+
+
+
+    /-constructor
+    · sorry
+    · sorry
+    · intro s
+      unfold FresSSK AlphaUpStar AlphaUpStarP at s
+      simp at s
+      simp
+      have L : (supSupK_cat K)ᵒᵖ := sorry
+
+      apply CategoryStruct.comp _
+      exact s.ι.app L
+      simp
+
+      --have truc : (FU K ((Sheaf.forget C (of X)).obj F) trueCond) ⟶ (FU (unop L).obj ((Sheaf.forget C (of X)).obj F) trueCond) := by sorry
+
+      have : colimit (((K1subK2subU trueCond K (unop L).obj sorry).op).comp (FU K ((Sheaf.forget C (of X)).obj F) trueCond)) = colimit (FU (unop L).obj ((Sheaf.forget C (of X)).obj F) trueCond) := by rfl--sorry
+
+      rw [← this]
+
+      --argh c'est le mauvais sens-/
+
+#check lim.comp lim
 
 @[simps]
 def shAlphaUpStar : Sheaf C (of X) ⥤ (Ksheaf X C)  where

@@ -15,7 +15,6 @@ variable {C : Type u} [Category.{v, u} C]
 def imageCompact : Compacts X ⥤ Compacts Y where
   obj K := Compacts.map f Cf K
   map i := homOfLE ( by
-    simp
     intro a ha
     rcases ha with ⟨x, hx1, hx2⟩
     use x
@@ -23,4 +22,11 @@ def imageCompact : Compacts X ⥤ Compacts Y where
     apply leOfHom i
     repeat assumption)
 
--- pas sur que ça mrche sur les K-faisceaux, revenir plus tard pour les K faisceaux d'homotopie
+--variable (hf : Injective f)
+
+def KsheafPullback (F:Ksheaf Y C ) : Ksheaf X C where
+  carrier := ((imageCompact Cf).op).comp F.carrier
+  ksh1 := sorry
+  ksh2 := by
+    sorry
+  kshe3 := by
