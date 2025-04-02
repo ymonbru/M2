@@ -1,8 +1,8 @@
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
-import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
+--import Mathlib.CategoryTheory.Limits.HasLimits
+--import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 import Mathlib.Topology.Sets.Compacts
-import Mathlib.CategoryTheory.Filtered.Basic
+--import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.CategoryTheory.Limits.Final
 import M2.KsubU
 

@@ -19,26 +19,18 @@ variable (P : Opens X → Prop)
 @[simps!]
 def FU : (KsubU_cat K P)ᵒᵖ ⥤ C := Functor.comp (fullSubcategoryInclusion (KsubU K P)).op  F
 
-variable (K₁ K₂ : Compacts X) (f : K₁ ⟶ K₂) --K1 ⊆ K2
-
-/-- The functor that sends opens that containt K2 to opens that contains K1-/
-@[simps]
-def K1subK2subU : (KsubU_cat K₂ P) ⥤ (KsubU_cat K₁ P ) where
-  obj W := (⟨W.obj,Set.Subset.trans (leOfHom _ ) W.property.1 , W.property.2⟩ : KsubU_cat _ _)
-  map  _ := homOfLE (leOfHom _)
-
 /-- The natural transformation of change of basis for the diagram FU-/
 @[simps]
-def K1subK2natTrans : (FU _ F P) ⟶  (Functor.comp (K1subK2subU _ _ _ f).op (FU _ F _)) where
+def K1subK2natTrans {K₁ K₂ : Compacts X} (f : K₁ ⟶ K₂) : (FU _ F P) ⟶  (Functor.comp (K1subK2subU _ f).op (FU _ F _)) where
   app _ := 𝟙 _
 
 /-- The functor α^*F-/
 @[simps]
 def AlphaUpStarF : (Compacts X)ᵒᵖ ⥤ C  where
   obj K := colimit (FU K.unop F P)
-  map f := colimMap (K1subK2natTrans F P _ _ f.unop) ≫ (colimit.pre (FU _ _ _) (K1subK2subU _ _ _ _ ).op)
+  map f := colimMap (K1subK2natTrans F P f.unop) ≫ (colimit.pre (FU _ _ _) (K1subK2subU _ _ ).op)
 
-variable (F₁ F₂ : (Opens X)ᵒᵖ ⥤ C) (τ : F₁ ⟶ F₂)
+variable {F₁ F₂ : (Opens X)ᵒᵖ ⥤ C} (τ : F₁ ⟶ F₂)
 
 /-- The restriction of the natural transformation between the digram FU over K₁ eand FU over K₂ -/
 @[simps]
@@ -48,18 +40,13 @@ def τres : (FU K F₁ P) ⟶ (FU _ F₂ _) where
 /-- The natural transformation α^* τ between α^* F₁ and α^* F₂-/
 @[simps]
 def AlphaUpStarTau : (AlphaUpStarF F₁ P) ⟶ (AlphaUpStarF F₂ P) where
-  app K := colimMap (τres K.unop P _ _ τ)
+  app K := colimMap (τres K.unop P τ)
 
 /-- The functor α^* with the conditon P-/
 @[simps]
 def AlphaUpStarP : ((Opens X)ᵒᵖ ⥤ C) ⥤ (Compacts X)ᵒᵖ ⥤ C where
   obj _ := AlphaUpStarF _ _
-  map := AlphaUpStarTau P _ _
-
-
-/-- The condition that is always true -/
-@[simp]
-def trueCond :Opens X → Prop:= λ _ => true
+  map := AlphaUpStarTau P
 
 /-- The first version of α^* -/
 @[simps!]
@@ -96,8 +83,6 @@ def U2supU1supK : (UsupK_cat U₁) ⥤ (UsupK_cat U₂) where
 @[simps]
 def U2supU1natTrans : (GK _ G) ⟶  Functor.comp (U2supU1supK _ _ f).op (GK _ G) where
   app _ := 𝟙 _
-
-variable [HasLimits C]
 
 /-- The functor α_* G-/
 @[simps]

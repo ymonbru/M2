@@ -8,26 +8,29 @@ universe u1 u2 u3 v1 v2 v3
 
 variable {A : Type u2} [Category.{v2, u2} A]
 
-variable (i : A ⥤ Cat.{v3, u3}) [HasLimit i] (F : Cocone i) (a : A)
+variable (i : A ⥤ Cat.{v3, u3}) [HasColimit i] (F : Cocone i) (a : A)
 
 variable [(a : A) → HasLimitsOfSize.{v3, u3} (i.obj a)]
 
-#check limit i
+#check colimit i
 
-def cupIa : Type max u2 u3 := ((a : A) × ((i.obj a).α ))
+noncomputable section
 
-instance : Category (cupIa i) := Sigma.sigma
+def cupIa : Type u3 := (colimit i).α
+
+instance : Category (cupIa i) := Cat.str _
 
 def FIa : (i.obj a) ⥤ F.pt := F.ι.app a -- pour permetre d'inferer l'existence de limites
 
 #check F.pt
 
-@[simps!]
-def FCupIa : (cupIa i) ⥤ F.pt := Sigma.desc (fun a => FIa i F a)--CategoryTheory.Sigma.desc F.ι.app
+def FCupIa : (cupIa i) ⥤ F.pt := colimit.desc i F
+
+--Sigma.desc (fun a => FIa i F a)--CategoryTheory.Sigma.desc F.ι.app
 
 --#check
 
-variable [HasLimitsOfSize.{max v3 max u2 u3, max u2 u3} F.pt]
+variable [HasLimitsOfSize.{v3,u3} F.pt]
 
 #check limit (FCupIa i F)
 
@@ -64,6 +67,7 @@ def limFIa : Aᵒᵖ ⥤ F.pt where
     apply Eq.symm
     apply eqToHom_trans
 
+
     /-exact
       Eq.symm
         (eqToHom_trans (this ▸ Eq.refl ((FIa i F (unop _)).obj ((i.map (g.unop ≫ f.unop)).obj j)))
@@ -93,8 +97,18 @@ variable [HasLimitsOfSize.{v2, u2} F.pt]
 
 /-- The natural transformation involved in limLimFIaConeFcupIa-/
 @[simps]
-def limLimFIaConeFcupIaπ :(const (cupIa i)).obj (limit (limFIa i F)) ⟶ FCupIa i F where
-  app x := limit.π (limFIa i F) (op x.1) ≫ ( limit.π (FIa i F x.1) x.2)
+def limLimFIaConeFcupIaπ : (const (cupIa i)).obj (limit (limFIa i F)) ⟶ FCupIa i F where
+  app x := by
+    simp
+    unfold FCupIa
+    #check F.ι
+    #check limit.π (limFIa i F)
+
+    sorry
+
+
+
+  --limit.π (limFIa i F) (op x.1) ≫ ( limit.π (FIa i F x.1) x.2)
   naturality x y f:= by
     rcases f with ⟨f⟩
     suffices limit.π (limFIa i F) _ ≫ limit.π _ _ =
@@ -132,7 +146,6 @@ def truc2π (s : Cone (FCupIa i F)) : (const Aᵒᵖ).obj s.pt ⟶ limFIa i F wh
     #check s.π.naturality
     apply eq_of_heq
     apply (heq_comp_eqToHom_iff _ _ _).mpr
-
 
 
 

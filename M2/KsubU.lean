@@ -19,6 +19,10 @@ variable (P : Opens X → Prop)-- true for the usual alpha and IsCompact (closur
 @[simp]
 def KsubU : Set (Opens X) := fun (U:Opens _) => (K.carrier ⊆ U) ∧ P U
 
+/-- The condition that is always true -/
+@[simp]
+def trueCond :Opens X → Prop:= λ _ => true
+
 /--The full subcategory induced by the property KsubU-/
 def KsubU_cat : Type u := FullSubcategory (KsubU K P)
 
@@ -32,6 +36,13 @@ def KsubU_cat : Type u := FullSubcategory (KsubU K P)
 
 instance : Category (KsubU_cat K P) := FullSubcategory.category (KsubU K P)
 
+/-- The functor that sends opens that containt K2 to opens that contains K1-/
+@[simps]
+def K1subK2subU {K₁ K₂ : Compacts X} (f : K₁ ⟶ K₂): (KsubU_cat K₂ P) ⥤ (KsubU_cat K₁ P ) where
+  obj W := (⟨W.obj,Set.Subset.trans (leOfHom _ ) W.property.1 , W.property.2⟩)
+  map  _ := homOfLE (leOfHom _)
+
+
 variable {P : Opens X → Prop } (axiomP : ∀ U1 U2, P U1 → P U2 → P (U1 ⊓ U2))
 include axiomP
 
@@ -40,6 +51,7 @@ include axiomP
 def InfKsubU (U1 U2 : KsubU_cat K P) : (KsubU_cat K P) := ⟨( U1.obj ⊓ U2.obj), ⟨le_inf U1.property.1 U2.property.1, axiomP _ _ U1.property.2 U2.property.2⟩ ⟩
 
 /-- The morphisme  U1 ⊓ U2 ⟶ U1 for elements of (KsubU_cat K P)-/
+
 def InfInLeftKSU (U1 U2 : KsubU_cat K P): (InfKsubU K axiomP U1 U2) ⟶ U1:= homOfLE (by simp)
 
 /-- The morphisme U1 ⊓ U2 ⟶ U2 for elements of (KsubU_cat K P)-/
@@ -105,20 +117,20 @@ instance : Nonempty (RelCN_cat K) := by
 end
 
 section
-variable [T2Space.{u} X]
 variable (K : Compacts X)
+
 
 def supSupK : Set (Compacts X) := fun (L : Compacts _) => (∃ (U: Opens _), (K.carrier ⊆ U.carrier) ∧ (U.carrier ⊆ L.carrier))
 
 def supSupK_cat : Type u:= FullSubcategory (supSupK K )
 
-omit [T2Space X] in
 lemma supSupKtoSupK (L : supSupK_cat K) : K.carrier ⊆ L.obj.carrier := by
   rcases L.property with ⟨U, hU1, hU2⟩
   exact hU1.trans hU2
 
-
 instance : Category (supSupK_cat K ) := FullSubcategory.category (supSupK K)
+
+variable [T2Space.{u} X]
 
 /-- L1 ⊓ L2 as an element of (supSupK_cat K)-/
 @[simps]

@@ -49,12 +49,12 @@ naturality K L f:= by
 
   rw [this]
 
-  suffices _ = colimit.ι (FU _ _ _) ( op <| (K1subK2subU _ _ _ _ ).obj <| (KsubUPtoQ _ hpq).obj J.unop ) by simpa
+  suffices _ = colimit.ι (FU _ _ _) ( op <| (K1subK2subU _ _ ).obj <| (KsubUPtoQ _ hpq).obj J.unop ) by simpa
 
-  have : colimit.ι (FU _ _ _ ) ( op <| (K1subK2subU _ _ _ f.unop).obj J.unop ) ≫
+  have : colimit.ι (FU _ _ _ ) ( op <| (K1subK2subU _ f.unop).obj J.unop ) ≫
     colimit.pre (FU _ _ _) (KsubUPtoQ _ hpq).op =
-  colimit.ι (FU _ F _) (op <| (KsubUPtoQ _ hpq).obj <| (K1subK2subU _ _ _ f.unop).obj J.unop )  := by
-    exact colimit.ι_pre (FU _ _ _) (Functor.op (KsubUPtoQ _ hpq)) ( op <| (K1subK2subU _ _ _ _).obj J.unop )
+  colimit.ι (FU _ F _) (op <| (KsubUPtoQ _ hpq).obj <| (K1subK2subU _ f.unop).obj J.unop )  := by
+    exact colimit.ι_pre (FU _ _ _) (Functor.op (KsubUPtoQ _ hpq)) ( op <| (K1subK2subU _ _).obj J.unop )
 
   rw [this]
   rfl
@@ -67,7 +67,7 @@ def AlphaUpPPtoQ : (AlphaUpStarP P) ⟶ (@AlphaUpStarP _ _ C _ _ Q) where
     ext _
     apply colimit.hom_ext
     intro U
-    suffices _ = _ ≫ colimit.pre _ (KsubUPtoQ _ _).op ≫ colimMap (τres _ _ _ _ _) by simpa
+    suffices _ = _ ≫ colimit.pre _ (KsubUPtoQ _ _).op ≫ colimMap (τres _ _ _) by simpa
     rw [ ← Category.assoc,← Category.assoc]
     have : colimit.ι (FU _ _ _) U ≫ colimit.pre (FU _ _ _ ) (KsubUPtoQ _ hpq).op =
   colimit.ι (FU _ F1 _) (op <| (KsubUPtoQ _ hpq).obj _ ) := by
