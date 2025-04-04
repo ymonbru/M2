@@ -136,7 +136,7 @@ lemma existsIntermed (h : K.carrier ⊆ U.carrier) : Nonempty ({ L //IsCompact L
 /-- The V such that K sub V sub Vbar sub U for X localy comapcts-/
 def V K : KsubU_cat K (trueCond) → KsubU_cat K (@relcCond X _ ) := by
   intro U
-  let L:=(Classical.choice (existsIntermed X K U.obj U.property.1)).val
+  let L := (Classical.choice (existsIntermed X K U.obj U.property.1)).val
   use ⟨interior L,@isOpen_interior X L _⟩
   constructor
   · exact (Classical.choice (existsIntermed X K U.obj U.property.1)).property.2.1

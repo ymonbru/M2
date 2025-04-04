@@ -105,14 +105,17 @@ def TerminalOpBotsubU : IsTerminal (op ⟨⊥ , by simp⟩ : (KsubU_cat (⊥ : C
 @[simps!]
 def shAlphaUpStarG : (Ksheaf X C) where
   carrier:= (AlphaUpStar).obj ((Sheaf.forget _ _).obj F)
-  ksh1:= by
+  ksh1 := by
     have : IsTerminal ((F.val).obj (op (⊥ : Opens X))) := by
       apply Sheaf.isTerminalOfBotCover F (⊥ : Opens X)
       intro _ hx
       rcases hx
     apply IsTerminal.ofIso this
     apply @asIso _ _ _ _ _ (isIso_ι_of_isTerminal (TerminalOpBotsubU X) (FU ⊥ ((Sheaf.forget C (of X)).obj F) trueCond))
-  ksh2:= by
+  ksh2 K1 K2 := by
+    #check Sheaf.isLimitPullbackCone F
+
+    --simp
     sorry
   ksh3 K := by
     --apply (Functor.Final.isColimitWhiskerEquiv _ _).toFun

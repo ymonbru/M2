@@ -14,27 +14,27 @@ noncomputable section
 
 universe u v w
 
-variable {C : Type u} [Category.{v} C]  [Small.{v, u} C]
+variable {C : Type u} [Category.{v,u} C]  [Small.{v, u} C]
 
 --variable [Limits.HasCoproducts (Type v)]
 
 
-variable (X:C)
+variable (X : C)
 
-variable (A: Type  v) [Ring A]
+variable (A : Type  v) [Ring A]
 
-variable (F:C ᵒᵖ ⥤ ModuleCat A)
+variable (F : Cᵒᵖ ⥤ ModuleCat A)
 
 variable (U : Presieve X)
 
 local notation "R" => Sieve.generate U
 
-def Y : Cᵒᵖ⥤Type v := ∐ (fun (Z : C) => ∐ (fun (_ : @U Z) => yoneda.obj Z))
+def Y : Cᵒᵖ ⥤ Type v := ∐ (fun (Z : C) => ∐ (fun (_ : @U Z) => yoneda.obj Z))
 
-def tau_Z_f (Z:C) (f: @U Z): yoneda.obj Z ⟶ (Sieve.functor R) where
+def tau_Z_f (Z : C) (f : @U Z): yoneda.obj Z ⟶ (Sieve.functor R) where
   app W a := ⟨(a ≫ f), Z, a, f, (f.2), by simp⟩
 
-def τ:  (Y X U) ⟶ (Sieve.functor R) := (Limits.Sigma.desc (fun (Z:C) => Limits.Sigma.desc fun (f : @U Z) => (tau_Z_f X U Z f)))
+def τ :  (Y X U) ⟶ (Sieve.functor R) := (Limits.Sigma.desc (fun (Z:C) => Limits.Sigma.desc fun (f : @U Z) => (tau_Z_f X U Z f)))
 
 /-lemma tau_epi: Epi (τ X U):= by
   constructor
