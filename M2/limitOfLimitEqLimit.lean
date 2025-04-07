@@ -52,8 +52,7 @@ def limFIa : Aᵒᵖ ⥤ F.pt where
   map_comp f g := by
     apply limit.hom_ext
     intro j
-    suffices limit.π (FIa i F (unop _)) ((i.map (g.unop ≫ f.unop)).obj j) ≫ eqToHom _ =
-  limit.π (FIa i F (unop _)) ((i.map f.unop).obj ((i.map g.unop).obj j)) ≫ eqToHom _ by simpa
+    suffices limit.π (FIa i F (unop _)) ((i.map (g.unop ≫ f.unop)).obj j) ≫ eqToHom _ = limit.π (FIa i F (unop _)) ((i.map f.unop).obj ((i.map g.unop).obj j)) ≫ eqToHom _ by simpa
 
     have : ((i.map (g.unop ≫ f.unop)).obj j) = ((i.map f.unop).obj ((i.map g.unop).obj j)) := by
       rw [i.map_comp]
@@ -63,29 +62,6 @@ def limFIa : Aᵒᵖ ⥤ F.pt where
     apply whisker_eq
     apply Eq.symm
     apply eqToHom_trans
-
-    /-exact
-      Eq.symm
-        (eqToHom_trans (this ▸ Eq.refl ((FIa i F (unop _)).obj ((i.map (g.unop ≫ f.unop)).obj j)))
-          (Eq.trans (congr_obj (FIaNaturalityIso.proof_1 i F f.unop) ((i.map g.unop).obj j))
-            (congr_obj (FIaNaturalityIso.proof_1 i F g.unop) j)))
-
-
-    apply eq_of_heq
-    apply heq_comp
-    · rfl
-    · rw [i.map_comp]
-      rfl
-    · rfl
-    · apply congr_arg_heq
-      rw [i.map_comp]
-      rfl
-    · apply HEq.trans
-      apply eqToHom_heq_id_cod
-      apply HEq.symm
-      apply eqToHom_heq_id_cod
-    --show_term (simp [i.map_comp]; congr; simp )
-    -- ça 'est vraiment pas beau...-/
 
 variable [HasLimitsOfSize.{v2, u2} F.pt]
 
@@ -111,7 +87,6 @@ def limLimFIaConeFcupIa : Cone (FCupIa i F) where
 def truc3π (s : Cone (FCupIa i F)) : (const ↑(i.obj a)).obj s.pt ⟶ FIa i F a where
   app x := s.π.app ((Sigma.incl a).obj x )
   naturality _ _ f:= by
-    beta_reduce
     exact s.π.naturality (((Sigma.incl a)).map f)
 
 @[simps]
@@ -165,7 +140,7 @@ end
 section -- pour avoir au moins une situation ou ce qui précède s'applique
 
 variable {X : Type u2} [TopologicalSpace X] [T2Space X] (K : Compacts X)
-variable {C : Type u2} [Category.{u2, u2} C] (F : (Opens X)ᵒᵖ ⥤ C)
+variable {C : Type u2} [Category.{u2, u2} C] [HasLimitsOfSize.{u2, u2, u2, u2} (Cat.of C)](F : (Opens X)ᵒᵖ ⥤ C)
 
 /-@[simps]
 def L1subL2supsup { L1 L2 : Compacts X} (f: L1 ⟶ L2) : (supSupK_cat L2 ) ⥤ (supSupK_cat L1) where
@@ -189,6 +164,9 @@ def iEx : (supSupK_cat K)ᵒᵖ  ⥤ Cat where
   obj L := Cat.of (KsubU_cat L.unop.obj trueCond)ᵒᵖ
   map f := Functor.op (K1subK2subU _ ((fullSubcategoryInclusion _ ).map f.unop))
 
+@[simps]
 def FEx : Cocone (iEx K) where
   pt := Cat.of C -- ça impose beaucoup de structure sur l'univers de C -> probablement à refaire
   ι := ⟨fun L => FU L.unop.obj F trueCond, by aesop⟩
+
+#check truc (iEx K) (FEx K F)

@@ -143,10 +143,9 @@ naturality K1 K2 i:= by
   intro U
 
   suffices colimit.ι (FU (unop K2) ((Presheaf.pushforward C (ofHom { toFun := f, continuous_toFun := _ })).obj F) trueCond)
-      (op ((K1subK2subU trueCond (unop K2) (unop K1) i.unop).obj (unop U))) ≫
+      (op ((K1subK2subU trueCond i.unop).obj (unop U))) ≫
     (Final.colimitIso (preimageRes proper_f (unop K2)).op
-        (FU ((preimageCompact proper_f).obj (unop K2)) F trueCond)).hom =
-  colimit.ι (FU (unop K1) ((Presheaf.pushforward C (ofHom { toFun := f, continuous_toFun := _ })).obj F) trueCond) U ≫
+        (FU ((preimageCompact proper_f).obj (unop K2)) F trueCond)).hom = colimit.ι (FU (unop K1) ((Presheaf.pushforward C (ofHom { toFun := f, continuous_toFun := _ })).obj F) trueCond) U ≫
     (Final.colimitIso (preimageRes proper_f (unop K1)).op
           (FU ((preimageCompact proper_f).obj (unop K1)) F trueCond)).hom ≫
       colimMap _ ≫ colimit.pre _ _ by simpa
@@ -164,7 +163,7 @@ naturality K1 K2 i:= by
   rw [this, colimit.ι_pre]
 
   --aesop? --suggestion bizare?
-  suffices colimit.ι _ (op ((preimageRes proper_f (unop K2)).obj ((K1subK2subU trueCond (unop K2) (unop K1) i.unop).obj (unop U)))) = colimit.ι _ (op ((K1subK2subU trueCond ((preimageCompact proper_f).obj (unop K2)) ((preimageCompact proper_f).obj (unop K1)) (homOfLE _ )).obj ((preimageRes proper_f (unop K1)).obj (unop U)))) by simpa
+  suffices colimit.ι _ (op ((preimageRes proper_f (unop K2)).obj ((K1subK2subU trueCond  i.unop).obj (unop U)))) = colimit.ι _ (op ((K1subK2subU trueCond (homOfLE _ )).obj ((preimageRes proper_f (unop K1)).obj (unop U)))) by simpa
 
   rfl
 

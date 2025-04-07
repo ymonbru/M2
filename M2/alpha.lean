@@ -77,7 +77,7 @@ variable (U₁ U₂ : Opens X) (f : U₁ ⟶ U₂)-- U₁ ⊆ U₂
 @[simps]
 def U2supU1supK : (UsupK_cat U₁) ⥤ (UsupK_cat U₂) where
   obj W := (⟨W.obj,Set.Subset.trans W.property (leOfHom f)⟩ : UsupK_cat _)
-  map _ := homOfLE (leOfHom _)
+  map i := homOfLE (leOfHom i)
 
 /-- The natural transformation of change of basis for the diagram GK-/
 @[simps]

@@ -81,7 +81,6 @@ def FpisCol : IsColimit (Fp p F) where
   s.ι.app _ ≫ ((Functor.const _ ).obj _ ).map (op (PsubOfpinK p K.unop )) by simpa
     apply s.ι.naturality
   uniq s m hm := by
-    beta_reduce
     rw [← hm (op _ )]
     suffices (Fp _ _).ι.app (op (pC2 p)) = 𝟙 _ by
       rw [this]

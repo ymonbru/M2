@@ -39,8 +39,9 @@ instance : Category (KsubU_cat K P) := FullSubcategory.category (KsubU K P)
 /-- The functor that sends opens that containt K2 to opens that contains K1-/
 @[simps]
 def K1subK2subU {K₁ K₂ : Compacts X} (f : K₁ ⟶ K₂): (KsubU_cat K₂ P) ⥤ (KsubU_cat K₁ P ) where
-  obj W := (⟨W.obj,Set.Subset.trans (leOfHom _ ) W.property.1 , W.property.2⟩)
-  map  _ := homOfLE (leOfHom _)
+  obj W := (⟨W.obj,Set.Subset.trans (leOfHom f ) W.property.1
+  , W.property.2⟩)
+  map i := homOfLE (leOfHom i)
 
 
 variable {P : Opens X → Prop } (axiomP : ∀ U1 U2, P U1 → P U2 → P (U1 ⊓ U2))
@@ -191,7 +192,7 @@ def closureFuncK : RelCN_cat K ⥤ supSupK_cat K where
     constructor
     exact U.property.1
     exact subset_closure ⟩
-  map _ :=  homOfLE <| closure_mono <| leOfHom _
+  map i :=  homOfLE <| closure_mono <| leOfHom i
 
 omit [LocallyCompactSpace X] in
 lemma containClosure (U : Opens X) (L : Compacts X) (h : U.carrier ⊆ L.carrier) : closure U.carrier ⊆ L.carrier := by
