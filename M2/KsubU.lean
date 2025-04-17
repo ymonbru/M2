@@ -176,7 +176,7 @@ instance : Nonempty (supSupK_cat K) := by
   have this2 : K.carrier ⊆ ⊤ := by
     intro _ _
     trivial
-  rcases (exists_compact_between K.isCompact this this2 ) with ⟨L,hL⟩
+  rcases (exists_compact_between K.isCompact this this2 ) with ⟨L, hL⟩
   use ⟨L, hL.1⟩
   use ⟨interior L,@isOpen_interior X L _⟩
   constructor
