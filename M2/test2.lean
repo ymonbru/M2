@@ -99,16 +99,43 @@ variable [HasLimitsOfSize.{v1, u1} D]
 
 #check limit (limFia iaSubC FcupIa )
 
-variable {repA : C → A} {repIa : (x : C) → i.obj (repA x)} (repSpec : (x : C) → (iaSubC.i (repA x)).obj (repIa x) ≅ x) --[IsFiltered C]
+structure repObj (x : C) where
+  a : A
+  ia : i.obj a
+  rep : (iaSubC.i a).obj ia ≅ x
+
+structure repHom {x y : C} (f : x ⟶ y) where
+  a : A
+  iaDom : i.obj a
+  iaCoDom : i.obj a
+  repDom : (iaSubC.i a).obj iaDom ≅ x
+  repCoDom : (iaSubC.i a).obj iaCoDom ≅ y
+  hom : iaDom ⟶ iaCoDom
+  rep : repDom.inv ≫(iaSubC.i a).map hom ≫ repCoDom.hom =  f
 
 
---variable {repAHom : {x y : C} → (f : x ⟶ y) → A} (repIaHomDom : {x y : C} → (f : x ⟶ y) → i.obj (repAHom f)) (repIaHomCoDom : {x y : C} → (f : x ⟶ y) → i.obj (repAHom f)) (repIaHom : {x y : C} → (f : x ⟶ y) → (repIaHomDom f) ⟶ (repIaHomCoDom f)) (repHomSpec : {x y : C} → (f : x ⟶ y))
-
+variable (repO : (x : C) → repObj iaSubC x)
+variable (repH : {x y : C} → ( f: x ⟶ y) → repHom iaSubC f)
 --def repAHom (x y : C) : A := repA<| IsFiltered.max x y
 
+variable (repCompat : (x : C) → (r1 r2 : repObj iaSubC x) → ∃ g : r1.a ⟶ r2.a, (i.map g).obj r1.ia = r2.ia ∨ ∃ g : r2.a ⟶ r1.a, (i.map g).obj r2.ia = r1.ia )
+
+@[simps]
+def repHtoD {x y : C} (f : x ⟶ y) (r : repHom iaSubC f) : (repObj iaSubC x) := ⟨r.a,r.iaDom,r.repDom⟩
+
+@[simps]
+def repHtoCd {x y : C} (f : x ⟶ y) (r : repHom iaSubC f) : (repObj iaSubC y) := ⟨r.a,r.iaCoDom,r.repCoDom⟩
+
+@[simps]
+def repCanO (a : A) (x : i.obj a) : repObj iaSubC ((iaSubC.i a).obj x) where
+  a := a
+  ia := x
+  rep := eqToIso rfl
 
 
-#check IsColimitF
+@[simp]
+lemma bidule2 {x : C}  (r s : repObj iaSubC x) : limit.π (limFia iaSubC FcupIa ) (op r.a) ≫ limit.π ((F iaSubC FcupIa).i r.a) r.ia ≫ FcupIa.map r.rep.hom = limit.π (limFia iaSubC FcupIa ) (op s.a) ≫ limit.π ((F iaSubC FcupIa).i s.a) s.ia ≫ FcupIa.map s.rep.hom := by
+  sorry
 
 
 
@@ -116,22 +143,33 @@ variable {repA : C → A} {repIa : (x : C) → i.obj (repA x)} (repSpec : (x : C
 @[simps]
 def limLimFiaConeFcupIaπ : (const C).obj (limit (limFia iaSubC FcupIa)) ⟶ FcupIa where
   app x := by
-    simp
+    let xr := repO x
 
-    --simp
-    --#check @h.desc _ _ (Cat.of D) (F iaSubC FcupIa)
-    --#check @h.fac _ _ (Cat.of D) (F iaSubC FcupIa)
-    --sorry
+    exact limit.π (limFia iaSubC FcupIa ) (op xr.a) ≫ limit.π ((F iaSubC FcupIa).i xr.a) xr.ia ≫ FcupIa.map xr.rep.hom
 
-
-
-
-    exact limit.π (limFia iaSubC FcupIa ) (op (repA x)) ≫ limit.π ((F iaSubC FcupIa).i (repA x)) (repIa x) ≫ FcupIa.map (repSpec x).hom
     --limit.π (limFia h3) (op (repA x)) ≫ limit.π (Fia (repA x)) (repIa x) ≫ (FiaFacIso h1 (repA x)).inv.app _ ≫ FcupIa.map (repSpec x).hom
   naturality x y f:= by
+    let fr := repH f
+    rw [bidule2 iaSubC FcupIa (repO y) (repHtoCd iaSubC f fr)]
+    rw [bidule2 iaSubC FcupIa (repO x) (repHtoD iaSubC f fr)]
 
-    simp
-    sorry
+    suffices limit.π (limFia iaSubC FcupIa) (op fr.a) ≫ limit.π ((F iaSubC FcupIa).i fr.a) fr.iaCoDom ≫ FcupIa.map fr.repCoDom.hom = limit.π (limFia iaSubC FcupIa) (op fr.a) ≫ limit.π ((F iaSubC FcupIa).i fr.a) fr.iaDom ≫ FcupIa.map fr.repDom.hom ≫ FcupIa.map f by simpa
+
+    apply whisker_eq
+    rw [← limit.w ((F iaSubC FcupIa).i fr.a) fr.hom]
+    rw [Category.assoc]
+
+    apply whisker_eq
+    suffices FcupIa.map ((iaSubC.i fr.a).map fr.hom) ≫ FcupIa.map fr.repCoDom.hom = FcupIa.map fr.repDom.hom ≫ FcupIa.map f by simpa [F]
+    repeat rw [← FcupIa.map_comp]
+    apply congr_arg
+    calc (iaSubC.i fr.a).map fr.hom ≫ fr.repCoDom.hom = fr.repDom.hom ≫ fr.repDom.inv ≫ (iaSubC.i fr.a).map fr.hom ≫ fr.repCoDom.hom := by simp
+      _ = fr.repDom.hom ≫ (fr.repDom.inv ≫ (iaSubC.i fr.a).map fr.hom ≫ fr.repCoDom.hom) := by simp
+      _ = fr.repDom.hom ≫ f := by rw [fr.rep]
+
+
+
+
     /-rcases f with ⟨f⟩
     suffices limit.π (limFIa i F) _ ≫ limit.π _ _ =
   limit.π _ _ ≫ _ ≫ _ by simpa
@@ -141,14 +179,13 @@ def limLimFiaConeFcupIaπ : (const C).obj (limit (limFia iaSubC FcupIa)) ⟶ Fcu
 @[simps!]
 def limLimFiaConeFcupIa : Cone FcupIa where
   pt := limit (limFia iaSubC FcupIa )
-  π := limLimFiaConeFcupIaπ iaSubC FcupIa repSpec
+  π := limLimFiaConeFcupIaπ iaSubC FcupIa repO repH
 
 @[simps]
 def truc3π (s : Cone FcupIa) : (const (i.obj a)).obj s.pt ⟶ (F iaSubC FcupIa).i a where
   app x := s.π.app ((iaSubC.i a).obj x)
   naturality x1 x2 f:= by
     simp [F]
-
 
 @[simps]
 def truc3 (s : Cone FcupIa) : Cone ((F iaSubC FcupIa).i a) where
@@ -168,25 +205,24 @@ def truc2 (s : Cone FcupIa ) : Cone (limFia iaSubC FcupIa) where
   pt := s.pt
   π := truc2π iaSubC FcupIa s
 
-def truc : IsLimit (limLimFiaConeFcupIa iaSubC FcupIa repSpec) where
+def truc : IsLimit (limLimFiaConeFcupIa iaSubC FcupIa repO repH) where
   lift s := limit.lift _ (truc2 iaSubC FcupIa s)
   uniq s (m : s.pt ⟶ limit (limFia iaSubC FcupIa)) hm:= by
     apply limit.hom_ext
     intro a
-    simp
-    --suffices m ≫ limit.π _ _ = limit.lift _ (truc3 iaSubC FcupIa s) by simpa
     apply limit.hom_ext
     intro x
-    simp
-    --suffices m ≫ limit.π _ _ ≫ limit.π _ _ = s.π.app ((iaSubC (unop _)).obj _) ≫ _ by simpa
+    suffices m ≫ limit.π (limFia iaSubC FcupIa) a ≫ limit.π ((F iaSubC FcupIa).i (unop a)) x = s.π.app ((iaSubC.i (unop a)).obj x) by simpa
+
     rw [← hm _]
-    simp
+
+    apply whisker_eq
+    have : limit.π (limFia iaSubC FcupIa) a ≫ limit.π ((F iaSubC FcupIa).i (unop a)) x = limit.π (limFia iaSubC FcupIa ) (op (repCanO iaSubC (unop a) x).a) ≫ limit.π ((F iaSubC FcupIa).i (repCanO iaSubC (unop a) x).a) (repCanO iaSubC (unop a) x).ia ≫ FcupIa.map (repCanO iaSubC (unop a) x).rep.hom := by simp [F]
+
+    rw [this, bidule2 iaSubC FcupIa (repCanO iaSubC a.unop x) (repO ((iaSubC.i (unop a)).obj x))]
+
     apply whisker_eq
     simp [F]
-    -- ça ça devrait se simplifier avec une bonne construction du premier truc.
-
-    sorry
-
 
 
 end
@@ -282,8 +318,9 @@ def chose2 : IsColimitF (iEx K) (KsubU_cat K trueCond)ᵒᵖ (chose K) where
   fac s L:= by
     apply CategoryTheory.Functor.ext
     intro U V f
-    · sorry --apply Functor.congr_hom
-    · simp; sorry
+    apply Functor.congr_hom
+    /-· sorry --apply Functor.congr_hom
+    · simp; sorry-/
   uniq s m hm := by
     apply CategoryTheory.Functor.ext
     intro U V f
