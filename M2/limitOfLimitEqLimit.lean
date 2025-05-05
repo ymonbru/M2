@@ -33,10 +33,10 @@ structure CoconeFunctor (F : A ⥤ Cat.{v2, u2}) where
   isoId : (x  : A) → (iso (𝟙 x)) = GIdIso F i x
   isoComp : {x y z: A } → (f : x ⟶ y) → (g : y ⟶ z) → (iso (f ≫ g) = FmapCompGIso F i iso f g)
 
-structure IsColimitF (t : CoconeFunctor B F) where
+/-structure IsColimitF (t : CoconeFunctor B F) where
   desc : {C : Cat.{v4, u4}} → (s : CoconeFunctor C F) → B ⥤ C
   fac : {C : Cat.{v4, u4}} → (s : CoconeFunctor C F) → (a : A) → (t.i a) ⋙ desc s = (s.i a)--probablement à transformer en iso plus tard
-  uniq : {C : Cat.{v4, u4}} → (s : CoconeFunctor C F) → (m : B ⥤ C) → (∀ (a : A), (t.i a) ⋙ m = (s.i a)) → m = desc s
+  uniq : {C : Cat.{v4, u4}} → (s : CoconeFunctor C F) → (m : B ⥤ C) → (∀ (a : A), (t.i a) ⋙ m = (s.i a)) → m = desc s-/
 
 variable {B : Type u3} [Category.{v3, u3} B] {C : Type u4} [Category.{v4, u4} C]
 
@@ -62,12 +62,12 @@ variable {i : A ⥤ Cat.{v4, u4}} (iaSubC : CoconeFunctor C i) (FcupIa : C ⥤ D
 
 def F : CoconeFunctor D i := CoconeFWhisker i iaSubC FcupIa
 
-variable (h : IsColimitF i C iaSubC)
+--variable (h : IsColimitF i C iaSubC)
 
-lemma bidule : FcupIa = @h.desc _ _ (Cat.of D) (F iaSubC FcupIa)  := by
+/-lemma bidule : FcupIa = @h.desc _ _ (Cat.of D) (F iaSubC FcupIa)  := by
   apply @h.uniq  _ _ (Cat.of D) (F iaSubC FcupIa)
   intro a
-  simp [F]
+  simp [F]-/
 
 variable (a : A)
 
@@ -137,7 +137,6 @@ def repCanO (a : A) (x : i.obj a) : repObj iaSubC ((iaSubC.i a).obj x) where
 /- If the representation r is a lifting of the representation s then the morphism limit.π _ ≫ limit.π _ is the same for r and s -/
 omit [∀ (a : A), HasLimitsOfSize.{v3, u3, v4, u4} ↑(i.obj a)] [HasLimitsOfSize.{v2, u2, v3, u3} D] in
 lemma limLimIndepOfLift {x : C}  (r s : repObj iaSubC x) (l : lifting iaSubC r s) : limit.π (limFia iaSubC FcupIa ) (op r.a) ≫ limit.π ((F iaSubC FcupIa).i r.a) r.ia ≫ FcupIa.map r.rep.hom = limit.π (limFia iaSubC FcupIa ) (op s.a) ≫ limit.π ((F iaSubC FcupIa).i s.a) s.ia ≫ FcupIa.map s.rep.hom := by
-
 
   rw [← limit.w (limFia iaSubC FcupIa) l.hom.op, Category.assoc]
   apply whisker_eq
