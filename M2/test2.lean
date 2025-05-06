@@ -316,9 +316,13 @@ def chose3 {C: Cat.{u1, u1}} (s: CoconeFunctor C (iEx K)) : (KsubU_cat K trueCon
 def chose2 : IsColimitF (iEx K) (KsubU_cat K trueCond)ᵒᵖ (chose K) where
   desc s := chose3 K s
   fac s L:= by
-    apply CategoryTheory.Functor.ext
+    apply CategoryTheory.Functor.ext (h_map := ?_)
+    sorry
+
+
     intro U V f
     apply Functor.congr_hom
+
     /-· sorry --apply Functor.congr_hom
     · simp; sorry-/
   uniq s m hm := by
