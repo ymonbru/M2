@@ -17,13 +17,13 @@ variable (F : (Compacts X)ᵒᵖ ⥤ C)
 def pinK : Set (Compacts X) := fun K => (p ∈ K)
 
 /-- the induced category by the property pinK-/
-def pinK_cat : Type w := FullSubcategory (pinK p)
+def pinK_cat : Type w := ObjectProperty.FullSubcategory (pinK p)
 
-instance : Category (pinK_cat p) := FullSubcategory.category (pinK p)
+instance : Category (pinK_cat p) := ObjectProperty.FullSubcategory.category (pinK p)
 
 /-- The diagram obtaind by considering F on the previous category-/
 @[simps!]
-def Fres : (pinK_cat p)ᵒᵖ ⥤ C := (fullSubcategoryInclusion (pinK p)).op.comp F
+def Fres : (pinK_cat p)ᵒᵖ ⥤ C := (ObjectProperty.ι (pinK p)).op.comp F
 
 /-- The functor that send a K-presheaf to it's stalk in p-/
 @[simps]

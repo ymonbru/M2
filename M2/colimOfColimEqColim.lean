@@ -10,10 +10,13 @@ section
 variable {A : Type u1} [Category.{v1, u1} A] {B : Type u3} [Category.{v3, u3} B]
 variable (F : A ⥤ Cat.{v2, u2})
 
+variable (a : A) (G : (a : A) → B ⥤ (F.obj a))
+#check G a ⋙ F.map (𝟙 a) ≅ G a
+
 @[simps!]
-def GIdIso (F : A ⥤ Cat.{v2, u2}) (G : (a : A) → (F.obj a) ⥤ B) (a : A) : (F.map (𝟙 _) ⋙ (G a) ≅ (G a)) := eqToIso (by
+def GIdIso (F : A ⥤ Cat.{v2, u2}) (G : (a : A) → B ⥤ (F.obj a)) (a : A) :  (G a) ⋙ (F.map (𝟙 a)) ≅ (G a) := eqToIso (by
   apply CategoryTheory.Functor.ext
-  intros _ _ _
+  intro b c f
   apply eq_of_heq
   apply (heq_eqToHom_comp_iff _ _ _).2
   apply (heq_comp_eqToHom_iff _ _ _).2
@@ -23,32 +26,31 @@ def GIdIso (F : A ⥤ Cat.{v2, u2}) (G : (a : A) → (F.obj a) ⥤ B) (a : A) : 
   · simp)
 
 @[simps!]
-def FmapCompGIso (F : A ⥤ Cat.{v2, u2}) (G : (a : A) → (F.obj a) ⥤ B) (iso : { a b : A} → (f : a ⟶ b) → (F.map f) ⋙ G b ≅ G a) {a b c : A } (f : a ⟶ b) (g :b ⟶ c) : F.map (f ≫ g) ⋙ G c ≅ G a := isoWhiskerRight (eqToIso (F.map_comp _ _)) (G c) ≪≫ associator (F.map f) (F.map g) (G c) ≪≫ isoWhiskerLeft (F.map f) (iso g) ≪≫ iso f
+def FmapCompGIso (F : A ⥤ Cat.{v2, u2}) (G : (a : A) → B ⥤ (F.obj a)) (iso : { a b : A} → (f : a ⟶ b) → G a ⋙ (F.map f) ≅ G b) {a b c : A } (f : a ⟶ b) (g :b ⟶ c) : G a ⋙ F.map (f ≫ g) ≅ G c := isoWhiskerLeft (G a) (eqToIso ( F.map_comp _ _)) ≪≫ ((G a).associator (F.map f) (F.map g)).symm ≪≫ isoWhiskerRight (iso f) (F.map g) ≪≫ iso g
 
 variable (B : Type u3) [Category.{v3, u3} B]
-structure CoconeFunctor (F : A ⥤ Cat.{v2, u2}) where
+structure ConeFunctor (F : A ⥤ Cat.{v2, u2}) where
 -- B n'est pas dans la structure pour eviter des soucis d'inference de type par la suite
-  i : (x : A) → (F.obj x) ⥤ B
-  iso : { x y : A} → (f : x ⟶ y) → (F.map f) ⋙ i y ≅ i x
+  i : (x : A) → B ⥤ (F.obj x)
+  iso : { x y : A} → (f : x ⟶ y) → i x ⋙ (F.map f) ≅ i y
   isoId : (x  : A) → (iso (𝟙 x)) = GIdIso F i x
   isoComp : {x y z: A } → (f : x ⟶ y) → (g : y ⟶ z) → (iso (f ≫ g) = FmapCompGIso F i iso f g)
 
-structure IsColimitF (t : CoconeFunctor B F) where
+/-structure IsColimitF (t : CoconeFunctor B F) where
   desc : {C : Cat.{v4, u4}} → (s : CoconeFunctor C F) → B ⥤ C
   fac : {C : Cat.{v4, u4}} → (s : CoconeFunctor C F) → (a : A) → (t.i a) ⋙ desc s = (s.i a)--probablement à transformer en iso plus tard
-  uniq : {C : Cat.{v4, u4}} → (s : CoconeFunctor C F) → (m : B ⥤ C) → (∀ (a : A), (t.i a) ⋙ m = (s.i a)) → m = desc s
+  uniq : {C : Cat.{v4, u4}} → (s : CoconeFunctor C F) → (m : B ⥤ C) → (∀ (a : A), (t.i a) ⋙ m = (s.i a)) → m = desc s-/
 
 variable {B : Type u3} [Category.{v3, u3} B] {C : Type u4} [Category.{v4, u4} C]
 
 @[simps]
-def  CoconeFWhisker (s : CoconeFunctor B F) (H : B ⥤ C) : CoconeFunctor C F where
-i x := s.i x ⋙ H
-iso f := (F.map f).associator  (s.i _) H ≪≫ (isoWhiskerRight (s.iso f) H)
-isoId _ := by
+def  ConeFWhisker (s : ConeFunctor C F) (H : B ⥤ C) : ConeFunctor B F where
+i x := H ⋙ s.i x
+iso f := H.associator (s.i _) (F.map f) ≪≫ isoWhiskerLeft H (s.iso f)
+isoId a := by
   ext
-  suffices H.map (eqToHom _ ) = eqToHom _ by simpa [s.isoId ]
-  apply eqToHom_map
-isoComp _ _ := by
+  simp [s.isoId]
+isoComp f g := by
   ext
   simp [s.isoComp]
 
@@ -58,9 +60,9 @@ section
 
 variable {A : Type u1} [Category.{v1, u1} A] {C : Type u2} [Category.{v2, u2} C] {D : Type u3} [Category.{v3, u3} D]
 
-variable {i : A ⥤ Cat.{v4, u4}} (iaSubC : CoconeFunctor C i) (FcupIa : C ⥤ D) (a : A)
+variable {i : A ⥤ Cat.{v4, u4}} (iaSubC : ConeFunctor C i) (FcupIa : C ⥤ D) (a : A)
 
-def F : CoconeFunctor D i := CoconeFWhisker i iaSubC FcupIa
+def F : ConeFunctor D i := ConeFWhisker i iaSubC FcupIa
 
 --variable (h : IsColimitF i C iaSubC)
 

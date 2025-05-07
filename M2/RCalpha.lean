@@ -23,7 +23,7 @@ variable {P Q : Opens X → Prop} (hpq : ∀ (U : Opens X), P U → Q U) (axiomP
 
 /-- The functor induced by P -> Q from the category of opens that contains K and satiffy P to the one that satisfy Q-/
 @[simps!]
-def KsubUPtoQ : (KsubU_cat K P) ⥤  (KsubU_cat K Q ):= FullSubcategory.map (fun _ => fun hP => ⟨hP.1, hpq _ hP.2⟩)
+def KsubUPtoQ : (KsubU_cat K P) ⥤  (KsubU_cat K Q ):= ObjectProperty.ιOfLE (fun _ => fun hP => ⟨hP.1, hpq _ hP.2⟩)
 
 --omit [HasPullbacks C] [HasColimits C] [HasLimits C]
 @[simp]
@@ -137,7 +137,7 @@ lemma existsIntermed (h : K.carrier ⊆ U.carrier) : Nonempty ({ L //IsCompact L
 def V K : KsubU_cat K (trueCond) → KsubU_cat K (@relcCond X _ ) := by
   intro U
   let L := (Classical.choice (existsIntermed X K U.obj U.property.1)).val
-  use ⟨interior L,@isOpen_interior X L _⟩
+  use ⟨interior L, isOpen_interior ⟩
   constructor
   · exact (Classical.choice (existsIntermed X K U.obj U.property.1)).property.2.1
   · apply IsCompact.of_isClosed_subset

@@ -20,7 +20,7 @@ variable (F : (Compacts X)ᵒᵖ ⥤ C) (K₁ :Compacts X) (K₂:Compacts X)
 
 /-- Taking the closure of a relatively compact subset gives a map from RelCN_cat to Compacts that is increasing, and the defines a functor on the underling categories-/
 @[simps!]
-def closureFunc : RelCN_cat K ⥤ (Compacts X)  := (closureFuncK K).comp (fullSubcategoryInclusion (supSupK K))
+def closureFunc : RelCN_cat K ⥤ (Compacts X)  := (closureFuncK K).comp (ObjectProperty.ι (supSupK K))
 
 /-- The Functor that represent the diagram composed of the F(overline{U}) together with the canonical maps-/
 @[simps!]
@@ -43,7 +43,7 @@ def FUbarToFK : Cocone (FUbar K F) := Cocone.mk _ <| (FUbarToFK_transNat K F)  �
 
 /-- The Functor that represent the diagram obtained by restricting F to the compacts that contain strictly K-/
 @[simps!]
-def FresSSK : (supSupK_cat K)ᵒᵖ ⥤ C := (fullSubcategoryInclusion (supSupK K)).op.comp F
+def FresSSK : (supSupK_cat K)ᵒᵖ ⥤ C := (ObjectProperty.ι (supSupK K)).op.comp F
 
 /-- The natural transformation that allows to define F(K) as a cocone of the diagram FresSSK-/
 @[simps]

@@ -17,7 +17,7 @@ variable (P : Opens X → Prop)
 
 /-- The diagram obtained by restricting F to the category KsubU-/
 @[simps!]
-def FU : (KsubU_cat K P)ᵒᵖ ⥤ C := Functor.comp (fullSubcategoryInclusion (KsubU K P)).op  F
+def FU : (KsubU_cat K P)ᵒᵖ ⥤ C := Functor.comp (ObjectProperty.ι (KsubU K P)).op  F
 
 /-- The natural transformation of change of basis for the diagram FU-/
 @[simps]
@@ -63,13 +63,13 @@ variable (U : Opens X) (G : (Compacts X)ᵒᵖ ⥤ C)
 def UsupK : Set (Compacts X) := fun (K:Compacts X) => (K : Set X) ⊆ U
 
 /-- The category induced by UsupK -/
-def UsupK_cat : Type w := FullSubcategory (UsupK U)
+def UsupK_cat : Type w := ObjectProperty.FullSubcategory (UsupK U)
 
-instance : Category (UsupK_cat U) := FullSubcategory.category (UsupK U)
+instance : Category (UsupK_cat U) := ObjectProperty.FullSubcategory.category (UsupK U)
 
 /-- The diagrom obtained by restricting G to the subcategory UsupK-/
 @[simps!]
-def GK : (UsupK_cat U)ᵒᵖ ⥤ C := Functor.comp (fullSubcategoryInclusion (UsupK U)).op  G
+def GK : (UsupK_cat U)ᵒᵖ ⥤ C := Functor.comp (ObjectProperty.ι (UsupK U)).op  G
 
 variable (U₁ U₂ : Opens X) (f : U₁ ⟶ U₂)-- U₁ ⊆ U₂
 
@@ -120,7 +120,7 @@ variable {F : (Opens X)ᵒᵖ⥤ C} {G : (Compacts X)ᵒᵖ ⥤ C} (τ : (AlphaU
 /-- The naturals maps from F(U) to the family of G(K) for K contained in U-/
 @[simps]
 def ConeFtoAG_NT : (Functor.const _ ).obj (F.obj (op U)) ⟶ GK U G where
-  app L := colimit.ι (FU (fullSubcategoryInclusion _ |>.op.obj _ ).unop _ <| trueCond) (op ⟨U,L.unop.property,rfl⟩) ≫ τ.app _
+  app L := colimit.ι (FU (ObjectProperty.ι _ |>.op.obj _ ).unop _ <| trueCond) (op ⟨U,L.unop.property,rfl⟩) ≫ τ.app _
 
   naturality _ L _ := by
     suffices _ = colimit.ι (FU _ _ _ ) (op ⟨U , _ ⟩) ≫ τ.app (op _ ) ≫ G.map _ by simpa

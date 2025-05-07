@@ -24,7 +24,7 @@ def KsubU : Set (Opens X) := fun (U:Opens _) => (K.carrier ⊆ U) ∧ P U
 def trueCond :Opens X → Prop:= λ _ => true
 
 /--The full subcategory induced by the property KsubU-/
-def KsubU_cat : Type u := FullSubcategory (KsubU K P)
+def KsubU_cat : Type u := ObjectProperty.FullSubcategory (KsubU K P)
 
 /-instance : SetLike (KsubU_cat K P) X where
   coe U:= U.obj.carrier
@@ -34,7 +34,7 @@ def KsubU_cat : Type u := FullSubcategory (KsubU K P)
     simp at h
     exact h-/
 
-instance : Category (KsubU_cat K P) := FullSubcategory.category (KsubU K P)
+instance : Category (KsubU_cat K P) := ObjectProperty.FullSubcategory.category (KsubU K P)
 
 /-- The functor that sends opens that containt K2 to opens that contains K1-/
 @[simps]
@@ -105,7 +105,7 @@ instance : Nonempty (RelCN_cat K) := by
     intro _ _
     trivial
   rcases (exists_compact_between K.isCompact this this2 ) with ⟨L,hL⟩
-  use ⟨interior L,@isOpen_interior X L _⟩
+  use ⟨interior L, isOpen_interior⟩
   constructor
   · exact hL.2.1
   · apply IsCompact.of_isClosed_subset hL.1 (isClosed_closure )
@@ -123,13 +123,13 @@ variable (K : Compacts X)
 
 def supSupK : Set (Compacts X) := fun (L : Compacts _) => (∃ (U: Opens _), (K.carrier ⊆ U.carrier) ∧ (U.carrier ⊆ L.carrier))
 
-def supSupK_cat : Type u:= FullSubcategory (supSupK K )
+def supSupK_cat : Type u:= ObjectProperty.FullSubcategory (supSupK K )
 
 lemma supSupKtoSupK (L : supSupK_cat K) : K.carrier ⊆ L.obj.carrier := by
   rcases L.property with ⟨U, hU1, hU2⟩
   exact hU1.trans hU2
 
-instance : Category (supSupK_cat K ) := FullSubcategory.category (supSupK K)
+instance : Category (supSupK_cat K ) := ObjectProperty.FullSubcategory.category (supSupK K)
 
 variable [T2Space.{u} X]
 
@@ -178,12 +178,12 @@ instance : Nonempty (supSupK_cat K) := by
     trivial
   rcases (exists_compact_between K.isCompact this this2 ) with ⟨L, hL⟩
   use ⟨L, hL.1⟩
-  use ⟨interior L,@isOpen_interior X L _⟩
+  use ⟨interior L, isOpen_interior⟩
   constructor
   · exact hL.2.1
   · exact interior_subset
 
-#check (fullSubcategoryInclusion (supSupK K) : (supSupK_cat K) ⥤ (Compacts X))
+#check (ObjectProperty.ι (supSupK K) : (supSupK_cat K) ⥤ (Compacts X))
 
 @[simp]
 def closureFuncK : RelCN_cat K ⥤ supSupK_cat K where

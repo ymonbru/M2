@@ -29,4 +29,5 @@ def KsheafPullback (F:Ksheaf Y C ) : Ksheaf X C where
   ksh1 := sorry
   ksh2 := by
     sorry
-  kshe3 := by
+  ksh3 := by
+    sorry
