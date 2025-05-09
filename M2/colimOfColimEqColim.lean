@@ -60,7 +60,7 @@ section
 
 variable {A : Type u1} [Category.{v1, u1} A] {C : Type u2} [Category.{v2, u2} C] {D : Type u3} [Category.{v3, u3} D]
 
-variable {i : A ⥤ Cat.{v4, u4}} (iaSubC : ConeFunctor C i) (FcupIa : C ⥤ D) (a : A)
+variable {i : A ⥤ Cat.{v4, u4}} (iaSubC : ConeFunctor C i) (FcupIa : D ⥤ C) (a : A)
 
 def F : ConeFunctor D i := ConeFWhisker i iaSubC FcupIa
 
@@ -73,19 +73,24 @@ def F : ConeFunctor D i := ConeFWhisker i iaSubC FcupIa
 
 variable (a : A)
 
-variable [(a : A) → HasLimitsOfSize.{v3, u3} (i.obj a)]
+
 
 noncomputable section
+variable [(a : A) → HasColimitsOfSize.{v3, u3} (i.obj a)]
+variable [HasColimitsOfSize.{v3, u3} C] [HasColimitsOfSize.{v4, u4} C]
 
-variable [HasLimitsOfSize.{v2, u2} D] [HasLimitsOfSize.{v4, u4} D]
+#check colimit (FcupIa )
 
-#check limit (FcupIa )
-
+#check  colimit ((F iaSubC FcupIa).i a)
 -- pas sur du op mais ça à l'air de marcher mieux
 @[simps]
-def limFia : Aᵒᵖ ⥤ D where
-  obj a := limit ((F iaSubC FcupIa).i a.unop)
-  map f := (limit.pre ((F iaSubC FcupIa).i _) (i.map f.unop)) ≫ ((HasLimit.isoOfNatIso ((F iaSubC FcupIa).iso f.unop)).hom )
+def colimFia : Aᵒᵖ ⥤ D where
+  obj a := colimit ((F iaSubC FcupIa).i a.unop)
+  map f := by
+    sorry
+
+
+  --(limit.pre ((F iaSubC FcupIa).i _) (i.map f.unop)) ≫ ((HasLimit.isoOfNatIso ((F iaSubC FcupIa).iso f.unop)).hom )
   map_id a := by
     ext
     rw [unop_id, Category.assoc, HasLimit.isoOfNatIso_hom_π, (F iaSubC FcupIa).isoId]

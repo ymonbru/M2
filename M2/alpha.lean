@@ -50,7 +50,7 @@ def AlphaUpStarP : ((Opens X)ᵒᵖ ⥤ C) ⥤ (Compacts X)ᵒᵖ ⥤ C where
 
 /-- The first version of α^* -/
 @[simps!]
-def AlphaUpStar : ((Opens X)ᵒᵖ ⥤ C)⥤ ((Compacts X)ᵒᵖ ⥤ C) := AlphaUpStarP (trueCond)
+def AlphaUpStar : ((Opens X)ᵒᵖ ⥤ C) ⥤ ((Compacts X)ᵒᵖ ⥤ C) := AlphaUpStarP (trueCond)
 
 end
 
