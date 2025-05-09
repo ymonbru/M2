@@ -71,40 +71,32 @@ def F : CoconeFunctor D i := CoconeFWhisker i iaSubC FcupIa
 
 variable (a : A)
 
-variable [(a : A) → HasLimitsOfSize.{v3, u3} (i.obj a)]
+--variable [(a : A) → HasLimitsOfSize.{v3, u3} (i.obj a)]
 
 noncomputable section
 
-variable [HasLimitsOfSize.{v2, u2} D] [HasColimitsOfSize.{v4, u4} D]
+variable [HasColimitsOfSize.{v2, u2} D] [HasColimitsOfSize.{v4, u4} D]
 
-#check limit (FcupIa )
+#check colimit (FcupIa )
 
 
 #check ((F iaSubC FcupIa).i a)
 -- pas sur du op mais ça à l'air de marcher mieux
 @[simps]
-def limFia : A ⥤ D where
+def colimFia : A ⥤ D where
   obj a := colimit ((F iaSubC FcupIa).i a)
   map f := (HasColimit.isoOfNatIso ((F iaSubC FcupIa).iso f).symm).hom ≫
         colimit.pre ((F iaSubC FcupIa).i _) (i.map f)
   map_id a := by
     ext
-    rw [ ← Category.assoc, HasColimit.isoOfNatIso_ι_hom, (F iaSubC FcupIa).isoId]
-    simp
-    refine colimit.eqToHom_comp_ι ((F iaSubC FcupIa).i a) ?_
-    r
-
-    simp_all only [comp_obj, Iso.symm_hom, GIdIso_inv, eqToHom_app, Category.assoc, colimit.ι_pre, Category.comp_id, F]
-    sorry
+    simp [ (F iaSubC FcupIa).isoId, colimit.eqToHom_comp_ι, i.map_id]
   map_comp f g := by
     ext
-    suffices limit.π _ _ ≫ _ = limit.π _ _ ≫ _ by simpa
-    rw [(F iaSubC FcupIa).isoComp]
-    simp
+    simp [(F iaSubC FcupIa).isoComp]
 
-variable [HasLimitsOfSize.{v1, u1} D]
+variable [HasColimitsOfSize.{v1, u1} D]
 
-#check limit (limFia iaSubC FcupIa )
+#check colimit (colimFia iaSubC FcupIa )
 
 structure repObj (x : C) where
   a : A
@@ -142,11 +134,15 @@ def repCanO (a : A) (x : i.obj a) : repObj iaSubC ((iaSubC.i a).obj x) where
   ia := x
   rep := eqToIso rfl
 
-/- If the representation r is a lifting of the representation s then the morphism limit.π _ ≫ limit.π _ is the same for r and s -/
-omit [∀ (a : A), HasLimitsOfSize.{v3, u3, v4, u4} ↑(i.obj a)] [HasLimitsOfSize.{v2, u2, v3, u3} D] in
-lemma limLimIndepOfLift {x : C}  (r s : repObj iaSubC x) (l : lifting iaSubC r s) : limit.π (limFia iaSubC FcupIa ) (op r.a) ≫ limit.π ((F iaSubC FcupIa).i r.a) r.ia ≫ FcupIa.map r.rep.hom = limit.π (limFia iaSubC FcupIa ) (op s.a) ≫ limit.π ((F iaSubC FcupIa).i s.a) s.ia ≫ FcupIa.map s.rep.hom := by
+variable (x : C) (r: repObj iaSubC x)
+#check
 
-  rw [← limit.w (limFia iaSubC FcupIa) l.hom.op, Category.assoc]
+/- If the representation r is a lifting of the representation s then the morphism limit.π _ ≫ limit.π _ is the same for r and s -/
+omit [∀ (a : A), HasColimitsOfSize.{v3, u3, v4, u4} ↑(i.obj a)] [HasColimitsOfSize.{v2, u2, v3, u3} D] in
+lemma limLimIndepOfLift {x : C}  (r s : repObj iaSubC x) (l : lifting iaSubC r s) : FcupIa.map r.rep.inv ≫ colimit.ι ((F iaSubC FcupIa).i r.a) r.ia ≫ colimit.ι (colimFia iaSubC FcupIa ) r.a = FcupIa.map s.rep.inv ≫ colimit.ι ((F iaSubC FcupIa).i s.a) s.ia ≫ colimit.ι (colimFia iaSubC FcupIa ) s.a := by
+  sorry
+
+  /-rw [← limit.w (limFia iaSubC FcupIa) l.hom.op, Category.assoc]
   apply whisker_eq
 
   have : r.rep.hom = ((iaSubC.iso l.hom).inv).app r.ia ≫ (iaSubC.i s.a).map l.liftIso.hom ≫ s.rep.hom := by
@@ -164,7 +160,7 @@ lemma limLimIndepOfLift {x : C}  (r s : repObj iaSubC x) (l : lifting iaSubC r s
     rw [← Category.assoc, ← Category.assoc]
     apply eq_whisker
     rw [← FcupIa.map_comp, ← FcupIa.map_comp, Category.assoc, this]
-  simp
+  simp-/
 
 variable (repLifting : {x : C} → (r s : repObj iaSubC x) → (t : repObj iaSubC x) × (lifting iaSubC r t) × (lifting iaSubC s t))
 
