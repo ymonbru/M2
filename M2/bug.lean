@@ -1,8 +1,8 @@
-import Mathlib
+import Mathlib.CategoryTheory.EqToHom
 
 
 
-
+/-
 class myQuiver (V : Type ) where
   Hom : V → V → Sort
 
@@ -76,18 +76,22 @@ lemma truc1 : G = G := by
   apply myExt
 
   intro U V f
-  apply myCongr_hom
+  apply myCongr_hom-/
 
 
 open CategoryTheory
 
-variable (B : Type ) [CategoryTheory.Category B]
+variable (B : Type ) [Category B]
 
 variable (G : B ⥤ B)
 
-
-lemma truc : G = G := by
+lemma foo : G = G := by
   apply CategoryTheory.Functor.ext --(h_map := ?_)
   --sorry
   intro U V f
   apply Functor.congr_hom
+
+lemma foo : G = G := by
+  apply CategoryTheory.Functor.ext
+  intro U V f
+  apply Functor.congr_hom rfl

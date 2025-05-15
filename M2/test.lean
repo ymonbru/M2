@@ -135,124 +135,117 @@ def repCanO (a : A) (x : i.obj a) : repObj iaSubC ((iaSubC.i a).obj x) where
   rep := eqToIso rfl
 
 variable (x : C) (r: repObj iaSubC x)
-#check
 
 /- If the representation r is a lifting of the representation s then the morphism limit.π _ ≫ limit.π _ is the same for r and s -/
-omit [∀ (a : A), HasColimitsOfSize.{v3, u3, v4, u4} ↑(i.obj a)] [HasColimitsOfSize.{v2, u2, v3, u3} D] in
-lemma limLimIndepOfLift {x : C}  (r s : repObj iaSubC x) (l : lifting iaSubC r s) : FcupIa.map r.rep.inv ≫ colimit.ι ((F iaSubC FcupIa).i r.a) r.ia ≫ colimit.ι (colimFia iaSubC FcupIa ) r.a = FcupIa.map s.rep.inv ≫ colimit.ι ((F iaSubC FcupIa).i s.a) s.ia ≫ colimit.ι (colimFia iaSubC FcupIa ) s.a := by
-  sorry
-
-  /-rw [← limit.w (limFia iaSubC FcupIa) l.hom.op, Category.assoc]
-  apply whisker_eq
-
-  have : r.rep.hom = ((iaSubC.iso l.hom).inv).app r.ia ≫ (iaSubC.i s.a).map l.liftIso.hom ≫ s.rep.hom := by
-    rw [← Category.assoc, ← l.compat]
+omit [HasColimitsOfSize.{v2, u2, v3, u3} D] in
+lemma colimColimIndepOfLift {x : C}  (r s : repObj iaSubC x) (l : lifting iaSubC r s) : FcupIa.map r.rep.inv ≫ colimit.ι ((F iaSubC FcupIa).i r.a) r.ia ≫ colimit.ι (colimFia iaSubC FcupIa ) r.a = FcupIa.map s.rep.inv ≫ colimit.ι ((F iaSubC FcupIa).i s.a) s.ia ≫ colimit.ι (colimFia iaSubC FcupIa ) s.a := by
+  rw [← colimit.w (colimFia iaSubC FcupIa) l.hom]
+  repeat rw [← Category.assoc]
+  apply eq_whisker
+  have : s.rep.inv = r.rep.inv ≫ ((iaSubC.iso l.hom).inv).app r.ia ≫ (iaSubC.i s.a).map l.liftIso.hom := by
+    rw [ ← l.compat]
     simp
 
-  rw [this, ← limit.w ((F iaSubC FcupIa).i s.a) l.liftIso.hom ]
-
-  suffices limit.π (iaSubC.i s.a ⋙ FcupIa) ((i.map l.hom).obj r.ia) ≫ _ = limit.π (iaSubC.i s.a ⋙ FcupIa) ((i.map l.hom).obj r.ia) ≫ _ by simpa [F]
-  -- ici suffices _ =_ by simp[F] suffit
+  rw [this]
+  simp [colimit.w ((F iaSubC FcupIa).i s.a) l.liftIso.inv, F]
 
   apply whisker_eq
-
-  suffices (iaSubC.iso l.hom).hom.app r.ia ≫  (iaSubC.iso l.hom).inv.app r.ia ≫ (iaSubC.i s.a).map l.liftIso.hom = (iaSubC.i s.a).map l.liftIso.hom  by
-    rw [← Category.assoc, ← Category.assoc]
-    apply eq_whisker
-    rw [← FcupIa.map_comp, ← FcupIa.map_comp, Category.assoc, this]
-  simp-/
+  apply whisker_eq
+  apply Eq.symm
+  exact colimit.w (iaSubC.i s.a ⋙ FcupIa) l.liftIso.hom
 
 variable (repLifting : {x : C} → (r s : repObj iaSubC x) → (t : repObj iaSubC x) × (lifting iaSubC r t) × (lifting iaSubC s t))
 
 
 include repLifting
-omit [∀ (a : A), HasLimitsOfSize.{v3, u3, v4, u4} ↑(i.obj a)] [HasLimitsOfSize.{v2, u2, v3, u3} D] in
+omit [HasColimitsOfSize.{v2, u2, v3, u3} D] in
 @[simp]
-theorem limLimIndep {x : C}  (r s : repObj iaSubC x) : limit.π (limFia iaSubC FcupIa ) (op r.a) ≫ limit.π ((F iaSubC FcupIa).i r.a) r.ia ≫ FcupIa.map r.rep.hom = limit.π (limFia iaSubC FcupIa ) (op s.a) ≫ limit.π ((F iaSubC FcupIa).i s.a) s.ia ≫ FcupIa.map s.rep.hom := Eq.trans (limLimIndepOfLift iaSubC FcupIa r (repLifting r s).fst (repLifting r s).snd.1)
-      (Eq.symm (limLimIndepOfLift iaSubC FcupIa s (repLifting r s).fst (repLifting r s).snd.2))
+theorem colimColimIndep {x : C}  (r s : repObj iaSubC x) : FcupIa.map r.rep.inv ≫ colimit.ι ((F iaSubC FcupIa).i r.a) r.ia ≫ colimit.ι (colimFia iaSubC FcupIa ) r.a = FcupIa.map s.rep.inv ≫ colimit.ι ((F iaSubC FcupIa).i s.a) s.ia ≫ colimit.ι (colimFia iaSubC FcupIa ) s.a := Eq.trans (colimColimIndepOfLift iaSubC FcupIa r (repLifting r s).fst (repLifting r s).snd.1)
+      (Eq.symm (colimColimIndepOfLift iaSubC FcupIa s (repLifting r s).fst (repLifting r s).snd.2))
 
 
 /-- The natural transformation involved in limLimFIaConeFcupIa-/
 @[simps]
-def limLimFiaConeFcupIaπ : (const C).obj (limit (limFia iaSubC FcupIa)) ⟶ FcupIa where
-  app x :=
-    let xr := repO x;
-    limit.π (limFia iaSubC FcupIa ) (op xr.a) ≫ limit.π ((F iaSubC FcupIa).i xr.a) xr.ia ≫ FcupIa.map xr.rep.hom
+def colimColimFiaCoconeFcupIaι : FcupIa ⟶ (const C).obj (colimit (colimFia iaSubC FcupIa)) where
+  app x := let xr := repO x; FcupIa.map xr.rep.inv ≫ colimit.ι ((F iaSubC FcupIa).i xr.a) xr.ia ≫ colimit.ι (colimFia iaSubC FcupIa ) xr.a
   naturality x y f:= by
     let fr := repH f
 
-    rw [limLimIndep iaSubC FcupIa repLifting (repO y) (repHtoCd iaSubC f fr)]
-    rw [limLimIndep iaSubC FcupIa repLifting (repO x) (repHtoD iaSubC f fr)]
+    rw [colimColimIndep iaSubC FcupIa repLifting (repO y) (repHtoCd iaSubC f fr)]
+    rw [colimColimIndep iaSubC FcupIa repLifting (repO x) (repHtoD iaSubC f fr)]
 
-    suffices limit.π (limFia iaSubC FcupIa) (op fr.a) ≫ limit.π ((F iaSubC FcupIa).i fr.a) fr.iaCoDom ≫ FcupIa.map fr.repCoDom.hom = limit.π (limFia iaSubC FcupIa) (op fr.a) ≫ limit.π ((F iaSubC FcupIa).i fr.a) fr.iaDom ≫ FcupIa.map fr.repDom.hom ≫ FcupIa.map f by simpa
+    suffices ((FcupIa.map f ≫ FcupIa.map fr.repCoDom.inv) ≫
+    colimit.ι ((F iaSubC FcupIa).i fr.a) fr.iaCoDom) ≫ colimit.ι (colimFia iaSubC FcupIa) fr.a = (FcupIa.map fr.repDom.inv ≫ colimit.ι ((F iaSubC FcupIa).i fr.a) fr.iaDom) ≫ colimit.ι (colimFia iaSubC FcupIa) fr.a by simpa
 
-    apply whisker_eq
-    rw [← limit.w ((F iaSubC FcupIa).i fr.a) fr.hom]
-    rw [Category.assoc]
+    apply eq_whisker
+    rw [← colimit.w ((F iaSubC FcupIa).i fr.a) fr.hom]
+    rw [← Category.assoc]
 
-    apply whisker_eq
-    suffices FcupIa.map ((iaSubC.i fr.a).map fr.hom) ≫ FcupIa.map fr.repCoDom.hom = FcupIa.map fr.repDom.hom ≫ FcupIa.map f by simpa [F]
-    repeat rw [← FcupIa.map_comp]
+    apply eq_whisker
+
+    suffices FcupIa.map (f ≫ fr.repCoDom.inv) = FcupIa.map (fr.repDom.inv ≫ ((iaSubC.i fr.a).map fr.hom)) by simpa [F]
+
     apply congr_arg
-    calc (iaSubC.i fr.a).map fr.hom ≫ fr.repCoDom.hom = fr.repDom.hom ≫ fr.repDom.inv ≫ (iaSubC.i fr.a).map fr.hom ≫ fr.repCoDom.hom := by simp
-      _ = fr.repDom.hom ≫ (fr.repDom.inv ≫ (iaSubC.i fr.a).map fr.hom ≫ fr.repCoDom.hom) := by simp
-      _ = fr.repDom.hom ≫ f := by rw [fr.rep]
+
+    slice_lhs 1 1 => rw [← fr.rep]
+    simp
 
 
 /-- The structure of cone over FCupIa on the limit of limit of FIa's-/
 @[simps!]
-def limLimFiaConeFcupIa : Cone FcupIa where
-  pt := limit (limFia iaSubC FcupIa )
-  π := limLimFiaConeFcupIaπ iaSubC FcupIa repO repH repLifting
+def colimColimFiaCoconeFcupIa : Cocone FcupIa where
+  pt := colimit (colimFia iaSubC FcupIa )
+  ι := colimColimFiaCoconeFcupIaι iaSubC FcupIa repO repH repLifting
 
 /--The natural transformation involved in fCupIaConeToFiaCone-/
 @[simps]
-def fCupIaConeToFiaConeπ (s : Cone FcupIa) : (const (i.obj a)).obj s.pt ⟶ (F iaSubC FcupIa).i a where
-  app x := s.π.app ((iaSubC.i a).obj x)
+def fCupIaCoconeToFiaCoconeι (s : Cocone FcupIa) : (F iaSubC FcupIa).i a ⟶ (const (i.obj a)).obj s.pt where
+  app x := s.ι.app ((iaSubC.i a).obj x)
   naturality x1 x2 f:= by
     simp [F]
 
 /-- The cone structure  over Fia of a cone over FcupIa-/
 @[simps]
-def fCupIaConeToFiaCone (s : Cone FcupIa) : Cone ((F iaSubC FcupIa).i a) where
+def fCupIaCoconeToFiaCocone (s : Cocone FcupIa) : Cocone ((F iaSubC FcupIa).i a) where
   pt := s.pt
-  π := fCupIaConeToFiaConeπ iaSubC FcupIa a s
+  ι := fCupIaCoconeToFiaCoconeι iaSubC FcupIa a s
 
 /--The natural transformation involved in fCupIaConeToLimFiaCone-/
 @[simps]
-def fCupIaConeToLimFiaConeπ (s : Cone FcupIa) : (const Aᵒᵖ).obj s.pt ⟶ limFia iaSubC FcupIa where
-  app a := limit.lift _ (fCupIaConeToFiaCone iaSubC FcupIa a.unop s)
+def fCupIaCoconeToColimFiaCoconeι (s : Cocone FcupIa) : colimFia iaSubC FcupIa ⟶ (const A).obj s.pt where
+  app a := colimit.desc _ (fCupIaCoconeToFiaCocone iaSubC FcupIa a s)
   naturality a b f:= by
-    apply limit.hom_ext
+    apply colimit.hom_ext
     intro j
     simp [F]
 
 /-- The cone structure  over lim FIa of a cone over FcupIa-/
 @[simps]
-def fCupIaConeToLimFiaCone (s : Cone FcupIa ) : Cone (limFia iaSubC FcupIa) where
+def fCupIaCoconeToColimFiaCocone (s : Cocone FcupIa ) : Cocone (colimFia iaSubC FcupIa) where
   pt := s.pt
-  π := fCupIaConeToLimFiaConeπ iaSubC FcupIa s
+  ι := fCupIaCoconeToColimFiaCoconeι iaSubC FcupIa s
 
 
 /-- The evidence that the limit of limit is a limit -/
 @[simps]
-def limLimIsLim : IsLimit (limLimFiaConeFcupIa iaSubC FcupIa repO repH repLifting) where
-  lift s := limit.lift _ (fCupIaConeToLimFiaCone iaSubC FcupIa s)
-  uniq s (m : s.pt ⟶ limit (limFia iaSubC FcupIa)) hm:= by
-    apply limit.hom_ext
+def colimColimIsColim : IsColimit (colimColimFiaCoconeFcupIa iaSubC FcupIa repO repH repLifting) where
+  desc s := colimit.desc _ (fCupIaCoconeToColimFiaCocone iaSubC FcupIa s)
+  uniq s (m : colimit (colimFia iaSubC FcupIa) ⟶ s.pt) hm:= by
+    apply colimit.hom_ext
     intro a
-    apply limit.hom_ext
+    apply colimit.hom_ext
     intro x
-    suffices m ≫ limit.π (limFia iaSubC FcupIa) a ≫ limit.π ((F iaSubC FcupIa).i (unop a)) x = s.π.app ((iaSubC.i (unop a)).obj x) by simpa
+    suffices colimit.ι ((F iaSubC FcupIa).i a) x ≫ colimit.ι (colimFia iaSubC FcupIa) a ≫ m = s.ι.app ((iaSubC.i a).obj x) by simpa
 
     rw [← hm _]
 
-    apply whisker_eq
-    have : limit.π (limFia iaSubC FcupIa) a ≫ limit.π ((F iaSubC FcupIa).i (unop a)) x = limit.π (limFia iaSubC FcupIa ) (op (repCanO iaSubC (unop a) x).a) ≫ limit.π ((F iaSubC FcupIa).i (repCanO iaSubC (unop a) x).a) (repCanO iaSubC (unop a) x).ia ≫ FcupIa.map (repCanO iaSubC (unop a) x).rep.hom := by simp [F]
+    repeat rw [← Category.assoc]
+    apply eq_whisker
 
-    rw [this, limLimIndep iaSubC FcupIa repLifting (repCanO iaSubC a.unop x) (repO ((iaSubC.i (unop a)).obj x))]
+    suffices colimit.ι ((F iaSubC FcupIa).i a) x ≫ colimit.ι (colimFia iaSubC FcupIa) a = FcupIa.map (repO ((iaSubC.i a).obj x)).rep.inv ≫ colimit.ι ((F iaSubC FcupIa).i (repO ((iaSubC.i a).obj x)).a) (repO ((iaSubC.i a).obj x)).ia ≫ colimit.ι (colimFia iaSubC FcupIa) (repO ((iaSubC.i a).obj x)).a by simpa
 
-    apply whisker_eq
+    rw [ ← colimColimIndep iaSubC FcupIa repLifting (repCanO iaSubC a x) (repO ((iaSubC.i a).obj x))]
+
     simp [F]
 
 
@@ -326,9 +319,9 @@ def FcupIaEx  : (KsubU_cat K trueCond)ᵒᵖ ⥤ D := (ObjectProperty.ι _ ).op 
 
 #check CoconeFWhisker _ (iaSubCEx K) (FcupIaEx K F)
 
-variable [HasLimitsOfSize.{u1, u1, u2, u2} D]
+variable [HasColimitsOfSize.{u1, u1, u2, u2} D]
 
-#check limFia (iaSubCEx K) (FcupIaEx K F)
+#check colimFia (iaSubCEx K) (FcupIaEx K F)
 
 variable [LocallyCompactSpace X]
 
@@ -419,6 +412,6 @@ def repLiftingEx {U : (KsubU_cat K trueCond)ᵒᵖ}  (r s : repObj (iaSubCEx K) 
   · apply liftingToSupRight
 
 
-#check limLimIsLim (iaSubCEx K) (FcupIaEx K F) (repOEx K) (repHEx K) (repLiftingEx K)
+#check colimColimIsColim (iaSubCEx K) (FcupIaEx K F) (repOEx K) (repHEx K) (repLiftingEx K)
 
 --#lint

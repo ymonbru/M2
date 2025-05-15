@@ -1,5 +1,6 @@
 import M2.Ksheaves
 import M2.alpha
+import M2.colimOfColimEqColim
 import Mathlib.Topology.Sheaves.Presheaf
 import Mathlib.Topology.Sheaves.Sheaf
 import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
@@ -9,13 +10,14 @@ import Mathlib.CategoryTheory.Limits.Fubini
 import Mathlib.CategoryTheory.Limits.Final
 
 
+
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite TopCat TopCat.Presheaf
 open ZeroObject
 
-universe u v w-- Pas de w à cause des faisceaux
+universe u v w
 
-variable (X: Type w) [TopologicalSpace X] [T2Space X]
-variable (C : Type u) [Category.{v, u} C] [HasColimitsOfSize.{w,w} C] [HasLimitsOfSize.{w,w} C] [HasColimits C]
+variable (X: Type w) [TopologicalSpace X] [T2Space X] [LocallyCompactSpace X]
+variable (C : Type u) [Category.{v, u} C] [HasColimitsOfSize.{w,w} C] [HasLimitsOfSize.{w,w} C] [HasColimitsOfSize.{w,w} C]
 
 variable (G: Ksheaf X C) (F:Sheaf C (of X))
 
@@ -101,6 +103,27 @@ def TerminalOpBotsubU : IsTerminal (op ⟨⊥ , by simp⟩ : (KsubU_cat (⊥ : C
     rcases hx
 
 
+def truc4 : (Opens X)ᵒᵖ ⥤ C := by exact ((Sheaf.forget C (of X)).obj F)
+variable (K : Compacts X)
+
+
+@[simps]
+def AlphaUpFIsoColimFSubU : (FresSSK K (AlphaUpStar.obj ((Sheaf.forget C (of X)).obj F))) ≅ colimFia  (iaSubCEx K) (FcupIaEx K (truc4 _ _ F)) where
+  hom := ⟨fun _ => colimMap (eqToHom rfl),fun _ _ _ => by
+    apply colimit.hom_ext
+    intro
+    simp [_root_.F]⟩
+  inv := ⟨fun _ => colimMap (eqToHom rfl),fun _ _ _ => by
+    apply colimit.hom_ext
+    intro
+    simp [_root_.F]⟩
+
+
+@[simps]
+def truc7 {K :Compacts X} : (FLToFK K (AlphaUpStar.obj ((Sheaf.forget C (of X)).obj F))) ≅ (Cocones.precomposeEquivalence (AlphaUpFIsoColimFSubU _ _ _ _ )).functor.obj (fCupIaCoconeToColimFiaCocone _ _ (colimit.cocone (FcupIaEx K (truc4 _ _ F)))) where
+  hom := ⟨𝟙 (colimit (FU K ((Sheaf.forget C (of X)).obj F) trueCond)), by aesop⟩
+  inv := ⟨𝟙 (colimit (FcupIaEx K (truc4 X C F))), by aesop⟩
+
 
 @[simps!]
 def shAlphaUpStarG : (Ksheaf X C) where
@@ -118,48 +141,12 @@ def shAlphaUpStarG : (Ksheaf X C) where
     --simp
     sorry
   ksh3 K := by
-    --apply (Functor.Final.isColimitWhiskerEquiv _ _).toFun
+    apply Limits.IsColimit.ofIsoColimit _ (truc7 X _ _ ).symm
+    apply IsColimit.ofPreservesCoconeInitial
 
-    #check FresSSK K (AlphaUpStar.obj ((Sheaf.forget C (of X)).obj F))
-
-
-
-
-    let Fp := (Sheaf.forget C (of X)).obj F
-    let truc  := ((Functor.const _).obj (FU K Fp trueCond) : (supSupK_cat K)ᵒᵖ  ⥤ (KsubU_cat K trueCond)ᵒᵖ ⥤ C)
-
-    let machin := colimitUncurryIsoColimitCompColim truc
+    exact colimIsColimColim _ _ (repOEx K) (repHEx K) (repLiftingEx K)
 
 
-    sorry
-
-
-
-
-
-
-    /-constructor
-    · sorry
-    · sorry
-    · intro s
-      unfold FresSSK AlphaUpStar AlphaUpStarP at s
-      simp at s
-      simp
-      have L : (supSupK_cat K)ᵒᵖ := sorry
-
-      apply CategoryStruct.comp _
-      exact s.ι.app L
-      simp
-
-      --have truc : (FU K ((Sheaf.forget C (of X)).obj F) trueCond) ⟶ (FU (unop L).obj ((Sheaf.forget C (of X)).obj F) trueCond) := by sorry
-
-      have : colimit (((K1subK2subU trueCond K (unop L).obj sorry).op).comp (FU K ((Sheaf.forget C (of X)).obj F) trueCond)) = colimit (FU (unop L).obj ((Sheaf.forget C (of X)).obj F) trueCond) := by rfl--sorry
-
-      rw [← this]
-
-      --argh c'est le mauvais sens-/
-
-#check lim.comp lim
 
 @[simps]
 def shAlphaUpStar : Sheaf C (of X) ⥤ (Ksheaf X C)  where
