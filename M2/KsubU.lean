@@ -71,8 +71,14 @@ lemma IsCofilteredKsubU : IsCofilteredOrEmpty (KsubU_cat K P) where
     use InfInLeftKSU K axiomP U1 U2
     rfl
 
-end
+instance : IsCofiltered (KsubU_cat K trueCond) where
+  toIsCofilteredOrEmpty := IsCofilteredKsubU K fun _ _ _ ↦ congrFun rfl
+  nonempty := by
+    use ⊤
+    simp
 
+
+end
 
 section
 variable [T2Space X]
@@ -128,6 +134,24 @@ def supSupK_cat : Type u:= ObjectProperty.FullSubcategory (supSupK K )
 lemma supSupKtoSupK (L : supSupK_cat K) : K.carrier ⊆ L.obj.carrier := by
   rcases L.property with ⟨U, hU1, hU2⟩
   exact hU1.trans hU2
+
+lemma supSupKtoKsubInt (L : supSupK_cat K) : K.carrier ⊆ interior L.obj.carrier := by
+  rcases L.property with ⟨U, hU1, hU2⟩
+  intro _ hx
+  use U
+  constructor
+  constructor
+  · exact U.isOpen
+  · exact hU2
+  · exact hU1 hx
+
+noncomputable def supSupKToKsubU ( L : supSupK_cat K) : KsubU_cat K trueCond where
+  obj := Classical.choose L.property
+  property := by
+    constructor
+    · exact (Classical.choose_spec L.property).1
+    · rfl
+
 
 instance : Category (supSupK_cat K ) := ObjectProperty.FullSubcategory.category (supSupK K)
 

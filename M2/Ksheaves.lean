@@ -71,7 +71,6 @@ noncomputable def FUbarEquivFL : IsColimit (FUbarToFK K F) ≃ IsColimit (FLToFK
 --open ZeroObject
 noncomputable section
 
-
 /-
 /--The canonical map in (Compacts X)ᵒᵖ induced by K1 ⊆ K1 ⊔ K2-/
 def toSupLeft : op (K₁ ⊔ K₂) ⟶ op K₁ := opHomOfLE le_sup_left

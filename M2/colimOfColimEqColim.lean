@@ -66,7 +66,6 @@ variable {A : Type u1} [Category.{v1, u1} A] {C : Type u2} [Category.{v2, u2} C]
 variable {i : A ⥤ Cat.{v4, u4}} (iaSubC : CoconeFunctor C i) (FcupIa : C ⥤ D) (a : A)
 
 /-- The cocone induced by applying FcupIa to the diagram i. It's not a @[simp] so that simp try to find solution without unfolding it (for exemple in the def colimFia)-/
-
 def F : CoconeFunctor D i := CoconeFWhisker i iaSubC FcupIa
 
 --variable (h : IsColimitF i C iaSubC)
@@ -241,57 +240,66 @@ def fCupIaCoconeToColimFiaCocone (s : Cocone FcupIa ) : Cocone (colimFia iaSubC 
 
 
 variable [HasColimitsOfSize.{v1, u1} D]
+
 /-- The evidence that the colimit of colimit is a colimit over the "union of indexes"-/
 @[simps]
-def colimColimIsColim : IsColimit (colimColimFiaCoconeFcupIa iaSubC FcupIa repO repH repLifting (colimit.cocone (colimFia iaSubC FcupIa))) where
-  desc s := colimit.desc _ (fCupIaCoconeToColimFiaCocone iaSubC FcupIa s)
-  fac s x:= by
+def colimColimIsColim (s : Cocone (colimFia iaSubC FcupIa)) (hs : IsColimit s) : IsColimit (colimColimFiaCoconeFcupIa iaSubC FcupIa repO repH repLifting s) where
+  desc t :=hs.desc (fCupIaCoconeToColimFiaCocone iaSubC FcupIa t)
+  fac s x := by
     simp [F]
-  uniq s (m : colimit (colimFia iaSubC FcupIa) ⟶ s.pt) hm:= by
-    apply colimit.hom_ext
+  uniq t (m : s.pt ⟶ t.pt) hm := by
+    apply hs.uniq (fCupIaCoconeToColimFiaCocone iaSubC FcupIa t)
     intro a
+
     apply colimit.hom_ext
     intro x
-    suffices colimit.ι ((F iaSubC FcupIa).i a) x ≫ colimit.ι (colimFia iaSubC FcupIa) a ≫ m = s.ι.app ((iaSubC.i a).obj x) by simpa
+
+    suffices colimit.ι ((F iaSubC FcupIa).i a) x ≫ s.ι.app a ≫ m = t.ι.app ((iaSubC.i a).obj x) by simpa
 
     rw [← hm _]
 
     repeat rw [← Category.assoc]
     apply eq_whisker
 
-    suffices FcupIa.map (repCanO iaSubC a x).rep.inv ≫
-    colimit.ι (iaSubC.i (repCanO iaSubC a x).a ⋙ FcupIa) (repCanO iaSubC a x).ia ≫
-      (colimit.cocone (colimFia iaSubC FcupIa)).ι.app (repCanO iaSubC a x).a =
-  FcupIa.map (repO ((iaSubC.i a).obj x)).rep.inv ≫
-    colimit.ι (iaSubC.i (repO ((iaSubC.i a).obj x)).a ⋙ FcupIa) (repO ((iaSubC.i a).obj x)).ia ≫
-      (colimit.cocone (colimFia iaSubC FcupIa)).ι.app (repO ((iaSubC.i a).obj x)).a by
-      simp_all [F]
+    suffices colimit.ι (iaSubC.i a ⋙ FcupIa) x ≫ s.ι.app a = FcupIa.map (repO ((iaSubC.i a).obj x)).rep.inv ≫ colimit.ι (iaSubC.i (repO ((iaSubC.i a).obj x)).a ⋙ FcupIa) (repO ((iaSubC.i a).obj x)).ia ≫ s.ι.app (repO ((iaSubC.i a).obj x)).a by simpa [F]
 
-    exact colimColimIndep iaSubC FcupIa repLifting (colimit.cocone (colimFia iaSubC FcupIa)) (repCanO iaSubC a x) (repO ((iaSubC.i a).obj x))
+    rw [← colimColimIndep iaSubC FcupIa repLifting s (repCanO iaSubC a x) (repO ((iaSubC.i a).obj x))]
+    simp
 
 
 variable [HasColimitsOfSize.{v2, u2} D]
 
 /- The evidence that the colimit over the "union of indexes" is the colimit of the colimit-/
 @[simps]
-def colimIsColimColim : IsColimit (fCupIaCoconeToColimFiaCocone iaSubC FcupIa (colimit.cocone FcupIa)) where
-  desc s := colimit.desc _ (colimColimFiaCoconeFcupIa iaSubC FcupIa repO repH repLifting s)
-  fac s a := by
-    apply colimit.hom_ext
-    intro
-    suffices FcupIa.map (repO ((iaSubC.i a).obj _)).rep.inv ≫
-    colimit.ι (iaSubC.i (repO ((iaSubC.i a).obj _)).a ⋙ FcupIa) (repO ((iaSubC.i a).obj _)).ia ≫
-      s.ι.app (repO ((iaSubC.i a).obj _)).a =
-  colimit.ι (iaSubC.i a ⋙ FcupIa) _ ≫ s.ι.app a by simp [F]; assumption
-
-    rw [ ← colimColimIndep iaSubC FcupIa repLifting s (repCanO iaSubC a _) (repO ((iaSubC.i a).obj _))]
-    simp
-  uniq s (m : colimit FcupIa ⟶ s.pt) hm := by
+def colimIsColimColim ( s : Cocone FcupIa) (hs : IsColimit s): IsColimit (fCupIaCoconeToColimFiaCocone iaSubC FcupIa s) where
+  desc t := hs.desc (colimColimFiaCoconeFcupIa iaSubC FcupIa repO repH repLifting t)
+  fac t a := by
     apply colimit.hom_ext
     intro x
+    suffices FcupIa.map (repO ((iaSubC.i a).obj x)).rep.inv ≫
+    colimit.ι (iaSubC.i (repO ((iaSubC.i a).obj x)).a ⋙ FcupIa) (repO ((iaSubC.i a).obj x)).ia ≫
+      t.ι.app (repO ((iaSubC.i a).obj x)).a =
+  colimit.ι ((F iaSubC FcupIa).i a) x ≫ t.ι.app a by simpa
+
+    rw [ ← colimColimIndep iaSubC FcupIa repLifting t (repCanO iaSubC a _) (repO ((iaSubC.i a).obj _))]
+    simp [F]
+  uniq t (m : s.pt ⟶ t.pt) hm := by
+    apply hs.uniq (colimColimFiaCoconeFcupIa iaSubC FcupIa repO repH repLifting  t)
+    intro
     simp [ ← hm _, F]
 
-variable (G: A ⥤ D) (Giso : G ≅ colimFia iaSubC FcupIa)
+/-variable (G: A ⥤ D) (Giso : G ≅ colimFia iaSubC FcupIa) (s : Cocone G) (t : Cocone (colimFia iaSubC FcupIa)) ( ht : IsColimit t)
+
+def truc (h : s ≅ (Cocones.precomposeEquivalence Giso ).functor.obj t) : IsColimit s := by
+
+  apply Limits.IsColimit.ofIsoColimit _ h.symm
+  apply IsColimit.ofPreservesCoconeInitial
+
+
+
+
+  sorry
+  --apply colimIsColimColim _ _ (repOEx K) (repHEx K) (repLiftingEx K) _-/
 
 
 
@@ -381,7 +389,7 @@ variable (repCompat : (x : C) → (r1 r2 : repObj iaSubC x) → ∃ g : r1.a ⟶
 @[simps]
 def repOEx (U : (KsubU_cat K trueCond)ᵒᵖ) : (repObj (iaSubCEx K) U ) where
   a := by
-    let ⟨L,hL⟩ := Classical.choice (existsIntermed X K U.unop.obj U.unop.property.1)
+    let ⟨L,hL⟩ := Classical.choice (existsIntermedKAndU X K U.unop.obj U.unop.property.1)
     apply op
     use ⟨L, hL.1⟩
     use ⟨interior L, isOpen_interior⟩
@@ -390,7 +398,7 @@ def repOEx (U : (KsubU_cat K trueCond)ᵒᵖ) : (repObj (iaSubCEx K) U ) where
     exact interior_subset
   ia := op ⟨U.unop.obj, by
       constructor
-      exact (Classical.choice (existsIntermed X K U.unop.obj U.unop.property.1)).2.2.2
+      exact (Classical.choice (existsIntermedKAndU X K U.unop.obj U.unop.property.1)).2.2.2
       rfl⟩
   rep := eqToIso rfl
 
@@ -400,7 +408,7 @@ def repHEx {U V : (KsubU_cat K trueCond)ᵒᵖ} (f : U ⟶ V) : repHom (iaSubCEx
   iaDom := ⟨U.unop.obj, by
     constructor
     apply Set.Subset.trans _ (leOfHom f.unop)
-    exact (Classical.choice (existsIntermed X K V.unop.obj V.unop.property.1)).2.2.2
+    exact (Classical.choice (existsIntermedKAndU X K V.unop.obj V.unop.property.1)).2.2.2
     simp⟩
   iaCoDom := (repOEx K V).ia
   repDom := Iso.refl _

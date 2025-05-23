@@ -1,4 +1,3 @@
-import M2.Ksheaves
 import M2.alpha
 import M2.colimOfColimEqColim
 import Mathlib.Topology.Sheaves.Presheaf
@@ -6,20 +5,19 @@ import Mathlib.Topology.Sheaves.Sheaf
 import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
 import Mathlib.CategoryTheory.Adjunction.Restrict
 import Mathlib.Topology.Sheaves.Stalks
-import Mathlib.CategoryTheory.Limits.Fubini
+--import Mathlib.CategoryTheory.Limits.Fubini
 import Mathlib.CategoryTheory.Limits.Final
-
-
+import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
 
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite TopCat TopCat.Presheaf
 open ZeroObject
 
-universe u v w
+universe u v w z
 
-variable (X: Type w) [TopologicalSpace X] [T2Space X] [LocallyCompactSpace X]
-variable (C : Type u) [Category.{v, u} C] [HasColimitsOfSize.{w,w} C] [HasLimitsOfSize.{w,w} C] [HasColimitsOfSize.{w,w} C]
+variable (X : Type w) [TopologicalSpace X] [T2Space X] [LocallyCompactSpace X]
+variable (C : Type u) [Category.{v, u} C] [HasLimitsOfSize.{w,w} C] [HasColimitsOfSize.{w,w} C]
 
-variable (G: Ksheaf X C) (F:Sheaf C (of X))
+variable (G : Ksheaf X C) (F : Sheaf C (of X))
 
 noncomputable section
 
@@ -37,40 +35,6 @@ theorem KshToSh: TopCat.Presheaf.IsSheaf  ((AlphaDownStar).obj (G.carrier) : Pre
     sorry
   · sorry
   · sorry
-
-
-
-
-
-  /-apply (isSheaf_iff_isSheafOpensLeCover _).2
-  unfold IsSheafOpensLeCover
-  intro i U
-  simp
-  apply Nonempty.intro
-  apply @IsLimit.mk _ _ _ _ _ _ _ _ _
-
-  intro s
-  repeat sorry-/
-
-  /-unfold SheafCondition.opensLeCoverCocone AlphaDownStar AlphaDownStarG --iSup
-  simp
-
-  apply CategoryStruct.comp _
-
-  apply limit.lift
-  apply Cone.mk s.pt
-  apply NatTrans.mk
-  sorry
-  intro K
-  simp
-  unfold GK
-  simp
-  let f:= s.π.app sorry
-  unfold AlphaDownStar AlphaDownStarG at f
-  simp at f
-
-  sorry
-  repeat sorry-/
 
 
 @[simps]
@@ -103,12 +67,72 @@ def TerminalOpBotsubU : IsTerminal (op ⟨⊥ , by simp⟩ : (KsubU_cat (⊥ : C
     rcases hx
 
 
-def truc4 : (Opens X)ᵒᵖ ⥤ C := by exact ((Sheaf.forget C (of X)).obj F)
+variable (K1 K2 : Compacts X)
+
+def presheafFunctor : (Opens X)ᵒᵖ ⥤ C := by exact ((Sheaf.forget C (of X)).obj F)
 variable (K : Compacts X)
+
+@[simps]
+def truc2 (U : (KsubU_cat K1 trueCond) × (KsubU_cat K2 trueCond)) : WalkingCospan ⥤ (Opens X) ᵒᵖ  where
+  obj x := match x with
+    |.left => op U.1.obj
+    |.right => op  U.2.obj
+    |.one => op (U.1.obj ⊓ U.2.obj)
+  map {x y } f :=
+    match f with
+      | WalkingCospan.Hom.inl => op (homOfLE inf_le_left)
+      | WalkingCospan.Hom.inr => op (homOfLE inf_le_right)
+      | WalkingCospan.Hom.id z => op (𝟙 _)
+
+@[simps]
+def truc3 {U V : (KsubU_cat K1 trueCond) × (KsubU_cat K2 trueCond)} (f : U ⟶ V) : truc2 _ _ _ V ⟶ truc2 _ _ _ U where
+  app x := match x with
+    |.left => op f.1
+    |.right => op f.2
+    |.one => op (homOfLE (inf_le_inf (leOfHom f.1) (leOfHom f.2)))
+
+
+def truc : ((KsubU_cat K1 trueCond) × (KsubU_cat K2 trueCond)) ᵒᵖ  ⥤ (WalkingCospan ⥤ C) where
+  obj U := truc2 _ _ _ U.unop ⋙  presheafFunctor _ _ F
+  map {U V} f:= whiskerRight (truc3 _ _ _ f.unop) (presheafFunctor X C F)
+  map_id _ := by
+    ext x
+    match x with
+    | _ =>
+      suffices (presheafFunctor X C F).map _ = 𝟙 _ by simpa
+      rw [← (presheafFunctor X C F).map_id]
+      rfl
+  map_comp f g := by
+    ext x
+    match x with
+      | _ =>
+        suffices (presheafFunctor X C F).map _ = (presheafFunctor X C F).map _ ≫ (presheafFunctor X C F).map _ by simpa
+        rw [← (presheafFunctor X C F).map_comp]
+        rfl
+
+instance truc4 : IsFiltered ((KsubU_cat K1 trueCond) × (KsubU_cat K2 trueCond)) ᵒᵖ := by sorry
+
+
+#check small_lift
+
+---variable [HasColimitsOfSize.{w} (Type z)]
+
+instance truc5 : Small.{u} ((KsubU_cat K1 trueCond) × (KsubU_cat K2 trueCond)) ᵒᵖ := by
+  sorry
+
+variable (FF : TopCat.Sheaf (Type z) (of X))
+
+#check colimitLimitIso (truc X _ FF K1 K2 ).flip
+
+
+
+
+
+
 
 
 @[simps]
-def AlphaUpFIsoColimFSubU : (FresSSK K (AlphaUpStar.obj ((Sheaf.forget C (of X)).obj F))) ≅ colimFia  (iaSubCEx K) (FcupIaEx K (truc4 _ _ F)) where
+def AlphaUpFIsoColimFSubU : (FresSSK K (AlphaUpStar.obj ((Sheaf.forget C (of X)).obj F))) ≅ colimFia  (iaSubCEx K) (FcupIaEx K (presheafFunctor _ _ F)) where
   hom := ⟨fun _ => colimMap (eqToHom rfl),fun _ _ _ => by
     apply colimit.hom_ext
     intro
@@ -120,9 +144,9 @@ def AlphaUpFIsoColimFSubU : (FresSSK K (AlphaUpStar.obj ((Sheaf.forget C (of X))
 
 
 @[simps]
-def truc7 {K :Compacts X} : (FLToFK K (AlphaUpStar.obj ((Sheaf.forget C (of X)).obj F))) ≅ (Cocones.precomposeEquivalence (AlphaUpFIsoColimFSubU _ _ _ _ )).functor.obj (fCupIaCoconeToColimFiaCocone _ _ (colimit.cocone (FcupIaEx K (truc4 _ _ F)))) where
+def FLToKIsoToColimColim {K :Compacts X} : (FLToFK K (AlphaUpStar.obj ((Sheaf.forget C (of X)).obj F))) ≅ (Cocones.precomposeEquivalence (AlphaUpFIsoColimFSubU _ _ _ _ )).functor.obj (fCupIaCoconeToColimFiaCocone _ _ (colimit.cocone (FcupIaEx K (presheafFunctor _ _ F)))) where
   hom := ⟨𝟙 (colimit (FU K ((Sheaf.forget C (of X)).obj F) trueCond)), by aesop⟩
-  inv := ⟨𝟙 (colimit (FcupIaEx K (truc4 X C F))), by aesop⟩
+  inv := ⟨𝟙 (colimit (FcupIaEx K (presheafFunctor X C F))), by aesop⟩
 
 
 @[simps!]
@@ -136,22 +160,27 @@ def shAlphaUpStarG : (Ksheaf X C) where
     apply IsTerminal.ofIso this
     apply @asIso _ _ _ _ _ (isIso_ι_of_isTerminal (TerminalOpBotsubU X) (FU ⊥ ((Sheaf.forget C (of X)).obj F) trueCond))
   ksh2 K1 K2 := by
+
+    #check colimitLimitIso
+    unfold AlphaUpStar AlphaUpStarP AlphaUpStarF
+    unfold SquareSuptoInf
     #check Sheaf.isLimitPullbackCone F
 
     --simp
     sorry
   ksh3 K := by
-    apply Limits.IsColimit.ofIsoColimit _ (truc7 X _ _ ).symm
+    apply Limits.IsColimit.ofIsoColimit _ (FLToKIsoToColimColim  X _ _ ).symm
     apply IsColimit.ofPreservesCoconeInitial
 
-    exact colimIsColimColim _ _ (repOEx K) (repHEx K) (repLiftingEx K)
+    apply colimIsColimColim _ _ (repOEx K) (repHEx K) (repLiftingEx K) _
+    exact colimit.isColimit (FcupIaEx K (presheafFunctor X C F))
 
 
 
 @[simps]
 def shAlphaUpStar : Sheaf C (of X) ⥤ (Ksheaf X C)  where
-  obj G:= shAlphaUpStarG X C G
-  map f:= (AlphaUpStar).map ((Sheaf.forget _ _).map f)
+  obj G := shAlphaUpStarG X C G
+  map f := (AlphaUpStar).map ((Sheaf.forget _ _).map f)
 
 
 --Restrict the adjunction

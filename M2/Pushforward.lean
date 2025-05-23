@@ -1,6 +1,7 @@
 import Mathlib.Topology.Maps.Proper.Basic
 import Mathlib.Topology.Sheaves.Functors
 import M2.alpha_K_sheaf
+import M2.lemmeTopologique
 
 
 universe u v w
@@ -8,7 +9,7 @@ universe u v w
 open CategoryTheory Limits TopologicalSpace Compacts Opposite Functor TopCat
 
 
-variable {X Y : Type w} [TopologicalSpace X] [T2Space X] [TopologicalSpace Y] [T2Space Y]
+variable {X Y : Type w} [TopologicalSpace X] [T2Space X] [TopologicalSpace Y] [T2Space Y] [LocallyCompactSpace Y]
 
 variable {f : X → Y} (proper_f : IsProperMap f)
 
@@ -24,7 +25,7 @@ def preimageCompact : Compacts Y ⥤ Compacts X where
 @[simps!]
 def preimageOpen : Opens Y ⥤ Opens X := (Opens.map (ofHom ( ContinuousMap.mk f proper_f.toContinuous)) )
 
-variable ( F : (Compacts X)ᵒᵖ ⥤ C) (K : Compacts Y) --[LocallyCompactSpace X]
+variable ( F : (Compacts X)ᵒᵖ ⥤ C) (K : Compacts Y) [LocallyCompactSpace X]
 
 /-def preimageRes : RelCN_cat K ⥤ RelCN_cat ((preimageCompact proper_f).obj K) where
   obj U := by
@@ -61,14 +62,18 @@ def preimageResSubSub : supSupK_cat K ⥤ supSupK_cat ((preimageCompact proper_f
   map _ := (preimageCompact proper_f).map _
 
 
+
 instance : (preimageResSubSub proper_f K).Initial := by
     apply (Functor.initial_iff_of_isCofiltered _).2
     constructor
     · intro L
-    --lemme de topologie de Pardon
-    --visiblement c'est plus compliqué que juste appliquer le lemme..
+      let closed_f := (IsProperMap.isClosedMap proper_f)
 
-      sorry
+      use existsIntermedFrepKAndLCompact closed_f K L.obj.carrier (supSupKtoKsubInt _ L)
+
+      apply Nonempty.intro
+      apply homOfLE
+      exact existsIntermedFrepKAndLSpec closed_f K L.obj.carrier (supSupKtoKsubInt _ L)
     · intro _ U _ _
       use U
       use 𝟙 _
@@ -125,8 +130,25 @@ instance : (preimageRes proper_f K).Initial := by
     apply (Functor.initial_iff_of_isCofiltered _).2
     constructor
     · intro U
-      -- lemme de topologie de Pardon
-      sorry
+      let closed_f := (IsProperMap.isClosedMap proper_f)
+
+      have : f ⁻¹' ↑K ⊆ interior U.obj.carrier := by
+        have : interior U.obj.carrier = U.obj.carrier := by
+          refine interior_eq_iff_isOpen.mpr U.obj.isOpen
+        rw [this]
+        exact U.property.1
+
+      let L := existsIntermedFrepKAndLCompact closed_f K U.obj.carrier this
+
+      use supSupKToKsubU _ L
+
+      apply Nonempty.intro
+      apply homOfLE
+
+      apply Set.Subset.trans _ (existsIntermedFrepKAndLSpec closed_f K U.obj.carrier this)
+      simp [preimageOpen, Opens.map]
+      apply Set.preimage_mono
+      exact (Classical.choose_spec L.property).2
     · intro _ U _ _
       use U
       use 𝟙 _

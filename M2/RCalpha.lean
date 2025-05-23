@@ -129,25 +129,25 @@ def AlphaUpStarRc : ((Opens X)ᵒᵖ ⥤ C) ⥤ (Compacts X)ᵒᵖ ⥤ C := Alph
 --hpq is trivial and #lint complain if an explicit proof is given
 
 omit [T2Space X] in
-lemma existsIntermed (h : K.carrier ⊆ U.carrier) : Nonempty ({ L //IsCompact L ∧ K.carrier ⊆ interior L ∧ L ⊆ U.carrier}) := by
-  rcases (exists_compact_between K.isCompact U.isOpen h ) with ⟨L,hL⟩
+lemma existsIntermedKAndU (h : K.carrier ⊆ U.carrier) : Nonempty ({ L //IsCompact L ∧ K.carrier ⊆ interior L ∧ L ⊆ U.carrier}) := by
+  let ⟨L,hL⟩ := (exists_compact_between K.isCompact U.isOpen h )
   exact Nonempty.intro ⟨L,hL⟩
 
 /-- The V such that K sub V sub Vbar sub U for X localy comapcts-/
 def V K : KsubU_cat K (trueCond) → KsubU_cat K (@relcCond X _ ) := by
   intro U
-  let L := (Classical.choice (existsIntermed X K U.obj U.property.1)).val
+  let L := (Classical.choice (existsIntermedKAndU X K U.obj U.property.1)).val
   use ⟨interior L, isOpen_interior ⟩
   constructor
-  · exact (Classical.choice (existsIntermed X K U.obj U.property.1)).property.2.1
+  · exact (Classical.choice (existsIntermedKAndU X K U.obj U.property.1)).property.2.1
   · apply IsCompact.of_isClosed_subset
-    · exact (Classical.choice (existsIntermed X K U.obj U.property.1)).property.1
+    · exact (Classical.choice (existsIntermedKAndU X K U.obj U.property.1)).property.1
     · apply isClosed_closure
     · intro _ ha
       apply ha
       constructor
       · apply IsCompact.isClosed
-        exact (Classical.choice (existsIntermed X _ U.obj U.property.1)).property.1
+        exact (Classical.choice (existsIntermedKAndU X _ U.obj U.property.1)).property.1
       · apply interior_subset
 
 lemma V_spec : ∀ K,∀ U, (V X K U).obj.carrier ⊆ U.obj:= by
@@ -155,7 +155,7 @@ lemma V_spec : ∀ K,∀ U, (V X K U).obj.carrier ⊆ U.obj:= by
   unfold V
   apply Set.Subset.trans
   apply interior_subset
-  exact (Classical.choice (existsIntermed X _ _ U.property.1)).property.2.2
+  exact (Classical.choice (existsIntermedKAndU X _ _ U.property.1)).property.2.2
 
 /-- The evidence that AlphaUpStarRc X C  and AlphaUpStar are isomorphics -/
 def AlphaUpStarToRc :  AlphaUpStarRc C X ≅ AlphaUpStar :=  IsoAlphaUpPtoQ _ (λ _ _ => rfl) (axiomPrc ) (V X) (V_spec
