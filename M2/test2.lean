@@ -4,16 +4,105 @@ open CategoryTheory Limits
 
 universe u1 v1 u2 v2 u3 v3 u4 v4
 
-variable (A : Type u1) [Category.{v1, u1} A] (B : Type u2) [Category.{v2, u2} B] (C :Type u3) [Category.{v3,u3} C] [IsFiltered B]
+variable {C : Type u1} [Category.{v1} C]
+variable {J : Type u2} [Category.{v2} J]
+variable {K : Type u3} [Category.{v3} K]
+variable [HasLimitsOfShape J C] [HasColimitsOfShape K C]
+variable [PreservesLimitsOfShape J (colim : (K ⥤ C) ⥤ _)]
 
-variable [HasLimitsOfShape A C]  [HasColimitsOfShape B C]
 
-variable (i : A ⥤ Cat.{v4,u4}) (F : A ⥤ B ⥤ C)
+variable {F : J ⥤ K ⥤ C}
 
-variable (limF : Cone F)
+variable (limF : Cone F) (colimF : Cocone F.flip) (colimLimF : Cocone limF.pt) (limColimF : Cone colimF.pt)
 
-def truc : A ⥤ C where
-  obj a := by
+variable (hLimF : IsLimit limF) (hColimF : IsColimit colimF) (hColimLimF : IsColimit colimLimF) (hLimColimF : IsLimit limColimF)
 
-    sorry
-  map := by sorry
+/-- For any j, the natural transformation from F(j) to colimF.pt(j)-/
+@[simps]
+def FjToColimFj (j : J) : F.obj j ⟶ (Functor.const K).obj (colimF.pt.obj j) where
+  app x := (colimF.ι.app x).app j
+  naturality x y f := by
+
+    have : (F.obj j).map f ≫ (colimF.ι.app y).app j = (F.flip.map f ≫ colimF.ι.app y).app j := by
+      rfl
+    rw [this, colimF.ι.naturality]
+    rfl
+
+
+@[simps]
+def truc3 (j : J) : Cocone limF.pt := ⟨ colimF.pt.obj j, limF.π.app j ≫ ( FjToColimFj _ _ )⟩
+
+/-- The natural transformation involved in ConeOverColimLimF-/
+@[simps]
+def ConeOverColimLimFπ : (Functor.const J).obj colimLimF.pt ⟶ colimF.pt where
+  app j := hColimLimF.desc (truc3 _ _ _)
+  naturality i j f := by
+    suffices hColimLimF.desc (truc3 _ _ _) ≫ colimF.pt.map f = hColimLimF.desc (truc3 _ _ _) by simp [this]
+    apply hColimLimF.uniq (truc3 _ _ _)
+    intro x
+    suffices (limF.π.app i).app x ≫ (colimF.ι.app x).app i ≫ colimF.pt.map f = (limF.π.app j).app x ≫ (colimF.ι.app x).app j by simpa
+    have : colimF.pt.map f = (((Functor.const K).obj colimF.pt).obj x).map f := by simp
+    rw [this, ← (colimF.ι.app x).naturality ]
+
+    suffices limF.π.app i ≫ F.map f = limF.π.app j by
+      rw [← this, ← Category.assoc]
+      rfl
+    rw [ ← limF.π.naturality ]
+    simp
+
+
+/-- The cone structure over coliLimF.pt -/
+@[simp]
+def ConeOverColimLimF : Cone colimF.pt where
+  pt := colimLimF.pt
+  π := ConeOverColimLimFπ _ _ _ hColimLimF
+
+/-- Translate an isomorphism of cones into an isomorphism between the undeling points-/
+@[simp]
+def IsoConeToIsoPt {F : J ⥤ C} {s t : Cone F} (h : s ≅ t) : s.pt ≅ t.pt where
+  hom := h.hom.hom
+  inv := h.inv.hom
+  hom_inv_id := by
+    calc h.hom.hom ≫ h.inv.hom = (h.hom ≫ h.inv).hom := by rfl
+      _ = 𝟙 s.pt := by simp
+  inv_hom_id := by
+    calc h.inv.hom ≫ h.hom.hom = (h.inv ≫ h.hom).hom := by rfl
+      _ = 𝟙 t.pt := by simp
+
+/-- Translate an isomorphism of cocones into an isomorphism between the undeling points-/
+@[simp]
+def IsoCoconeToIsoPt {F : J ⥤ C} {s t : Cocone F} (h : s ≅ t) : s.pt ≅ t.pt where
+  hom := h.hom.hom
+  inv := h.inv.hom
+  hom_inv_id := by
+    calc h.hom.hom ≫ h.inv.hom = (h.hom ≫ h.inv).hom := by rfl
+      _ = 𝟙 s.pt := by simp
+  inv_hom_id := by
+    calc h.inv.hom ≫ h.hom.hom = (h.inv ≫ h.hom).hom := by rfl
+      _ = 𝟙 t.pt := by simp
+
+/-- The isomorphism between limcolim F and colimLimF for any cone and cocones.
+It's composition of (colimitLimitIso F) and the canonicals isomorphisms-/
+noncomputable def limColimFPtIsoColimLimFPt : limColimF.pt ≅ colimLimF.pt := (IsoConeToIsoPt (IsLimit.uniqueUpToIso hLimColimF (limit.isLimit colimF.pt)) ≪≫ HasLimit.isoOfNatIso ( IsoCoconeToIsoPt (IsColimit.uniqueUpToIso hColimF (colimit.isColimit F.flip))) ≪≫ (colimitLimitIso F).symm ≪≫ HasColimit.isoOfNatIso ( IsoConeToIsoPt (IsLimit.uniqueUpToIso hLimF (limit.isLimit F))).symm ≪≫ IsoCoconeToIsoPt (IsColimit.uniqueUpToIso hColimLimF (colimit.isColimit limF.pt)).symm)
+
+noncomputable def IsLimitConeOfColimF : IsLimit (ConeOverColimLimF _ colimF colimLimF (hColimLimF) ) where
+  lift s := hLimColimF.lift s ≫ (limColimFPtIsoColimLimFPt _ _ _ _ hLimF hColimF hColimLimF hLimColimF).hom
+  fac s j := by
+    rw [ ← hLimColimF.fac s j, Category.assoc]
+    apply whisker_eq
+    suffices (ConeOverColimLimF  limF colimF colimLimF hColimLimF).π.app j = (limColimFPtIsoColimLimFPt limF colimF colimLimF limColimF hLimF hColimF hColimLimF hLimColimF).inv ≫ limColimF.π.app j by
+      rw [this]
+      simp
+    apply Eq.symm
+    apply hColimLimF.uniq (truc3 limF colimF j)
+    intro
+    simp [limColimFPtIsoColimLimFPt]
+  uniq s (m : s.pt ⟶ colimLimF.pt) hm := by
+    rw [← hLimColimF.uniq s (m ≫ (limColimFPtIsoColimLimFPt _ _ _ _ hLimF hColimF hColimLimF hLimColimF).inv)]
+    · simp
+    · intro j
+      rw [← hm j, Category.assoc]
+      apply whisker_eq
+      apply hColimLimF.uniq (truc3 limF colimF j)
+      intro
+      simp [limColimFPtIsoColimLimFPt]
