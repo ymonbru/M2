@@ -119,7 +119,7 @@ partial def BFS_step (stateStored : Queue (List α)) (lt : List (triangle α)) (
 def BFS (depState endState: List α ) (lt : List (triangle α)) : HashMap (List α) (Option <| List α × rwTriangle α) :=
 
   let stateStored := Queue.empty.enqueue depState
-  let explored := HashMap.empty.insert depState none
+  let explored := HashMap.emptyWithCapacity.insert depState none
   BFS_step α stateStored lt endState explored
 
 open Lean Elab Tactic
