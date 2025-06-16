@@ -163,7 +163,7 @@ instance : Top (KsubU_cat K1 trueCond) where
 def truc4DescCoconeLeftι : (K1subK2subU trueCond (homOfLE inf_le_left)).op ⋙ (ObjectProperty.ι (KsubU (K1 ⊓ K2) trueCond)).op ⋙ presheafFunctor X C F ⟶ (Functor.const (KsubU_cat K1 trueCond)ᵒᵖ).obj (s.pt.obj .left) where
   app U := (s.ι.app  (op ⟨U.unop, ⊤⟩)).app .left
   naturality U V f:= by
-    simp
+    suffices (presheafFunctor X C F).map (homOfLE _).op ≫ (s.ι.app (op (unop V, ⊤))).app WalkingCospan.left = (s.ι.app (op (unop U, ⊤))).app WalkingCospan.left by simpa
     have : ((truc X C F K1 K2).obj (op (unop U, ⊤))).map (WalkingCospan.Hom.id WalkingCospan.left) ≫ (s.ι.app (op (unop U, ⊤))).app WalkingCospan.left = (s.ι.app (op (unop U, ⊤))).app WalkingCospan.left := by
       rw [(s.ι.app (op (unop U, ⊤))).naturality (WalkingCospan.Hom.id .left)]
       simp
