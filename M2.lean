@@ -10,3 +10,5 @@ import M2.alpha_K_sheaf
 import M2.alphaup_and_stalk
 import M2.RCalpha
 import M2.Pushforward
+
+import M2.CommDiagTactic.Exemples
