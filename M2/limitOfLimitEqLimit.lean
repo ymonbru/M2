@@ -33,10 +33,10 @@ structure CoconeFunctor (F : A ⥤ Cat.{v2, u2}) where
   isoId : (x  : A) → (iso (𝟙 x)) = GIdIso F i x
   isoComp : {x y z: A } → (f : x ⟶ y) → (g : y ⟶ z) → (iso (f ≫ g) = FmapCompGIso F i iso f g)
 
-structure IsColimitF (t : CoconeFunctor B F) where
+/-structure IsColimitF (t : CoconeFunctor B F) where
   desc : {C : Cat.{v4, u4}} → (s : CoconeFunctor C F) → B ⥤ C
   fac : {C : Cat.{v4, u4}} → (s : CoconeFunctor C F) → (a : A) → (t.i a) ⋙ desc s = (s.i a)--probablement à transformer en iso plus tard
-  uniq : {C : Cat.{v4, u4}} → (s : CoconeFunctor C F) → (m : B ⥤ C) → (∀ (a : A), (t.i a) ⋙ m = (s.i a)) → m = desc s
+  uniq : {C : Cat.{v4, u4}} → (s : CoconeFunctor C F) → (m : B ⥤ C) → (∀ (a : A), (t.i a) ⋙ m = (s.i a)) → m = desc s-/
 
 variable {B : Type u3} [Category.{v3, u3} B] {C : Type u4} [Category.{v4, u4} C]
 
@@ -252,7 +252,7 @@ def limLimIsLim : IsLimit (limLimFiaConeFcupIa iaSubC FcupIa repO repH repLiftin
     simp [F]
 
 
-
+/-
 --test pour voir si C peut être une colimite
 
 #check IsColimitF i _ iaSubC
@@ -288,7 +288,7 @@ def truc : IsColimitF i _ iaSubC where
   fac := by
 
     sorry
-  uniq := sorry
+  uniq := sorry-/
 
 
 
@@ -334,7 +334,7 @@ variable (repCompat : (x : C) → (r1 r2 : repObj iaSubC x) → ∃ g : r1.a ⟶
 @[simps]
 def repOEx (U : (KsubU_cat K trueCond)ᵒᵖ) : (repObj (iaSubCEx K) U ) where
   a := by
-    let ⟨L,hL⟩ := Classical.choice (existsIntermed X K U.unop.obj U.unop.property.1)
+    let ⟨L,hL⟩ := Classical.choice (existsIntermedKAndU X K U.unop.obj U.unop.property.1)
     apply op
     use ⟨L, hL.1⟩
     use ⟨interior L, isOpen_interior⟩
@@ -343,7 +343,7 @@ def repOEx (U : (KsubU_cat K trueCond)ᵒᵖ) : (repObj (iaSubCEx K) U ) where
     exact interior_subset
   ia := op ⟨U.unop.obj, by
       constructor
-      exact (Classical.choice (existsIntermed X K U.unop.obj U.unop.property.1)).2.2.2
+      exact (Classical.choice (existsIntermedKAndU X K U.unop.obj U.unop.property.1)).2.2.2
       rfl⟩
   rep := eqToIso rfl
 
@@ -353,7 +353,7 @@ def repHEx {U V : (KsubU_cat K trueCond)ᵒᵖ} (f : U ⟶ V) : repHom (iaSubCEx
   iaDom := ⟨U.unop.obj, by
     constructor
     apply Set.Subset.trans _ (leOfHom f.unop)
-    exact (Classical.choice (existsIntermed X K V.unop.obj V.unop.property.1)).2.2.2
+    exact (Classical.choice (existsIntermedKAndU X K V.unop.obj V.unop.property.1)).2.2.2
     simp⟩
   iaCoDom := (repOEx K V).ia
   repDom := Iso.refl _

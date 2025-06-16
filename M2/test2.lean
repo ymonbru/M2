@@ -28,17 +28,17 @@ def FjToColimFj (j : J) : F.obj j ⟶ (Functor.const K).obj (colimF.pt.obj j) wh
     rw [this, colimF.ι.naturality]
     rfl
 
-
+/--for any j, the structure of Cocone limF.pt over colimF.pt.obj j-/
 @[simps]
-def truc3 (j : J) : Cocone limF.pt := ⟨ colimF.pt.obj j, limF.π.app j ≫ ( FjToColimFj _ _ )⟩
+def CoconeOverColimFj (j : J) : Cocone limF.pt := ⟨ colimF.pt.obj j, limF.π.app j ≫ ( FjToColimFj _ _ )⟩
 
 /-- The natural transformation involved in ConeOverColimLimF-/
 @[simps]
 def ConeOverColimLimFπ : (Functor.const J).obj colimLimF.pt ⟶ colimF.pt where
-  app j := hColimLimF.desc (truc3 _ _ _)
+  app j := hColimLimF.desc (CoconeOverColimFj _ _ _)
   naturality i j f := by
-    suffices hColimLimF.desc (truc3 _ _ _) ≫ colimF.pt.map f = hColimLimF.desc (truc3 _ _ _) by simp [this]
-    apply hColimLimF.uniq (truc3 _ _ _)
+    suffices hColimLimF.desc (CoconeOverColimFj _ _ _) ≫ colimF.pt.map f = hColimLimF.desc (CoconeOverColimFj _ _ _) by simp [this]
+    apply hColimLimF.uniq (CoconeOverColimFj _ _ _)
     intro x
     suffices (limF.π.app i).app x ≫ (colimF.ι.app x).app i ≫ colimF.pt.map f = (limF.π.app j).app x ≫ (colimF.ι.app x).app j by simpa
     have : colimF.pt.map f = (((Functor.const K).obj colimF.pt).obj x).map f := by simp
@@ -94,7 +94,7 @@ noncomputable def IsLimitConeOfColimF : IsLimit (ConeOverColimLimF _ colimF coli
       rw [this]
       simp
     apply Eq.symm
-    apply hColimLimF.uniq (truc3 limF colimF j)
+    apply hColimLimF.uniq (CoconeOverColimFj limF colimF j)
     intro
     simp [limColimFPtIsoColimLimFPt]
   uniq s (m : s.pt ⟶ colimLimF.pt) hm := by
@@ -103,6 +103,6 @@ noncomputable def IsLimitConeOfColimF : IsLimit (ConeOverColimLimF _ colimF coli
     · intro j
       rw [← hm j, Category.assoc]
       apply whisker_eq
-      apply hColimLimF.uniq (truc3 limF colimF j)
+      apply hColimLimF.uniq (CoconeOverColimFj limF colimF j)
       intro
       simp [limColimFPtIsoColimLimFPt]

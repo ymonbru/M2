@@ -58,6 +58,21 @@ def InfInLeftKSU (U1 U2 : KsubU_cat K P): (InfKsubU K axiomP U1 U2) ⟶ U1:= hom
 /-- The morphisme U1 ⊓ U2 ⟶ U2 for elements of (KsubU_cat K P)-/
 def InfInRightKSU (U1 U2 : KsubU_cat K P ): (InfKsubU K axiomP U1 U2) ⟶ U2 := homOfLE (by simp)
 
+/- The functor that send the pair K1 ⊆ U1 K2 ⊆ U2 to K1 ⊓ K2 ⊆ U1 ⊆ U2-/
+@[simps]
+def subK1SubK2toSubK1InterK2 {K1 K2 : Compacts X} [T2Space X]: (KsubU_cat K1 trueCond) × (KsubU_cat K2 trueCond) ⥤ KsubU_cat (K1 ⊓ K2) trueCond where
+  obj U := ⟨ U.1.obj ⊓ U.2.obj, by
+        constructor
+        apply Set.inter_subset_inter
+        exact U.1.property.1
+        exact U.2.property.1
+        rfl⟩
+  map { U V } f := homOfLE ( by
+    suffices U.1.obj ⊓ U.2.obj ≤ V.1.obj ∧ U.1.obj ⊓ U.2.obj ≤ V.2.obj by simpa
+    exact ⟨Set.Subset.trans inf_le_left (leOfHom f.1), Set.Subset.trans inf_le_right (leOfHom f.2)⟩ )
+
+
+
 include axiomP
 
 /-- The evidence that the category (KsubU_cat K P) is cofiltered-/

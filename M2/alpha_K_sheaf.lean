@@ -73,51 +73,138 @@ def presheafFunctor : (Opens X)ᵒᵖ ⥤ C := by exact ((Sheaf.forget C (of X))
 variable (K : Compacts X)
 
 @[simps]
-def truc2 (U : (KsubU_cat K1 trueCond) × (KsubU_cat K2 trueCond)) : WalkingCospan ⥤ (Opens X) ᵒᵖ  where
-  obj x := match x with
-    |.left => op U.1.obj
-    |.right => op  U.2.obj
-    |.one => op (U.1.obj ⊓ U.2.obj)
-  map {x y } f :=
-    match f with
-      | WalkingCospan.Hom.inl => op (homOfLE inf_le_left)
-      | WalkingCospan.Hom.inr => op (homOfLE inf_le_right)
-      | WalkingCospan.Hom.id z => op (𝟙 _)
+def natTransCospan {C : Type u} [Category.{v} C] { A1 B1 C1 A2 B2 C2 : C} { f1 : A1 ⟶ B1} { g1 : C1 ⟶ B1} { f2 : A2 ⟶ B2} { g2 : C2 ⟶ B2} (a : A1 ⟶ A2) (b : B1 ⟶ B2) (c : C1 ⟶ C2) (hab : f1 ≫ b = a ≫ f2) (hbc : g1 ≫ b = c ≫ g2):  cospan f1 g1 ⟶ cospan f2 g2 where
+  app x := match x with
+    |.left => a
+    |.right => c
+    |.one => b
+  naturality  x y f := match f with
+    | WalkingCospan.Hom.inl => hab
+    | WalkingCospan.Hom.inr => hbc
+    | WalkingCospan.Hom.id _ => by simp
+
 
 @[simps]
-def truc3 {U V : (KsubU_cat K1 trueCond) × (KsubU_cat K2 trueCond)} (f : U ⟶ V) : truc2 _ _ _ V ⟶ truc2 _ _ _ U where
-  app x := match x with
-    |.left => op f.1
-    |.right => op f.2
-    |.one => op (homOfLE (inf_le_inf (leOfHom f.1) (leOfHom f.2)))
+def truc9 : ((KsubU_cat K1 trueCond) × (KsubU_cat K2 trueCond) )ᵒᵖ  ⥤ WalkingCospan ⥤ (Opens X)ᵒᵖ where
+  obj U := cospan (op (homOfLE inf_le_left): op U.unop.1.obj ⟶ op (U.unop.1.obj ⊓ U.unop.2.obj) ) (op (homOfLE inf_le_right ): op U.unop.2.obj ⟶ op (U.unop.1.obj ⊓ U.unop.2.obj))
+  map {U V} f := natTransCospan (op f.unop.1) (op (subK1SubK2toSubK1InterK2.map f.unop)) (op f.unop.2) (rfl) (rfl)
+
+@[simps!]
+def truc : ((KsubU_cat K1 trueCond) × (KsubU_cat K2 trueCond)) ᵒᵖ ⥤ (WalkingCospan ⥤ C) := let WToOInWToC := (whiskeringRight WalkingCospan _ _ ).obj (presheafFunctor _ _ F); ((whiskeringRight (KsubU_cat K1 trueCond × KsubU_cat K2 trueCond)ᵒᵖ _ _).obj  WToOInWToC).obj (truc9 X K1 K2)
 
 
-def truc : ((KsubU_cat K1 trueCond) × (KsubU_cat K2 trueCond)) ᵒᵖ  ⥤ (WalkingCospan ⥤ C) where
-  obj U := truc2 _ _ _ U.unop ⋙  presheafFunctor _ _ F
-  map {U V} f:= whiskerRight (truc3 _ _ _ f.unop) (presheafFunctor X C F)
-  map_id _ := by
+@[simps!]
+def truc4Pt : WalkingCospan ⥤ C := by
+  apply cospan
+  exact colimit.pre (Functor.op  (ObjectProperty.ι _ ) ⋙ presheafFunctor X C F) (Functor.op ( K1subK2subU trueCond (homOfLE (inf_le_left) : K1 ⊓ K2 ⟶ K1)))
+  exact colimit.pre (Functor.op  (ObjectProperty.ι _ ) ⋙ presheafFunctor X C F) (Functor.op ( K1subK2subU trueCond (homOfLE (inf_le_right) : K1 ⊓ K2 ⟶ K2)))
+
+@[simps]
+def truc4ι : truc X C F K1 K2 ⟶ (Functor.const (KsubU_cat K1 trueCond × KsubU_cat K2 trueCond)ᵒᵖ).obj (truc4Pt X C F K1 K2) where
+  app U := by
+    apply (cospanCompIso _ _ _).hom ≫ _
+
+    refine natTransCospan ?_ ?_ ?_ ?_ ?_
+    · exact colimit.ι ((K1subK2subU trueCond (homOfLE inf_le_left)).op ⋙ (ObjectProperty.ι (KsubU (K1 ⊓ K2) trueCond)).op ⋙ presheafFunctor X C F) (op U.unop.1)
+    · exact colimit.ι ((ObjectProperty.ι (KsubU (K1 ⊓ K2) trueCond)).op ⋙ presheafFunctor X C F) ( op (subK1SubK2toSubK1InterK2.obj U.unop))
+    · exact colimit.ι ((K1subK2subU trueCond (homOfLE inf_le_right)).op ⋙ (ObjectProperty.ι (KsubU (K1 ⊓ K2) trueCond)).op ⋙ presheafFunctor X C F) (op U.unop.2)
+
+    · suffices (presheafFunctor X C F).map (op (homOfLE _)) ≫ colimit.ι ((ObjectProperty.ι (KsubU (K1 ⊓ K2) trueCond)).op ⋙ presheafFunctor X C F) (op { obj := (unop U).1.obj ⊓ (unop U).2.obj, property := _ }) = colimit.ι ((ObjectProperty.ι (KsubU (K1 ⊓ K2) trueCond)).op ⋙ presheafFunctor X C F) (op ((K1subK2subU trueCond (homOfLE _)).obj (unop U).1)) by simpa
+
+      apply Eq.symm
+      rw [ ← colimit.w _ ?_]
+      apply eq_whisker
+      repeat rfl
+      apply op
+      apply homOfLE
+      simp
+    · suffices (presheafFunctor X C F).map (op (homOfLE _)) ≫ colimit.ι ((ObjectProperty.ι (KsubU (K1 ⊓ K2) trueCond)).op ⋙ presheafFunctor X C F) (op { obj := (unop U).1.obj ⊓ (unop U).2.obj, property := _ }) = colimit.ι ((ObjectProperty.ι (KsubU (K1 ⊓ K2) trueCond)).op ⋙ presheafFunctor X C F) (op ((K1subK2subU trueCond (homOfLE _)).obj (unop U).2)) by simpa
+
+      apply Eq.symm
+      rw [ ← colimit.w _ ?_]
+      apply eq_whisker
+      repeat rfl
+      apply op
+      apply homOfLE
+      simp
+  naturality U V f:= by
     ext x
     match x with
-    | _ =>
-      suffices (presheafFunctor X C F).map _ = 𝟙 _ by simpa
-      rw [← (presheafFunctor X C F).map_id]
-      rfl
-  map_comp f g := by
-    ext x
-    match x with
-      | _ =>
-        suffices (presheafFunctor X C F).map _ = (presheafFunctor X C F).map _ ≫ (presheafFunctor X C F).map _ by simpa
-        rw [← (presheafFunctor X C F).map_comp]
+      | .left =>
+        suffices (presheafFunctor X C F).map (op f.unop.1) ≫ colimit.ι ((K1subK2subU trueCond (homOfLE _ )).op ⋙ (ObjectProperty.ι (KsubU (K1 ⊓ K2) trueCond)).op ⋙ presheafFunctor X C F) (op (unop V).1) = colimit.ι ((K1subK2subU trueCond (homOfLE _ )).op ⋙ (ObjectProperty.ι (KsubU (K1 ⊓ K2) trueCond)).op ⋙ presheafFunctor X C F) (op (unop U).1) by simpa
+
+        have : (op (unop U).1) ⟶ (op (unop V).1) := op f.unop.1
+        rw [← colimit.w _ this]
         rfl
+      | .right =>
+        suffices (presheafFunctor X C F).map (op f.unop.2) ≫ colimit.ι ((K1subK2subU trueCond (homOfLE _ )).op ⋙ (ObjectProperty.ι (KsubU (K1 ⊓ K2) trueCond)).op ⋙ presheafFunctor X C F) (op (unop V).2) = colimit.ι ((K1subK2subU trueCond (homOfLE _ )).op ⋙ (ObjectProperty.ι (KsubU (K1 ⊓ K2) trueCond)).op ⋙ presheafFunctor X C F) (op (unop U).2) by simpa
 
-instance truc4 : IsFiltered ((KsubU_cat K1 trueCond) × (KsubU_cat K2 trueCond)) ᵒᵖ := by sorry
+        have : (op (unop U).2) ⟶ (op (unop V).2) := op f.unop.2
+        rw [← colimit.w _ this]
+        rfl
+      | .one =>
+        suffices (presheafFunctor X C F).map (op (homOfLE _)) ≫ colimit.ι ((ObjectProperty.ι (KsubU (K1 ⊓ K2) trueCond)).op ⋙ presheafFunctor X C F) (op (subK1SubK2toSubK1InterK2.obj (unop V))) = colimit.ι ((ObjectProperty.ι (KsubU (K1 ⊓ K2) trueCond)).op ⋙ presheafFunctor X C F) (op (subK1SubK2toSubK1InterK2.obj (unop U))) by simpa
 
+        have : (op (subK1SubK2toSubK1InterK2.obj (unop U))) ⟶ (op (subK1SubK2toSubK1InterK2.obj (unop V))) := op (subK1SubK2toSubK1InterK2.map f.unop)
+        rw [ ← colimit.w _ this ]
+        rfl
+@[simps]
+def truc4 : Cocone (truc X C F K1 K2 ) where
+  pt := truc4Pt X C F K1 K2
+  ι := truc4ι X C F K1 K2
+
+variable (s : Cocone (truc X C F K1 K2)) (x : WalkingCospan)
+
+instance : Top (KsubU_cat K1 trueCond) where
+  top := by
+    use ⊤
+    simp
+
+def truc4DescCoconeLeftι : (K1subK2subU trueCond (homOfLE inf_le_left)).op ⋙ (ObjectProperty.ι (KsubU (K1 ⊓ K2) trueCond)).op ⋙ presheafFunctor X C F ⟶ (Functor.const (KsubU_cat K1 trueCond)ᵒᵖ).obj (s.pt.obj .left) where
+  app U := (s.ι.app  (op ⟨U.unop, ⊤⟩)).app .left
+  naturality U V f:= by
+    simp
+    have : ((truc X C F K1 K2).obj (op (unop U, ⊤))).map (WalkingCospan.Hom.id WalkingCospan.left) ≫ (s.ι.app (op (unop U, ⊤))).app WalkingCospan.left = (s.ι.app (op (unop U, ⊤))).app WalkingCospan.left := by
+      rw [(s.ι.app (op (unop U, ⊤))).naturality (WalkingCospan.Hom.id .left)]
+      simp
+    rw [← this]
+
+    have : (truc X C F K1 K2).map (op (f.unop, 𝟙 ⊤)) ≫ s.ι.app (op (unop V, ⊤)) = s.ι.app (op (unop U, ⊤)) := by
+      rw [s.ι.naturality ((op ⟨f.unop, 𝟙 _⟩) : (op ⟨U.unop, ⊤⟩) ⟶ (op ⟨V.unop, ⊤⟩))]
+      simp
+    rw [← this]
+    suffices (presheafFunctor X C F).map (homOfLE (leOfHom f.unop)).op ≫ (s.ι.app (op (unop V, ⊤))).app WalkingCospan.left = (presheafFunctor X C F).map (op f.unop) ≫ (s.ι.app (op (unop V, ⊤))).app WalkingCospan.left by simpa [truc]
+
+    rfl
+
+
+def truc4DescCoconeLeft : Cocone ((K1subK2subU trueCond (homOfLE inf_le_left)).op ⋙ (ObjectProperty.ι (KsubU (K1 ⊓ K2) trueCond)).op ⋙ presheafFunctor X C F) where
+  pt := s.pt.obj .left
+  ι := truc4DescCoconeLeftι X C F K1 K2 s
+
+def truc4Desc : truc4Pt X C F K1 K2 ⟶ s.pt where
+  app x := match x with
+    | .left => colimit.desc _ (truc4DescCoconeLeft _ _ _ _ _ _)
+    | _ => sorry
+
+
+def truc4Colim : IsColimit (truc4 X C F K1 K2) where
+  desc s := by
+    simp
+
+    apply?
+    sorry
+
+
+/-instance truc4 : IsFiltered ((KsubU_cat K1 trueCond) × (KsubU_cat K2 trueCond)) ᵒᵖ := by
+  exact isFiltered_op_of_isCofiltered (KsubU_cat K1 trueCond × KsubU_cat K2 trueCond)-/
 
 #check small_lift
 
 ---variable [HasColimitsOfSize.{w} (Type z)]
 
 instance truc5 : Small.{u} ((KsubU_cat K1 trueCond) × (KsubU_cat K2 trueCond)) ᵒᵖ := by
+
   sorry
 
 variable (FF : TopCat.Sheaf (Type z) (of X))
