@@ -50,16 +50,11 @@ def existsIntermedFrepKAndLSpec : f ⁻¹' ( existsIntermedFrepKAndLCompact clos
 /-- an open  U such that K ⊆ U  and such that f⁻¹ U ⊆ L-/
 @[simps]
 def existsIntermedFrepKAndLOpen : KsubU_cat K trueCond where
-  obj := by
-    let ⟨K', hK'⟩ := Classical.choice (existsIntermedFrepKAndL closed_f K L hKL)
-
-    exact ⟨interior K',by
-
-      sorry ⟩
+  obj :=
+    let ⟨K', hK'⟩ := Classical.choice (existsIntermedFrepKAndL closed_f K L hKL);
+    ⟨interior K', isOpen_interior⟩
   property := by
     let ⟨K', hK'⟩ := Classical.choice (existsIntermedFrepKAndL closed_f K L hKL)
-    use ⟨interior K', isOpen_interior ⟩
-
     constructor
     · exact hK'.2.1
-    · simp [interior_subset]
+    · rfl
