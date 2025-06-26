@@ -1,6 +1,5 @@
 import M2.Ksheaves
 import M2.KsubU
-import Mathlib.Topology.Sets.Opens
 
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite
 

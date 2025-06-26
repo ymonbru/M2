@@ -4,6 +4,8 @@ open CategoryTheory Limits
 
 universe u1 v1 u2 v2 u3 v3 u4 v4
 
+section
+
 variable {C : Type u1} [Category.{v1} C]
 variable {J : Type u2} [Category.{v2} J]
 variable {K : Type u3} [Category.{v3} K]
@@ -106,3 +108,5 @@ noncomputable def IsLimitConeOfColimF : IsLimit (ConeOverColimLimF _ colimF coli
       apply hColimLimF.uniq (CoconeOverColimFj limF colimF j)
       intro
       simp [limColimFPtIsoColimLimFPt]
+
+end
