@@ -1,5 +1,6 @@
 import M2.alpha
 import M2.colimOfColimEqColim
+import M2.LimOfColimEx
 import Mathlib.Topology.Sheaves.Presheaf
 import Mathlib.Topology.Sheaves.Sheaf
 --import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
@@ -64,24 +65,8 @@ def TerminalOpBotsubU : IsTerminal (op ⟨⊥ , by simp⟩ : (KsubU_cat (⊥ : C
     intro x hx
     rcases hx
 
-variable (K :Compacts X)
 
-
-/-instance truc4 : IsFiltered ((KsubU_cat K1 trueCond) × (KsubU_cat K2 trueCond)) ᵒᵖ := by
-  exact isFiltered_op_of_isCofiltered (KsubU_cat K1 trueCond × KsubU_cat K2 trueCond)-/
-
-/-#check small_lift
-
----variable [HasColimitsOfSize.{w} (Type z)]
-
-instance truc5 : Small.{u} ((KsubU_cat K1 trueCond) × (KsubU_cat K2 trueCond)) ᵒᵖ := by
-
-  sorry
-
-variable (FF : TopCat.Sheaf (Type z) (of X))
-
-#check colimitLimitIso (truc X _ FF K1 K2 ).flip-/
-
+variable (K : Compacts X)
 
 @[simps]
 def AlphaUpFIsoColimFSubU : (FresSSK K (AlphaUpStar.obj F.val)) ≅ colimFia  (iaSubCEx K) (FcupIaEx K F.val) where
@@ -95,11 +80,39 @@ def AlphaUpFIsoColimFSubU : (FresSSK K (AlphaUpStar.obj F.val)) ≅ colimFia  (i
     simp [_root_.F]⟩
 
 
+
 @[simps]
 def FLToKIsoToColimColim {K :Compacts X} : (FLToFK K (AlphaUpStar.obj (F.val))) ≅ (Cocones.precomposeEquivalence (AlphaUpFIsoColimFSubU _ _ _ _ )).functor.obj (fCupIaCoconeToColimFiaCocone _ _ (colimit.cocone (FcupIaEx K F.val))) where
   hom := ⟨𝟙 (colimit (FU K F.val trueCond)), by aesop⟩
   inv := ⟨𝟙 (colimit (FcupIaEx K F.val)), by aesop⟩
 
+variable (K1 K2 : Compacts X) [HasForget C]  [(forget C).ReflectsIsomorphisms] [HasFiniteLimits C] [PreservesColimitsOfShape (KsubU_cat K1 trueCond × KsubU_cat K2 trueCond)ᵒᵖ (forget C)] [PreservesFiniteLimits (forget C)] [Small.{v, w} (KsubU_cat K1 trueCond × KsubU_cat K2 trueCond)ᵒᵖ]
+--par exemple le cas si C = Type w
+
+#check IsLimitConeOfColimF (limFUInterWCFlip F.val K1 K2) (colimFUInterWC F.val K1 K2) (colimLimFUInterWCFlip K1 K2 F) (limColimFUCap K1 K2 F) (limFUInterWCFlipLim K1 K2 F) (colimFUInterWCColim F.val K1 K2) (colimLimFUInterWCFlipIsColim K1 K2 F) (limColimFUCapIsLim K1 K2 F)
+
+#check ConeOverColimLimF (limFUInterWCFlip F.val K1 K2) (colimFUInterWC F.val K1 K2) (colimLimFUInterWCFlip K1 K2 F) (colimLimFUInterWCFlipIsColim K1 K2 F)
+
+#check PullbackCone (FtoFInfLeft (AlphaUpStar.obj F.val) K1 K2) (FtoFInfRight (AlphaUpStar.obj F.val) K1 K2)
+
+@[simps!]
+def trucL : (KsubU_cat K1 trueCond × KsubU_cat K2 trueCond)ᵒᵖ ⥤ (KsubU_cat K1 trueCond)ᵒᵖ := (CategoryTheory.Prod.fst (KsubU_cat K1 trueCond) (KsubU_cat K2 trueCond)).op
+
+
+def IsoLeft : (jLeft K1 K2 ⋙ F.val) ≅ (trucL X K1 K2) ⋙ (FU K1 F.val trueCond) := eqToIso (by aesop)
+
+def bidule : (colimFUInterWC F.val K1 K2).pt ⟶ cospan (FtoFInfLeft (AlphaUpStar.obj F.val) K1 K2) (FtoFInfRight (AlphaUpStar.obj F.val) K1 K2) where
+  app x := by
+    match x with
+      |.left =>
+        apply _ ≫ _
+        sorry
+        simp
+        apply Limits.IsColimit.ofIsoColimit (IsoLeft )
+        rw [this]
+
+        sorry
+      | _ => sorry
 
 @[simps!]
 def shAlphaUpStarG : (Ksheaf X C) where
@@ -112,6 +125,8 @@ def shAlphaUpStarG : (Ksheaf X C) where
     apply IsTerminal.ofIso this
     apply @asIso _ _ _ _ _ (isIso_ι_of_isTerminal (TerminalOpBotsubU X) (FU ⊥ F.val trueCond))
   ksh2 K1 K2 := by
+    --apply Limits.IsLimit.ofIsoLimit _
+    --exact IsLimitConeOfColimF (limFUInterWCFlip F.val K1 K2) (colimFUInterWC F.val K1 K2) (colimLimFUInterWCFlip K1 K2 F) (limColimFUCap K1 K2 F) (limFUInterWCFlipLim K1 K2 F) (colimFUInterWCColim F.val K1 K2) (colimLimFUInterWCFlipIsColim K1 K2 F) (limColimFUCapIsLim K1 K2 F)
 
     #check colimitLimitIso
     unfold AlphaUpStar AlphaUpStarP AlphaUpStarF

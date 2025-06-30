@@ -11,4 +11,6 @@ import M2.alphaup_and_stalk
 import M2.RCalpha
 import M2.Pushforward
 
+import M2.LimOfColimEx
+
 import M2.CommDiagTactic.Exemples

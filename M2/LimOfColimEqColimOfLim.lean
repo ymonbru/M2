@@ -1,4 +1,5 @@
-import Mathlib
+import Mathlib.CategoryTheory.Limits.Preserves.Basic
+import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
 
 open CategoryTheory Limits
 

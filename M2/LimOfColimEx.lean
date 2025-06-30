@@ -1,5 +1,6 @@
 import M2.KsubU
 import M2.LimOfColimEqColimOfLim
+import Mathlib.Topology.Sheaves.SheafCondition.PairwiseIntersections
 
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite --TopCat TopCat.Presheaf
 --open ZeroObject
@@ -151,7 +152,7 @@ def colimFUInterWCDesc : colimFUInterWCPt F K1 K2 ⟶ s.pt := by
     intro U
     suffices F.map ((jLToJO K1 K2).app U) ≫ F.map (op (𝟙 ((unop U).1.obj ⊓ (unop U).2.obj))) ≫ (s.ι.app U).app WalkingCospan.one = F.map (op (𝟙 (unop U).1.obj)) ≫ (s.ι.app U).app WalkingCospan.left ≫ s.pt.map WalkingCospan.Hom.inl by simpa
 
-    have : F.map (op (homOfLE ( UInterWC._proof_2 K1 K2 U))) ≫ (s.ι.app U).app WalkingCospan.one = (s.ι.app U).app WalkingCospan.left ≫ s.pt.map WalkingCospan.Hom.inl := by
+    have : F.map (op (homOfLE ( UInterWC._proof_1 K1 K2 U))) ≫ (s.ι.app U).app WalkingCospan.one = (s.ι.app U).app WalkingCospan.left ≫ s.pt.map WalkingCospan.Hom.inl := by
       exact (s.ι.app U).naturality WalkingCospan.Hom.inl
     rw [← this]
 
@@ -163,7 +164,7 @@ def colimFUInterWCDesc : colimFUInterWCPt F K1 K2 ⟶ s.pt := by
     suffices F.map ((jRToJO K1 K2).app U) ≫
     F.map (op (𝟙 ((unop U).1.obj ⊓ (unop U).2.obj))) ≫ (s.ι.app U).app WalkingCospan.one = F.map (op (𝟙 (unop U).2.obj)) ≫
     (s.ι.app U).app WalkingCospan.right ≫ s.pt.map WalkingCospan.Hom.inr by simpa
-    have : F.map (op (homOfLE ( UInterWC._proof_3 K1 K2 U))) ≫ (s.ι.app U).app WalkingCospan.one = (s.ι.app U).app WalkingCospan.right ≫ s.pt.map WalkingCospan.Hom.inr := by
+    have : F.map (op (homOfLE ( UInterWC._proof_2 K1 K2 U))) ≫ (s.ι.app U).app WalkingCospan.one = (s.ι.app U).app WalkingCospan.right ≫ s.pt.map WalkingCospan.Hom.inr := by
       exact (s.ι.app U).naturality WalkingCospan.Hom.inr
     rw [← this]
 
@@ -253,6 +254,8 @@ def limFUInterWCFlip : Cone (FUInterWC F K1 K2 ).flip where
   π := limFUInterWCFlipπ F K1 K2
 
 open TopCat
+
+#check TopCat
 
 variable (F : Sheaf C (of X))
 
@@ -382,7 +385,7 @@ def limFUInterWCFlipLim : IsLimit (limFUInterWCFlip F.val K1 K2) where
         rw [Sheaf.interUnionPullbackCone_fst, ← hm, ← F.val.map_comp]
         rfl
 
-@[simps!]
+/-@[simps!]
 def colimFUCapπ : (Functor.const WalkingCospan).obj (colimit (jCup K1 K2 ⋙ F.val)) ⟶ (colimFUInterWC F.val K1 K2).pt := by
   refine natTransWcspFunc _ _ ?_ ?_ ?_ ?_ ?_
   · exact colimMap (whiskerRight (jCToJL K1 K2) F.val)
@@ -395,41 +398,82 @@ def colimFUCapπ : (Functor.const WalkingCospan).obj (colimit (jCup K1 K2 ⋙ F.
     rfl
   · apply colimit.hom_ext
     intro U
-    simp
+    simp-/
 
-@[simps]
-def limColimFUCap : Cone ((colimFUInterWC F.val K1 K2 ).pt) where
-  pt := colimit (jCup K1 K2 ⋙ F.val)
-  π := colimFUCapπ K1 K2 F
+
+def limColimFUCap : Cone ((colimFUInterWC F.val K1 K2 ).pt) := limit.cone ((colimFUInterWC F.val K1 K2 ).pt)
 
 variable (s : Cone (colimFUInterWC F.val K1 K2).pt)
 
 #check colimit.desc
-
-def limColimFUCapIsLim : IsLimit (limColimFUCap K1 K2 F ) where
-  lift s := by
-    simp
-    let h := s.π.app .one -- du coup pas sur du truc plus haut
-    dsimp at h
-
-    apply h ≫ _
-    refine colimMap ?_
-    refine (whiskerRight ?_ F.val)
-    exact ⟨ fun U => by
-      apply op
-      apply homOfLE
-      simp
-      sorry,sorry ⟩
-  fac := sorry
-  uniq := sorry
-
+/-
 @[simps]
-def colimLimFUInterWCFlipι :jCup K1 K2 ⋙ F.val ⟶ (Functor.const (KsubU_cat K1 trueCond × KsubU_cat K2 trueCond)ᵒᵖ).obj (colimit (jCup K1 K2 ⋙ F.val)) where
-  app U := colimit.ι (jCup K1 K2 ⋙ F.val) U
-  naturality {U V} f := by
-    rw [colimit.w]
+def bidule2 (K :Compacts X) (hK : ∀ U : (KsubU_cat K1 trueCond × KsubU_cat K2 trueCond), K.carrier ⊆ U.1.obj.carrier ∪ U.2.obj.carrier): (KsubU_cat K1 trueCond × KsubU_cat K2 trueCond) ⥤ (KsubU_cat K trueCond ) where
+  obj U := ⟨U.1.obj ⊔ U.2.obj, by
+    constructor
+    · apply hK
+    ·rfl⟩
+  map {U V} f := by
+    apply homOfLE
+    apply sup_le_sup
+    · exact leOfHom f.1
+    · exact leOfHom f.2
+
+
+@[simps!]
+def bidule : (KsubU_cat K1 trueCond × KsubU_cat K2 trueCond) ⥤ (KsubU_cat K1 trueCond × KsubU_cat K2 trueCond)  := by
+  apply Functor.prod'
+  · apply bidule2 K1 K2
+    intro U
+    exact Set.subset_union_of_subset_left (U.1.property.1) U.2.obj.carrier
+  · apply bidule2 K1 K2
+    intro U
+    exact Set.subset_union_of_subset_right (U.2.property.1) U.1.obj.carrier
+
+
+
+omit [LocallyCompactSpace X]
+lemma bidule3 : (bidule K1 K2).op ⋙ (jOne K1 K2)  = (jCup K1 K2) := by
+  apply CategoryTheory.Functor.ext
+  · intro _ _ _
+    rfl
+  · intro _
     simp
+
+instance ouf : (bidule K1 K2).Initial := by -- bon du coup ça c'est faux
+  apply (Functor.initial_iff_of_isCofiltered _).2
+  constructor
+  · intro U
+    have V: KsubU_cat K1 trueCond × KsubU_cat K2 trueCond := sorry
+
+    use V
+    apply Nonempty.intro
+    constructor
+    · apply homOfLE
+      simp
+      sorry
+    · apply homOfLE
+      simp
+      sorry
+  · intro U V f g
+    use V
+    use 𝟙 _
+    rfl-/
+
+def limColimFUCapIsLim : IsLimit (limColimFUCap K1 K2 F ) := limit.isLimit ((colimFUInterWC F.val K1 K2 ).pt)
 
 def colimLimFUInterWCFlip : Cocone ((limFUInterWCFlip F.val K1 K2).pt) := colimit.cocone (limFUInterWCFlip F.val K1 K2).pt
 
 def colimLimFUInterWCFlipIsColim : IsColimit (colimLimFUInterWCFlip K1 K2 F) := colimit.isColimit (limFUInterWCFlip F.val K1 K2).pt
+
+--variable [HasColimitsOfShape WalkingCospan C]
+
+#check CategoryTheory.Limits.instPreservesFiniteLimitsFunctorColimOfPreservesColimitsOfShapeOfHasFiniteLimitsOfReflectsIsomorphismsForget
+
+variable [HasForget C]  [(forget C).ReflectsIsomorphisms] [HasFiniteLimits C] [PreservesColimitsOfShape (KsubU_cat K1 trueCond × KsubU_cat K2 trueCond)ᵒᵖ (forget C)] [PreservesFiniteLimits (forget C)] [Small.{v, w} (KsubU_cat K1 trueCond × KsubU_cat K2 trueCond)ᵒᵖ]
+--par exemple le cas si C = Type w
+
+#check IsLimitConeOfColimF (limFUInterWCFlip F.val K1 K2) (colimFUInterWC F.val K1 K2) (colimLimFUInterWCFlip K1 K2 F) (limColimFUCap K1 K2 F) (limFUInterWCFlipLim K1 K2 F) (colimFUInterWCColim F.val K1 K2) (colimLimFUInterWCFlipIsColim K1 K2 F) (limColimFUCapIsLim K1 K2 F)
+
+
+--def But : IsLimit (SquareSuptoInf (AlphaUpStar.obj F.val) K1 K2)
