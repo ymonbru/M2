@@ -77,10 +77,7 @@ def FUInterWC : ((KsubU_cat K1 trueCond) × (KsubU_cat K2 trueCond)) ᵒᵖ ⥤ 
 
 /-- The diaram colimit_{K1 ⊆ U}F(U) → colimit_{K1 ∩ K2 ⊆ U}F(U) ← colimit_{K2 ⊆ U} F(U)-/
 @[simps!]
-def colimFUInterWCPt : WalkingCospan ⥤ C := by
-  apply cospan
-  exact colimMap ( whiskerRight (jLToJO K1 K2) F)
-  exact colimMap ( whiskerRight (jRToJO K1 K2) F)
+def colimFUInterWCPt : WalkingCospan ⥤ C := cospan (colimMap ( whiskerRight (jLToJO K1 K2) F)) (colimMap ( whiskerRight (jRToJO K1 K2) F))
 
 /-- the natural transformation that makes colimFUInterWCPt a Cocone over truc-/
 @[simps]

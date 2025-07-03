@@ -96,23 +96,89 @@ variable (K1 K2 : Compacts X) [HasForget C]  [(forget C).ReflectsIsomorphisms] [
 #check PullbackCone (FtoFInfLeft (AlphaUpStar.obj F.val) K1 K2) (FtoFInfRight (AlphaUpStar.obj F.val) K1 K2)
 
 @[simps!]
-def trucL : (KsubU_cat K1 trueCond × KsubU_cat K2 trueCond)ᵒᵖ ⥤ (KsubU_cat K1 trueCond)ᵒᵖ := (CategoryTheory.Prod.fst (KsubU_cat K1 trueCond) (KsubU_cat K2 trueCond)).op
+def KsubUK1K2ProjLeft : (KsubU_cat K1 trueCond × KsubU_cat K2 trueCond) ⥤ (KsubU_cat K1 trueCond) := (CategoryTheory.Prod.fst (KsubU_cat K1 trueCond) (KsubU_cat K2 trueCond))
 
 
-def IsoLeft : (jLeft K1 K2 ⋙ F.val) ≅ (trucL X K1 K2) ⋙ (FU K1 F.val trueCond) := eqToIso (by aesop)
+instance : (KsubUK1K2ProjLeft X K1 K2).Initial := by
+  apply (Functor.initial_iff_of_isCofiltered _).mpr
+  constructor
+  · intro U
+    use ⟨ U, ⊤⟩
+    apply Nonempty.intro
+    exact  𝟙 _
+  · intro _ V _ _
+    use V
+    use 𝟙 _
+    rfl
 
-def bidule : (colimFUInterWC F.val K1 K2).pt ⟶ cospan (FtoFInfLeft (AlphaUpStar.obj F.val) K1 K2) (FtoFInfRight (AlphaUpStar.obj F.val) K1 K2) where
-  app x := by
-    match x with
-      |.left =>
-        apply _ ≫ _
-        sorry
-        simp
-        apply Limits.IsColimit.ofIsoColimit (IsoLeft )
-        rw [this]
+@[simps!]
+def KsubUK1K2ProjRight: (KsubU_cat K1 trueCond × KsubU_cat K2 trueCond) ⥤ (KsubU_cat K2 trueCond) := (CategoryTheory.Prod.snd (KsubU_cat K1 trueCond) (KsubU_cat K2 trueCond))
 
-        sorry
-      | _ => sorry
+instance : (KsubUK1K2ProjRight X K1 K2).Initial := by
+  apply (Functor.initial_iff_of_isCofiltered _).mpr
+  constructor
+  · intro U
+    use ⟨ ⊤, U⟩
+    apply Nonempty.intro
+    exact  𝟙 _
+  · intro _ V _ _
+    use V
+    use 𝟙 _
+    rfl
+
+instance : (@subK1SubK2toSubK1InterK2 _ _ K1 K2).Initial := by
+  apply (Functor.initial_iff_of_isCofiltered _).mpr
+  constructor
+  · intro U
+    -- c'est au moins vrai dans les metriques en épaissisant
+    sorry
+  · intro _ V _ _
+    use V
+    use 𝟙 _
+    rfl
+
+@[simps!]
+def jCompFEqProjCompFULeft : (jLeft K1 K2 ⋙ F.val) ≅ (KsubUK1K2ProjLeft X K1 K2).op ⋙ (FU K1 F.val trueCond) := eqToIso (by aesop)
+
+@[simps!]
+def jCompFEqProjCompFURight : (jRight K1 K2 ⋙ F.val) ≅ (KsubUK1K2ProjRight X K1 K2).op ⋙ (FU K2 F.val trueCond) := eqToIso (by aesop)
+
+@[simps!]
+def jCompFEqProjCompFUOne : (jOne K1 K2 ⋙ F.val) ≅ subK1SubK2toSubK1InterK2.op ⋙ (FU (K1 ⊓ K2) F.val trueCond) := eqToIso (by aesop)
+
+
+def bidule : (colimFUInterWC F.val K1 K2).pt ⟶ cospan (FtoFInfLeft (AlphaUpStar.obj F.val) K1 K2) (FtoFInfRight (AlphaUpStar.obj F.val) K1 K2) := by
+  refine natTransWcspFunc _ _ ?_ ?_ ?_ ?_ ?_
+  · exact (HasColimit.isoOfNatIso (jCompFEqProjCompFULeft X C F K1 K2) ≪≫ Functor.Final.colimitIso (KsubUK1K2ProjLeft X K1 K2).op (FU K1 F.val trueCond)).hom
+    --exact Iso.hom (HasColimit.isoOfNatIso (jCompFEqProjCompFULeft X C F K1 K2)) ≫ colimit.pre _ _
+  · exact (HasColimit.isoOfNatIso (jCompFEqProjCompFURight X C F K1 K2) ≪≫ Functor.Final.colimitIso (KsubUK1K2ProjRight X K1 K2).op (FU K2 F.val trueCond)).hom
+  · exact (HasColimit.isoOfNatIso (jCompFEqProjCompFUOne X C F K1 K2) ≪≫ Functor.Final.colimitIso subK1SubK2toSubK1InterK2.op (FU (K1 ⊓ K2) F.val trueCond)).hom
+  · apply colimit.hom_ext
+    intro U
+    suffices F.val.map ((jLToJO K1 K2).app U) ≫
+    colimit.ι (FU (K1 ⊓ K2) F.val trueCond) (op (subK1SubK2toSubK1InterK2.obj (unop U))) = colimit.ι (FU (K1 ⊓ K2) F.val trueCond) (op ((K1subK2subU trueCond (opHomOfLE _).unop).obj (unop U).1)) by simpa [FtoFInfLeft]
+
+
+    have f : (op ((K1subK2subU trueCond (opHomOfLE (FtoFInfLeft._proof_1 K1 K2)).unop).obj (unop U).1)) ⟶ (op (subK1SubK2toSubK1InterK2.obj (unop U))) := by
+      apply op
+      apply homOfLE
+      simp
+    rw [← colimit.w _ f]
+    suffices F.val.map ((jLToJO K1 K2).app U) ≫
+    colimit.ι (FU (K1 ⊓ K2) F.val trueCond) (op (subK1SubK2toSubK1InterK2.obj (unop U))) = F.val.map f.unop.op ≫ colimit.ι (FU (K1 ⊓ K2) F.val trueCond) (op (subK1SubK2toSubK1InterK2.obj (unop U))) by simpa
+    rfl
+  · apply colimit.hom_ext
+    intro U
+    simp [FtoFInfRight]
+
+    have f : (op ((K1subK2subU trueCond (opHomOfLE (FtoFInfRight._proof_1 K1 K2)).unop).obj (unop U).2)) ⟶ (op (subK1SubK2toSubK1InterK2.obj (unop U))) := by
+      apply op
+      apply homOfLE
+      simp
+    rw [← colimit.w _ f]
+    suffices F.val.map ((jRToJO K1 K2).app U) ≫
+    colimit.ι (FU (K1 ⊓ K2) F.val trueCond) (op (subK1SubK2toSubK1InterK2.obj (unop U))) = F.val.map f.unop.op ≫ colimit.ι (FU (K1 ⊓ K2) F.val trueCond) (op (subK1SubK2toSubK1InterK2.obj (unop U))) by simpa
+    rfl
 
 @[simps!]
 def shAlphaUpStarG : (Ksheaf X C) where

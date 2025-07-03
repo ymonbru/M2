@@ -86,11 +86,12 @@ lemma IsCofilteredKsubU : IsCofilteredOrEmpty (KsubU_cat K P) where
     use InfInLeftKSU K axiomP U1 U2
     rfl
 
+instance : Top (KsubU_cat K trueCond) := by
+  use ⊤
+  simp
+
 instance : IsCofiltered (KsubU_cat K trueCond) where
   toIsCofilteredOrEmpty := IsCofilteredKsubU K fun _ _ _ ↦ congrFun rfl
-  nonempty := by
-    use ⊤
-    simp
 
 
 end
