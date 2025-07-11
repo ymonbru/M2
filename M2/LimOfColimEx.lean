@@ -1,9 +1,9 @@
 import M2.KsubU
 import M2.LimOfColimEqColimOfLim
+import M2.natTransWC
 import Mathlib.Topology.Sheaves.SheafCondition.PairwiseIntersections
 
-open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite --TopCat TopCat.Presheaf
---open ZeroObject
+open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite
 
 noncomputable section
 
@@ -14,74 +14,17 @@ variable {C : Type u} [Category.{v, u} C] [HasLimitsOfSize.{w,w} C] [HasColimits
 
 variable (F : (Opens X)ᵒᵖ ⥤ C) (K1 K2 : Compacts X)
 
-/--An helper to buil natural transformation between functors WalkingCospan ⥤ C. In particular it makes obvious for simp the naturality case for id, wich simp cant close in some particular cases-/
-@[simps]
-def natTransWcspFunc {C : Type u} [Category.{v} C] (F G : WalkingCospan ⥤ C) (fL: F.obj .left ⟶ G.obj .left)(fR: F.obj .right ⟶ G.obj .right) (fO: F.obj .one ⟶ G.obj .one) (hOL : F.map WalkingCospan.Hom.inl ≫ fO = fL ≫ G.map WalkingCospan.Hom.inl) (hOR : F.map WalkingCospan.Hom.inr ≫ fO = fR ≫ G.map WalkingCospan.Hom.inr) : F ⟶ G where
-  app x:= match x with
-    |.left => fL
-    |.right => fR
-    |.one => fO
-  naturality x y f := match f with
-    | WalkingCospan.Hom.inl => hOL
-    | WalkingCospan.Hom.inr => hOR
-    | WalkingCospan.Hom.id _ => by simp
-
-/-- The specialisation of natTransWcspFunc in the case where the functors are obtain by cospan-/
+/-- Whiskering UInterWC by F: For any pair U1 U2 (containing K1 and K2) the diagram F(U1) → F(U1 ∩ U2) ← F(U2) in a functorial way-/
 @[simps!]
-def natTransCospan {C : Type u} [Category.{v} C] { A1 B1 C1 A2 B2 C2 : C} { f1 : A1 ⟶ B1} { g1 : C1 ⟶ B1} { f2 : A2 ⟶ B2} { g2 : C2 ⟶ B2} (a : A1 ⟶ A2) (b : B1 ⟶ B2) (c : C1 ⟶ C2) (hab : f1 ≫ b = a ≫ f2) (hbc : g1 ≫ b = c ≫ g2):  cospan f1 g1 ⟶ cospan f2 g2 :=  natTransWcspFunc (cospan f1 g1) _ a c b hab hbc
+def FUInterWC : (KsubU_cat K1 × KsubU_cat K2 ) ᵒᵖ ⥤ (WalkingCospan ⥤ C) := let WToOInWToC := (whiskeringRight WalkingCospan _ _ ).obj F; ((whiskeringRight (KsubU_cat K1 × KsubU_cat K2 )ᵒᵖ _ _).obj  WToOInWToC).obj ( UInterWC K1 K2)
 
-/-- For any pair U1 U2 (containing K1 and K2) the diagram U1 → U1 ∩ U2 ← U2 in a functorial way-/
-@[simps]
-def UInterWC : ((KsubU_cat K1 trueCond) × (KsubU_cat K2 trueCond) )ᵒᵖ  ⥤ WalkingCospan ⥤ (Opens X)ᵒᵖ where
-  obj U := cospan (op (homOfLE inf_le_left): op U.unop.1.obj ⟶ op (U.unop.1.obj ⊓ U.unop.2.obj) ) (op (homOfLE inf_le_right ): op U.unop.2.obj ⟶ op (U.unop.1.obj ⊓ U.unop.2.obj))
-  map {U V} f := natTransCospan (op f.unop.1) (op (subK1SubK2toSubK1InterK2.map f.unop)) (op f.unop.2) (rfl) (rfl)
-
-/-- The left projection: (K1 ⊆ U1, K2 ⊆ U) ↦ U1-/
-@[simps!]
-def jLeft : ((KsubU_cat K1 trueCond) × (KsubU_cat K2 trueCond) )ᵒᵖ ⥤ (Opens X)ᵒᵖ := (UInterWC K1 K2).flip.obj .left
-
-/-- The Right projection: (K1 ⊆ U1, K2 ⊆ U) ↦ U2-/
-@[simps!]
-def jRight : ((KsubU_cat K1 trueCond) × (KsubU_cat K2 trueCond) )ᵒᵖ ⥤ (Opens X)ᵒᵖ := ( UInterWC K1 K2).flip.obj .right
-
-/-- The "intersection" projection: (K1 ⊆ U1, K2 ⊆ U) ↦ U1 ∩ U2-/
-@[simps!]
-def jOne : ((KsubU_cat K1 trueCond) × (KsubU_cat K2 trueCond) )ᵒᵖ ⥤ (Opens X)ᵒᵖ := ( UInterWC K1 K2).flip.obj .one
-
-/-- The "union" projection: (K1 ⊆ U1, K2 ⊆ U) ↦ U1 ∩ U2-/
-@[simps!]
-def jCup : ((KsubU_cat K1 trueCond) × (KsubU_cat K2 trueCond) )ᵒᵖ ⥤ (Opens X)ᵒᵖ where
-  obj U := op (U.unop.1.obj ⊔ U.unop.2.obj)
-  map f := op (homOfLE (sup_le_sup (leOfHom f.unop.1) (leOfHom f.unop.2)
-))
-
-/-- The obvious natural transformation from jLeft to jOne -/
-def jLToJO : (jLeft K1 K2) ⟶ (jOne K1 K2) where
-  app U := op (homOfLE (by simp))
-
-/-- The obvious natural transformation from jRight to jOne-/
-def jRToJO : (jRight K1 K2) ⟶ (jOne K1 K2) where
-  app U := op (homOfLE (by simp))
-
-/-- The obvious natural transformation from jLeft to jOne -/
-def jCToJL : (jCup K1 K2) ⟶ (jLeft K1 K2)  where
-  app U := op (homOfLE (by simp))
-
-/-- The obvious natural transformation from jRight to jOne-/
-def jCToJR : (jCup K1 K2) ⟶ (jRight K1 K2) where
-  app U := op (homOfLE (by simp))
-
-/-- Whiskering UInterWC by F: For any pair U1 U2 (containing K1 and K2) the diagram F(U1) → F(U1 ∩ U2) ← U2 in a functorial way-/
-@[simps!]
-def FUInterWC : ((KsubU_cat K1 trueCond) × (KsubU_cat K2 trueCond)) ᵒᵖ ⥤ (WalkingCospan ⥤ C) := let WToOInWToC := (whiskeringRight WalkingCospan _ _ ).obj F; ((whiskeringRight (KsubU_cat K1 trueCond × KsubU_cat K2 trueCond)ᵒᵖ _ _).obj  WToOInWToC).obj ( UInterWC K1 K2)
-
-/-- The diaram colimit_{K1 ⊆ U}F(U) → colimit_{K1 ∩ K2 ⊆ U}F(U) ← colimit_{K2 ⊆ U} F(U)-/
+/-- The diaram colimit_{K1 ⊆ U}F(U) → colimit_{K1 ∩ K2 ⊆ U}F(U) ← colimit_{K2 ⊆ U} F(U) (moraly because all the colimits are taken over (K1 ⊆ U1, K2 ⊆ U2) and the suitable projections are added.)-/
 @[simps!]
 def colimFUInterWCPt : WalkingCospan ⥤ C := cospan (colimMap ( whiskerRight (jLToJO K1 K2) F)) (colimMap ( whiskerRight (jRToJO K1 K2) F))
 
-/-- the natural transformation that makes colimFUInterWCPt a Cocone over truc-/
+/-- the natural transformation that makes colimFUInterWCPt a Cocone over FUInterWC-/
 @[simps]
-def colimFUInterWCι : FUInterWC F K1 K2 ⟶ (Functor.const (KsubU_cat K1 trueCond × KsubU_cat K2 trueCond)ᵒᵖ).obj (colimFUInterWCPt F K1 K2) where
+def colimFUInterWCι : FUInterWC F K1 K2 ⟶ (Functor.const (KsubU_cat K1 × KsubU_cat K2 )ᵒᵖ).obj (colimFUInterWCPt F K1 K2) where
   app U := by
     apply (cospanCompIso _ _ _).hom ≫ _
     refine natTransCospan ?_ ?_ ?_ ?_ ?_
@@ -108,7 +51,7 @@ def colimFUInterWCι : FUInterWC F K1 K2 ⟶ (Functor.const (KsubU_cat K1 trueCo
         rw [← colimit.w _ f]
         rfl
 
-/-- The cocne structre of colimFUInterWCPt over truc-/
+/-- The cocne structre of colimFUInterWCPt over FUInterWC-/
 @[simps]
 def colimFUInterWC : Cocone (FUInterWC F K1 K2 ) where
   pt := colimFUInterWCPt F K1 K2
@@ -116,8 +59,9 @@ def colimFUInterWC : Cocone (FUInterWC F K1 K2 ) where
 
 variable (s : Cocone (FUInterWC F K1 K2)) (x : WalkingCospan)
 
+/-- The natural transformation involved in colimFUInterWCDescCoconeX-/
 @[simps]
-def colimFUInterWCDescCoconeXι (j : ((KsubU_cat K1 trueCond) × (KsubU_cat K2 trueCond) )ᵒᵖ ⥤ (Opens X)ᵒᵖ ) (h : ∀ U, unop ((( UInterWC K1 K2).obj U).obj x) ≤ unop (j.obj U)
+def colimFUInterWCDescCoconeXι (j : (KsubU_cat K1 × KsubU_cat K2 )ᵒᵖ ⥤ (Opens X)ᵒᵖ ) (h : ∀ U, unop ((( UInterWC K1 K2).obj U).obj x) ≤ unop (j.obj U)
  ): j ⋙ F ⟶ (Functor.const _).obj (s.pt.obj x) where
   app U := F.map ( op (homOfLE (h U))) ≫ (s.ι.app  U).app x
   naturality U V f:= by
@@ -132,12 +76,14 @@ def colimFUInterWCDescCoconeXι (j : ((KsubU_cat K1 trueCond) × (KsubU_cat K2 t
     rw [← Category.assoc, ← F.map_comp]
     rfl
 
+/-- The cone structre over one of the three point over the diagrame (s.left -> s.one <- s.right) that will give the components of colimFUInterWCDesc by using desc morphism-/
 @[simps]
-def colimFUInterWCDescCoconeX (j : ((KsubU_cat K1 trueCond) × (KsubU_cat K2 trueCond) )ᵒᵖ ⥤ (Opens X)ᵒᵖ ) (h : ∀ U, unop ((( UInterWC K1 K2).obj U).obj x) ≤ unop (j.obj U)
+def colimFUInterWCDescCoconeX (j : (KsubU_cat K1 × KsubU_cat K2)ᵒᵖ ⥤ (Opens X)ᵒᵖ ) (h : ∀ U, unop ((( UInterWC K1 K2).obj U).obj x) ≤ unop (j.obj U)
  ): Cocone (j ⋙ F) where
   pt := s.pt.obj x
   ι := colimFUInterWCDescCoconeXι F K1 K2 s x j h
 
+/-- The desc morphism from colimFUInterWCPt to the point of a cocone over FUInterWC-/
 @[simps!]
 def colimFUInterWCDesc : colimFUInterWCPt F K1 K2 ⟶ s.pt := by
   refine natTransWcspFunc _ _ ?_ ?_ ?_ ?_ ?_
@@ -169,6 +115,7 @@ def colimFUInterWCDesc : colimFUInterWCPt F K1 K2 ⟶ s.pt := by
     rw [← Category.assoc, ← F.map_comp, ← Category.assoc, ← F.map_comp]
     rfl
 
+/-- The evidence that colimFUInterWC is a colimit.-/
 @[simps]
 def colimFUInterWCColim : IsColimit (colimFUInterWC F K1 K2) where
   desc s := colimFUInterWCDesc F K1 K2 s
@@ -194,7 +141,6 @@ def colimFUInterWCColim : IsColimit (colimFUInterWC F K1 K2) where
           rw [this]
           simp
         rfl
-
   uniq s m hm := by
     ext x
     match x with
@@ -223,11 +169,12 @@ def colimFUInterWCColim : IsColimit (colimFUInterWC F K1 K2) where
           simp
         rfl
 
+/-- The natural transformation sending (K1 ⊆ U1, K2 ⊆ U2 ) to (F(U1 ∪ U2) ⟶ F( Ux)), Ux being U1, U2 or U1 ∩ U2 acording to the value of x (.left, .right, .one)-/
 @[simps]
-def truc : jCup K1 K2 ⋙ F ⟶ (FUInterWC F K1 K2).flip.obj x where
+def JCupFToFUInterWC : jCup K1 K2 ⋙ F ⟶ (FUInterWC F K1 K2).flip.obj x where
   app U := F.map (op (homOfLE ( match x with
-      | .left => by simp
-      | .right => by simp
+      | .left => by dsimp;simp
+      | .right => by dsimp;simp
       | .one => by exact inf_le_sup)))
   naturality U V f := match x with
     | _ => by
@@ -235,9 +182,10 @@ def truc : jCup K1 K2 ⋙ F ⟶ (FUInterWC F K1 K2).flip.obj x where
       rw [← F.map_comp, ← F.map_comp]
       rfl
 
+/-- The natural transformation involved in limFUInterWCFlip-/
 @[simps]
 def limFUInterWCFlipπ : (Functor.const WalkingCospan).obj (jCup K1 K2 ⋙ F) ⟶ (FUInterWC F K1 K2).flip where
-  app x := truc F K1 K2 x
+  app x := JCupFToFUInterWC F K1 K2 x
   naturality {a b} f:= match f with
     | _ => by
       ext
@@ -245,6 +193,7 @@ def limFUInterWCFlipπ : (Functor.const WalkingCospan).obj (jCup K1 K2 ⋙ F) �
       rw [← F.map_comp]
       rfl
 
+/-- (jCup ≫ F) : U : (K1 ⊆ U1, K2 ⊆ U2 ) ⥤ F(U1 ∪ U2 ), as a cone over FUInterWC-/
 @[simps]
 def limFUInterWCFlip : Cone (FUInterWC F K1 K2 ).flip where
   pt := (jCup K1 K2) ⋙ F
@@ -252,14 +201,13 @@ def limFUInterWCFlip : Cone (FUInterWC F K1 K2 ).flip where
 
 open TopCat
 
-#check TopCat
-
 variable (F : Sheaf C (of X))
 
-variable (s : Cone (FUInterWC F.val K1 K2).flip) (U : (KsubU_cat K1 trueCond × KsubU_cat K2 trueCond)ᵒᵖ)
+variable (s : Cone (FUInterWC F.val K1 K2).flip) (U : (KsubU_cat K1 × KsubU_cat K2 )ᵒᵖ)
 
+/--For any U = (K1 ⊆ U1, K2 ⊆ U2), translate a cone over FUInterWC ( ie U ⥤ the diagram F(U1) → F(U1 ∩ U2) ← F(U2)) as a cone over F(U1) → F(U1 ∩ U2) ← F(U2)). It's basicaly "évaluating the cocone" -/
 @[simps]
-def FUInterWCConeToPullbackCone (U : (KsubU_cat K1 trueCond × KsubU_cat K2 trueCond)ᵒᵖ ) : PullbackCone (F.val.1.map (homOfLE inf_le_left : U.unop.1.obj ⊓ U.unop.2.obj ⟶ _).op) (F.val.1.map (homOfLE inf_le_right).op) where
+def FUInterWCConeToPullbackCone (U : (KsubU_cat K1 × KsubU_cat K2)ᵒᵖ) : PullbackCone (F.val.1.map (homOfLE inf_le_left : U.unop.1.obj ⊓ U.unop.2.obj ⟶ _).op) (F.val.1.map (homOfLE inf_le_right).op) where
   pt := s.pt.obj U
   π := by
     refine natTransWcspFunc _ _ ?_ ?_ ?_ ?_ ?_
@@ -299,7 +247,7 @@ lemma bidule : f x = (match x with
       | .left => rfl
       | .right => rfl
       | .one => rfl-/
-
+/-- The lifting morphism from the limFUInterWCFlipLim evidence-/
 @[simps]
 def limFUInterWCFlipLimLift : s.pt ⟶ jCup K1 K2 ⋙ F.val where
   app U := (Sheaf.isLimitPullbackCone F U.unop.1.obj U.unop.2.obj).lift (FUInterWCConeToPullbackCone K1 K2 F s U)
@@ -340,6 +288,8 @@ def limFUInterWCFlipLimLift : s.pt ⟶ jCup K1 K2 ⋙ F.val where
           rw [← this, Category.assoc, Sheaf.interUnionPullbackCone_fst, Sheaf.interUnionPullbackCone_fst, ← F.val.map_comp,← F.val.map_comp, ← F.val.map_comp, ← F.val.map_comp ]
           rfl
 
+/-- The evidence that for a sheaf F,  U : (K1 ⊆ U1, K2 ⊆ U2 ) ⥤ F(U1 ∪ U2 ) is (as a cone, cf limFUInterWCFlip) a limit (of U ⥤ F(U1) → F(U1 ∩ U2) ← F(U2))
+It is the case because for F a sheaf F(U1 ∪ U2) is the limit of F(U1) → F(U1 ∩ U2) ← F(U2)-/
 @[simps]
 def limFUInterWCFlipLim : IsLimit (limFUInterWCFlip F.val K1 K2) where
   lift s := limFUInterWCFlipLimLift K1 K2 F s
@@ -382,95 +332,18 @@ def limFUInterWCFlipLim : IsLimit (limFUInterWCFlip F.val K1 K2) where
         rw [Sheaf.interUnionPullbackCone_fst, ← hm, ← F.val.map_comp]
         rfl
 
-/-@[simps!]
-def colimFUCapπ : (Functor.const WalkingCospan).obj (colimit (jCup K1 K2 ⋙ F.val)) ⟶ (colimFUInterWC F.val K1 K2).pt := by
-  refine natTransWcspFunc _ _ ?_ ?_ ?_ ?_ ?_
-  · exact colimMap (whiskerRight (jCToJL K1 K2) F.val)
-  · exact colimMap (whiskerRight (jCToJR K1 K2) F.val)
-  · exact colimMap (whiskerRight (jCToJR K1 K2 ≫ jRToJO K1 K2) F.val) -- C → R → O = C → L → 0
-  · apply colimit.hom_ext
-    intro U
-    suffices F.val.map ((jCToJR K1 K2).app U) ≫ F.val.map ((jRToJO K1 K2).app U) ≫ colimit.ι (jOne K1 K2 ⋙ F.val) U = F.val.map ((jCToJL K1 K2).app U) ≫ F.val.map ((jLToJO K1 K2).app U) ≫ colimit.ι (jOne K1 K2 ⋙ F.val) U by simpa
-    rw [ ← Category.assoc, ← Category.assoc, ← F.val.map_comp, ← F.val.map_comp]
-    rfl
-  · apply colimit.hom_ext
-    intro U
-    simp-/
-
-
+/-- A choice of limit of the diagram U ⥤ colimit_{K1 ⊆ U}F(U) → colimit_{K1 ∩ K2 ⊆ U}F(U) ← colimit_{K2 ⊆ U} F(U)-/
 def limColimFUCap : Cone ((colimFUInterWC F.val K1 K2 ).pt) := limit.cone ((colimFUInterWC F.val K1 K2 ).pt)
 
 variable (s : Cone (colimFUInterWC F.val K1 K2).pt)
 
-#check colimit.desc
-/-
-@[simps]
-def bidule2 (K :Compacts X) (hK : ∀ U : (KsubU_cat K1 trueCond × KsubU_cat K2 trueCond), K.carrier ⊆ U.1.obj.carrier ∪ U.2.obj.carrier): (KsubU_cat K1 trueCond × KsubU_cat K2 trueCond) ⥤ (KsubU_cat K trueCond ) where
-  obj U := ⟨U.1.obj ⊔ U.2.obj, by
-    constructor
-    · apply hK
-    ·rfl⟩
-  map {U V} f := by
-    apply homOfLE
-    apply sup_le_sup
-    · exact leOfHom f.1
-    · exact leOfHom f.2
-
-
-@[simps!]
-def bidule : (KsubU_cat K1 trueCond × KsubU_cat K2 trueCond) ⥤ (KsubU_cat K1 trueCond × KsubU_cat K2 trueCond)  := by
-  apply Functor.prod'
-  · apply bidule2 K1 K2
-    intro U
-    exact Set.subset_union_of_subset_left (U.1.property.1) U.2.obj.carrier
-  · apply bidule2 K1 K2
-    intro U
-    exact Set.subset_union_of_subset_right (U.2.property.1) U.1.obj.carrier
-
-
-
-omit [LocallyCompactSpace X]
-lemma bidule3 : (bidule K1 K2).op ⋙ (jOne K1 K2)  = (jCup K1 K2) := by
-  apply CategoryTheory.Functor.ext
-  · intro _ _ _
-    rfl
-  · intro _
-    simp
-
-instance ouf : (bidule K1 K2).Initial := by -- bon du coup ça c'est faux
-  apply (Functor.initial_iff_of_isCofiltered _).2
-  constructor
-  · intro U
-    have V: KsubU_cat K1 trueCond × KsubU_cat K2 trueCond := sorry
-
-    use V
-    apply Nonempty.intro
-    constructor
-    · apply homOfLE
-      simp
-      sorry
-    · apply homOfLE
-      simp
-      sorry
-  · intro U V f g
-    use V
-    use 𝟙 _
-    rfl-/
-
+/-- The evidence that limColimFUCap is a limit-/
 def limColimFUCapIsLim : IsLimit (limColimFUCap K1 K2 F ) := limit.isLimit ((colimFUInterWC F.val K1 K2 ).pt)
 
+/-- A choice of a colimit of the diagram U ⥤ F( U1 ∪ U.2)-/
 def colimLimFUInterWCFlip : Cocone ((limFUInterWCFlip F.val K1 K2).pt) := colimit.cocone (limFUInterWCFlip F.val K1 K2).pt
 
+/-- The evidence that colimLimFUInterWCFlip is a colimit-/
 def colimLimFUInterWCFlipIsColim : IsColimit (colimLimFUInterWCFlip K1 K2 F) := colimit.isColimit (limFUInterWCFlip F.val K1 K2).pt
 
---variable [HasColimitsOfShape WalkingCospan C]
-
-#check CategoryTheory.Limits.instPreservesFiniteLimitsFunctorColimOfPreservesColimitsOfShapeOfHasFiniteLimitsOfReflectsIsomorphismsForget
-
-variable [HasForget C]  [(forget C).ReflectsIsomorphisms] [HasFiniteLimits C] [PreservesColimitsOfShape (KsubU_cat K1 trueCond × KsubU_cat K2 trueCond)ᵒᵖ (forget C)] [PreservesFiniteLimits (forget C)] [Small.{v, w} (KsubU_cat K1 trueCond × KsubU_cat K2 trueCond)ᵒᵖ]
---par exemple le cas si C = Type w
-
-#check IsLimitConeOfColimF (limFUInterWCFlip F.val K1 K2) (colimFUInterWC F.val K1 K2) (colimLimFUInterWCFlip K1 K2 F) (limColimFUCap K1 K2 F) (limFUInterWCFlipLim K1 K2 F) (colimFUInterWCColim F.val K1 K2) (colimLimFUInterWCFlipIsColim K1 K2 F) (limColimFUCapIsLim K1 K2 F)
-
-
---def But : IsLimit (SquareSuptoInf (AlphaUpStar.obj F.val) K1 K2)
+#lint

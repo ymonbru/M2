@@ -14,3 +14,4 @@ import M2.Pushforward
 import M2.LimOfColimEx
 
 import M2.CommDiagTactic.Exemples
+import M2.forceColimW

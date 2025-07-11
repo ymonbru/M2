@@ -103,4 +103,4 @@ instance : IsIso (AlphaComStalk X C p):= by
 /-- the evidence that the functor α*≫ Kstalk and stalk are isomorphics -/
 def IsoAlphaComStalk: (AlphaUpStar) ⋙ (KstalkFunctor p) ≅ @stalkFunctor C _ _ (of X) p:= asIso (AlphaComStalk X C p)
 
-#lint
+--#lint

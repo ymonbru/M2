@@ -28,13 +28,17 @@ def GIdIso (F : A ⥤ Cat.{v2, u2}) (G : (a : A) → (F.obj a) ⥤ B) (a : A) : 
 def FmapCompGIso (F : A ⥤ Cat.{v2, u2}) (G : (a : A) → (F.obj a) ⥤ B) (iso : { a b : A} → (f : a ⟶ b) → (F.map f) ⋙ G b ≅ G a) {a b c : A } (f : a ⟶ b) (g :b ⟶ c) : F.map (f ≫ g) ⋙ G c ≅ G a := isoWhiskerRight (eqToIso (F.map_comp _ _)) (G c) ≪≫ associator (F.map f) (F.map g) (G c) ≪≫ isoWhiskerLeft (F.map f) (iso g) ≪≫ iso f
 
 variable (B : Type u3) [Category.{v3, u3} B]
-structure CoconeFunctor (F : A ⥤ Cat.{v2, u2}) where
-/- The data of a Cocone for F, but with isomorphism instead of equality and the lemmas that allow computation
+/-- The data of a Cocone for F, but with isomorphism instead of equality and the lemmas that allow computation
 
 B is not part of the structure to avoid issue in inferance later-/
+structure CoconeFunctor (F : A ⥤ Cat.{v2, u2}) where
+  /-- the canonial morphisms of the cocone-/
   i : (x : A) → (F.obj x) ⥤ B
+  /-- The w condition of the cocone as an isomorphism-/
   iso : { x y : A} → (f : x ⟶ y) → (F.map f) ⋙ i y ≅ i x
+  /-- The compatibility condition over iso 𝟙 _-/
   isoId : (x  : A) → (iso (𝟙 x)) = GIdIso F i x
+  /-- The compatibility condition over iso(f ≫ g)-/
   isoComp : {x y z: A } → (f : x ⟶ y) → (g : y ⟶ z) → (iso (f ≫ g) = FmapCompGIso F i iso f g)
 
 /-structure IsColimitF (t : CoconeFunctor B F) where
@@ -98,24 +102,37 @@ def colimFia : A ⥤ D where
 
 /-- Data that allow to represent x : C as an element (a, ia) -/
 structure repObj (x : C) where
+  /-- The index in which the representant leaves-/
   a : A
+  /-- The representant of x-/
   ia : i.obj a
+  /-- The isomorphism that shows that ia represent x-/
   rep : (iaSubC.i a).obj ia ≅ x
 
 /-- Data that allow to represent f : x ⟶ y as an element (a, ia1) ⟶ (a,ia2) -/
 structure repHom {x y : C} (f : x ⟶ y) where
+  /-- The index in which the representant leaves-/
   a : A
+  /-- The representant of x-/
   iaDom : i.obj a
+  /-- The representant of y-/
   iaCoDom : i.obj a
+  /-- The isomorphism that shows that iaDom represent x-/
   repDom : (iaSubC.i a).obj iaDom ≅ x
+  /-- The isomorphism that shows that iaCodom represent y-/
   repCoDom : (iaSubC.i a).obj iaCoDom ≅ y
+  /-- Th representant of f-/
   hom : iaDom ⟶ iaCoDom
+  /-- The isomorphism that shows that hom represent f-/
   rep : repDom.inv ≫(iaSubC.i a).map hom ≫ repCoDom.hom =  f
 
 /-- Data that express the compatibility between two reprsentation of x : C-/
 structure lifting {x : C} (r s : repObj iaSubC x) where
+  /-- The lifting between indexes-/
   hom : r.a ⟶ s.a
+  /-- the isomorphism that shows that hom is a lifting-/
   liftIso : (i.map hom).obj r.ia ≅ s.ia
+  /-- The compatilty condition between the liftings and the representing morphisms of r and s-/
   compat : r.rep.hom ≫ s.rep.inv = ((iaSubC.iso hom).inv).app r.ia ≫ (iaSubC.i s.a).map liftIso.hom
 
 variable (repO : (x : C) → repObj iaSubC x)
@@ -269,7 +286,7 @@ def colimColimIsColim (s : Cocone (colimFia iaSubC FcupIa)) (hs : IsColimit s) :
 
 variable [HasColimitsOfSize.{v2, u2} D]
 
-/- The evidence that the colimit over the "union of indexes" is the colimit of the colimit-/
+/-- The evidence that the colimit over the "union of indexes" is the colimit of the colimit-/
 @[simps]
 def colimIsColimColim ( s : Cocone FcupIa) (hs : IsColimit s): IsColimit (fCupIaCoconeToColimFiaCocone iaSubC FcupIa s) where
   desc t := hs.desc (colimColimFiaCoconeFcupIa iaSubC FcupIa repO repH repLifting t)
@@ -349,23 +366,24 @@ def truc : IsColimitF i _ iaSubC where
 
 end
 
-noncomputable section -- pour avoir au moins une situation ou ce qui précède s'applique
+noncomputable section -- the exemple that will be applyed in the fille alpha_K_sheaf.lean
 
 variable {X : Type u1} [TopologicalSpace X] [T2Space X] (K : Compacts X)
 variable {D : Type u2} [Category.{v2, u2} D] (F : (Opens X)ᵒᵖ ⥤ D)
 
+/-- The diagram of diagram ( L ⊆ U) indexed by L compacts neighbourhoods of K-/
 @[simps]
 def iEx : (supSupK_cat K)ᵒᵖ  ⥤ Cat where
   obj L := Cat.of (KsubU_cat L.unop.obj trueCond)ᵒᵖ
   map f := Functor.op (K1subK2subU _ ((ObjectProperty.ι _ ).map f.unop))
 
-#check iEx
-
+/-- The functor to the "union category of indexes" that just forget the L in (K ⊆ L ⊆ U)-/
 @[simps]
 def iaSubCExi (L : (supSupK_cat K)ᵒᵖ ) : ((iEx K ).obj L) ⥤ (KsubU_cat K trueCond)ᵒᵖ  where
   obj U := ⟨U.unop.obj,⟨Set.Subset.trans (supSupKtoSupK K (unop L)) (unop U).property.left, of_eq_true (eq_self true)⟩⟩
   map f := op <| homOfLE <| leOfHom f.unop
 
+/-- The coconeFunctor structure over iaSubCExi (which are comming from equality)-/
 @[simps]
 def iaSubCEx : CoconeFunctor (KsubU_cat K trueCond)ᵒᵖ (iEx K) where
   i := iaSubCExi K
@@ -373,6 +391,7 @@ def iaSubCEx : CoconeFunctor (KsubU_cat K trueCond)ᵒᵖ (iEx K) where
   isoId _ := rfl
   isoComp _ _ := rfl
 
+/-- The version of F with domain the "union category"-/
 def FcupIaEx  : (KsubU_cat K trueCond)ᵒᵖ ⥤ D := (ObjectProperty.ι _ ).op ⋙ F
 
 #check CoconeFWhisker _ (iaSubCEx K) (FcupIaEx K F)
@@ -385,7 +404,7 @@ variable [LocallyCompactSpace X]
 
 variable (repCompat : (x : C) → (r1 r2 : repObj iaSubC x) → ∃ g : r1.a ⟶ r2.a, (i.map g).obj r1.ia = r2.ia ∨ ∃ g : r2.a ⟶ r1.a, (i.map g).obj r2.ia = r1.ia )
 
-
+/-- a representation of (K ⊆ U) as (K ⊆ L ⊆ U) with L that exists because of the space being locally compact-/
 @[simps]
 def repOEx (U : (KsubU_cat K trueCond)ᵒᵖ) : (repObj (iaSubCEx K) U ) where
   a := by
@@ -402,6 +421,7 @@ def repOEx (U : (KsubU_cat K trueCond)ᵒᵖ) : (repObj (iaSubCEx K) U ) where
       rfl⟩
   rep := eqToIso rfl
 
+/-- a representation of a morphism (there is no choice because of the unique morphism in ordered set) -/
 @[simps]
 def repHEx {U V : (KsubU_cat K trueCond)ᵒᵖ} (f : U ⟶ V) : repHom (iaSubCEx K) f where
   a := (repOEx K V).a
@@ -419,6 +439,7 @@ def repHEx {U V : (KsubU_cat K trueCond)ᵒᵖ} (f : U ⟶ V) : repHom (iaSubCEx
 omit [LocallyCompactSpace X] [T2Space X] in
 lemma iaExEqU {U : (KsubU_cat K trueCond)ᵒᵖ} (r : repObj (iaSubCEx K) U) : (unop r.ia).obj = (unop U).obj := antisymm (leOfHom (r.rep.inv.unop)) (leOfHom (r.rep.hom.unop))
 
+/-- a representant lifting two reprentant : send (K ⊆ Li ⊆ U)_i to (K ⊆ L1 ∩ L2 ⊆ U)-/
 @[simps]
 def resupEx {U : (KsubU_cat K trueCond)ᵒᵖ}  (r s : repObj (iaSubCEx K) U) : (repObj (iaSubCEx K) U) where
   a := op <| InfSupSupK K r.a.unop s.a.unop
@@ -439,6 +460,7 @@ def resupEx {U : (KsubU_cat K trueCond)ᵒᵖ}  (r s : repObj (iaSubCEx K) U) : 
     apply ObjectProperty.FullSubcategory.ext
     simp_all only [iaSubCEx, iaSubCExi, iaExEqU K r, iaExEqU K s, le_refl, inf_of_le_left]
 
+/-- The morphism commint with resupEx to the left , again no choice for the morphisms-/
 @[simps]
 def liftingToSupLeft {U : (KsubU_cat K trueCond)ᵒᵖ}  (r s : repObj (iaSubCEx K) U) : lifting (iaSubCEx K) r (resupEx K r s) where
   hom := op <| InfInLeftSSK K (unop r.a) (unop s.a)
@@ -451,6 +473,7 @@ def liftingToSupLeft {U : (KsubU_cat K trueCond)ᵒᵖ}  (r s : repObj (iaSubCEx
     simp only [iaSubCEx, iaSubCExi]
     rfl
 
+/-- The morphism commint with resupEx to the right , again no choice for the morphisms-/
 @[simps]
 def liftingToSupRight {U : (KsubU_cat K trueCond)ᵒᵖ}  (r s : repObj (iaSubCEx K) U) : lifting (iaSubCEx K) s (resupEx K r s) where
   hom := op <| InfInRightSSK K (unop r.a) (unop s.a)
@@ -463,6 +486,7 @@ def liftingToSupRight {U : (KsubU_cat K trueCond)ᵒᵖ}  (r s : repObj (iaSubCE
     simp only [iaSubCEx, iaSubCExi]
     rfl
 
+/-- Combining the three previous definition into a replifting data-/
 def repLiftingEx {U : (KsubU_cat K trueCond)ᵒᵖ}  (r s : repObj (iaSubCEx K) U) : (t : repObj (iaSubCEx K) U) × (lifting (iaSubCEx K) r t) × (lifting (iaSubCEx K) s t) := by
   use resupEx K r s
   constructor

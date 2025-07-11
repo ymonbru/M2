@@ -1,4 +1,3 @@
-import Lean
 import Mathlib.Tactic
 
 open CategoryTheory Lean Meta Elab Tactic

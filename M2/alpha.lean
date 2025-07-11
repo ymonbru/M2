@@ -12,11 +12,7 @@ variable {C : Type u} [Category.{v, u} C] [HasColimitsOfSize.{w, w} C] [HasLimit
 noncomputable section
 variable (K : Compacts X)
 variable (F : (Opens X)ᵒᵖ ⥤ C)
-variable (P : Opens X → Prop)
-
-/-- The diagram obtained by restricting F to the category KsubU-/
-@[simps!]
-def FU : (KsubU_cat K P)ᵒᵖ ⥤ C := Functor.comp (ObjectProperty.ι (KsubU K P)).op  F
+variable (P : Opens X → Prop := trueCond)
 
 /-- The natural transformation of change of basis for the diagram FU-/
 @[simps]
@@ -49,7 +45,7 @@ def AlphaUpStarP : ((Opens X)ᵒᵖ ⥤ C) ⥤ (Compacts X)ᵒᵖ ⥤ C where
 
 /-- The first version of α^* -/
 @[simps!]
-def AlphaUpStar : ((Opens X)ᵒᵖ ⥤ C) ⥤ ((Compacts X)ᵒᵖ ⥤ C) := AlphaUpStarP (trueCond)
+def AlphaUpStar : ((Opens X)ᵒᵖ ⥤ C) ⥤ ((Compacts X)ᵒᵖ ⥤ C) := AlphaUpStarP
 
 end
 
@@ -119,7 +115,7 @@ variable {F : (Opens X)ᵒᵖ⥤ C} {G : (Compacts X)ᵒᵖ ⥤ C} (τ : (AlphaU
 /-- The naturals maps from F(U) to the family of G(K) for K contained in U-/
 @[simps]
 def ConeFtoAG_NT : (Functor.const _ ).obj (F.obj (op U)) ⟶ GK U G where
-  app L := colimit.ι (FU (ObjectProperty.ι _ |>.op.obj _ ).unop _ <| trueCond) (op ⟨U,L.unop.property,rfl⟩) ≫ τ.app _
+  app L := colimit.ι (FU (ObjectProperty.ι _ |>.op.obj _ ).unop _ ) (op ⟨U,L.unop.property,rfl⟩) ≫ τ.app _
 
   naturality _ L _ := by
     suffices _ = colimit.ι (FU _ _ _ ) (op ⟨U , _ ⟩) ≫ τ.app (op _ ) ≫ G.map _ by simpa
