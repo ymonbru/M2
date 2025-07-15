@@ -91,28 +91,13 @@ def colimFUInterWCIsoTwoVersion : (colimFUInterWC F.val K1 K2).pt ≅ cospan (Ft
     suffices _ ≫ colimit.ι (FU (K1 ⊓ K2) F.val) (op ((subK1SubK2toSubK1InterK2 K1 K2).obj (unop U))) = colimit.ι (FU (K1 ⊓ K2) F.val) (op ((K1subK2subU _ (opHomOfLE _).unop).obj (unop U).1)) by simpa [FtoFInfLeft]
 
     forceColimW
-    /-have f : (op ((K1subK2subU _ (opHomOfLE (FtoFInfLeft._proof_1 K1 K2)).unop).obj (unop U).1)) ⟶ (op ((subK1SubK2toSubK1InterK2 K1 K2).obj (unop U))) := by
-      apply op
-      apply homOfLE
-      simp
-    rw [← colimit.w _ f]; aesop_cat
-    suffices F.val.map ((jLToJO K1 K2).app U) ≫
-    colimit.ι (FU (K1 ⊓ K2) F.val) (op ((subK1SubK2toSubK1InterK2 K1 K2).obj (unop U))) = F.val.map f.unop.op ≫ colimit.ι (FU (K1 ⊓ K2) F.val) (op ((subK1SubK2toSubK1InterK2 K1 K2).obj (unop U))) by simpa
-    rfl-/
+
   · apply colimit.hom_ext
     intro U
     --simp [FtoFInfRight]
     suffices F.val.map ((jRToJO K1 K2).app U) ≫ colimit.ι (FU (K1 ⊓ K2) F.val) (op ((subK1SubK2toSubK1InterK2 K1 K2).obj (unop U))) = colimit.ι (FU (K1 ⊓ K2) F.val) (op ((K1subK2subU trueCond (opHomOfLE (by simp)).unop).obj (unop U).2)) by simpa [FtoFInfRight]
 
     forceColimW
-    /-have f : (op ((K1subK2subU _ (opHomOfLE (FtoFInfRight._proof_1 K1 K2)).unop).obj (unop U).2)) ⟶ (op ((subK1SubK2toSubK1InterK2 K1 K2).obj (unop U))) := by
-      apply op
-      apply homOfLE
-      simp
-    rw [← colimit.w _ f]
-    suffices F.val.map ((jRToJO K1 K2).app U) ≫
-    colimit.ι (FU (K1 ⊓ K2) F.val) (op ((subK1SubK2toSubK1InterK2 K1 K2).obj (unop U))) = F.val.map f.unop.op ≫ colimit.ι (FU (K1 ⊓ K2) F.val) (op ((subK1SubK2toSubK1InterK2 K1 K2).obj (unop U))) by simpa
-    rfl-/
 
 /-- The inverse morphism of SquareSuptoInfIsColimLim-/
 @[simps]
@@ -129,36 +114,14 @@ def SquareSuptoInfIsColimLimInv : (SquareSuptoInf (AlphaUpStar.obj F.val) K1 K2)
         suffices F.val.map (op (homOfLE _)) ≫ colimit.ι (FU K1 F.val) (op (unop U).1) = colimit.ι (FU K1 F.val) (op ((K1subK2subU _ (opHomOfLE _).unop).obj ((KsubUK1K2ProjCup K1 K2).obj (unop U)))) by simpa [FSuptoFLeft, colimLimFUInterWCFlipIsColim]
 
         forceColimW
-        /-have f : (op ((K1subK2subU _ (opHomOfLE (by simp)).unop).obj ((KsubUK1K2ProjCup K1 K2).obj (unop U)))) ⟶ (op (unop U).1) := by
-          apply op
-          apply homOfLE
-          simp
-        rw [← colimit.w _ f]
-        simp
-        rfl-/
       | .right =>
         suffices F.val.map (op (homOfLE _)) ≫ colimit.ι (FU K2 F.val ) (op (unop U).2) = colimit.ι (FU K2 F.val) (op ((K1subK2subU _ (opHomOfLE _).unop).obj ((KsubUK1K2ProjCup K1 K2).obj (unop U)))) by simpa [FSuptoFRight, colimLimFUInterWCFlipIsColim]
 
         forceColimW
-        /-have f : (op ((K1subK2subU _ (opHomOfLE (by simp)).unop).obj ((KsubUK1K2ProjCup K1 K2).obj (unop U)))) ⟶ (op (unop U).2) := by
-          apply op
-          apply homOfLE
-          simp
-        rw [← colimit.w _ f]
-        simp
-        rfl-/
       | .one =>
         suffices F.val.map (op (homOfLE _)) ≫ colimit.ι (FU (K1 ⊓ K2) F.val) (op ((subK1SubK2toSubK1InterK2 K1 K2).obj (unop U))) = colimit.ι (FU (K1 ⊓ K2) F.val) (op ((K1subK2subU _ (opHomOfLE _).unop).obj ((K1subK2subU _ (opHomOfLE _).unop).obj ((KsubUK1K2ProjCup K1 K2).obj (unop U))))) by simpa [FSuptoFLeft, FtoFInfLeft, colimLimFUInterWCFlipIsColim]
 
         forceColimW
-        /-have f : (op ((K1subK2subU _ (opHomOfLE ((by simp))).unop).obj
-        ((K1subK2subU _ (opHomOfLE (FSuptoFLeft._proof_1 K1 K2)).unop).obj ((KsubUK1K2ProjCup K1 K2).obj (unop U))))) ⟶ (op ((subK1SubK2toSubK1InterK2 K1 K2).obj (unop U))) := by
-          apply op
-          apply homOfLE
-          exact inf_le_sup
-        rw [← colimit.w _ f]
-        simp
-        rfl-/
 
 /-- The morphism of SquareSuptoInfIsColimLim-/
 @[simps]

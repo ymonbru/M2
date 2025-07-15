@@ -1,6 +1,7 @@
-import Mathlib
+--import Mathlib
 import M2.KsubU
 import M2.RCalpha
+import M2.forceColimW
 
 open CategoryTheory Limits TopologicalSpace Compacts Opposite Functor TopCat
 
@@ -169,8 +170,7 @@ lemma FcupColimIndepOfLift {x : C}  (r s : repObj iaSubC x) (l : lifting iaSubC 
 
   apply whisker_eq
 
-  rw [← colimit.w (iaSubC.i s.a ⋙ FcupIa) l.liftIso.hom]
-  rfl
+  forceColimW
 
 /-If the representation r is a lifting of the representation q then the morphism _ ≫ colimit.ι _ ≫ colimit.ι _ is the same for r and q.
 The lemma is valid for any cocone not just the colimit-/
@@ -206,6 +206,8 @@ def colimColimFiaCoconeFcupIaι (s : Cocone (colimFia iaSubC FcupIa) ) : FcupIa 
     rw [colimColimIndep iaSubC FcupIa repLifting s (repO x) (repHtoD iaSubC f fr)]
 
     suffices FcupIa.map f ≫ FcupIa.map fr.repCoDom.inv ≫ colimit.ι (iaSubC.i fr.a ⋙ FcupIa) fr.iaCoDom ≫ s.ι.app fr.a = FcupIa.map fr.repDom.inv ≫ colimit.ι (iaSubC.i fr.a ⋙ FcupIa) fr.iaDom ≫ s.ι.app fr.a by simpa
+
+    -- ce serait cool d'avoir forceColimW qui s'occupe de ça mais on verra plus tard
 
     rw [← colimit.w ((iaSubC.i fr.a ⋙ FcupIa)) fr.hom]
     rw [← Category.assoc]

@@ -28,11 +28,13 @@ def is_colimitwLeft (e : Expr) : MetaM <| Option ( Expr × Expr) := do
     return none
 
 
-elab "forceColimW" : tactic => withMainContext do
-  let s0 ← saveState
-  evalTactic $ ←  `(tactic| repeat rw [ ← Category.assoc])
+/-@[tactic_code_action]
+elab "ouou" : tactic => withMainContext do
+  logInfo m!"eho"-/
+
+def forceColimWLeft : TacticM Unit := withMainContext do
   match ← is_colimitwLeft (← getMainTarget) with
-    | none => restoreState s0; throwError "The goal is not of the form _ ≫ colimit.ι F x = colimit.ι F y"
+    | none => throwError "The goal is not of the form _ ≫ colimit.ι F x = colimit.ι F y"
     | some (a,b) =>
       let fForce := "fForce".toName
 
@@ -47,11 +49,25 @@ elab "forceColimW" : tactic => withMainContext do
 
       match ← getUnsolvedGoals with -- maybe the aesop_cat tactic closed everything if the morphism is obvious
         | [] => return
-
         | _ => -- go to the morphism goal an try to solve it
           evalTactic $ ← `(tactic| swap; first | apply Opposite.op | skip)
           evalTactic $ ← `(tactic| first | apply CategoryTheory.homOfLE | skip)
           evalTactic $ ← `(tactic| first | simp | skip)
+
+elab "forceColimW" : tactic => withMainContext do
+  let s0 ← saveState
+  evalTactic $ ←  `(tactic| repeat rw [ ← Category.assoc]; repeat apply eq_whisker)
+  logInfo m!"{← getMainTarget}"
+  try
+    forceColimWLeft
+  catch
+    | _ => logInfo m!"Right}";try
+            evalTactic $ ←  `(tactic| apply Eq.symm)
+            forceColimWLeft
+          catch
+            | _ => restoreState s0
+                   throwError "The goal is not of the form _ ≫ colimit.ι F x = colimit.ι F y"
+
 
 variable {C : Type u} [Category.{v, u} C] {D : Type w} [Category.{x, w} D] (F : Cᵒᵖ  ⥤ D) [HasColimit F] { a b : C} ( f: b ⟶ a)
 

@@ -1,6 +1,7 @@
 import M2.KsubU
 import M2.LimOfColimEqColimOfLim
 import M2.natTransWC
+import M2.forceColimW
 import Mathlib.Topology.Sheaves.SheafCondition.PairwiseIntersections
 
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite
@@ -39,17 +40,18 @@ def colimFUInterWCι : FUInterWC F K1 K2 ⟶ (Functor.const (KsubU_cat K1 × Ksu
     ext x
     match x with
       | .left =>
-        suffices F.map (op f.unop.1) ≫ colimit.ι (jLeft K1 K2 ⋙ F) V = colimit.ι (jLeft K1 K2 ⋙ F) U by simpa
-        rw [← colimit.w _ f]
-        rfl
+        suffices F.map _ ≫ colimit.ι (jLeft K1 K2 ⋙ F) V = colimit.ι (jLeft K1 K2 ⋙ F) U by simpa
+        forceColimW
+        /-rw [← colimit.w _ f]
+        rfl-/
       | .right =>
-        suffices F.map (op f.unop.2) ≫ colimit.ι (jRight K1 K2 ⋙ F) V = colimit.ι (jRight K1 K2 ⋙ F) U by simpa
-        rw [← colimit.w _ f]
-        rfl
+
+        suffices F.map _ ≫ colimit.ι (jRight K1 K2 ⋙ F) V = colimit.ι (jRight K1 K2 ⋙ F) U by simpa
+        forceColimW
       | .one =>
-        simp
-        rw [← colimit.w _ f]
-        rfl
+        suffices F.map (op (homOfLE _)) ≫ colimit.ι (jOne K1 K2 ⋙ F) V = colimit.ι (jOne K1 K2 ⋙ F) U by simpa
+        apply Eq.symm
+        forceColimW
 
 /-- The cocne structre of colimFUInterWCPt over FUInterWC-/
 @[simps]
