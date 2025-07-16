@@ -27,11 +27,6 @@ def is_colimitwLeft (e : Expr) : MetaM <| Option ( Expr × Expr) := do
   else
     return none
 
-
-/-@[tactic_code_action]
-elab "ouou" : tactic => withMainContext do
-  logInfo m!"eho"-/
-
 def forceColimWLeft : TacticM Unit := withMainContext do
   match ← is_colimitwLeft (← getMainTarget) with
     | none => throwError "The goal is not of the form _ ≫ colimit.ι F x = colimit.ι F y"
