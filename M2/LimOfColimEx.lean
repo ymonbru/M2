@@ -42,16 +42,15 @@ def colimFUInterWCι : FUInterWC F K1 K2 ⟶ (Functor.const (KsubU_cat K1 × Ksu
       | .left =>
         suffices F.map _ ≫ colimit.ι (jLeft K1 K2 ⋙ F) V = colimit.ι (jLeft K1 K2 ⋙ F) U by simpa
         forceColimW
-        /-rw [← colimit.w _ f]
-        rfl-/
       | .right =>
 
         suffices F.map _ ≫ colimit.ι (jRight K1 K2 ⋙ F) V = colimit.ι (jRight K1 K2 ⋙ F) U by simpa
+        apply Eq.symm
         forceColimW
       | .one =>
         suffices F.map (op (homOfLE _)) ≫ colimit.ι (jOne K1 K2 ⋙ F) V = colimit.ι (jOne K1 K2 ⋙ F) U by simpa
-        apply Eq.symm
         forceColimW
+        exact f.unop
 
 /-- The cocne structre of colimFUInterWCPt over FUInterWC-/
 @[simps]

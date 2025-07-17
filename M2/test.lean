@@ -1,4 +1,4 @@
-import Batteries
+import Batteries.CodeAction.Misc
 import Mathlib
 import Batteries.Lean.Position
 import Batteries.CodeAction.Attr
@@ -33,10 +33,10 @@ def Test : TacticCodeAction := fun _ _ _ stk node => do
 @[tactic_code_action Lean.Parser.Tactic.dsimp]
 def createCalc : TacticCodeAction := fun _params _snap ctx _stack node => do
   let .node (.ofTacticInfo info) _ := node | return #[]
-  if info.goalsBefore.isEmpty then return #[]
-  if info.goalsAfter.isEmpty then return #[]-- si simp termine le but alors stop
+  --if info.goalsBefore.isEmpty then return #[]
+  --if info.goalsAfter.isEmpty then return #[]-- si simp termine le but alors stop
   let eager := {
-    title := s!"Clique ici!"
+    title := s!"Clic"
     kind? := "quickfix"
   }
   let doc ← readDoc
@@ -46,21 +46,20 @@ def createCalc : TacticCodeAction := fun _params _snap ctx _stack node => do
       let tacPos := doc.meta.text.utf8PosToLspPos info.stx.getPos?.get!
       let endPos := doc.meta.text.utf8PosToLspPos info.stx.getTailPos?.get!
 
+      let goal := info.goalsAfter[0]!
 
-      let goal := info.goalsBefore[0]!
+      let goalFmt ← ctx.runMetaM  {} <| goal.withContext do ppExpr (← goal.getType)
 
-      let goalFmt ← ctx.runMetaM {} <| goal.withContext do ppExpr (← goal.getType)
+
       return { eager with
         edit? := some <|.ofTextEdit doc.versionedIdentifier
-          { range := ⟨tacPos, endPos⟩, newText := s!"suffices {goalFmt} by simpa" }
+          { range := ⟨tacPos, endPos⟩, newText := s!"suffices {goalFmt} by dsimp; assumption" }
       }
   }]
 
 @[simps!]
 def foo : ℕ × ℤ := (4, 2)
 
-
 example : foo.1 = 5 := by
-  suffices foo.1 = 5 by simpa
-
+  dsimp
   sorry
