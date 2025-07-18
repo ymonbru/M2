@@ -14,7 +14,7 @@ def IsUseless? (target: Expr)(tac: Syntax):
       let goal ← mkFreshExprMVar target
       let (goals, _) ←
         withoutErrToSorry do
-        Elab.runTactic goal.mvarId! tac (← read) (← get)
+        runTactic goal.mvarId! tac (← read) (← get)
 
       match goals with
         | [] => return false

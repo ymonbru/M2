@@ -7,26 +7,16 @@ universe u v w x
 /-- try to identify e as _ ≫ colim.ι F a = colim.ι F b and return the parameters-/
 def is_colimitwLeft (e : Expr) : MetaM <| Option ( Expr × Expr) := do
   let e ← whnf e
-  if e.isAppOf ``Eq then
-    let e1 := e.getArg! 1
-    let e2 := e.getArg! 2
-    match e1.isAppOf ``CategoryStruct.comp , e2.isAppOf ``CategoryTheory.Limits.colimit.ι with
-      | true, true =>
-        let colimLeft := e1.getArg! 6
-        if colimLeft.isAppOf ``CategoryTheory.Limits.colimit.ι then
+  guard <| e.isAppOf ``Eq
+  let e1 := e.getArg! 1
+  let e2 := e.getArg! 2
+  guard <| e1.isAppOf ``CategoryStruct.comp && e2.isAppOf ``CategoryTheory.Limits.colimit.ι
+  let colimLeft := e1.getArg! 6
+  guard <| colimLeft.isAppOf ``CategoryTheory.Limits.colimit.ι
 
-          -- if the two functor on wich the colimits are taken are equal
-          if ← isDefEq (colimLeft.getArg! 4) (e2.getArg! 4) then
-            return (e2.getArg! 6, colimLeft.getArg! 6)
-          else
-            return none
-        else
-          return none
-      | true, _ => return none
-      | _, true => return none
-      | _, _ => return none
-  else
-    return none
+  -- if the two functor on wich the colimits are taken are equal
+  guard <| ← isDefEq (colimLeft.getArg! 4) (e2.getArg! 4)
+  return (e2.getArg! 6, colimLeft.getArg! 6)
 
 /-- if the main target is of the form _ ≫ colim.ι F a = colim.ι F b, then try to solve it by forcing the application of the colimit.w lemma-/
 def forceColimWLeft : TacticM Unit := withMainContext do

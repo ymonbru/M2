@@ -51,24 +51,20 @@ partial def match_comp (e : Expr) : MetaM <|(List Expr) := do
 /-- check if an expression is an equality of composition of morphisms and gives the two sequences-/
 def match_eq (e : Expr) : MetaM <| Option (List Expr × List Expr) := do
   let e ← whnf e
-  if e.isAppOf ``Eq then
-    return some (← match_comp (e.getArg! 1) , ← match_comp (e.getArg! 2))
-  else
-    return none
+  guard <| e.isAppOf ``Eq
+  return some (← match_comp (e.getArg! 1) , ← match_comp (e.getArg! 2))
 
 /-- check if the expression correspond to  a ≫ b = c or c = a ≫ b and gives the three morphisms involved -/
 def is_triangle (e : Expr) : MetaM <| Option ( Expr × Expr × Expr × Bool) := do
   let e ← whnf e
-  if e.isAppOf ``Eq then
-    let e1 := e.getArg! 1
-    let e2 := e.getArg! 2
-    match e1.isAppOf ``CategoryStruct.comp , e2.isAppOf ``CategoryStruct.comp with
+  guard <| e.isAppOf ``Eq
+  let e1 := e.getArg! 1
+  let e2 := e.getArg! 2
+  match e1.isAppOf ``CategoryStruct.comp , e2.isAppOf ``CategoryStruct.comp with
       | true, true => return none
       | true, _ => return (e1.getArg! 5, e1.getArg! 6, e2, true)
       | _, true => return (e2.getArg! 5, e2.getArg! 6, e1, false)
       | _, _ => return none
-  else
-    return none
 
 /-- a step in FindPath that add to the list the triangle coresponding to e if it represents a triangle  -/
 def find_triangles_totrig (l : List <| Expr × Expr × Expr × Bool × Expr ) (e: Expr) : MetaM <|List <| Expr × Expr × Expr × Bool × Expr := do

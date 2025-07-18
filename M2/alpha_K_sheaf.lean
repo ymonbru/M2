@@ -23,6 +23,23 @@ variable (G : Ksheaf X C) (F : Sheaf C (of X)) (K K1 K2 : Compacts X)
 
 noncomputable section
 
+/-variable (i : Type w) (U : i → Opens X ) (s : Cone ((Pairwise.diagram U).op ⋙ AlphaDownStarG G.carrier))
+
+def trucπ : (Functor.const (UsupK_cat (iSup U))ᵒᵖ).obj s.pt ⟶ GK (iSup U) G.carrier where
+  app K := by
+    dsimp
+    let h := s.π.app
+    dsimp at h
+    #check colimit.ι
+    sorry
+
+def truc : Cone (GK (iSup U) G.carrier) where
+  pt := s.pt
+  π := by
+
+    sorry-/
+
+
 /-- The evidence that α_* G is a sheaf-/
 theorem KshToSh: IsSheaf (AlphaDownStarG G.carrier : Presheaf C (of X)):= by
   --probablement mieux d'utiliser isSheaf_iff_isSheafPairwiseIntersections
@@ -39,6 +56,8 @@ theorem KshToSh: IsSheaf (AlphaDownStarG G.carrier : Presheaf C (of X)):= by
     simp
     have h := s.π.app
     dsimp at h
+
+    #check limit.lift
     sorry
 
 /-- α_* G as a sheaf-/
@@ -89,7 +108,6 @@ def colimFUInterWCIsoTwoVersion : (colimFUInterWC F.val K1 K2).pt ≅ cospan (Ft
   · apply colimit.hom_ext
     intro U
     suffices _ ≫ colimit.ι (FU (K1 ⊓ K2) F.val) (op ((subK1SubK2toSubK1InterK2 K1 K2).obj (unop U))) = colimit.ι (FU (K1 ⊓ K2) F.val) (op ((K1subK2subU _ (opHomOfLE _).unop).obj (unop U).1)) by simpa [FtoFInfLeft]
-
     forceColimW
 
   · apply colimit.hom_ext

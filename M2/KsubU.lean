@@ -4,6 +4,7 @@ import Mathlib.Topology.Sets.Compacts
 import Mathlib.Topology.Sets.Opens
 --import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.Filtered.Final
+import Mathlib.Topology.UniformSpace.Compact
 
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite
 
@@ -166,6 +167,28 @@ instance [T2Space X]: (subK1SubK2toSubK1InterK2 K1 K2).Initial := by
   apply (Functor.initial_iff_of_isCofiltered _).mpr
   constructor
   · intro U
+    #check Disjoint.exists_uniform_thickening
+
+    -- A = K1\ U, B= K2 \ U
+    -- Vi est pris comme compact qui contient K1 et est inclus dans A ∪ U
+    let A := K1.carrier \ U.obj
+    let B := K2.carrier \ U.obj
+
+    have : Disjoint A B := by
+      unfold A B
+
+      rintro x xa xb
+      have : x ∈ K1.carrier ∩ K2.carrier := by sorry
+
+      have :
+
+
+
+
+
+      sorry
+
+
     -- c'est au moins vrai dans les metriques en épaissisant
     sorry
   · intro _ V _ _

@@ -235,6 +235,8 @@ instance : IsIso (PushforwardCommAlphaUp proper_f C) := by
     exact instIsIsoFunctorOppositeCompactsCarrierOfPushforwardCommAlphaUpF proper_f F
   exact NatIso.isIso_of_isIso_app _
 
+variable [HasForget C] [(forget C).ReflectsIsomorphisms] [HasFiniteLimits C] [∀ (K1 K2 : Compacts X), PreservesColimitsOfShape (KsubU_cat K1 × KsubU_cat K2)ᵒᵖ (forget C)] [∀ (K1 K2 : Compacts Y), PreservesColimitsOfShape (KsubU_cat K1 × KsubU_cat K2)ᵒᵖ (forget C)] [PreservesFiniteLimits (forget C)] [∀ (K1 K2 : Compacts X), Small.{v, w} (KsubU_cat K1 × KsubU_cat K2)ᵒᵖ] [∀ (K1 K2 : Compacts Y), Small.{v, w} (KsubU_cat K1 × KsubU_cat K2)ᵒᵖ]
+
 /--The natural transformation from f* α* to α* f* for sheaves -/
 @[simps]
 def PushforwardCommAlphaUpShHom : (Sheaf.pushforward C (ofHom ⟨_ , proper_f.toContinuous⟩)).comp (shAlphaUpStar Y C) ⟶ (shAlphaUpStar X C).comp (KsheafPushforward proper_f) where
