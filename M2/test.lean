@@ -30,7 +30,7 @@ def Test : TacticCodeAction := fun _ _ _ stk node => do
     }
   }
   pure #[{ eager }]-/
-@[tactic_code_action Lean.Parser.Tactic.dsimp]
+@[tactic_code_action Lean.Parser.Tactic.simp]
 def createCalc : TacticCodeAction := fun _params _snap ctx _stack node => do
   let .node (.ofTacticInfo info) _ := node | return #[]
   --if info.goalsBefore.isEmpty then return #[]
@@ -46,14 +46,15 @@ def createCalc : TacticCodeAction := fun _params _snap ctx _stack node => do
       let tacPos := doc.meta.text.utf8PosToLspPos info.stx.getPos?.get!
       let endPos := doc.meta.text.utf8PosToLspPos info.stx.getTailPos?.get!
 
+      let newCtx : ContextInfo := {ctx with mctx := info.mctxAfter}
       let goal := info.goalsAfter[0]!
 
-      let goalFmt ← ctx.runMetaM  {} <| goal.withContext do ppExpr (← goal.getType)
+      let goalFmt ← newCtx.runMetaM  {} <| goal.withContext do ppExpr (← goal.getType)
 
 
       return { eager with
         edit? := some <|.ofTextEdit doc.versionedIdentifier
-          { range := ⟨tacPos, endPos⟩, newText := s!"suffices {goalFmt} by dsimp; assumption" }
+          { range := ⟨tacPos, endPos⟩, newText := s!"suffices {goalFmt} by simp; assumption" }
       }
   }]
 
@@ -61,5 +62,6 @@ def createCalc : TacticCodeAction := fun _params _snap ctx _stack node => do
 def foo : ℕ × ℤ := (4, 2)
 
 example : foo.1 = 5 := by
-  dsimp
+  suffices False by simp; assumption
+
   sorry

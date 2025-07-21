@@ -174,7 +174,7 @@ instance [T2Space X]: (subK1SubK2toSubK1InterK2 K1 K2).Initial := by
     let A := K1.carrier \ U.obj
     let B := K2.carrier \ U.obj
 
-    have : Disjoint A B := by
+    /-have : Disjoint A B := by
       unfold A B
 
       rintro x xa xb
@@ -189,7 +189,7 @@ instance [T2Space X]: (subK1SubK2toSubK1InterK2 K1 K2).Initial := by
       sorry
 
 
-    -- c'est au moins vrai dans les metriques en épaissisant
+    -- c'est au moins vrai dans les metriques en épaissisant-/
     sorry
   · intro _ V _ _
     use V
