@@ -1,3 +1,4 @@
+import M2.Suffices
 import M2.natTransWC
 import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.Topology.Sets.Compacts
@@ -5,6 +6,7 @@ import Mathlib.Topology.Sets.Opens
 --import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.Filtered.Final
 import Mathlib.Topology.UniformSpace.Compact
+import Mathlib.Topology.UniformSpace.OfCompactT2
 
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite
 
@@ -163,9 +165,142 @@ instance : (KsubUK1K2ProjRight K1 K2).Initial := by
     rfl
 
 
-instance [T2Space X]: (subK1SubK2toSubK1InterK2 K1 K2).Initial := by
+/-
+lemma bidule (X : Type) [UniformSpace X] [CompactSpace X] [T2Space X] (K1 K2 : Compacts X) (U : KsubU (K1 ⊓ K2)) (hU : K1.1 ∩ K2.1 ⊆ U.1) : ∃ (V1 : KsubU_cat K1), ∃ (V2 : KsubU_cat K2), V1.1.1 ∩ V2.1.1 ⊆ U.1.1  := by
+
+  -- en fait on doit pouvoir bricoler avec ça (L'énoncé IsCompact.nhdsSet_inter_eq te donne bien ce que tu veux grâce à docs#Filter.HasBasis.inf), merci anatole et moi du passé qui avais oublié
+  -- A = K1\ U, B= K2 \ U
+    -- Vi est pris comme compact qui contient K1 et est inclus dans A ∪ U
+    let A := K1.carrier \ U.1
+    let B := K2.carrier \ U.1
+
+    have this : Disjoint A B := by
+      apply Set.disjoint_iff_inter_eq_empty.mpr
+      apply Set.subset_empty_iff.mp
+      intro _ ⟨hA,hB⟩
+      exfalso
+      apply hA.2
+      apply hU
+      exact ⟨hA.1, hB.1⟩
+
+    have hA : IsCompact A := by
+      apply IsCompact.diff
+      exact K1.isCompact'
+      exact Opens.isOpen U.1
+
+    have hB : IsClosed B := by
+      apply IsClosed.sdiff
+      apply IsCompact.isClosed
+      exact K2.isCompact'
+      exact Opens.isOpen U.1
+
+    let r := (Disjoint.exists_uniform_thickening hA hB this).choose
+
+    let r_spec := (Disjoint.exists_uniform_thickening hA hB this).choose_spec
+
+    -- c'est faux mais on doit pouvoir s'en sortir en le prenant plus petit non?
+    have : IsOpen r := by
+      sorry
+
+
+    let V1s := (⋃ x ∈ K1.1, UniformSpace.ball x r)
+    let V2s := (⋃ x ∈ K2.1, UniformSpace.ball x r)
+
+    let V1o : Opens X := ⟨ V1s, by
+      apply isOpen_biUnion
+      intro a ha
+      apply @UniformSpace.isOpen_ball _ (uniformSpaceOfCompactT2 : UniformSpace X) a
+      exact this⟩
+    let V2o : Opens X := ⟨ V2s, by
+      apply isOpen_biUnion
+      intro a ha
+      apply @UniformSpace.isOpen_ball _ (uniformSpaceOfCompactT2 : UniformSpace X) a
+      exact this⟩
+
+    let V1 : (KsubU_cat K1) := ⟨ V1o, by
+      constructor
+      intro x _
+      apply Set.mem_iUnion.2
+      use x
+      suffices x ∈ K1 ∧ x ∈ UniformSpace.ball x r by simpa
+      constructor
+      · assumption
+      · apply UniformSpace.mem_ball_self
+
+        exact r_spec.1
+      rfl⟩
+
+    let V2 : (KsubU_cat K2) := ⟨ V2o, by
+      constructor
+      intro x _
+      apply Set.mem_iUnion.2
+      use x
+      suffices x ∈ K2 ∧ x ∈ UniformSpace.ball x r by simpa
+      constructor
+      · assumption
+      · apply UniformSpace.mem_ball_self
+        exact r_spec.1
+      rfl⟩
+
+    use V1
+    use V2
+
+    intro x hx
+
+    sorry-/
+
+
+
+instance  [T2Space X]: (subK1SubK2toSubK1InterK2 K1 K2).Initial := by
   apply (Functor.initial_iff_of_isCofiltered _).mpr
   constructor
+  · intro U
+
+    let FK1 := nhdsSet K1.carrier
+    let FK2 := nhdsSet K2.carrier
+
+    have : U.1.carrier ∈ FK1 ⊓ FK2 := by
+      unfold FK1 FK2
+      rw [← IsCompact.nhdsSet_inter_eq K1.isCompact' K2.isCompact']
+      apply (IsOpen.mem_nhdsSet _).mpr
+      exact U.2.1
+      exact U.obj.is_open'
+
+    let h := (Filter.HasBasis.mem_iff (Filter.HasBasis.inf (hasBasis_nhdsSet _) (hasBasis_nhdsSet _))).1 this
+
+    let V := h.choose
+    let ⟨⟨hV1,hV2⟩,hV3⟩ := h.choose_spec
+
+    let V1O : Opens X := ⟨V.1, hV1.1⟩
+    let V2O : Opens X := ⟨V.2, hV2.1⟩
+
+    let V1 : KsubU_cat K1 := ⟨ V1O, by
+      constructor
+      exact hV1.2
+      rfl⟩
+
+    let V2 : KsubU_cat K2 := ⟨ V2O, by
+      constructor
+      exact hV2.2
+      rfl⟩
+
+    use ⟨V1, V2⟩
+    apply Nonempty.intro
+    apply homOfLE
+    exact hV3
+
+  · intro _ c _ _
+    use c
+    use 𝟙 _
+    rfl
+
+/-
+--omit [TopologicalSpace X] in
+--[UniformSpace X]
+instance  [T2Space X]: (subK1SubK2toSubK1InterK2 K1 K2).Initial := by
+  apply (Functor.initial_iff_of_isCofiltered _).mpr
+  sorry
+  /-constructor
   · intro U
     #check Disjoint.exists_uniform_thickening
 
@@ -173,6 +308,82 @@ instance [T2Space X]: (subK1SubK2toSubK1InterK2 K1 K2).Initial := by
     -- Vi est pris comme compact qui contient K1 et est inclus dans A ∪ U
     let A := K1.carrier \ U.obj
     let B := K2.carrier \ U.obj
+
+    have this : Disjoint A B := by
+      apply Set.disjoint_iff_inter_eq_empty.mpr
+      apply Set.subset_empty_iff.mp
+      intro _ ⟨hA,hB⟩
+      exfalso
+      apply hA.2
+      apply U.property.1
+      exact ⟨hA.1, hB.1⟩
+
+    have hA : IsCompact A := by
+      apply IsCompact.diff
+      exact K1.isCompact'
+      exact Opens.isOpen U.obj
+
+    have hB : IsClosed B := by
+      apply IsClosed.sdiff
+      apply IsCompact.isClosed
+      exact K2.isCompact'
+      exact Opens.isOpen U.obj
+
+    --on verra après pour la version non locale
+
+    have this2 : CompactSpace X := by sorry
+
+    #check exists_compact_between
+
+
+    have this3 : UniformSpace X := uniformSpaceOfCompactT2
+
+    --comprend pas pourquoi il ne le devine pas seul
+    let r := (@Disjoint.exists_uniform_thickening _ (uniformSpaceOfCompactT2 : UniformSpace X) _ _ hA hB this).choose
+
+    -- c'est faux, mais on doit pouvoir s'en sortir non?
+    have : IsOpen r := by
+      sorry
+
+
+    let V1s := (⋃ x ∈ A, UniformSpace.ball x r)
+    let V2s := (⋃ x ∈ B, UniformSpace.ball x r)
+
+    let V1o : Opens X := ⟨ V1s, by
+      apply isOpen_biUnion
+      intro a ha
+      apply @UniformSpace.isOpen_ball _ (uniformSpaceOfCompactT2 : UniformSpace X) a
+      exact this⟩
+    let V2o : Opens X := ⟨ V2s, by
+      apply isOpen_biUnion
+      intro a ha
+      apply @UniformSpace.isOpen_ball _ (uniformSpaceOfCompactT2 : UniformSpace X) a
+      exact this⟩
+
+    let V1 : (KsubU_cat K1) := ⟨ V1o, by
+      constructor
+      unfold V1o V1s
+      simp
+      apply subset_trans
+
+      sorry
+      sorry
+      sorry
+      sorry⟩-/
+
+
+
+
+
+
+    /-have hV: V ∈ uniformity X ∧ Disjoint (⋃ x ∈ A, UniformSpace.ball x V) (⋃ x ∈ B, UniformSpace.ball x V) := by
+      constructor
+      unfold V
+      exact (@Disjoint.exists_uniform_thickening _ (uniformSpaceOfCompactT2 : UniformSpace X) _ _ hA hB this).choose_spec.1
+
+
+
+
 
     /-have : Disjoint A B := by
       unfold A B
@@ -194,7 +405,7 @@ instance [T2Space X]: (subK1SubK2toSubK1InterK2 K1 K2).Initial := by
   · intro _ V _ _
     use V
     use 𝟙 _
-    rfl
+    rfl-/-/
 
 /-- The functor that send the pair (K1 ⊆ U1, K2 ⊆ U2) to K1 ⊆ U1 -/
 @[simps]

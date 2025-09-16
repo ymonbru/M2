@@ -1,5 +1,4 @@
 import Batteries.CodeAction.Misc
-import Mathlib
 import Batteries.Lean.Position
 import Batteries.CodeAction.Attr
 import Lean.Server.CodeActions.Provider
@@ -36,7 +35,7 @@ def createCalc : TacticCodeAction := fun _params _snap ctx _stack node => do
   --if info.goalsBefore.isEmpty then return #[]
   --if info.goalsAfter.isEmpty then return #[]-- si simp termine le but alors stop
   let eager := {
-    title := s!"Clic"
+    title := s!"Replaces by suffices ..."
     kind? := "quickfix"
   }
   let doc ← readDoc
@@ -46,22 +45,13 @@ def createCalc : TacticCodeAction := fun _params _snap ctx _stack node => do
       let tacPos := doc.meta.text.utf8PosToLspPos info.stx.getPos?.get!
       let endPos := doc.meta.text.utf8PosToLspPos info.stx.getTailPos?.get!
 
-      let newCtx : ContextInfo := {ctx with mctx := info.mctxAfter}
+      let newCtx := {ctx with mctx := info.mctxAfter}
       let goal := info.goalsAfter[0]!
 
       let goalFmt ← newCtx.runMetaM  {} <| goal.withContext do ppExpr (← goal.getType)
 
-
       return { eager with
         edit? := some <|.ofTextEdit doc.versionedIdentifier
-          { range := ⟨tacPos, endPos⟩, newText := s!"suffices {goalFmt} by simp; assumption" }
+          { range := ⟨tacPos, endPos⟩, newText := s!"suffices {goalFmt} by simpa" }
       }
   }]
-
-@[simps!]
-def foo : ℕ × ℤ := (4, 2)
-
-example : foo.1 = 5 := by
-  suffices False by simp; assumption
-
-  sorry

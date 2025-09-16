@@ -42,33 +42,33 @@ def combineTacticList (todo : List <| TSyntax `tactic) : TacticM <| TSyntax `Lea
       mkTacticSeqAppend tacQ tac
 
 /-- check if an expression is a sequence of composition of morphisms and gives the list-/
-partial def match_comp (e : Expr) : MetaM <|(List Expr) := do
+partial def match_comp (e : Expr) : (List Expr) :=
   if e.isAppOf ``CategoryStruct.comp then
-    return (← match_comp (e.getArg! 5)) ++ (← match_comp (e.getArg! 6)) -- probablement pas optimal du tout
+    (match_comp (e.getArg! 5)) ++ (match_comp (e.getArg! 6)) -- probablement pas optimal du tout
   else
-    return [e]
+    [e]
 
 /-- check if an expression is an equality of composition of morphisms and gives the two sequences-/
-def match_eq (e : Expr) : MetaM <| Option (List Expr × List Expr) := do
-  let e ← whnf e
+def match_eq (e : Expr) : Option (List Expr × List Expr) := do
+  --let e ← whnf e
   guard <| e.isAppOf ``Eq
-  return some (← match_comp (e.getArg! 1) , ← match_comp (e.getArg! 2))
+  return (← match_comp (e.getArg! 1) , ← match_comp (e.getArg! 2))
 
 /-- check if the expression correspond to  a ≫ b = c or c = a ≫ b and gives the three morphisms involved -/
-def is_triangle (e : Expr) : MetaM <| Option ( Expr × Expr × Expr × Bool) := do
-  let e ← whnf e
+def is_triangle (e : Expr) :  Option ( Expr × Expr × Expr × Bool) := do
+
   guard <| e.isAppOf ``Eq
   let e1 := e.getArg! 1
   let e2 := e.getArg! 2
   match e1.isAppOf ``CategoryStruct.comp , e2.isAppOf ``CategoryStruct.comp with
-      | true, true => return none
+      | true, true => none
       | true, _ => return (e1.getArg! 5, e1.getArg! 6, e2, true)
       | _, true => return (e2.getArg! 5, e2.getArg! 6, e1, false)
-      | _, _ => return none
+      | _, _ => none
 
 /-- a step in FindPath that add to the list the triangle coresponding to e if it represents a triangle  -/
-def find_triangles_totrig (l : List <| Expr × Expr × Expr × Bool × Expr ) (e: Expr) : MetaM <|List <| Expr × Expr × Expr × Bool × Expr := do
-  match ← is_triangle ( ← inferType e) with
+def find_triangles_totrig (l : List <| Expr × Expr × Expr × Bool × Expr ) (e : Expr) : MetaM <|List <| Expr × Expr × Expr × Bool × Expr := do
+  match is_triangle ( ← inferType (← whnf e)) with
     | some <| (f , g, h, b) =>  return (f, g, h, b, e)  :: l
     | none =>  return l
 
@@ -120,7 +120,7 @@ elab "findPath" : tactic => withMainContext do
   let list_triangles := Array.foldlM (find_triangles_totrig) [] hyp
   let (nextN, names, list_triangles) ← nameInTriangle (← list_triangles)
 
-  match ← match_eq (← getMainTarget) with
+  match match_eq (← whnf (← getMainTarget)) with
     | none => return
     | some list_hom =>
       let (nextN, names, lh1) ←  nameList names nextN list_hom.1
@@ -133,6 +133,7 @@ elab "findPath" : tactic => withMainContext do
 /-- Same thing as findPath, except that it gives the suggestion of the tactic to apply instead of evaluating them-/
 def SuggestPath (stx : Syntax) : TacticM Unit := withMainContext do
   let split_square  ← `(tactic| split_square)
+  logInfo m!"truc"
   let useless_split_square? ← IsUseless? (← getMainTarget) split_square
 
   --no need to compute the tactic does nothing
@@ -144,7 +145,7 @@ def SuggestPath (stx : Syntax) : TacticM Unit := withMainContext do
   let list_triangles :=  Array.foldlM (find_triangles_totrig) [] hyp
   let (nextN, names, list_triangles) ← nameInTriangle (← list_triangles)
 
-  match ← match_eq (← getMainTarget) with
+  match match_eq (← whnf (← getMainTarget)) with
     | none => return
     | some list_hom =>
       let (nextN, names, lh1) ←  nameList names nextN list_hom.1

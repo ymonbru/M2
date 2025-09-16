@@ -1,5 +1,5 @@
-import M2.alpha
-import M2.KsubU
+import M2.CPP.CPP_alpha
+import M2.CPP.CPP_KsubU
 import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.Filtered.Final
 import Mathlib.Order.Lattice

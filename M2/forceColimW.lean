@@ -4,6 +4,8 @@ open CategoryTheory CategoryTheory.Limits Opposite Lean Meta Elab Tactic
 
 universe u v w x
 
+#check  `(tactic|rfl)
+
 /-- try to identify e as _ ≫ colim.ι F a = colim.ι F b and return the parameters-/
 def is_colimitwLeft (e : Expr) : MetaM <| Option ( Expr × Expr) := do
   let e ← whnf e
@@ -24,6 +26,35 @@ def forceColimWLeft : TacticM Unit := withMainContext do
     | none => throwError "The goal is not of the form _ ≫ colimit.ι F x = colimit.ι F y"
     | some (a,b) =>
       let fForce := "fForce".toName
+      --#check `(tactic| rfl)
+
+      -- make the intermediate goal fForce : a ⟶ b
+      let newtarget ← mkAppM ``Quiver.Hom #[a, b]
+      let newGoal ← mkFreshExprMVar newtarget
+      appendGoals [newGoal.mvarId!]
+
+      --
+
+      -- apply the colimit.w lemma and try to solve it
+      evalTactic $ ← `(tactic| set $(mkIdent fForce) := $( ← Term.exprToSyntax newGoal))
+
+      evalTactic $ ← `(tactic| rw [ ← colimit.w _ $(mkIdent fForce)]; apply eq_whisker; first | aesop_cat| skip)
+
+
+      match ← getUnsolvedGoals with -- maybe the aesop_cat tactic closed everything if the morphism is obvious
+        | [] => return
+        | _ => -- go to the morphism goal (if it is already solved by the previous simplifications ) and the try to solve it
+          evalTactic $ ← `(tactic| first | swap| skip)
+          evalTactic $ ← `(tactic| first | apply Opposite.op | skip)
+          evalTactic $ ← `(tactic| first | apply CategoryTheory.homOfLE | skip)
+          evalTactic $ ← `(tactic| first | aesop_cat | skip)
+
+/-- if the main target is of the form _ ≫ colim.ι F a = colim.ι F b, then try to solve it by forcing the application of the colimit.w lemma-/
+def forceColimWLeft2 : TacticM Unit := withMainContext do
+  match ← is_colimitwLeft (← getMainTarget) with
+    | none => throwError "The goal is not of the form _ ≫ colimit.ι F x = colimit.ι F y"
+    | some (a,b) =>
+      let fForce := "fForce".toName
 
       -- make the intermediate goal fForce : a ⟶ b
       let newtarget ← mkAppM ``Quiver.Hom #[a, b]
@@ -32,16 +63,10 @@ def forceColimWLeft : TacticM Unit := withMainContext do
 
       -- apply the colimit.w lemma and try to solve it
       evalTactic $ ← `(tactic| set $(mkIdent fForce) := $( ← Term.exprToSyntax newGoal))
-      evalTactic $ ← `(tactic| rw [ ← colimit.w _ $(mkIdent fForce)]; apply eq_whisker; first | aesop_cat| skip)
 
-      match ← getUnsolvedGoals with -- maybe the aesop_cat tactic closed everything if the morphism is obvious
-        | [] => return
-        | _ => -- go to the morphism goal (if it is already solved by the previous simplifications ) and the try to solve it
+      evalTactic $ ← `(tactic| rw [ ← colimit.w _ $(mkIdent fForce)])
 
-          evalTactic $ ← `(tactic| first | swap| skip)
-          evalTactic $ ← `(tactic| first | apply Opposite.op | skip)
-          evalTactic $ ← `(tactic| first | apply CategoryTheory.homOfLE | skip)
-          evalTactic $ ← `(tactic| first | aesop_cat | skip)
+elab "forceColimW2" : tactic => withMainContext do forceColimWLeft2
 
 elab "forceColimW" : tactic => withMainContext do
   let s0 ← saveState

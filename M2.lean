@@ -15,3 +15,4 @@ import M2.LimOfColimEx
 
 import M2.CommDiagTactic.Exemples
 import M2.forceColimW
+import M2.Suffices

@@ -125,7 +125,7 @@ structure repHom {x y : C} (f : x ⟶ y) where
   /-- Th representant of f-/
   hom : iaDom ⟶ iaCoDom
   /-- The isomorphism that shows that hom represent f-/
-  rep : repDom.inv ≫(iaSubC.i a).map hom ≫ repCoDom.hom =  f
+  rep : repDom.inv ≫(iaSubC.i a).map hom ≫ repCoDom.hom = f
 
 /-- Data that express the compatibility between two reprsentation of x : C-/
 structure lifting {x : C} (r s : repObj iaSubC x) where
@@ -169,7 +169,7 @@ lemma FcupColimIndepOfLift {x : C}  (r s : repObj iaSubC x) (l : lifting iaSubC 
     FcupIa.map ((iaSubC.i s.a).map l.liftIso.hom) ≫ colimit.ι (iaSubC.i s.a ⋙ FcupIa) s.ia by simp [F]; assumption
 
   apply whisker_eq
-
+  --here rw [← colimit.w ]; rfl works but we have the tactic...
   forceColimW
 
 /-If the representation r is a lifting of the representation q then the morphism _ ≫ colimit.ι _ ≫ colimit.ι _ is the same for r and q.

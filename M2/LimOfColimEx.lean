@@ -17,11 +17,11 @@ variable (F : (Opens X)ᵒᵖ ⥤ C) (K1 K2 : Compacts X)
 
 /-- Whiskering UInterWC by F: For any pair U1 U2 (containing K1 and K2) the diagram F(U1) → F(U1 ∩ U2) ← F(U2) in a functorial way-/
 @[simps!]
-def FUInterWC : (KsubU_cat K1 × KsubU_cat K2 ) ᵒᵖ ⥤ (WalkingCospan ⥤ C) := let WToOInWToC := (whiskeringRight WalkingCospan _ _ ).obj F; ((whiskeringRight (KsubU_cat K1 × KsubU_cat K2 )ᵒᵖ _ _).obj  WToOInWToC).obj ( UInterWC K1 K2)
+def FUInterWC : (KsubU_cat K1 × KsubU_cat K2 ) ᵒᵖ ⥤ (WalkingCospan ⥤ C) := let WToOInWToC := (Functor.whiskeringRight WalkingCospan _ _ ).obj F; ((Functor.whiskeringRight (KsubU_cat K1 × KsubU_cat K2 )ᵒᵖ _ _).obj  WToOInWToC).obj ( UInterWC K1 K2)
 
 /-- The diaram colimit_{K1 ⊆ U}F(U) → colimit_{K1 ∩ K2 ⊆ U}F(U) ← colimit_{K2 ⊆ U} F(U) (moraly because all the colimits are taken over (K1 ⊆ U1, K2 ⊆ U2) and the suitable projections are added.)-/
 @[simps!]
-def colimFUInterWCPt : WalkingCospan ⥤ C := cospan (colimMap ( whiskerRight (jLToJO K1 K2) F)) (colimMap ( whiskerRight (jRToJO K1 K2) F))
+def colimFUInterWCPt : WalkingCospan ⥤ C := cospan (colimMap ( Functor.whiskerRight (jLToJO K1 K2) F)) (colimMap ( Functor.whiskerRight (jRToJO K1 K2) F))
 
 /-- the natural transformation that makes colimFUInterWCPt a Cocone over FUInterWC-/
 @[simps]
@@ -208,7 +208,7 @@ variable (s : Cone (FUInterWC F.val K1 K2).flip) (U : (KsubU_cat K1 × KsubU_cat
 
 /--For any U = (K1 ⊆ U1, K2 ⊆ U2), translate a cone over FUInterWC ( ie U ⥤ the diagram F(U1) → F(U1 ∩ U2) ← F(U2)) as a cone over F(U1) → F(U1 ∩ U2) ← F(U2)). It's basicaly "évaluating the cocone" -/
 @[simps]
-def FUInterWCConeToPullbackCone (U : (KsubU_cat K1 × KsubU_cat K2)ᵒᵖ) : PullbackCone (F.val.1.map (homOfLE inf_le_left : U.unop.1.obj ⊓ U.unop.2.obj ⟶ _).op) (F.val.1.map (homOfLE inf_le_right).op) where
+def FUInterWCConeToPullbackCone (U : (KsubU_cat K1 × KsubU_cat K2)ᵒᵖ) : PullbackCone (F.val.map (homOfLE inf_le_left : U.unop.1.obj ⊓ U.unop.2.obj ⟶ _).op) (F.val.map (homOfLE inf_le_right).op) where
   pt := s.pt.obj U
   π := by
     refine natTransWcspFunc _ _ ?_ ?_ ?_ ?_ ?_
