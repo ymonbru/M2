@@ -36,9 +36,9 @@ def forceColimWLeft : TacticM Unit := withMainContext do
       --
 
       -- apply the colimit.w lemma and try to solve it
-      evalTactic $ ← `(tactic| set $(mkIdent fForce) := $( ← Term.exprToSyntax newGoal))
+      evalTactic <| ← `(tactic| set $(mkIdent fForce) := $( ← Term.exprToSyntax newGoal))
 
-      evalTactic $ ← `(tactic| rw [ ← colimit.w _ $(mkIdent fForce)]; apply eq_whisker; first | aesop_cat| skip)
+      evalTactic <| ← `(tactic| rw [ ← colimit.w _ $(mkIdent fForce)]; apply eq_whisker; first | aesop_cat| skip)
 
 
       match ← getUnsolvedGoals with -- maybe the aesop_cat tactic closed everything if the morphism is obvious

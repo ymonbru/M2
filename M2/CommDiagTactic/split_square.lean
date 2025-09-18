@@ -22,8 +22,8 @@ def split_square_step (_ : Unit ) (e : Expr) : TacticM Unit := withMainContext d
       let hleft := hname.str "map_eq_left"
       let hright := hname.str "map_eq_right"
 
-      evalTactic $ ← `(tactic|set $(mkIdent hmap) := $( ← Term.exprToSyntax c) ≫ $( ← Term.exprToSyntax d) with ← $(mkIdent hright))
-      evalTactic $ ← `(tactic|rename' $(mkIdent hname) => $(mkIdent hleft))
+      evalTactic <| ← `(tactic|set $(mkIdent hmap) := $( ← Term.exprToSyntax c) ≫ $( ← Term.exprToSyntax d) with ← $(mkIdent hright))
+      evalTactic <| ← `(tactic|rename' $(mkIdent hname) => $(mkIdent hleft))
 
     | none => return ()
 
