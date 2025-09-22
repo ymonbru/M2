@@ -234,6 +234,9 @@ instance {α : Type*} (l : List α) : LawfulBEq (FromList l) := sorry
 instance {α : Type*} (l : List α) : Hashable (FromList l) where
   hash x := hash x.obj
 
+
+
+
 elab "constructDiag" : tactic => do
   withMainContext do
   let goal ← getMainGoal
@@ -310,6 +313,11 @@ elab "constructDiag" : tactic => do
     -- add the quiver instance to the context (with definition)
     let (_, goal) ← (← goal.define `instQuiver (← inferType instQuiver) instQuiver).intro1P
     return [goal]
+
+example (X Y : Scheme) (f : X ⟶ Y) : True := by
+  constructDiag
+
+  sorry
 
 structure GraphData (goal : MVarId) where
   objs : List FVarId
