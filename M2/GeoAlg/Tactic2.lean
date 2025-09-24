@@ -3,28 +3,24 @@ import Qq
 
 open Qq Lean Meta Elab Tactic CategoryTheory
 
+universe u v
+
+variable {Cate: Type u} [Quiver.{v+1,u} Cate] -- ici il faut un +1
 
 
-def Cate : Type := sorry
-instance : Quiver  Cate := by
-  refine { Hom := ?_ }
-  exact fun x y => Nat
-
---variable (Cate : Type) [Category Cate]
-
-def isObjStep  (e : Expr) (l : List Expr) : TacticM <| List Expr := do
-  if ← isDefEq (← inferType e) (Expr.const `Cate [])  then
+def isObjStep (cat : Expr) (e : Expr) (l : List Expr) : TacticM <| List Expr := do
+  if ← isDefEq (← inferType e) cat  then
     return e :: l
   else
     return l
 
-def isHomStep (l : List <| Expr × Expr × Expr) (e : Expr) : TacticM <|  List <| Expr × Expr × Expr := do
+def isHomStep (cat : Expr) (l : List <| Expr × Expr × Expr) (e : Expr) : TacticM <|  List <| Expr × Expr × Expr := do
   let typeE ← inferType e
-  if typeE.isAppOf (``Quiver.Hom) then
-    --if ← isDefEq cat (typeE.getArg! 1) then
-      return (e, typeE.getArg! 2,typeE.getArg! 3) :: l
-    --else
-      --return l
+  let x ←  mkFreshExprMVar cat
+  let y ←  mkFreshExprMVar cat
+  let h ← mkAppOptM ``Quiver.Hom #[cat, none, x, y]
+  if ← isDefEq typeE h then
+    return ⟨e,x,y⟩ :: l
   else
     return l
 
@@ -36,11 +32,13 @@ def mkFinE {n : Nat} (x : Fin n) : TacticM Expr := do
   let ineq  ← mkAppM ``LT.lt #[xQ,nQ]
   let newGoal ← mkFreshExprMVar ineq
   appendGoals [newGoal.mvarId!]
+  evalTactic <| ← `(tactic| rotate_left; repeat decide)
   mkAppM ``Fin.mk #[xQ, newGoal]
+
 
 variable {v : List Cate} (l : List <| Σ a b : Fin v.length, v.get a ⟶ v.get b)
 
-def mkHomNum (vE : List Q(Cate)) (f : Expr × Expr × Expr): TacticM <| Expr × Expr × Expr := do
+def mkHomNum (cat : Q(Type)) (vE : List Q($cat)) (f : Expr × Expr × Expr): TacticM <| Expr × Expr × Expr := do
   let l := List.ofFn (fun x => x : Fin vE.length → Fin vE.length)
   let ox ← List.findM? (fun x => isDefEq (vE.get x) f.2.1) l
   let oy ← List.findM? (fun x => isDefEq (vE.get x) f.2.2) l
@@ -58,11 +56,12 @@ def mkHomNum (vE : List Q(Cate)) (f : Expr × Expr × Expr): TacticM <| Expr × 
 
 --est-ce que ce ne serait pas usine à gaz ça?
 -- surement à corriger quand on aura un truc qui marche
-def baseE (f :  Σ a b : Fin v.length, v.get a ⟶ v.get b) (e : Π a b : Fin v.length, List (v.get a ⟶ v.get b)): Π a b : Fin v.length, List (v.get a ⟶ v.get b) := fun a b =>
-  if a = f.1 && b = f.2.1 then
+def baseE (f :  Σ a b : Fin v.length, v.get a ⟶ v.get b) (e : Π a b : Fin v.length, List (v.get a ⟶ v.get b)): Π a b : Fin v.length, List (v.get a ⟶ v.get b) := fun a b => sorry/-
+  if h: a = f.1 ∧ b = f.2.1 then
+
     f.2.2 :: e a b
   else
-    e a b
+    e a b-/
 
 def e : Π a b : Fin v.length, List (v.get a ⟶ v.get b) :=
   List.foldr baseE (fun _ _ => []) l
@@ -80,32 +79,41 @@ def ObjMapJ : Fin v.length → Cate := v.get
 
 def FunMapJ  {x y : Fin v.length} (f : QuivJ l x y) : (ObjMapJ x ⟶ ObjMapJ y) := (e l x y).get ⟨f.val, Fin.val_lt_of_le f (le_of_eq (by simp [toNb]))⟩
 
-def mkSigma (x y : Fin v.length) (f :v.get x ⟶ v.get y) : Σ a b : Fin v.length, v.get a ⟶ v.get b := Sigma.mk x (Sigma.mk y f)
+def mkSigma (x y : Fin v.length) (f : v.get x ⟶ v.get y) : Σ a b : Fin v.length, v.get a ⟶ v.get b := Sigma.mk x (Sigma.mk y f)
 
 def mkSigmaE (v : Expr) (f : Expr × Expr × Expr) : TacticM Expr := do
-  mkAppOptM ``mkSigma #[v, f.2.1, f.2.2, f.1]
-
-
-/-def SigmaMkE (f : Expr × Expr × Expr) : TacticM Expr := do
-  mkAppM ``Sigma.mk #[f.2.1, ← mkAppM ``Sigma.mk #[f.2.2, f.1]]-/
+  mkAppOptM ``mkSigma #[none, none, v, f.2.1, f.2.2, f.1]
 
 def consE (l : List Expr) (t : Expr) : TacticM Expr := do
   let nil ← mkAppOptM ``List.nil #[t]
   List.foldrM (fun e l => mkAppM ``List.cons #[e, l]) nil l
 
+def mkTypeAux (l : List Cate) : Type v := (Σ a b : Fin l.length, List.get l a ⟶ List.get l b)
 
-elab "BuildDiagram" : tactic => do
-  --let cat : Q(Type) ← Term.elabTerm cat none
+
+elab "BuildDiagram_of" cat:term : tactic => do
+  let cat : Q(Type) ← Term.elabTerm cat none
+  let uQ ← mkFreshLevelMVar
+  let vQ ← mkFreshLevelMVar
+  --pas beau du tout mais on verra après
+  let QuivCat := Expr.app (Expr.const `Quiver [vQ, uQ]) cat
+  let newGoal ← mkFreshExprMVar QuivCat
+  appendGoals [newGoal.mvarId!]
+
+  evalTactic <| ← `(tactic| rotate_left; assumption)--changer le assumption
 
   let hyp ← getLocalHyps
 
-  let listV ←  Array.foldrM (isObjStep ) [] hyp
-  let listVE : Q(List Cate) ← consE listV (q(Cate))
+  let listV ←  Array.foldrM (isObjStep cat) [] hyp
+  let listVE : Q(List $cat) ← consE listV cat
 
-  let listH ←  Array.foldlM (isHomStep) [] hyp
-  let listH ← listH.mapM (mkHomNum listV)
+  let listH ←  Array.foldlM (isHomStep cat) [] hyp
+  logInfo m!"{listH}"
+  let listH ← listH.mapM (mkHomNum cat listV)
   let listH ← listH.mapM (mkSigmaE listVE)
-  let listHE ← consE listH.reverse (q(Σ a b : Fin ($listVE).length, List.get $listVE a ⟶ List.get $listVE b))
+
+  let t ← mkAppM ``mkTypeAux #[listVE]
+  let listHE ← consE listH.reverse t
 
   logInfo m!"{← ppExpr listVE}"
   logInfo m!"{← ppExpr listHE}"
@@ -114,29 +122,35 @@ elab "BuildDiagram" : tactic => do
   let nQ : Q(Nat) := Expr.lit (Literal.natVal n)
   let J : Q(Type) := mkApp q(Fin) nQ
 
-  let QuivJ ← mkAppOptM ``QuivJ #[listVE, listHE]
+  let QuivJ ← mkAppOptM ``QuivJ #[none, none, listVE, listHE]
   let instQuiverJ ← mkAppOptM ``Quiver.mk #[J, QuivJ]
 
-  let FunObjJ ← mkAppOptM ``ObjMapJ #[listVE]
-  let FunMapJ ← mkAppOptM ``FunMapJ #[listVE, listHE]
+  let FunObjJ ← mkAppOptM ``ObjMapJ #[none, listVE]
+  let FunMapJ ← mkAppOptM ``FunMapJ #[none, none, listVE, listHE]
 
-  let DiagJ  ← mkAppOptM ``Prefunctor.mk #[J,instQuiverJ,q(Cate),q(inferInstance : Quiver Cate ), FunObjJ, FunMapJ ]
+
+  let DiagJ  ← mkAppOptM ``Prefunctor.mk #[J,instQuiverJ, cat, newGoal , FunObjJ, FunMapJ ]
 
   --let Diag ← mkAppOptM ``Paths.lift #[J, instQuiverJ, none, none, DiagJ]
 
-  --netoyer le bazard de mkFinE
-  evalTactic <| ← `(tactic| rotate_left; repeat decide)
+  --netoyer le bazard de mkFinE assumption c'est pour QuivCat
+  --evalTactic <| ← `(tactic| rotate_left; repeat decide;assumption)
 
   evalTactic <| ← `(tactic| set $(mkIdent `J) : Type := $(← Term.exprToSyntax J))
   evalTactic <| ← `(tactic| set $(mkIdent "QuivJ".toName) := $(← Term.exprToSyntax instQuiverJ))
   evalTactic <| ← `(tactic| set $(mkIdent "Diag".toName) := $(← Term.exprToSyntax DiagJ))
 
+variable (C2: Type u) [Quiver.{v+1,u} C2]
+example {x y : C2} (k : x ⟶ y) {a b c d : Cate} (f: a ⟶ b) (g : c ⟶ b) : 1=2 := by
 
-example {a b c d : Cate} (f: a ⟶ b) (g : c ⟶ b) : 1=2 := by
-  BuildDiagram
+  BuildDiagram_of Cate
+
+  BuildDiagram_of AlgebraicGeometry.Scheme
+
+
 
   have : Diag.obj 1 = b := by rfl
-  have : Diag.map (⟨0, by simp [toNb,e,baseE,mkSigma]⟩ : QuivJ.Hom 0 1 ) = f := by rfl
+  have : Diag.map (⟨0, by simp [toNb, mkSigma, e, baseE ];sorry ⟩ : QuivJ.Hom 0 1 ) = f := by rfl
 
 
   sorry
