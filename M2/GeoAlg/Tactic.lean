@@ -25,13 +25,53 @@ def isHomStep (l : List <| Expr × Expr × Expr) (e : Expr) : TacticM <|  List <
   else
     return l
 
+#eval q(by decide : 3<4)
 
-variable (v : List Cate) (e : Π a b : Fin v.length, List (v.get a ⟶ v.get b))
+def mkFinE {n : Nat} (x : Fin n) : MetaM Expr :=
+  let nQ : Q(Nat) := Expr.lit (Literal.natVal n)
+  let xQ : Q(Nat) := Expr.lit (Literal.natVal x.val)
 
-def toNb : List <| List Nat := List.ofFn (fun x => List.ofFn (fun k => (e x k).length))
+  mkAppM ``Fin.mk #[xQ, q(by sorry : $xQ < $nQ)]
+
+variable {v : List Cate} (l : List <| Σ a b : Fin v.length, v.get a ⟶ v.get b) --(e : Π a b : Fin v.length, List (v.get a ⟶ v.get b))
+
+def mkHomNum (vE : List Q(Cate)) (f : Expr × Expr × Expr): TacticM <| Expr × Expr × Expr := do
+  let l := List.ofFn (fun x => x : Fin vE.length → Fin vE.length)
+  let ox ← List.findM? (fun x => isDefEq (vE.get x) f.2.1) l
+  let oy ← List.findM? (fun x => isDefEq (vE.get x) f.2.2) l
+
+  match ox, oy with
+    |none, _ => throwError "ça n'arrive que dans les films"
+    |_, none => throwError "ça n'arrive que dans les films"
+    |some x, some y => do
+      --let n := vE.length
+      --let nQ : Q(Nat) := Expr.lit (Literal.natVal n)
+
+
+      --let t := q(($x).isLt : Prop )
+      let xQ ← mkFinE x
+      let yQ ← mkFinE y
+
+      return ⟨f.1,xQ,yQ⟩
+
+
+
+
+--est-ce que ce ne serait pas usine à gaz ça?
+-- surement à corriger quand on aura un truc qui marche
+def baseE (f :  Σ a b : Fin v.length, v.get a ⟶ v.get b) (e : Π a b : Fin v.length, List (v.get a ⟶ v.get b)): Π a b : Fin v.length, List (v.get a ⟶ v.get b) := fun a b =>
+  if a = f.1 && b = f.2.1 then
+    f.2.2 :: e a b
+  else
+    e a b
+
+def e : Π a b : Fin v.length, List (v.get a ⟶ v.get b) :=
+  List.foldr baseE (fun _ _ => []) l
+
+def toNb : List <| List Nat := List.ofFn (fun x => List.ofFn (fun k => (e l x k).length))
 
 def QuivJ (x y : Fin v.length): Type :=
-  let h := toNb v e
+  let h := toNb l
   let a : Fin h.length := ⟨x.val, Fin.val_lt_of_le x (le_of_eq (by simp [h,toNb]))⟩
   let b : Fin (h.get a).length := ⟨y.val, Fin.val_lt_of_le y (le_of_eq (by simp [h, a, toNb]))⟩
 
@@ -39,119 +79,64 @@ def QuivJ (x y : Fin v.length): Type :=
 
 def ObjMapJ : Fin v.length → Cate := v.get
 
-def FunMapJ  {x y : Fin v.length} (f : QuivJ v e x y) : (ObjMapJ v x ⟶ ObjMapJ v y) := (e x y).get ⟨f.val, Fin.val_lt_of_le f (le_of_eq (by simp [toNb]))⟩
+def FunMapJ  {x y : Fin v.length} (f : QuivJ l x y) : (ObjMapJ x ⟶ ObjMapJ y) := (e l x y).get ⟨f.val, Fin.val_lt_of_le f (le_of_eq (by simp [toNb]))⟩
+
+/-def isCompatible (x y : Expr) (e: Expr × Expr × Expr) : TacticM Bool := do
+  return (← isDefEq x e.2.1) && (← isDefEq y e.2.2)-/
 
 
 
-def isCompatible (x y : Expr) (e: Expr × Expr × Expr) : TacticM Bool := do
-  return (← isDefEq x e.2.1) && (← isDefEq y e.2.2)
+def mkSigma (x y : Fin v.length) (f :v.get x ⟶ v.get y) : Σ a b : Fin v.length, v.get a ⟶ v.get b := Sigma.mk x (Sigma.mk y f)
 
-#check Quiver.mk
-#check List.foldlM
-#check List.get
+def mkSigmaE (v : Expr) (f : Expr × Expr × Expr) : TacticM Expr := do
+  mkAppOptM ``mkSigma #[v, f.2.1, f.2.2, f.1]
+
+
+/-def SigmaMkE (f : Expr × Expr × Expr) : TacticM Expr := do
+  mkAppM ``Sigma.mk #[f.2.1, ← mkAppM ``Sigma.mk #[f.2.2, f.1]]-/
+
+def consE (l : List Expr) (t : Expr) : TacticM Expr := do
+  let nil ← mkAppOptM ``List.nil #[t]
+  List.foldrM (fun e l => mkAppM ``List.cons #[e, l]) nil l
+
 
 elab "BuildDiagram" : tactic => do
   let hyp ← getLocalHyps
+
   let listV ←  Array.foldrM isObjStep [] hyp
+  let listVE : Q(List Cate) ← consE listV (q(Cate))
+
   let listH ←  Array.foldlM isHomStep [] hyp
-  let listVE ← List.foldrM (fun e l => mkAppM ``List.cons #[e, l]) (q(List.nil) : Q(List Cate)) listV
+  let listH ← listH.mapM (mkHomNum listV)
+  let listH ← listH.mapM (mkSigmaE listVE)
+  let listHE ← consE listH.reverse (q(Σ a b : Fin ($listVE).length, List.get $listVE a ⟶ List.get $listVE b))
 
-
-  --terriblement pas obptimal tout ce bazard
-  let mut listHE := []
-  let mut listN := []
-  for x in listV.reverse do
-    let mut listHEx := []
-    let mut listNx := []
-    for y in listV.reverse do
-
-
-      let Hxy ← listH.filterM (isCompatible x y)
-      let nxy : Q(Nat) := Expr.lit (Literal.natVal Hxy.length)
-      listNx := nxy :: listNx
-
-
-      let nilExy ← mkAppOptM ``List.nil #[← mkAppM ``Quiver.Hom #[x, y]]
-      let Hxy ← List.foldrM (fun e l => mkAppM ``List.cons #[e.1, l]) nilExy Hxy
-      listHEx := Hxy :: listHEx
-
-    let nilEn ← mkAppOptM ``List.nil #[q(Nat)]
-    let Nx ← List.foldrM (fun e l => mkAppM ``List.cons #[e, l]) nilEn listNx
-
-    listN := Nx :: listN
-    listHE := listHEx :: listHE
-
-  let truc := q(fun (x y : Nat) => ((listHE.get! x).get! y))
-
-  let nilEln ← mkAppOptM ``List.nil #[q(List Nat)]
-
-  let QuivJE ← List.foldrM (fun e l => mkAppM ``List.cons #[e, l]) nilEln listN
-
-  --logInfo m!"{listV},{listHE}"
-
-  logInfo m!"{← listV.mapM (fun e =>  ppExpr e)}"
-  logInfo m!"{← listH.mapM (fun e =>  (ppExpr e.1)) }"
-  logInfo m!"{← listH.mapM (fun e =>  (ppExpr e.2.1)) }"
-  logInfo m!"{← listH.mapM (fun e =>  (ppExpr e.2.2)) }"
+  logInfo m!"{← ppExpr listVE}"
+  logInfo m!"{← ppExpr listHE}"
 
   let n := listV.length
   let nQ : Q(Nat) := Expr.lit (Literal.natVal n)
   let J : Q(Type) := mkApp q(Fin) nQ
 
-  let QuivJ ← mkAppM ``QuivJ #[nQ, QuivJE]
-  let instQuiver ← mkAppOptM ``Quiver.mk #[J, QuivJ]
+  let QuivJ ← mkAppOptM ``QuivJ #[listVE, listHE]
+  let instQuiverJ ← mkAppOptM ``Quiver.mk #[J, QuivJ]
 
-  let FunObj ← mkAppOptM `ObjMapJ #[listVE]
+  let FunObjJ ← mkAppOptM ``ObjMapJ #[listVE]
+  let FunMapJ ← mkAppOptM ``FunMapJ #[listVE, listHE]
 
-  --FunMapJ : (a b : Cate) (e : List (a ⟶ b)) (n : ℕ) (h : List (List ℕ)) (x y : Fin n) (hyp : (--- = ---)
-  --let FunMap ← mkAppM `FunMapJ #[]
-
+  let DiagJ  ← mkAppOptM ``Prefunctor.mk #[J,instQuiverJ,q(Cate),q(inferInstance : Quiver Cate ), FunObjJ, FunMapJ ]
 
   evalTactic <| ← `(tactic| set $(mkIdent "J".toName) := $(← Term.exprToSyntax J))
-  evalTactic <| ← `(tactic| set $(mkIdent "JQ".toName) := $(← Term.exprToSyntax instQuiver))
-  evalTactic <| ← `(tactic| set $(mkIdent "Jfun".toName) := $(← Term.exprToSyntax FunObj))
-  --evalTactic <| ← `(tactic| set $(mkIdent "Diag".toName) := CST `C x)
+  evalTactic <| ← `(tactic| set $(mkIdent "QuivJ".toName) := $(← Term.exprToSyntax instQuiverJ))
+  evalTactic <| ← `(tactic| set $(mkIdent "Diag".toName) := $(← Term.exprToSyntax DiagJ))
 
-  --let v := sorry
-  --let e := sorry
-
-  --let D := sorry
-
-  --return-/
-
-
-
-example {a b c d : Cate} (f h : a ⟶ b) (g : c ⟶ b) : True := by
-  let v: List Cate := [a, b, c]
-  let e (a b : Fin 3) : List (v.get a ⟶ v.get b) := match a,b with
-    |0,1 => [f]
-    |2,1 => [g]
-    | _,_ => []
-
-  let J := Fin 3
-  let JQ : Quiver J := Quiver.mk <| QuivJ v e
-  let JDiag : J ⥤q Cate := ⟨ObjMapJ v , FunMapJ v e⟩
-
-  have : JDiag.obj 1 = b := by rfl
-  have : JDiag.map (⟨0, by simp [toNb,e, v] ⟩ : JQ.Hom 0 1 ) = f := by rfl
-
-
+example {a b c d : Cate} (f: a ⟶ b) (g : c ⟶ b) : True := by
   BuildDiagram
-  --suffices : Jfun ⟨0, sorry⟩ = Jfun ⟨0,sorry⟩
-  --exact this
 
+  have : Diag.obj 1 = b := by rfl
+  have : Diag.map (⟨0, by simp [toNb, mkSigma, e, baseE ] ⟩ : QuivJ.Hom 0 1 ) = f := by rfl
 
-  let x : Fin 4 := ⟨2,by exact Nat.lt_of_sub_eq_succ rfl⟩
-
-  let JDiag : J ⥤q Cate := ⟨ Jfun, by
-    intro x y hom
-
-
-    sorry⟩
-
-  have : JDiag.obj x  = c := by
-    rfl
-  sorry
+  trivial
 
 
 /-
@@ -261,6 +246,8 @@ def e2 (x y : Fin 3) : List ([a,b,c].get x ⟶ [a,b,c].get y) := match x,y with
 #eval q( fun (x y : Fin 3) (a : Cate) (f : a ⟶ a) => match x,y with
     |0,1 => [f]
     | _,_ => [])
+
+#eval q(fun x : Fin 1 => [1].get x )
 
 #expr [e2]
 
