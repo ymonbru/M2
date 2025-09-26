@@ -5,16 +5,17 @@ open Qq Lean Meta Elab Tactic CategoryTheory
 
 universe u v
 
-variable {Cate: Type u} [Quiver.{v+1,u} Cate] -- ici il faut un +1
+variable {Cate: Type u} [Quiver.{v+1,u} Cate] -- in order to allow the lemmas used by the tactic to work, there is ne need of the +1.
 
-
+/-- Intermediate function (it will be aplied into a List.foldr) that store a list of Expr and add e if it's definitionaly equal to an element of type cat-/
 def isObjStep (cat : Expr) (e : Expr) (l : List Expr) : TacticM <| List Expr := do
   if ← isDefEq (← inferType e) cat  then
     return e :: l
   else
     return l
 
-def isHomStep (cat : Expr) (l : List <| Expr × Expr × Expr) (e : Expr) : TacticM <|  List <| Expr × Expr × Expr := do
+/-- Intermediate function (it will be aplied into a List.foldr) that store a list of morphisms and add e if it's definitionaly equal to an element of type cat-/
+def isHomStep (cat : Expr) (e : Expr) (l : List <| Expr × Expr × Expr) : TacticM <|  List <| Expr × Expr × Expr := do
   logInfo m!"{← ppExpr e}"
   let typeE ← inferType e
   let x ←  mkFreshExprMVar cat
@@ -25,6 +26,7 @@ def isHomStep (cat : Expr) (l : List <| Expr × Expr × Expr) (e : Expr) : Tacti
   else
     return l
 
+/-- Takes an element of type Fin n and give the coresponding expression. Probably very ackward at the moment-/
 def mkFinE {n : Nat} (x : Fin n) : TacticM Expr := do
   let nQ : Q(Nat) := Expr.lit (Literal.natVal n)
   let xQ : Q(Nat) := Expr.lit (Literal.natVal x.val)
@@ -36,9 +38,10 @@ def mkFinE {n : Nat} (x : Fin n) : TacticM Expr := do
   evalTactic <| ← `(tactic| rotate_left; repeat decide)
   mkAppM ``Fin.mk #[xQ, newGoal]
 
-
+/- the variables that will be Meta-Computed by the tactic. -/
 variable {v : List Cate} (l : List <| Σ a b : Fin v.length, v.get a ⟶ v.get b)
 
+/-- If a morphism is represented as (f,a,b) with f: a⟶ b, it gives (f, k, n) where k and n are the positions of a and b in vE-/
 def mkHomNum (cat : Q(Type)) (vE : List Q($cat)) (f : Expr × Expr × Expr): TacticM <| Expr × Expr × Expr := do
   let l := List.ofFn (fun x => x : Fin vE.length → Fin vE.length)
   let ox ← List.findM? (fun x => isDefEq (vE.get x) f.2.1) l
@@ -52,31 +55,20 @@ def mkHomNum (cat : Q(Type)) (vE : List Q($cat)) (f : Expr × Expr × Expr): Tac
 
       return ⟨f.1,xQ,yQ⟩
 
-/-
-variable (f: Nat → Type)
-
-def truc (x : Σ a : Nat, f a) : (Π a : Nat, Option <| Type) := fun y => do
-  if x.1 = y then
-    some x.2
-    --sorry
-  else
-    none-/
-
-
-
---est-ce que ce ne serait pas usine à gaz ça?
--- surement à corriger quand on aura un truc qui marche
+/-- takes a morphism and a family of lists of morphisms and add the morphism to the list of morphism of the same type. Very awckward at the moment.-/
 def baseE (f :  Σ a b : Fin v.length, v.get a ⟶ v.get b) (e : Π a b : Fin v.length, List (v.get a ⟶ v.get b)): Π a b : Fin v.length, List (v.get a ⟶ v.get b) := fun a b =>
   if h: a = f.1 ∧ b = f.2.1 then
     (Quiver.homOfEq f.2.2 (by rw[h.1]) (by rw [h.2])) :: e a b
   else
     e a b
-
+/-- Build the familly of all the morphism in the context as a pi-type.-/
 def e : Π a b : Fin v.length, List (v.get a ⟶ v.get b) :=
   List.foldr baseE (fun _ _ => []) l
 
+/-- Gives the "Matrix" containing the number of morphisms of type v i ⟶ vj in the context-/
 def toNb : List <| List Nat := List.ofFn (fun x => List.ofFn (fun k => (e l x k).length))
 
+/-- The instance of Quiver build on Fin v.length: the morphisms between and i and j are Fin number of morphisms between v i and v j in the context-/
 def QuivJ (x y : Fin v.length): Type :=
   let h := toNb l
   let a : Fin h.length := ⟨x.val, Fin.val_lt_of_le x (le_of_eq (by simp [h,toNb]))⟩
@@ -84,64 +76,77 @@ def QuivJ (x y : Fin v.length): Type :=
 
   Fin <| ((h.get a).get b)
 
+/-- The object map of the prefunctor-/
 def ObjMapJ : Fin v.length → Cate := v.get
 
+/-- the function map of the prefunctor-/
 def FunMapJ  {x y : Fin v.length} (f : QuivJ l x y) : (ObjMapJ x ⟶ ObjMapJ y) := (e l x y).get ⟨f.val, Fin.val_lt_of_le f (le_of_eq (by simp [toNb]))⟩
 
+/-- An helper to build a morphism of the good type. It will be used to build expressions.-/
 def mkSigma (x y : Fin v.length) (f : v.get x ⟶ v.get y) : Σ a b : Fin v.length, v.get a ⟶ v.get b := Sigma.mk x (Sigma.mk y f)
 
+/-- Version of the same function but adapted to Expr-/
 def mkSigmaE (v : Expr) (f : Expr × Expr × Expr) : TacticM Expr := do
   mkAppOptM ``mkSigma #[none, none, v, f.2.1, f.2.2, f.1]
 
+/-- Takes a list of Expr (coresponding to elements of type t in the context) and gives the Expr coresponding to it-/
 def consE (l : List Expr) (t : Expr) : TacticM Expr := do
   let nil ← mkAppOptM ``List.nil #[t]
   List.foldrM (fun e l => mkAppM ``List.cons #[e, l]) nil l
 
+/-- An helper to define the Expr coresponding to this type-/
 def mkTypeAux (l : List Cate) : Type v := (Σ a b : Fin l.length, List.get l a ⟶ List.get l b)
 
-
-elab "BuildDiagram_of" c:term : tactic => do
-  let cat : Q(Type) ← Term.elabTerm c none
+/-- Build the Expr of the diagram (and the instance of quiver on the source, it will be needed)-/
+def BuildDiagram (cat : Q(Type)) : TacticM <| Expr × Expr := do
+  -- get the Expr corespongind to the instance of category of $cat
   let uQ ← mkFreshLevelMVar
   let vQ ← mkFreshLevelMVar
   --pas beau du tout mais on verra après
   let QuivCat := Expr.app (Expr.const `Quiver [vQ, uQ]) cat
   let newGoal ← mkFreshExprMVar QuivCat
   appendGoals [newGoal.mvarId!]
-
-  evalTactic <| ← `(tactic| rotate_left;infer_instance)--changer le assumption
+  evalTactic <| ← `(tactic| rotate_left;infer_instance)
 
   let hyp ← getLocalHyps --NB : this does not grab the elements defined before applying the tactic.
 
+  -- Get the list of objects in the context (as Expr)
   let listV ←  Array.foldrM (isObjStep cat) [] hyp
   let listVE : Q(List $cat) ← consE listV cat
 
-  let listH ←  Array.foldlM (isHomStep cat) [] hyp
-  logInfo m!"{listH}"
+  -- Get the list of morphisms in the context (as Expr)
+  let listH ←  Array.foldrM (isHomStep cat) [] hyp
+  --logInfo m!"{listH}"
   let listH ← listH.mapM (mkHomNum cat listV)
   let listH ← listH.mapM (mkSigmaE listVE)
-
   let t ← mkAppM ``mkTypeAux #[listVE]
   let listHE ← consE listH.reverse t
 
-  logInfo m!"{← ppExpr listVE}"
-  logInfo m!"{← ppExpr listHE}"
-
+  -- Build the Expr of the index Quiver of the diagram
   let n := listV.length
   let nQ : Q(Nat) := Expr.lit (Literal.natVal n)
   let J : Q(Type) := mkApp q(Fin) nQ
 
+  -- Build the Quiver instance over J
   let QuivJ ← mkAppOptM ``QuivJ #[none, none, listVE, listHE]
   let instQuiverJ ← mkAppOptM ``Quiver.mk #[J, QuivJ]
 
+  --Build the diagram
   let FunObjJ ← mkAppOptM ``ObjMapJ #[none, listVE]
   let FunMapJ ← mkAppOptM ``FunMapJ #[none, none, listVE, listHE]
-
-
   let DiagJ ← mkAppOptM ``Prefunctor.mk #[J,instQuiverJ, cat, newGoal , FunObjJ, FunMapJ ]
-
   --let Diag ← mkAppOptM ``Paths.lift #[J, instQuiverJ, none, none, DiagJ]
 
+  return ⟨instQuiverJ, DiagJ⟩
+
+
+/-- The tactic that build the diagram. The objects and morphism will be definitionaly equal to the one in the context.-/
+elab "BuildDiagram_of" c:term : tactic => do
+  let cat : Q(Type) ← Term.elabTerm c none
+
+  let ⟨instQuiverJ, DiagJ⟩ ← BuildDiagram cat
+
+  --Add the diagram to the context
   --evalTactic <| ← `(tactic| set $(mkIdent `J) : Type := $(← Term.exprToSyntax J))
   evalTactic <| ← `(tactic| set $(mkIdent "QuivJ".toName) := $(← Term.exprToSyntax instQuiverJ))
   evalTactic <| ← `(tactic| set $(mkIdent "Diag".toName) := $(← Term.exprToSyntax DiagJ))
@@ -151,141 +156,11 @@ variable (C2: Type u) [Quiver.{v+1,u} C2]
 example {x y : C2} (X : AlgebraicGeometry.Scheme) (k : x ⟶ y) {a b c d : Cate} (f: a ⟶ b) (g : c ⟶ b) : 1=2 := by
 
   BuildDiagram_of Cate
-
   --BuildDiagram_of C2
-
   --BuildDiagram_of AlgebraicGeometry.Scheme
-
-
 
   have : Diag.obj 1 = b := by rfl
   have : Diag.map (⟨0, by simp [toNb, mkSigma, e, baseE ]⟩ : QuivJ.Hom 0 1 ) = f := by rfl
 
 
   sorry
-
-
-/-
-unsafe def diagObjE (x : J) : TacticM C:= do
-  let h := v.get x
-  let t ← inferType h
-  guard <| ← isDefEq t (Expr.const `C [])
-  evalExpr C (Expr.const `C []) h
-
-unsafe def diagObj : TacticM <| J → C :=  do
-  let mut l := []
-  for h : i in [0: v.length] do
-    let iFin : Fin v.length := ⟨i, Membership.mem.upper h⟩
-    -- au pire pas grave si on ajoute une nouvelle source d'erreur
-    l := l.cons (← diagObjE C iFin)
-
-  return fun x => l[x.val]!-/
-
-/-unsafe def diagMapE { a b : J } ( f : a ⟶ b) (x y : C) : TacticM (x ⟶ y):= do
-  let t := e.get f.type
-  let h := t.get f.hom
-  let ty ← inferType h.1
-
-  let homType ← mkAppM (``Quiver.Hom) #[v.get h.2.1, v.get h.2.2]
-  guard <| ← isDefEq ty homType
-
-  --let d ← diagObjE C v h.2.1
-  --let cd ← diagObjE C v h.2.2
-  -- la pour le coup on exploite à mort les possibilitées de unsafe
-  evalExpr (x ⟶ y) homType h.1
-/-
-variable [Inhabited ((x : C) × (y : C) × (x ⟶ y))]
-
-unsafe def diagMap (x y): TacticM <| Fin e.length → (Σ x : C, Σ y : C , x ⟶ y) :=  do
-  let mut l := []
-  for i in [0: e.length] do
-    let iFin : Fin e.length := ⟨i, by sorry⟩
-    let h := e.get iFin
-    let t ← inferType h.1
-
-    let homType ← mkAppM (``Quiver.Hom) #[v.get h.2.1, v.get h.2.2]
-    guard <| ← isDefEq t homType
-
-    let d ← diagObjE C h.2.1
-    let cd ← diagObjE C h.2.2
-
-    l := l.cons ⟨d, cd, ← evalExpr (d ⟶ cd) homType h.1⟩
-
-  return fun x => l[x.val]!-/
-
-unsafe def diag0 : TacticM <| (Prefunctor J C) := do
-  let obj ← diagObj C
-  --let map ← diagMap C v e
-
-  let map {x y : J} : TacticM <| ( x ⟶ y) → (obj x ⟶ obj y) := do
-    let mut l := []
-    let n := HomE x y
-    let xToY := e.get n
-
-    for h : i in [0: xToY.length] do
-      let iFin : Fin xToY.length := ⟨i, Membership.mem.upper h⟩
-      let h := xToY.get iFin
-      let t ← inferType h.1
-
-      let homType ← mkAppM (``Quiver.Hom) #[v.get h.2.1, v.get h.2.2]
-      guard <| ← isDefEq t homType
-
-      --let d ← diagObjE C h.2.1
-      --let cd ← diagObjE C h.2.2
-
-      l := l.cons (← evalExpr (obj x ⟶ obj y) homType h.1)
-    return (fun f => l.get ⟨f.hom.val,sorry⟩)
-
-
-  let bidule ← map
-
-  return ⟨obj , bidule⟩
-
-    --sorry⟩
-
-def diag  :  Prefunctor (Fin v.length) C where
-  obj := sorry
-  map := sorry-/
-
-
-
-elab "#expr" "[" t:term "]" : command =>
-  Command.liftTermElabM do
-  let t ← Term.elabTerm t none
-  let t ← instantiateMVars t
-  logInfo m!"Expression: {t}:\n{repr t}"
-  --let t ← reduce t
-  --let t ← instantiateMVars t
-  --logInfo m!"Reduced: {t}:\n{repr t}"
-
-#check Prefunctor
-variable (a b c : Cate) (f : a ⟶ b) (g : c ⟶ b)
-
-def v1: List Cate := [a, b, c]
-
-#check v1
-def e2 (x y : Fin 3) : List ([a,b,c].get x ⟶ [a,b,c].get y) := match x,y with
-    |0,1 => [f]
-    |2,1 => [g]
-    | _,_ => []
-
-#eval q( fun (x y : Fin 3) (a : Cate) (f : a ⟶ a) => match x,y with
-    |0,1 => [f]
-    | _,_ => [])
-
-#eval q(fun x : Fin 1 => [1].get x )
-
-#expr [e2]
-
-variable (x : C)
-
-#expr [x]
-#expr [Prefunctor (Fin 4) (Fin 4)]
-
-
-
-def CST : Prefunctor J C where
-  obj _ := x
-  map _ := 𝟙 x
-
-#expr [CST]
