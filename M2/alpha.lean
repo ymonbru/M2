@@ -55,7 +55,7 @@ noncomputable section
 variable (U : Opens X) (G : (Compacts X)ᵒᵖ ⥤ C)
 
 /-- The condition over compacts subset of being contained in U -/
-def UsupK : Set (Compacts X) := fun (K:Compacts X) => (K : Set X) ⊆ U
+def UsupK : Set (Compacts X) := fun (K : Compacts X) => (K : Set X) ⊆ U
 
 /-- The category induced by UsupK -/
 def UsupK_cat : Type w := ObjectProperty.FullSubcategory (UsupK U)
@@ -111,7 +111,6 @@ noncomputable section
 
 variable {F : (Opens X)ᵒᵖ⥤ C} {G : (Compacts X)ᵒᵖ ⥤ C} (τ : (AlphaUpStar).obj F ⟶ G) (σ : F ⟶ (AlphaDownStar).obj G) (K : Compacts X) (U : Opens X)
 
-
 /-- The naturals maps from F(U) to the family of G(K) for K contained in U-/
 @[simps]
 def ConeFtoAG_NT : (Functor.const _ ).obj (F.obj (op U)) ⟶ GK U G where
@@ -159,6 +158,7 @@ def AFtoG : ( (AlphaUpStar).obj F ⟶  G) where
     rfl
 
 /-- The bijection between hom(αF, G) and hom(F,αG) -/
+@[simps]
 def homEquiv: (AlphaUpStar.obj F ⟶ G) ≃ ( F ⟶ AlphaDownStar.obj G) where
   toFun := fun τ => FtoAG τ
   invFun := fun σ  => AFtoG σ
@@ -167,6 +167,7 @@ def homEquiv: (AlphaUpStar.obj F ⟶ G) ≃ ( F ⟶ AlphaDownStar.obj G) where
 
 
 /-- The data necessary to build the adjunction between α^* and α_*-/
+@[simps]
 def adjthm : Adjunction.CoreHomEquiv (AlphaUpStar) (@AlphaDownStar X _ C _ _) where
 homEquiv := (@homEquiv _ _ _ _ _ _)
 homEquiv_naturality_left_symm _ _ := by
@@ -179,6 +180,7 @@ homEquiv_naturality_right _ _ := by
   simp [homEquiv]
 
 /-- The adjunction between α^* and α_*-/
+@[simps!]
 def AdjAlphaStar : (AlphaUpStar ) ⊣ (@AlphaDownStar X _ C _ _ ) := Adjunction.mkOfHomEquiv (adjthm)
 
 --#lint

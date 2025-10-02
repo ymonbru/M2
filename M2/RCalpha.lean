@@ -1,8 +1,4 @@
-import M2.CPP.CPP_alpha
-import M2.CPP.CPP_KsubU
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.Filtered.Final
-import Mathlib.Order.Lattice
+import M2.alpha
 
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite
 
@@ -23,7 +19,7 @@ variable {P Q : Opens X → Prop} (hpq : ∀ (U : Opens X), P U → Q U) (axiomP
 
 /-- The functor induced by P -> Q from the category of opens that contains K and satiffy P to the one that satisfy Q-/
 @[simps!]
-def KsubUPtoQ : (KsubU_cat K P) ⥤  (KsubU_cat K Q ):= ObjectProperty.ιOfLE (fun _ => fun hP => ⟨hP.1, hpq _ hP.2⟩)
+def KsubUPtoQ : (KsubU_cat K P) ⥤ (KsubU_cat K Q ):= ObjectProperty.ιOfLE (fun _ => fun hP => ⟨hP.1, hpq _ hP.2⟩)
 
 --omit [HasPullbacks C] [HasColimits C] [HasLimits C]
 @[simp]
@@ -39,14 +35,16 @@ variable [HasColimitsOfSize.{w, w} C] [HasLimitsOfSize.{w, w} C]
 def AlphaUpFPtoQ : (AlphaUpStarF F P) ⟶ (AlphaUpStarF F Q) where
 app K := colimit.pre (FU K.unop _ _) (Functor.op (KsubUPtoQ K.unop hpq))
 naturality K L f:= by
-
   apply colimit.hom_ext
   intro J
+  -- ça on devrais pourvoir le plier avec une tactique du genre forceColimW : TODO
+
   rw [ ← Category.assoc, ← Category.assoc]
+  --rw [colimit.ι_pre (FU _ F Q) (Functor.op (KsubUPtoQ _ hpq)) J]
+
   have : colimit.ι (FU _ _ _) J ≫ colimit.pre (FU _ _ _) (KsubUPtoQ _ hpq).op =
   colimit.ι (FU _ F _) (op <| (KsubUPtoQ _ hpq).obj J.unop ) := by
     exact colimit.ι_pre (FU _ _ _) (Functor.op (KsubUPtoQ _ hpq)) J
-
   rw [this]
 
   suffices _ = colimit.ι (FU _ _ _) ( op <| (K1subK2subU _ _ ).obj <| (KsubUPtoQ _ hpq).obj J.unop ) by simpa
@@ -68,6 +66,7 @@ def AlphaUpPPtoQ : (AlphaUpStarP P) ⟶ (@AlphaUpStarP _ _ C _ _ Q) where
     apply colimit.hom_ext
     intro U
     suffices _ = _ ≫ colimit.pre _ (KsubUPtoQ _ _).op ≫ colimMap (τres _ _ _) by simpa
+
     rw [ ← Category.assoc,← Category.assoc]
     have : colimit.ι (FU _ _ _) U ≫ colimit.pre (FU _ _ _ ) (KsubUPtoQ _ hpq).op =
   colimit.ι (FU _ F1 _) (op <| (KsubUPtoQ _ hpq).obj _ ) := by
@@ -123,9 +122,12 @@ variable (X : Type w) [TopologicalSpace X] [LocallyCompactSpace.{w} X] [T2Space 
 
 variable [HasColimitsOfSize.{w, w} C] [HasLimitsOfSize.{w, w} C]
 
+variable {X}  {C}
 /-- The functor α^* with condition on the opens of being relatively compact-/
+@[simps!]
 def AlphaUpStarRc : ((Opens X)ᵒᵖ ⥤ C) ⥤ (Compacts X)ᵒᵖ ⥤ C := AlphaUpStarP (relcCond)
 
+variable (X) (C)
 --hpq is trivial and #lint complain if an explicit proof is given
 
 omit [T2Space X] in
@@ -158,9 +160,11 @@ lemma V_spec : ∀ K,∀ U, (V X K U).obj.carrier ⊆ U.obj:= by
   exact (Classical.choice (existsIntermedKAndU X _ _ U.property.1)).property.2.2
 
 /-- The evidence that AlphaUpStarRc X C  and AlphaUpStar are isomorphics -/
-def AlphaUpStarToRc :  AlphaUpStarRc C X ≅ AlphaUpStar :=  IsoAlphaUpPtoQ _ (λ _ _ => rfl) (axiomPrc ) (V X) (V_spec
+@[simps!]
+def AlphaUpStarToRc :  (@AlphaUpStarRc C _ X _ _ _) ≅ AlphaUpStar :=  IsoAlphaUpPtoQ _ (λ _ _ => rfl) (axiomPrc ) (V X) (V_spec
 X)
 /-- The data of the adjunction betwee α^*RC and α_* deduced by the previous isomorphism and the adjunction of α^* and α_*-/
-def AdjAlphaStarRc : AlphaUpStarRc C X ⊣ AlphaDownStar := AdjAlphaStar.ofNatIsoLeft (AlphaUpStarToRc C X).symm
+@[simps!]
+def AdjAlphaStarRc : (@AlphaUpStarRc C _ X _ _ _) ⊣ AlphaDownStar := AdjAlphaStar.ofNatIsoLeft (AlphaUpStarToRc C X).symm
 
 #lint

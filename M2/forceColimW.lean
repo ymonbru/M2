@@ -45,7 +45,7 @@ def forceColimWLeft : TacticM Unit := withMainContext do
         | [] => return
         | _ => -- go to the morphism goal (if it is already solved by the previous simplifications ) and the try to solve it
           evalTactic $ ← `(tactic| first | swap| skip)
-          evalTactic $ ← `(tactic| first | apply Opposite.op | skip)
+          evalTactic $ ← `(tactic| first |assumption | apply Opposite.op | skip)
           evalTactic $ ← `(tactic| first | apply CategoryTheory.homOfLE | skip)
           evalTactic $ ← `(tactic| first | aesop_cat | skip)
 

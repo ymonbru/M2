@@ -178,7 +178,7 @@ example {x y : C2} (X : AlgebraicGeometry.Scheme) (k : x ⟶ y) {a b c d : Cate}
 
   BuildDiagram_of Cate
 
-  rename a => Diag.obj 0
+  ---rename a => Diag.obj 0
 
 
 

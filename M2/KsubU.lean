@@ -1,12 +1,6 @@
-import M2.Suffices
 import M2.natTransWC
-import Mathlib.CategoryTheory.Filtered.Basic
-import Mathlib.Topology.Sets.Compacts
-import Mathlib.Topology.Sets.Opens
---import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.Filtered.Final
-import Mathlib.Topology.UniformSpace.Compact
-import Mathlib.Topology.UniformSpace.OfCompactT2
+import Mathlib.Topology.Sets.Compacts
 
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite
 
@@ -44,7 +38,7 @@ instance : Category (KsubU_cat K P) := ObjectProperty.FullSubcategory.category (
 
 /-- The functor that sends opens that containt K2 to opens that contains K1-/
 @[simps]
-def K1subK2subU {K₁ K₂ : Compacts X} (f : K₁ ⟶ K₂): (KsubU_cat K₂ P) ⥤ (KsubU_cat K₁ P ) where
+def K1subK2subU {K₁ K₂ : Compacts X} (f : K₁ ⟶ K₂) : (KsubU_cat K₂ P) ⥤ (KsubU_cat K₁ P ) where
   obj W := (⟨W.obj,Set.Subset.trans (leOfHom f ) W.property.1
   , W.property.2⟩)
   map i := homOfLE (leOfHom i)
@@ -514,7 +508,7 @@ lemma axiomPrc : ∀ (U₁ U₂ : Opens X), relcCond U₁ → relcCond U₂ → 
     apply closure_inter_subset_inter_closure
 
 /-- The category of opens neighbourhoods relatively compact of K-/
-def RelCN_cat : Type u := (KsubU_cat K (relcCond))
+def RelCN_cat : Type u := (KsubU_cat K relcCond)
 
 instance : Category (RelCN_cat K) := instCategoryKsubU_cat K (relcCond)
 
@@ -666,4 +660,5 @@ instance closureFuncIsInitial : Functor.Initial (closureFuncK K) := by
   use 𝟙 _
   rfl
 
+#min_imports
 --#lint pourquoi n'est tu pas content?

@@ -1,10 +1,5 @@
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
---import Mathlib.CategoryTheory.Limits.HasLimits
---import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
-import Mathlib.Topology.Sets.Compacts
---import Mathlib.CategoryTheory.Filtered.Basic
-import Mathlib.CategoryTheory.Limits.Final
 import M2.KsubU
+import Mathlib.Combinatorics.Quiver.ReflQuiver
 
 open CategoryTheory Limits TopologicalSpace Compacts Opposite
 
@@ -62,8 +57,7 @@ def FLToFK : Cocone (FresSSK K F) := Cocone.mk _ <| (FLToFK_transNat K F)  ≫ (
 variable [LocallyCompactSpace X]
 
 /-- The evidence that the colimit can be computed in two diferent ways-/
-noncomputable def FUbarEquivFL : IsColimit (FUbarToFK K F) ≃ IsColimit (FLToFK K F) := by
-  exact Functor.Final.isColimitWhiskerEquiv (closureFuncK K).op  (FLToFK K F)
+noncomputable def FUbarEquivFL : IsColimit (FUbarToFK K F) ≃ IsColimit (FLToFK K F) := Functor.Final.isColimitWhiskerEquiv (closureFuncK K).op  (FLToFK K F)
 
 
 --the pullback square that gives a complex sheaf like in some good cases in the axiom of K-sheaf
@@ -161,5 +155,4 @@ def KsheafToPre : (Ksheaf X C ) ⥤ (Compacts X)ᵒᵖ ⥤ C := inducedFunctor f
 /--The evidence that KsheafToPre is fullyfaithful-/
 def KsheafToPreIsFF: (KsheafToPre X C).FullyFaithful  := fullyFaithfulInducedFunctor fun (F : Ksheaf X C) ↦ F.carrier
 
-
-#lint
+--#lint
