@@ -57,6 +57,7 @@ def FLToFK : Cocone (FresSSK K F) := Cocone.mk _ <| (FLToFK_transNat K F)  ≫ (
 variable [LocallyCompactSpace X]
 
 /-- The evidence that the colimit can be computed in two diferent ways-/
+@[simps!]
 noncomputable def FUbarEquivFL : IsColimit (FUbarToFK K F) ≃ IsColimit (FLToFK K F) := Functor.Final.isColimitWhiskerEquiv (closureFuncK K).op  (FLToFK K F)
 
 
