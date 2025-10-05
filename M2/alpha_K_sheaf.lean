@@ -251,19 +251,12 @@ theorem IsoAlphaUnit : IsIso ((AdjShAlphaStar X C).unit.app F):= by
 
 #check (AdjAlphaStar).counit.app G.carrier
 variable {X} {C}
---def truc0 : RelCN_cat K1 ⥤ RelCN_cat K2 := by apply K1subK2subU
 
 @[simps!]
 def Gbar : (RelCN_cat K)ᵒᵖ ⥤ C := (closureFunc K).op ⋙ G.carrier
 
 @[simps!]
 def αG : (RelCN_cat K)ᵒᵖ ⥤ C := (FU K (AlphaDownStar.obj G.carrier) relcCond)
-
-@[simps!]
-def Gsup : (supSupK_cat K)ᵒᵖ ⥤ C := (inducedFunctor ObjectProperty.FullSubcategory.obj).op ⋙ G.carrier
-
-@[simps!]
-def αGPasRC : (supSupK_cat K)ᵒᵖ ⥤ (RelCN_cat K)ᵒᵖ := by apply Functor.op ;apply?;sorry
 
 variable (U : RelCN_cat K) (K' : UsupK_cat U.obj)
 
@@ -292,12 +285,6 @@ def truc : FUbar K G.carrier ⟶  αG K G where
     rw [ ← G.carrier.map_comp]
     rfl
 
-def trucPasRC : (FresSSK K G.carrier) ⟶ αGPasRC K G where
-  app L := by
-    simp
-    sorry
-
-
 @[simps]
 -- ici si pas de NatTrans ça ne marche pas dans la def qui suit
 def truc2ι : αG K G ⟶ (Functor.const (RelCN_cat K)ᵒᵖ).obj (((AlphaDownStar ⋙ AlphaUpStarRc ).obj G.carrier).obj (op K)) where
@@ -312,28 +299,9 @@ def truc2: Cocone (αG K G) where
   pt:= ((AlphaDownStar ⋙ AlphaUpStarRc).obj G.carrier).obj (op K)
   ι := truc2ι K G
 
-def truc2ιPasRC : αG K G ⟶ (Functor.const (RelCN_cat K)ᵒᵖ).obj (((AlphaDownStar ⋙ AlphaUpStar).obj G.carrier).obj (op K)) where
-  app U := colimit.ι (FU K (AlphaDownStarG G.carrier )) (((KsubUPtoQ K (fun _ _ => rfl))).op.obj U)
-  naturality {U V} f := sorry
-
-@[simps]
-def truc2PasRC: Cocone (αG K G) where
-  pt:= ((AlphaDownStar ⋙ AlphaUpStar).obj G.carrier).obj (op K)
-  ι := truc2ιPasRC K G
-
-
-/-def h1 : ((AlphaDownStar ⋙ AlphaUpStarRc).obj G.carrier).obj (op K) ⟶ G.carrier.obj (op K) := ((AdjAlphaStarRc C X).counit.app G.carrier).app (op K)
-
-def h2 : G.carrier.obj (op K) ⟶ ((AlphaDownStar ⋙ AlphaUpStarRc).obj G.carrier).obj (op K) := Limits.IsColimit.map ((FUbarEquivFL K G.carrier).invFun (G.ksh3 K)) (truc2 K G) (truc K G)-/
-theorem bidule2PasRC : IsIso (((AdjAlphaStar).counit.app G.carrier).app (op K)) where
-  out := by
-    #check (G.ksh3 K).map --(truc2 K G) sorry --(truc K G)
-
-
-    sorry
-
 theorem bidule2 : IsIso (((AdjAlphaStarRc C X).counit.app G.carrier).app (op K)) where
   out := by
+    simp
     use ((FUbarEquivFL K G.carrier).invFun (G.ksh3 K)).map (truc2 K G) (truc K G)
     constructor
     · apply colimit.hom_ext
@@ -346,28 +314,14 @@ theorem bidule2 : IsIso (((AdjAlphaStarRc C X).counit.app G.carrier).app (op K))
         exact colimit.ι_pre (FU K (AlphaDownStarG G.carrier) fun x ↦ true = true) (KsubUPtoQ K (λ _ _ => rfl)).op _
       slice_lhs 1 2 => rw [this]
 
-      let t : (FU K (AlphaDownStarG G.carrier) relcCond).obj U ⟶ colimit (FU K (AlphaDownStarG G.carrier) relcCond) := by
-        simp
-        sorry
-      simp at t
-
-      let t2 : (FUbarToFK K G.carrier).pt ⟶ (truc2 K G).pt := by
-        simp
-        apply _ ≫ colimit.ι (FU K (AlphaDownStarG G.carrier) relcCond) _
-        exact U
-        simp
-        apply _ ≫ limit.π (GK (unop U).obj G.carrier) _
-
-        sorry
-
       simp [AdjAlphaStar, homEquiv,]
 
-      unfold truc bidule
+      let t : (FUbarToFK K G.carrier).pt ⟶ (truc2 K G).pt  := by sorry
+      simp at t
 
-
-      --set f:= colimit.pre (FU K (AlphaDownStarG G.carrier) trueCond) (KsubUPtoQ K (fun _ _=> rfl)).op
-      --dsimp only [AdjAlphaStarRc_counit_app_app] --[AdjAlphaStar, homEquiv]
       sorry
+
+
     · apply Eq.trans _
       · apply Eq.symm
 
@@ -376,7 +330,8 @@ theorem bidule2 : IsIso (((AdjAlphaStarRc C X).counit.app G.carrier).app (op K))
         simp
       · apply ((FUbarEquivFL K G.carrier).invFun (G.ksh3 K)).uniq (FUbarToFK K G.carrier )
         intro U
-        simp [AdjAlphaStar, homEquiv, CoconeAFtoG]
+        simp [AdjAlphaStar, homEquiv,]
+
         sorry
 
 
