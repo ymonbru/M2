@@ -276,37 +276,6 @@ def truc : FUbar K G.carrier ⟶ FU K (AlphaDownStar.obj G.carrier) relcCond whe
     suffices G.carrier.map ((closureFunc K).map f.unop).op ≫ G.carrier.map (op (homOfLE _)) = G.carrier.map (op (homOfLE _)) by simpa
     rw [ ← G.carrier.map_comp]
     rfl
-/-
-@[simps]
-def truc2 : (FU K (AlphaDownStar.obj G.carrier) relcCond) ⟶ (Functor.const (RelCN_cat K)ᵒᵖ).obj (G.carrier.obj (op K)) where
-  app U := by
-    apply limit.π _ _ ≫ _
-    · apply op
-      use K
-      simp [UsupK]
-      exact U.unop.property.1
-    exact 𝟙 _
-
-/-
-@[simps]
-def truc3 : FUbar K G.carrier ⟶ (Functor.const (RelCN_cat K)ᵒᵖ).obj (G.carrier.obj (op K)) where
-  app U := by
-    apply G.carrier.map
-    apply op
-    apply homOfLE
-    apply Set.Subset.trans
-    exact U.unop.property.1
-    exact subset_closure
-
-def cocone3 : Cocone (FUbar K G.carrier) := Cocone.mk _ (truc3 K G)
-
-lemma Comp12Eq3 : truc K G ≫ truc2 K G = truc3 K G := by
-  apply NatTrans.ext
-  apply funext
-  intro
-  simp-/
-
---rempacer par la colmite selon G.ksh3-/
 
 @[simps]
 def coconeι : FU K (AlphaDownStar.obj G.carrier) relcCond ⟶
