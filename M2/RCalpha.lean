@@ -22,8 +22,8 @@ variable {P Q : Opens X → Prop} (hpq : ∀ (U : Opens X), P U → Q U) (axiomP
 def KsubUPtoQ : (KsubU_cat K P) ⥤ (KsubU_cat K Q ):= ObjectProperty.ιOfLE (fun _ => fun hP => ⟨hP.1, hpq _ hP.2⟩)
 
 --omit [HasPullbacks C] [HasColimits C] [HasLimits C]
-@[simp]
-lemma KsubPtoQCompFQEqFP : (KsubUPtoQ K hpq).op ⋙ FU K F Q = FU K F P := by rfl
+--@[simp]
+--lemma KsubPtoQCompFQEqFP : (KsubUPtoQ K hpq).op ⋙ FU K F Q = FU K F P := by rfl
 
 variable (V : ∀ K, KsubU_cat K Q → KsubU_cat K P)
 
@@ -136,7 +136,7 @@ lemma existsIntermedKAndU (h : K.carrier ⊆ U.carrier) : Nonempty ({ L //IsComp
   exact Nonempty.intro ⟨L,hL⟩
 
 /-- The V such that K sub V sub Vbar sub U for X localy comapcts-/
-def V K : KsubU_cat K → KsubU_cat K (@relcCond X _ ) := by
+def Vloc : KsubU_cat K → (RelCN_cat K )  := by
   intro U
   let L := (Classical.choice (existsIntermedKAndU X K U.obj U.property.1)).val
   use ⟨interior L, isOpen_interior ⟩
@@ -152,16 +152,28 @@ def V K : KsubU_cat K → KsubU_cat K (@relcCond X _ ) := by
         exact (Classical.choice (existsIntermedKAndU X _ U.obj U.property.1)).property.1
       · apply interior_subset
 
-lemma V_spec : ∀ K,∀ U, (V X K U).obj.carrier ⊆ U.obj:= by
-  intro _ U
-  unfold V
+-- probabelement refaire ces deux lemmes dans un meilleur format et un meilleur nom
+lemma V_spec : ∀ U, (Vloc X K U).obj.carrier ⊆ U.obj:= by
+  intro U
   apply Set.Subset.trans
   apply interior_subset
   exact (Classical.choice (existsIntermedKAndU X _ _ U.property.1)).property.2.2
 
+lemma V_closure : ∀ U, ((closureFunc K).obj (Vloc X K U)).carrier ⊆ U.obj := by
+  intro U
+  apply Set.Subset.trans _
+  exact (Classical.choice (existsIntermedKAndU X _ _ U.property.1)).property.2.2
+  apply Set.Subset.trans _
+  apply closure_subset_iff_isClosed.2
+  apply IsCompact.isClosed
+  exact (Classical.choice (existsIntermedKAndU X _ _ U.property.1)).property.1
+
+  apply closure_mono
+  apply interior_subset
+
 /-- The evidence that AlphaUpStarRc X C  and AlphaUpStar are isomorphics -/
 @[simps!]
-def AlphaUpStarToRc :  (@AlphaUpStarRc C _ X _ _ _) ≅ AlphaUpStar :=  IsoAlphaUpPtoQ _ (λ _ _ => rfl) (axiomPrc ) (V X) (V_spec
+def AlphaUpStarToRc :  (@AlphaUpStarRc C _ X _ _ _) ≅ AlphaUpStar :=  IsoAlphaUpPtoQ _ (λ _ _ => rfl) (axiomPrc ) (Vloc X) (V_spec
 X)
 /-- The data of the adjunction betwee α^*RC and α_* deduced by the previous isomorphism and the adjunction of α^* and α_*-/
 @[simps!]

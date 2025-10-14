@@ -97,12 +97,17 @@ instance : Top (KsubU_cat K) := by
   use ⊤
   simp
 
-instance : Bot (KsubU_cat (⊥ : Compacts X)) := by
-  use ⊥
-  simp
+variable (Pbot: P ⊥)
 
+instance : Bot (KsubU_cat (⊥ : Compacts X) P) := by
+  use ⊥
+  simpa
+
+instance : Bot (KsubU_cat (⊥ : Compacts X) ) := by
+  apply instBotKsubU_catBotCompacts
+  rfl
 /-- The evidence that ⊥ is initial in the neighbourhouds of ⊥ -/
-def IsInitialKsubUBot: IsInitial (⊥ :(KsubU_cat (⊥ : Compacts X))) := by
+instance IsInitialKsubUBot : IsInitial ((instBotKsubU_catBotCompacts Pbot).bot :(KsubU_cat (⊥ : Compacts X) P)) := by
   apply IsInitial.ofUniqueHom
   · intro _ _
     apply eq_of_comp_right_eq
@@ -113,10 +118,17 @@ def IsInitialKsubUBot: IsInitial (⊥ :(KsubU_cat (⊥ : Compacts X))) := by
     intro _ hx
     rcases hx
 
+instance IsInitialKsubUBotTrue : IsInitial (⊥ :(KsubU_cat (⊥ : Compacts X))) := by
+  apply IsInitialKsubUBot
+
+
 /-- The evidence that op ⊥ is terminal in the neighbourhouds of op ⊥ -/
-def IsTerminalKsubUOpBotOp: IsTerminal (op ⊥ : (KsubU_cat (⊥ : Compacts X))ᵒᵖ ) := by
-  refine terminalOpOfInitial ?_
-  exact IsInitialKsubUBot
+def IsTerminalKsubUOpBotOp: IsTerminal (op (instBotKsubU_catBotCompacts Pbot).bot : (KsubU_cat (⊥ : Compacts X) P)ᵒᵖ ) := by
+  apply terminalOpOfInitial
+  exact IsInitialKsubUBot Pbot
+
+def IsTerminalKsubUOpBotOpTrue: IsTerminal (op ⊥ : (KsubU_cat (⊥ : Compacts X) )ᵒᵖ ) := by
+  exact IsTerminalKsubUOpBotOp _
 
 instance : IsCofiltered (KsubU_cat K ) where
   toIsCofilteredOrEmpty := IsCofilteredKsubU K fun _ _ _ ↦ congrFun rfl
@@ -158,94 +170,7 @@ instance : (KsubUK1K2ProjRight K1 K2).Initial := by
     use 𝟙 _
     rfl
 
-
-/-
-lemma bidule (X : Type) [UniformSpace X] [CompactSpace X] [T2Space X] (K1 K2 : Compacts X) (U : KsubU (K1 ⊓ K2)) (hU : K1.1 ∩ K2.1 ⊆ U.1) : ∃ (V1 : KsubU_cat K1), ∃ (V2 : KsubU_cat K2), V1.1.1 ∩ V2.1.1 ⊆ U.1.1  := by
-
-  -- en fait on doit pouvoir bricoler avec ça (L'énoncé IsCompact.nhdsSet_inter_eq te donne bien ce que tu veux grâce à docs#Filter.HasBasis.inf), merci anatole et moi du passé qui avais oublié
-  -- A = K1\ U, B= K2 \ U
-    -- Vi est pris comme compact qui contient K1 et est inclus dans A ∪ U
-    let A := K1.carrier \ U.1
-    let B := K2.carrier \ U.1
-
-    have this : Disjoint A B := by
-      apply Set.disjoint_iff_inter_eq_empty.mpr
-      apply Set.subset_empty_iff.mp
-      intro _ ⟨hA,hB⟩
-      exfalso
-      apply hA.2
-      apply hU
-      exact ⟨hA.1, hB.1⟩
-
-    have hA : IsCompact A := by
-      apply IsCompact.diff
-      exact K1.isCompact'
-      exact Opens.isOpen U.1
-
-    have hB : IsClosed B := by
-      apply IsClosed.sdiff
-      apply IsCompact.isClosed
-      exact K2.isCompact'
-      exact Opens.isOpen U.1
-
-    let r := (Disjoint.exists_uniform_thickening hA hB this).choose
-
-    let r_spec := (Disjoint.exists_uniform_thickening hA hB this).choose_spec
-
-    -- c'est faux mais on doit pouvoir s'en sortir en le prenant plus petit non?
-    have : IsOpen r := by
-      sorry
-
-
-    let V1s := (⋃ x ∈ K1.1, UniformSpace.ball x r)
-    let V2s := (⋃ x ∈ K2.1, UniformSpace.ball x r)
-
-    let V1o : Opens X := ⟨ V1s, by
-      apply isOpen_biUnion
-      intro a ha
-      apply @UniformSpace.isOpen_ball _ (uniformSpaceOfCompactT2 : UniformSpace X) a
-      exact this⟩
-    let V2o : Opens X := ⟨ V2s, by
-      apply isOpen_biUnion
-      intro a ha
-      apply @UniformSpace.isOpen_ball _ (uniformSpaceOfCompactT2 : UniformSpace X) a
-      exact this⟩
-
-    let V1 : (KsubU_cat K1) := ⟨ V1o, by
-      constructor
-      intro x _
-      apply Set.mem_iUnion.2
-      use x
-      suffices x ∈ K1 ∧ x ∈ UniformSpace.ball x r by simpa
-      constructor
-      · assumption
-      · apply UniformSpace.mem_ball_self
-
-        exact r_spec.1
-      rfl⟩
-
-    let V2 : (KsubU_cat K2) := ⟨ V2o, by
-      constructor
-      intro x _
-      apply Set.mem_iUnion.2
-      use x
-      suffices x ∈ K2 ∧ x ∈ UniformSpace.ball x r by simpa
-      constructor
-      · assumption
-      · apply UniformSpace.mem_ball_self
-        exact r_spec.1
-      rfl⟩
-
-    use V1
-    use V2
-
-    intro x hx
-
-    sorry-/
-
-
-
-instance  [T2Space X]: (subK1SubK2toSubK1InterK2 K1 K2).Initial := by
+instance [T2Space X] : (subK1SubK2toSubK1InterK2 K1 K2).Initial := by
   apply (Functor.initial_iff_of_isCofiltered _).mpr
   constructor
   · intro U
@@ -533,6 +458,17 @@ instance : Nonempty (RelCN_cat K) := by
     constructor
     · exact IsCompact.isClosed hL.1
     · apply interior_subset
+
+instance : Bot (KsubU_cat (⊥ : Compacts X) relcCond) := by
+  apply instBotKsubU_catBotCompacts
+  apply Set.Finite.isCompact
+  simp
+
+def IsInitialKsubUBotRc : IsInitial (⊥ :(KsubU_cat (⊥ : Compacts X) relcCond)) := by
+  apply IsInitialKsubUBot
+
+def IsTerminalKsubUOpBotOpRc: IsTerminal (op ⊥ : (KsubU_cat (⊥ : Compacts X) )ᵒᵖ ) := by
+  exact IsTerminalKsubUOpBotOp _
 
 end
 

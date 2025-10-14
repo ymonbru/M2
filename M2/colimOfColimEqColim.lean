@@ -3,7 +3,7 @@ import M2.KsubU
 import M2.RCalpha
 import M2.forceColimW
 
-open CategoryTheory Limits TopologicalSpace Compacts Opposite Functor TopCat
+open CategoryTheory Limits TopologicalSpace Compacts Opposite Functor
 
 universe u1 u2 u3 u4 v1 v2 v3 v4
 

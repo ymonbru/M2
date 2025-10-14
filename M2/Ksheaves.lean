@@ -1,5 +1,4 @@
 import M2.KsubU
-import Mathlib.Combinatorics.Quiver.ReflQuiver
 
 open CategoryTheory Limits TopologicalSpace Compacts Opposite
 
@@ -42,7 +41,7 @@ def FresSSK : (supSupK_cat K)ᵒᵖ ⥤ C := (ObjectProperty.ι (supSupK K)).op.
 
 /-- The natural transformation that allows to define F(K) as a cocone of the diagram FresSSK-/
 @[simps]
-def FLToFK_transNat: (FresSSK K F) ⟶ (Functor.const _ ).obj (op K) |>.comp F where
+def FLToFKι: (FresSSK K F) ⟶ (Functor.const _ ).obj (op K) |>.comp F where
 app W:= F.map <| op <| homOfLE <| by
   apply supSupKtoSupK
 naturality _ _ _ := by
@@ -52,7 +51,7 @@ naturality _ _ _ := by
 
 /-- The cocone of the diagram FresSSK given by F(K) and the canonical maps-/
 @[simps]
-def FLToFK : Cocone (FresSSK K F) := Cocone.mk _ <| (FLToFK_transNat K F)  ≫ (Functor.constComp _ _ _).hom
+def FLToFK : Cocone (FresSSK K F) := Cocone.mk _ <| (FLToFKι K F)  ≫ (Functor.constComp _ _ _).hom
 
 variable [LocallyCompactSpace X]
 
@@ -154,6 +153,15 @@ instance :  Category (Ksheaf X C) := InducedCategory.category (·.carrier)
 def KsheafToPre : (Ksheaf X C ) ⥤ (Compacts X)ᵒᵖ ⥤ C := inducedFunctor fun (F : Ksheaf X C) ↦ F.carrier
 
 /--The evidence that KsheafToPre is fullyfaithful-/
-def KsheafToPreIsFF: (KsheafToPre X C).FullyFaithful  := fullyFaithfulInducedFunctor fun (F : Ksheaf X C) ↦ F.carrier
+instance KsheafToPreIsFF: (KsheafToPre X C).FullyFaithful  := fullyFaithfulInducedFunctor fun (F : Ksheaf X C) ↦ F.carrier
+
+-- pourquoi diable il ne le devine pas seul?
+instance : (KsheafToPre X C).Faithful := by
+  apply Functor.FullyFaithful.faithful
+  exact KsheafToPreIsFF X C
+
+instance : (KsheafToPre X C).Full := by
+  apply Functor.FullyFaithful.full
+  exact KsheafToPreIsFF X C
 
 --#lint

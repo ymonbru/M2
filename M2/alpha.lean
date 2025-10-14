@@ -62,6 +62,10 @@ def UsupK_cat : Type w := ObjectProperty.FullSubcategory (UsupK U)
 
 instance : Category (UsupK_cat U) := ObjectProperty.FullSubcategory.category (UsupK U)
 
+/-- The conversion from an open that contain K to a compact contained in U-/
+@[simps]
+def KsubUToUsupK {K : Compacts X} {P : Opens X → Prop} (U : KsubU_cat K P) : UsupK_cat U.obj := ⟨K, U.property.1⟩
+
 /-- The diagrom obtained by restricting G to the subcategory UsupK-/
 @[simps!]
 def GK : (UsupK_cat U)ᵒᵖ ⥤ C := Functor.comp (ObjectProperty.ι (UsupK U)).op  G
@@ -73,17 +77,18 @@ variable (U₁ U₂ : Opens X) (f : U₁ ⟶ U₂)-- U₁ ⊆ U₂
 def U2supU1supK : (UsupK_cat U₁) ⥤ (UsupK_cat U₂) where
   obj W := (⟨W.obj,Set.Subset.trans W.property (leOfHom f)⟩ : UsupK_cat _)
   map i := homOfLE (leOfHom i)
-
+/-
 /-- The natural transformation of change of basis for the diagram GK-/
 @[simps]
 def U2supU1natTrans : (GK _ G) ⟶  Functor.comp (U2supU1supK _ _ f).op (GK _ G) where
-  app _ := 𝟙 _
+  app _ := 𝟙 _-/
 
 /-- The functor α_* G-/
 @[simps]
 def AlphaDownStarG : (Opens X)ᵒᵖ ⥤ C  where
   obj U := limit (GK U.unop G)
-  map f := (limit.pre (GK _ G) (U2supU1supK _ _ f.unop).op) ≫ limMap (U2supU1natTrans G _ _ f.unop)
+  map f := (limit.pre (GK _ G) (U2supU1supK _ _ f.unop).op) ≫ limMap (𝟙 _)--((U2supU1natTrans G _ _ f.unop))
+-- c'est assez fou parceque sans le limMap il ne trouve pas seul
 
 variable (G₁ G₂:(Compacts X)ᵒᵖ ⥤ C) (σ : G₁ ⟶ G₂)
 
@@ -113,7 +118,7 @@ variable {F : (Opens X)ᵒᵖ⥤ C} {G : (Compacts X)ᵒᵖ ⥤ C} (τ : (AlphaU
 
 /-- The naturals maps from F(U) to the family of G(K) for K contained in U-/
 @[simps]
-def ConeFtoAG_NT : (Functor.const _ ).obj (F.obj (op U)) ⟶ GK U G where
+def ConeFtoAGπ : (Functor.const _ ).obj (F.obj (op U)) ⟶ GK U G where
   app L := colimit.ι (FU (ObjectProperty.ι _ |>.op.obj _ ).unop _ ) (op ⟨U,L.unop.property,rfl⟩) ≫ τ.app _
 
   naturality _ L _ := by
@@ -123,12 +128,12 @@ def ConeFtoAG_NT : (Functor.const _ ).obj (F.obj (op U)) ⟶ GK U G where
 
 /-- The cone of the diragram GK U with point F(U)-/
 @[simps]
-def ConeFtoAG : Cone (GK U G) := Cone.mk _ (ConeFtoAG_NT τ _)
+def ConeFtoAG : Cone (GK U G) := Cone.mk _ (ConeFtoAGπ τ _)
 
 /-- The natural transformation from F to α_*G induced taking the natural map from ConeFtoAG to the colimit-/
 @[simps]
 def FtoAG : F ⟶ (AlphaDownStar).obj G where
-  app U:= limit.lift _ (ConeFtoAG τ U.unop)
+  app U := limit.lift _ (ConeFtoAG τ U.unop)
   naturality U V _ := by
     --ext ne trouve pas limit.hom_ext
     apply limit.hom_ext
@@ -139,12 +144,12 @@ def FtoAG : F ⟶ (AlphaDownStar).obj G where
 
 /-- The naturals maps from the family of F(U) to  G(K) for U containing K -/
 @[simps]
-def CoconeAFtoG_NT : FU K F P ⟶ (Functor.const _ ).obj (G.obj (op K))  where
+def CoconeAFtoGι : FU K F P ⟶ (Functor.const _ ).obj (G.obj (op K))  where
   app W := σ.app _ ≫ limit.π (GK _ _) (op ⟨K, W.unop.property.1⟩)
 
 /-- The cocone induced by the natural transformation CoconeAFtoG_NT-/
 @[simps]
-def CoconeAFtoG : Cocone (FU K F P) := Cocone.mk _ (CoconeAFtoG_NT σ K)
+def CoconeAFtoG : Cocone (FU K F P) := Cocone.mk _ (CoconeAFtoGι σ K)
 
 /-- The natural transformation  from α^* F to G induced taking the natural map from the limit to CoconeAFtoG-/
 @[simps]

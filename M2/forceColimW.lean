@@ -1,9 +1,9 @@
-import Mathlib
+import Lean
+import Mathlib.CategoryTheory.Limits.HasLimits
 
 open CategoryTheory CategoryTheory.Limits Opposite Lean Meta Elab Tactic
 
 universe u v w x
-
 #check  `(tactic|rfl)
 
 /-- try to identify e as _ ≫ colim.ι F a = colim.ι F b and return the parameters-/
@@ -98,3 +98,4 @@ example : (𝟙 _ ≫ (FfBis F f ≫ colimit.ι F ( op b)) = colimit.ι F (op a)
 
   sorry
 example : 1=1 := by forceColimW-/
+#min_imports
