@@ -2,6 +2,8 @@ import M2.LimOfColimEx
 import M2.colimOfColimEqColim
 import M2.Suffices
 import M2.RCalpha
+import M2.KsheafIso
+import Mathlib.Topology.Sheaves.Stalks
 
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite TopCat TopCat.Presheaf
 open ZeroObject
@@ -161,7 +163,7 @@ def shAlphaUpStarG : (Ksheaf X C) where
       intro _ hx
       rcases hx
     apply IsTerminal.ofIso this
-    apply @asIso _ _ _ _ _ (isIso_ι_of_isTerminal (IsTerminalKsubUOpBotOp) (FU ⊥ F.val ))
+    apply @asIso _ _ _ _ _ (isIso_ι_of_isTerminal (IsTerminalKsubUOpBotOpTrue) (FU ⊥ F.val ))
   ksh2 K1 K2 := by
     apply Limits.IsLimit.ofIsoLimit _ (SquareSuptoInfIsColimLim F K1 K2)
     apply IsLimit.ofPreservesConeTerminal
@@ -172,6 +174,10 @@ def shAlphaUpStarG : (Ksheaf X C) where
     apply colimIsColimColim _ _ (repOEx K) (repHEx K) (repLiftingEx K) _
     exact colimit.isColimit (FcupIaEx K F.val)
 
+/-- The structur of Ksheaf over (AlphaUpStarRc).obj F-/
+@[simps!]
+def shAlphaUpStarRcG : (Ksheaf X C) := KsheafOfIso (AlphaUpStarRc.obj F.val) (shAlphaUpStarG X C F) ((AlphaUpStarToRc C X).app F.val)
+
 /-- α^* as a functor restricted to sheaves and corestricted to Ksheaves-/
 @[simps]
 def shAlphaUpStar : Sheaf C (of X) ⥤ (Ksheaf X C) where
@@ -179,15 +185,24 @@ def shAlphaUpStar : Sheaf C (of X) ⥤ (Ksheaf X C) where
   map f := (AlphaUpStar).map ((Sheaf.forget _ _).map f)
   map_id G := by
     -- j'ai remplace Sheaf.forget F par F.val pour simplifier et du coup il ne sait plus faire ça
-
     have : 𝟙 ((Sheaf.forget C (of X)).obj G) = 𝟙 G.val := by rfl
     rw [(Sheaf.forget C (of X)).map_id, this, AlphaUpStar.map_id]
     rfl
 
+@[simps]
+def shAlphaUpStarRc : Sheaf C (of X) ⥤ (Ksheaf X C) where
+  obj G := shAlphaUpStarRcG X C G
+  map f := (AlphaUpStarRc).map ((Sheaf.forget _ _).map f)
+  map_id G := by
+    -- j'ai remplace Sheaf.forget F par F.val pour simplifier et du coup il ne sait plus faire ça
+    have : 𝟙 ((Sheaf.forget C (of X)).obj G) = 𝟙 G.val := by rfl
+    rw [(Sheaf.forget C (of X)).map_id, this, AlphaUpStarRc.map_id]
+    rfl
+
 --Restrict the adjunction
 /-- The adjunction between α^* and α_* restricted to sheaves and Ksheaves-/
-def AdjShAlphaStar: (shAlphaUpStar X C ) ⊣ (shAlphaDownStar X C) := by
-  apply (Adjunction.restrictFullyFaithful  (@AdjAlphaStar (of X) _ C _ _ _) _ _) _ _
+def AdjShAlphaStarRc : (shAlphaUpStarRc X C ) ⊣ (shAlphaDownStar X C) := by
+  apply (Adjunction.restrictFullyFaithful  (AdjAlphaStarRc C X) _ _) _ _
 
   apply Sheaf.forget
   apply (inducedFunctor (fun (F:Ksheaf X C) => F.carrier))
@@ -209,7 +224,8 @@ def AdjShAlphaStar: (shAlphaUpStar X C ) ⊣ (shAlphaDownStar X C) := by
 -- c'est l'autre qu'il faut faire en premier
 variable (G : Ksheaf X C) (F : Sheaf C (of X)) -- in order to get the variable in the right place for next theorems
 
-theorem IsoAlphaUnit : IsIso ((AdjShAlphaStar X C).unit.app F):= by
+theorem IsoAlphaUnit : IsIso ((AdjShAlphaStarRc X C).unit.app F):= by
+  apply TopCat.Presheaf.isIso_of_stalkFunctor_map_iso
   /-have truc : ∀ (x : ↑(of X)), IsIso ((stalkFunctor C x).map ((AdjShAlphaStar X C).unit.app F).val):= by
     intro p
     rw [← Adjunction.homEquiv_id]
@@ -267,7 +283,7 @@ def bidule : Cone (GK U.obj G.carrier) where
   π := biduleπ K G U
 
 @[simps]
-def truc : FUbar K G.carrier ⟶ FU K (AlphaDownStar.obj G.carrier) relcCond where
+def truc9 : FUbar K G.carrier ⟶ FU K (AlphaDownStar.obj G.carrier) relcCond where
   app U := by
     apply limit.lift _ (bidule K G U.unop)
   naturality {U V} f:= by
@@ -290,7 +306,7 @@ def cocone : Cocone (FU K (AlphaDownStar.obj G.carrier) relcCond) where
   pt := ((AlphaDownStar ⋙ AlphaUpStarRc).obj G.carrier).obj (op K)
   ι := coconeι K G
 
-def h1 : G.carrier.obj (op K) ⟶ ((AlphaDownStar ⋙ AlphaUpStarRc).obj G.carrier).obj (op K) := ((FUbarEquivFL K G.carrier).invFun (G.ksh3 K)).map (cocone K G) (truc K G)
+def h1 : G.carrier.obj (op K) ⟶ ((AlphaDownStar ⋙ AlphaUpStarRc).obj G.carrier).obj (op K) := ((FUbarEquivFL K G.carrier).invFun (G.ksh3 K)).map (cocone K G) (truc9 K G)
 
 def h2 : ((AlphaDownStar ⋙ AlphaUpStarRc).obj G.carrier).obj (op K) ⟶ G.carrier.obj (op K) := ((AdjAlphaStarRc C X).counit.app G.carrier).app (op K)
 
@@ -412,53 +428,22 @@ theorem bidule2 : IsIso (((AdjAlphaStarRc C X).counit.app G.carrier).app (op K))
   apply machinInv
   apply machin
 
-theorem IsoAlphaCoUnit : IsIso ((AdjShAlphaStar X C).counit.app G):= by
+theorem IsoAlphaCoUnit : IsIso ((AdjShAlphaStarRc X C).counit.app G):= by
   --#check
 
-  have : IsIso ((KsheafToPre X C).map ((AdjShAlphaStar X C).counit.app G)) := by
-    unfold AdjShAlphaStar
+  have : IsIso ((KsheafToPre X C).map ((AdjShAlphaStarRc X C).counit.app G)) := by
+    unfold AdjShAlphaStarRc
     rw [CategoryTheory.Adjunction.map_restrictFullyFaithful_counit_app]
     apply ((CategoryTheory.NatTrans.isIso_iff_isIso_app) _).2
     intro K
-    simp
-    let f := h1 K.unop G
-    simp at f
-    use f
-    -- il faut régler le fait que j'ai définit a^* avec la version normale et pas la relativement compacte, probablement avec un truc du genre si on est iso a un Kfaisceaux alors on l'est aussi
+    suffices IsIso (colimit.pre (FU (unop K) (AlphaDownStarG G.carrier) fun x ↦ true = true) (KsubUPtoQ (unop K) _).op ≫
+    ((AdjAlphaStar.homEquiv (AlphaDownStarG G.carrier) G.carrier).symm (𝟙 (AlphaDownStarG G.carrier))).app K) by simpa
     exact bidule2 K.unop G
-    sorry
   apply CategoryTheory.isIso_of_fully_faithful (KsheafToPre X C)
-
-
-  --#check ((CategoryTheory.NatTrans.isIso_iff_isIso_app) _).2 (fun K => bidule2 K G)
-  /-apply?
-  set f := (AdjShAlphaStar X C).counit.app G
-  --apply (CategoryTheory.NatTrans.isIso_iff_isIso_app f).2
-
-
-  suffices  ∀ (K : (Compacts X)ᵒᵖ),IsIso (f.app K: colimit (FU (unop K) (AlphaDownStarG G.carrier)) ⟶ G.carrier.obj K) by
-    let h := (CategoryTheory.NatTrans.isIso_iff_isIso_app f).2 this
-
-    sorry
-  intro K
-
-  let truc := f.app K; simp at truc
-  let U :(Opens X)ᵒᵖ := sorry
-
-  let truc2 := (AlphaDownStarG G.carrier).obj U
-  unfold AlphaDownStarG at truc2
-
-  apply?
-  simp [f,Adjunction.counit]
-  --unfold  Adjunction.counit AdjShAlphaStar
-
-  --unfold AdjShAlphaStar AlphaDownStar
-  --simp
-  --#check  TopCat.Presheaf.isIso_of_stalkFunctor_map_iso-/
 
 /-- The isomorphism between the category of sheaves and the category of Ksheaves-/
 def KshIsoSh: (Sheaf C (of X)) ≌ (Ksheaf X C) := by
-   apply @Adjunction.toEquivalence _ _ _ _  _  _ (AdjShAlphaStar X C) (IsoAlphaUnit X C) (IsoAlphaCoUnit)
+   apply @Adjunction.toEquivalence _ _ _ _  _  _ (AdjShAlphaStarRc X C) (IsoAlphaUnit X C) (IsoAlphaCoUnit)
 
 --#min_imports
 --#lint
