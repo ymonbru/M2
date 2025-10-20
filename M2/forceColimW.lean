@@ -4,7 +4,6 @@ import Mathlib.CategoryTheory.Limits.HasLimits
 open CategoryTheory CategoryTheory.Limits Opposite Lean Meta Elab Tactic
 
 universe u v w x
-#check  `(tactic|rfl)
 
 /-- try to identify e as _ ≫ colim.ι F a = colim.ι F b and return the parameters-/
 def is_colimitwLeft (e : Expr) : MetaM <| Option ( Expr × Expr) := do
