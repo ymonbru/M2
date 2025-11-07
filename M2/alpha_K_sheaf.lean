@@ -203,9 +203,21 @@ def shAlphaUpStarRc : Sheaf C (of X) ⥤ (Ksheaf X C) where
     rfl
 
 --Restrict the adjunction
-/-- The adjunction between α^* and α_* restricted to sheaves and Ksheaves-/
+/-- The adjunction between α^*RC and α_* restricted to sheaves and Ksheaves-/
 def AdjShAlphaStarRc : (shAlphaUpStarRc X C ) ⊣ (shAlphaDownStar X C) := by
   apply (Adjunction.restrictFullyFaithful  (AdjAlphaStarRc C X) _ _) _ _
+
+  apply Sheaf.forget
+  apply (inducedFunctor (fun (F:Ksheaf X C) => F.carrier))
+  apply @Functor.FullyFaithful.ofFullyFaithful _ _ _ _ _ (Sheaf.forget_full _ _) (Sheaf.forgetFaithful _ _)
+
+  apply fullyFaithfulInducedFunctor
+  exact ⟨𝟙 _,𝟙 _,by aesop_cat,by aesop_cat⟩
+  exact ⟨𝟙 _,𝟙 _,by aesop_cat,by aesop_cat⟩
+
+/-- The adjunction between α^* and α_* restricted to sheaves and Ksheaves-/
+def AdjShAlphaStar : (shAlphaUpStar X C ) ⊣ (shAlphaDownStar X C) := by
+  apply (Adjunction.restrictFullyFaithful  (@AdjAlphaStar X _ C _ _ _) _ _) _ _
 
   apply Sheaf.forget
   apply (inducedFunctor (fun (F:Ksheaf X C) => F.carrier))
@@ -228,18 +240,157 @@ def AdjShAlphaStarRc : (shAlphaUpStarRc X C ) ⊣ (shAlphaDownStar X C) := by
 -- il semble que utiliser le fait que deux faiseaux soient isomorphes ssi ils le sont sur les stalks ajoute encore des hyp sur C donc on va essayer sans
 #check TopCat.Presheaf.isIso_of_stalkFunctor_map_iso
 variable (G : Ksheaf X C) (F : Sheaf C (of X)) -- in order to get the variable in the right place for next theorems
+variable {X} {C}
 
-theorem IsoAlphaUnit : IsIso ((AdjShAlphaStarRc X C).unit.app F):= by
+variable (U : Opens X)
+
+
+
+/-def infInfU : Set (Opens X) := fun (V  : Opens _ )=> (∃ L: Compacts _ , V.carrier ⊆ L.carrier ∧ L.carrier ⊆ U.carrier )
+
+def infInfU_cat : Type w := ObjectProperty.FullSubcategory (infInfU U)
+
+instance : Category (infInfU_cat U ) := ObjectProperty.FullSubcategory.category (infInfU U)
+
+def FresIIU : (infInfU_cat U)ᵒᵖ ⥤ C := (ObjectProperty.ι (infInfU U)).op.comp F.val-/
+
+@[simps]
+def intFunc : UsupK_cat U ⥤ Opens X where
+obj K := ⟨ interior K.obj.carrier, isOpen_interior⟩
+map {K L} f := homOfLE <| interior_mono <| leOfHom f
+
+@[simps!]
+def Fcirc : (UsupK_cat U)ᵒᵖ ⥤ C := (intFunc U).op.comp F.val
+
+@[simps]
+def trucπ : (Functor.const (UsupK_cat U)ᵒᵖ).obj (F.val.obj (op U)) ⟶ Fcirc F U where
+  app K := F.val.map <| op <| homOfLE <| by apply LE.le.trans (interior_mono K.unop.property) (interior_subset)
+  naturality { K L} f := by
+    simp
+    rw [← F.val.map_comp]
+    rfl
+
+--@[simps]
+def truc : Cone (Fcirc F U) where
+  pt := F.val.obj (op U)
+  π := trucπ F U
+
+def trucLimit: IsLimit (truc F U) where
+  lift s := by
+    dsimp [truc]
+    #check s.π.app
+    sorry
+
+
+variable (U : (Opens X)ᵒᵖ )
+/-variable (U : (Opens X)ᵒᵖ ) (L : (UsupK_cat (unop U))ᵒᵖ)
+
+def biduleι :FU (unop L).obj F.val ⟶ (Functor.const (KsubU_cat (unop L).obj)ᵒᵖ).obj (F.val.obj U) where
+  app V := by
+    apply F.val.map
+    apply op
+    apply homOfLE
+    simp
+    -- un tel L n'existe pas même dans R....
+    sorry
+
+def bidule : Cocone (FU (unop L).obj F.val) where
+  pt  := F.val.obj U
+  ι := biduleι F U L-/
+
+@[simps]
+def truc3π : (Functor.const (UsupK_cat (unop U))ᵒᵖ).obj (((AlphaUpStar ⋙ AlphaDownStar).obj F.val).obj U) ⟶ GK (unop U) (AlphaUpStar.obj F.val) where
+  app K := limit.π _ K
+  naturality {K L} f:= by
+    simp
+    forceLimW
+
+@[simps]
+def truc3 : Cone  (GK U.unop (AlphaUpStar.obj F.val) ) where
+  pt := ((AlphaUpStar ⋙ AlphaDownStar ).obj F.val).obj U
+  π := truc3π F U
+
+variable (K : (UsupK_cat (unop U))ᵒᵖ)
+
+@[simps]
+def biduleCoconeι : FU (unop K).obj F.val ⟶ (Functor.const (KsubU_cat (unop K).obj)ᵒᵖ).obj (F.val.obj (op ((intFunc (unop U)).obj (unop K)))) where
+  app V := F.val.map <| op <| homOfLE <| by apply LE.le.trans (interior_mono V.unop.property.1) (interior_subset)
+  naturality { V W} f := by
+    simp
+    rw [← F.val.map_comp]
+    rfl
+
+@[simps]
+def biduleCocone : Cocone (FU (unop K).obj F.val) where
+  pt := F.val.obj (op ((intFunc (unop U)).obj (unop K)))
+  ι := biduleCoconeι F U K
+
+@[simps]
+def bidule : (GK (unop U) (AlphaUpStar.obj F.val) ⟶ Fcirc F (unop U)) where
+  app K:= by
+    apply colimit.desc _ (biduleCocone F U K)
+  naturality {K L } f  := by
+    apply colimit.hom_ext
+    intro V
+    simp
+    rw [← F.val.map_comp]
+    rfl
+
+
+def UnitAlphaInv : ((AlphaUpStar ⋙ AlphaDownStar ).obj F.val).obj U  ⟶ F.val.obj U := (trucLimit F U.unop).map (truc3 F U) (bidule F U)
+
+@[simps]
+def truc2π : (Functor.const (UsupK_cat (unop U))ᵒᵖ).obj (F.val.obj U) ⟶ GK (unop U) (AlphaUpStar.obj F.val)  where
+  app K := colimit.ι (FU (unop K).obj F.val) (op <| UsupKToKsubU (unop K))
+
+@[simps]
+def truc2 : Cone  (GK (unop U) (AlphaUpStar.obj F.val)) where
+  pt := F.val.obj U
+  π := truc2π F U
+
+--def UnitAlphaAppApp : F.val.obj U ⟶ ((AlphaUpStar ⋙ AlphaDownStar ).obj F.val).obj U := (AdjAlphaStar.unit.app F.val).app U
+
+omit [T2Space X] [LocallyCompactSpace X] [HasForget C] [(forget C).ReflectsIsomorphisms] [HasFiniteLimits C] [∀ (K1 K2 : Compacts X), PreservesColimitsOfShape (KsubU_cat K1 × KsubU_cat K2)ᵒᵖ (forget C)] [PreservesFiniteLimits (forget C)] [∀ (K1 K2 : Compacts X), Small.{v, w} (KsubU_cat K1 × KsubU_cat K2)ᵒᵖ] in
+lemma machinEq : limit.lift _ (truc2 F U) = (AdjAlphaStar.unit.app F.val).app U := by
+  apply limit.hom_ext
+  intro K
+  simp --[UnitAlphaAppApp]
+  rfl
+
+theorem IsoAlphaUnit : IsIso (((AdjAlphaStar).unit.app F.val).app U) := by
+  use UnitAlphaInv F U
+  constructor
+  · rw [← machinEq F U]
+    simp [UnitAlphaInv]
+    apply IsLimit.hom_ext (trucLimit F (unop U))
+    intro K
+    simp
+    dsimp [truc]-- pourquoi diable si on met simps à truc il ne s'en sort pas
+  · apply limit.hom_ext
+    intro K
+    simp [UnitAlphaInv]
+    sorry
+
+
+theorem IsoAlphaShUnit : IsIso ((AdjAlphaStar).unit.app F.val):= sorry/-by
+  have : HasForget C := by sorry
+  have : IsIso ((Sheaf.forget C (of X)).map ((AdjShAlphaStar X C ).unit.app F)) := by
+    unfold AdjShAlphaStar
+    rw [CategoryTheory.Adjunction.map_restrictFullyFaithful_unit_app]
+    apply ((CategoryTheory.NatTrans.isIso_iff_isIso_app) _).2
+    intro U
+    simp [shAlphaUpStarRcG, shAlphaUpStarG]
+    exact IsoAlphaUnit F U
+  apply CategoryTheory.isIso_of_fully_faithful (Sheaf.forget C (of X))
   --let f := ((AdjShAlphaStarRc X C).unit.app F)
   --have : ∀ (x : X), IsIso ((stalkFunctor C x).map f) := by sorry
-  --#check TopCat.Presheaf.isIso_of_stalkFunctor_map_iso
+  --#check TopCat.Presheaf.isIso_of_stalkFunctor_map_iso-/
   /-have truc : ∀ (x : ↑(of X)), IsIso ((stalkFunctor C x).map ((AdjShAlphaStar X C).unit.app F).val):= by
     intro p
     rw [← Adjunction.homEquiv_id]
     simp
 
-    sorry-/ -- soucis d'univers mais il faudrait se passer des stalks cf argument de joel riou
-  sorry
+    sorry-/ -- soucis d'univers mais il faudrait se passer des stalks cf argument de joel riou que je ne retrouve pas a* ⟶ a* ≫ a_* ≫ a*
 
   --apply Presheaf.isIso_of_stalkFunctor_map_iso
 
@@ -267,13 +418,9 @@ theorem IsoAlphaUnit : IsIso ((AdjShAlphaStarRc X C).unit.app F):= by
     simp
     sorry-/
 
+variable (K : Compacts X) (G : Ksheaf X C) (F : Sheaf C (of X)) -- in order to get the variable in the right place for next theorems
 
-
-
-#check (AdjAlphaStar).counit.app G.carrier
-variable {X} {C}
-
-variable (U : RelCN_cat K)
+variable  (U : RelCN_cat K)
 
 @[simps]
 def GUbarToAlphaDownStarGConeπ : (Functor.const (UsupK_cat U.obj)ᵒᵖ).obj ((FUbar K G.carrier).obj (op U)) ⟶ GK U.obj G.carrier where
@@ -343,25 +490,19 @@ lemma CounitAlphaEq : colimit.desc _ (CounitAlphaV2Cocone K G) = CounitAlphaAppA
 omit [HasForget C] [(forget C).ReflectsIsomorphisms] [HasFiniteLimits
   C] [∀ (K1 K2 : Compacts X), PreservesColimitsOfShape (KsubU_cat K1 × KsubU_cat K2)ᵒᵖ (forget C)] [PreservesFiniteLimits (forget C)] [∀ (K1 K2 : Compacts X), Small.{v, w} (KsubU_cat K1 × KsubU_cat K2)ᵒᵖ] in
 lemma CounitAlphaInvCompHomEqId : CounitAlphaInv K G ≫ CounitAlphaAppApp K G = 𝟙 _ := by
-  apply Eq.trans _
-  · apply Eq.symm
-    apply ((FUbarEquivFL K G.carrier).invFun (G.ksh3 K)).uniq (FUbarToFK K G.carrier)
-    intro U
-    simp
-  · apply ((FUbarEquivFL K G.carrier).invFun (G.ksh3 K)).uniq (FUbarToFK K G.carrier)
-    intro U
-    unfold CounitAlphaInv
-    slice_lhs 1 2 => rw [IsColimit.ι_map]
-    simp [CounitAlphaInvCocone, CounitAlphaInvCoconeι, CounitAlphaAppApp]
+  apply IsColimit.hom_ext ((FUbarEquivFL K G.carrier).invFun (G.ksh3 K))
+  intro U
+  unfold CounitAlphaInv
+  slice_lhs 1 2 => rw [IsColimit.ι_map]
+  simp [CounitAlphaInvCocone, CounitAlphaInvCoconeι, CounitAlphaAppApp]
 
     -- vraiment faire une tactique forcecolimit.ι_pre
-    have : colimit.ι (FU K (AlphaDownStarG G.carrier) relcCond) U ≫
-    colimit.pre (FU K (AlphaDownStarG G.carrier) fun x ↦ true = true) (KsubUPtoQ K (λ _ _ => rfl)).op = colimit.ι (FU K (AlphaDownStarG G.carrier) ) ((KsubUPtoQ K (λ _ _ => rfl)).op.obj U) := by
-        exact colimit.ι_pre (FU K (AlphaDownStarG G.carrier) fun x ↦ true = true) (KsubUPtoQ K (λ _ _ => rfl)).op _
+  have : colimit.ι (FU K (AlphaDownStarG G.carrier) relcCond) U ≫ colimit.pre (FU K (AlphaDownStarG G.carrier) fun x ↦ true = true) (KsubUPtoQ K (λ _ _ => rfl)).op = colimit.ι (FU K (AlphaDownStarG G.carrier) ) ((KsubUPtoQ K (λ _ _ => rfl)).op.obj U) := by
+    exact colimit.ι_pre (FU K (AlphaDownStarG G.carrier) fun x ↦ true = true) (KsubUPtoQ K (λ _ _ => rfl)).op _
 
-    slice_lhs 2 3 => rw [this]
+  slice_lhs 2 3 => rw [this]
 
-    simp [AdjAlphaStar, homEquiv]
+  simp [AdjAlphaStar, homEquiv]
 
 
 omit [HasForget C] [(forget C).ReflectsIsomorphisms] [HasFiniteLimits
@@ -430,7 +571,7 @@ theorem IsoAlphaShCoUnit : IsIso ((AdjShAlphaStarRc X C).counit.app G):= by
 
 /-- The isomorphism between the category of sheaves and the category of Ksheaves-/
 def KshIsoSh: (Sheaf C (of X)) ≌ (Ksheaf X C) := by
-   apply @Adjunction.toEquivalence _ _ _ _  _  _ (AdjShAlphaStarRc X C) (IsoAlphaUnit X C) (IsoAlphaShCoUnit)
+   apply @Adjunction.toEquivalence _ _ _ _  _  _ (AdjShAlphaStarRc X C) (IsoAlphaShUnit ) (IsoAlphaShCoUnit)
 
 example : (Sheaf (Type w) (of X)) ≌ (Ksheaf X (Type w)) := by
   apply KshIsoSh

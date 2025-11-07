@@ -51,7 +51,7 @@ def forceLimWLeft : TacticM Unit := withMainContext do
 
 elab "forceLimW" : tactic => withMainContext do
   let s0 ← saveState
-  evalTactic $ ←  `(tactic| repeat rw [ ← Category.assoc]; repeat apply eq_whisker)
+  evalTactic $ ←  `(tactic| repeat rw [ Category.assoc]; repeat apply whisker_eq)
   try
     forceLimWLeft
   catch

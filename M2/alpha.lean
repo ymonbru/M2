@@ -66,6 +66,10 @@ instance : Category (UsupK_cat U) := ObjectProperty.FullSubcategory.category (Us
 @[simps]
 def KsubUToUsupK {K : Compacts X} {P : Opens X → Prop} (U : KsubU_cat K P) : UsupK_cat U.obj := ⟨K, U.property.1⟩
 
+/-- The conversion from a compact contained in U to an open cotained in K-/
+@[simps]
+def UsupKToKsubU {U : Opens X} (K : UsupK_cat U) : KsubU_cat K.obj := ⟨U, K.property,rfl⟩
+
 /-- The diagrom obtained by restricting G to the subcategory UsupK-/
 @[simps!]
 def GK : (UsupK_cat U)ᵒᵖ ⥤ C := Functor.comp (ObjectProperty.ι (UsupK U)).op  G
