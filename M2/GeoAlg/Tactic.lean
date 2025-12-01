@@ -171,7 +171,7 @@ elab "BuildDiagram_of" c:term : tactic => do
 
 variable (C2: Type u) [Quiver.{v+1,u} C2]
 
-example {x y : C2} (X : AlgebraicGeometry.Scheme) (k : x ⟶ y) {a b c d : Cate} (h f: a ⟶ b) (g : c ⟶ b) : a = a ∧ 1=2 := by
+example {x y : C2} (X : AlgebraicGeometry.Scheme) (k : x ⟶ y) {a b c : Cate} (h f: a ⟶ b) (g : c ⟶ b) : a = a ∧ 1=2 := by
   let x : Cate := a
   suffices x = a ∧ 1=2 by
     exact this

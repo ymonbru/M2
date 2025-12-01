@@ -171,6 +171,11 @@ lemma V_closure : ∀ U, ((closureFunc K).obj (Vloc X K U)).carrier ⊆ U.obj :=
   apply closure_mono
   apply interior_subset
 
+lemma V_interior : ∀ U, K.carrier ⊆ interior (Vloc X K U).obj.carrier  := by
+  intro U
+  simp [Vloc]
+  exact (Classical.choice (existsIntermedKAndU X _ _ U.property.1)).property.2.1
+
 /-- The evidence that AlphaUpStarRc X C  and AlphaUpStar are isomorphics -/
 @[simps!]
 def AlphaUpStarToRc :  (@AlphaUpStarRc C _ X _ _ _) ≅ AlphaUpStar :=  IsoAlphaUpPtoQ _ (λ _ _ => rfl) (axiomPrc ) (Vloc X) (V_spec

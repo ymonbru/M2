@@ -203,17 +203,6 @@ def shAlphaUpStarRc : Sheaf C (of X) ⥤ (Ksheaf X C) where
     rfl
 
 --Restrict the adjunction
-/-- The adjunction between α^*RC and α_* restricted to sheaves and Ksheaves-/
-def AdjShAlphaStarRc : (shAlphaUpStarRc X C ) ⊣ (shAlphaDownStar X C) := by
-  apply (Adjunction.restrictFullyFaithful  (AdjAlphaStarRc C X) _ _) _ _
-
-  apply Sheaf.forget
-  apply (inducedFunctor (fun (F:Ksheaf X C) => F.carrier))
-  apply @Functor.FullyFaithful.ofFullyFaithful _ _ _ _ _ (Sheaf.forget_full _ _) (Sheaf.forgetFaithful _ _)
-
-  apply fullyFaithfulInducedFunctor
-  exact ⟨𝟙 _,𝟙 _,by aesop_cat,by aesop_cat⟩
-  exact ⟨𝟙 _,𝟙 _,by aesop_cat,by aesop_cat⟩
 
 /-- The adjunction between α^* and α_* restricted to sheaves and Ksheaves-/
 def AdjShAlphaStar : (shAlphaUpStar X C ) ⊣ (shAlphaDownStar X C) := by
@@ -226,6 +215,21 @@ def AdjShAlphaStar : (shAlphaUpStar X C ) ⊣ (shAlphaDownStar X C) := by
   apply fullyFaithfulInducedFunctor
   exact ⟨𝟙 _,𝟙 _,by aesop_cat,by aesop_cat⟩
   exact ⟨𝟙 _,𝟙 _,by aesop_cat,by aesop_cat⟩
+
+/-- The adjunction between α^*RC and α_* restricted to sheaves and Ksheaves-/
+def AdjShAlphaStarRc : (shAlphaUpStarRc X C ) ⊣ (shAlphaDownStar X C) := by
+  --exact (AdjShAlphaStar X C).ofNatIsoLeft (AlphaShUpStarToRc X C).symm
+  apply (Adjunction.restrictFullyFaithful  (AdjAlphaStarRc C X) _ _) _ _
+
+  apply Sheaf.forget
+  apply (inducedFunctor (fun (F:Ksheaf X C) => F.carrier))
+  apply @Functor.FullyFaithful.ofFullyFaithful _ _ _ _ _ (Sheaf.forget_full _ _) (Sheaf.forgetFaithful _ _)
+
+  apply fullyFaithfulInducedFunctor
+  exact ⟨𝟙 _,𝟙 _,by aesop_cat,by aesop_cat⟩
+  exact ⟨𝟙 _,𝟙 _,by aesop_cat,by aesop_cat⟩
+
+
 
 --end
 --noncomputable section
@@ -264,11 +268,17 @@ def Fcirc : (UsupK_cat U)ᵒᵖ ⥤ C := (intFunc U).op.comp F.val
 
 @[simps]
 def trucπ : (Functor.const (UsupK_cat U)ᵒᵖ).obj (F.val.obj (op U)) ⟶ Fcirc F U where
-  app K := F.val.map <| op <| homOfLE <| by apply LE.le.trans (interior_mono K.unop.property) (interior_subset)
+  app K := F.val.map <| op <| homOfLE <| by apply subset_trans (interior_mono K.unop.property) (interior_subset)
   naturality { K L} f := by
     simp
     rw [← F.val.map_comp]
     rfl
+
+def machin : (UsupK_cat U) → Opens (of X) := fun K => (intFunc U).obj K
+
+
+#check Classical.choice (TopCat.Presheaf.IsSheaf.isSheafOpensLeCover (F := F.val) (machin U) (by sorry))
+
 
 --@[simps]
 def truc : Cone (Fcirc F U) where
@@ -314,7 +324,7 @@ variable (K : (UsupK_cat (unop U))ᵒᵖ)
 
 @[simps]
 def biduleCoconeι : FU (unop K).obj F.val ⟶ (Functor.const (KsubU_cat (unop K).obj)ᵒᵖ).obj (F.val.obj (op ((intFunc (unop U)).obj (unop K)))) where
-  app V := F.val.map <| op <| homOfLE <| by apply LE.le.trans (interior_mono V.unop.property.1) (interior_subset)
+  app V := F.val.map <| op <| homOfLE <| by apply subset_trans (interior_mono V.unop.property.1) (interior_subset)
   naturality { V W} f := by
     simp
     rw [← F.val.map_comp]
@@ -357,66 +367,85 @@ lemma machinEq : limit.lift _ (truc2 F U) = (AdjAlphaStar.unit.app F.val).app U 
   simp --[UnitAlphaAppApp]
   rfl
 
+omit [HasForget C] [(forget C).ReflectsIsomorphisms] [HasFiniteLimits
+  C] [∀ (K1 K2 : Compacts X), PreservesColimitsOfShape (KsubU_cat K1 × KsubU_cat K2)ᵒᵖ (forget C)] [PreservesFiniteLimits (forget C)] [∀ (K1 K2 : Compacts X), Small.{v, w} (KsubU_cat K1 × KsubU_cat K2)ᵒᵖ] in
 theorem IsoAlphaUnit : IsIso (((AdjAlphaStar).unit.app F.val).app U) := by
   use UnitAlphaInv F U
   constructor
   · rw [← machinEq F U]
-    simp [UnitAlphaInv]
+    suffices limit.lift (GK (unop U) (AlphaUpStar.obj F.val)) (truc2 F U) ≫ IsLimit.map (truc3 F U) (trucLimit F (unop U)) (bidule F U) = 𝟙 (F.val.obj U) by simpa [UnitAlphaInv]
     apply IsLimit.hom_ext (trucLimit F (unop U))
     intro K
-    simp
+    suffices F.val.map (op (homOfLE _)) = (truc F (unop U)).π.app K by simpa
     dsimp [truc]-- pourquoi diable si on met simps à truc il ne s'en sort pas
   · apply limit.hom_ext
     intro K
-    simp [UnitAlphaInv]
-    sorry
+    --unfold UnitAlphaInv
+    rw [← machinEq]
 
+    suffices UnitAlphaInv F U ≫ colimit.ι (FU (unop K).obj F.val) (op (UsupKToKsubU (unop K))) = limit.π (GK (unop U) (AlphaUpStar.obj F.val)) K by simpa
 
-theorem IsoAlphaShUnit : IsIso ((AdjAlphaStar).unit.app F.val):= sorry/-by
-  have : HasForget C := by sorry
-  have : IsIso ((Sheaf.forget C (of X)).map ((AdjShAlphaStar X C ).unit.app F)) := by
+    let L : (UsupK_cat (unop U))ᵒᵖ := by
+      apply op
+      let Lcirc := (Vloc X _ (UsupKToKsubU (unop K)))
+      use (closureFunc _ ).obj Lcirc
+      simp [UsupK]
+      apply V_closure
+
+    let KsubL : KsubU (unop K).obj trueCond ((intFunc (unop U)).obj (unop L)) := by
+      simp only [KsubU, carrier_eq_coe, coe_intFunc_obj, coe_closureFunc_obj, trueCond, and_true, L]
+      apply Set.Subset.trans _
+      apply interior_mono
+      apply subset_closure
+      apply V_interior
+
+    let f : (op (UsupKToKsubU (unop K))) ⟶ op ⟨((intFunc (unop U)).obj (unop L)), KsubL⟩ := by
+      apply op
+      apply homOfLE
+      apply Set.Subset.trans
+      apply interior_subset
+      apply V_closure
+
+    rw [← colimit.w _ f]
+
+    have h := IsLimit.map_π (truc3 F U) (trucLimit F (unop U)) (bidule F U) L
+
+    have : UnitAlphaInv F U ≫ (FU (unop K).obj F.val).map f  = (truc3 F U).π.app L ≫ (bidule F U).app L := by
+      rw [← h]-- mais par contre on ne peut pas rw h directement dans ce qui suit
+      rfl
+
+    slice_lhs 1 2 => rw [this]
+
+    simp
+    forceLimW
+    · apply Set.Subset.trans
+      exact KsubL.1
+      apply interior_subset
+    · apply colimit.hom_ext
+      intro V
+      suffices F.val.map (op (homOfLE _)) ≫ colimit.ι (FU (unop K).obj F.val) (op { obj := (intFunc (unop U)).obj (unop L), property := KsubL }) = colimit.ι (FU (unop K).obj F.val) (op ((K1subK2subU trueCond fForce.unop).obj (unop V))) by simpa
+      forceColimW
+
+theorem IsoAlphaShUnit : IsIso ((AdjShAlphaStar X C).unit.app F):= by
+  have : IsIso ((Sheaf.forget C (of X)).map ((AdjShAlphaStar X C).unit.app F)) := by
     unfold AdjShAlphaStar
     rw [CategoryTheory.Adjunction.map_restrictFullyFaithful_unit_app]
     apply ((CategoryTheory.NatTrans.isIso_iff_isIso_app) _).2
     intro U
-    simp [shAlphaUpStarRcG, shAlphaUpStarG]
-    exact IsoAlphaUnit F U
+    dsimp
+    apply CategoryTheory.IsIso.comp_isIso'
+    · exact IsoAlphaUnit F U
+    · -- ça on ne devrait pas avoir à le faire
+      use 𝟙 _
+      constructor
+      · suffices limMap _ =  𝟙 (limit (GK (unop U) (AlphaUpStar.obj ((Sheaf.forget C (of X)).obj F)))) by simpa [σres]
+        ext
+        simp
+      · apply limit.hom_ext
+        intro K
+        simp
+        rfl
   apply CategoryTheory.isIso_of_fully_faithful (Sheaf.forget C (of X))
-  --let f := ((AdjShAlphaStarRc X C).unit.app F)
-  --have : ∀ (x : X), IsIso ((stalkFunctor C x).map f) := by sorry
-  --#check TopCat.Presheaf.isIso_of_stalkFunctor_map_iso-/
-  /-have truc : ∀ (x : ↑(of X)), IsIso ((stalkFunctor C x).map ((AdjShAlphaStar X C).unit.app F).val):= by
-    intro p
-    rw [← Adjunction.homEquiv_id]
-    simp
-
-    sorry-/ -- soucis d'univers mais il faudrait se passer des stalks cf argument de joel riou que je ne retrouve pas a* ⟶ a* ≫ a_* ≫ a*
-
-  --apply Presheaf.isIso_of_stalkFunctor_map_iso
-
-
-  --rw [← Adjunction.homEquiv_id]
-  --#check (AdjShAlphaStar X C).unit.app F
-
-  --#check ((𝟭 (TopCat.Sheaf C (of X))).obj F : Functor _ _)
-  --#check NatTrans.isIso_iff_isIso_app ((AdjShAlphaStar X C).unit.app F)
-
-  --sorry
-
-
-
-
-
-  --apply asIso
-
-  --unfold AdjShAlphaStar AdjAlphaStar
-  --simp
-  --#check (NatTrans.isIso_iff_isIso_app ((Adjunction.unit (AdjShAlphaStar X)).app F)).2
-
-/-def machin : (𝟭 (Ksheaf X C)).obj G ⟶ (shAlphaDownStar X C ⋙ shAlphaUpStar X C).obj G  where
-  app K := by
-    simp
-    sorry-/
 
 variable (K : Compacts X) (G : Ksheaf X C) (F : Sheaf C (of X)) -- in order to get the variable in the right place for next theorems
 
@@ -501,7 +530,6 @@ lemma CounitAlphaInvCompHomEqId : CounitAlphaInv K G ≫ CounitAlphaAppApp K G =
     exact colimit.ι_pre (FU K (AlphaDownStarG G.carrier) fun x ↦ true = true) (KsubUPtoQ K (λ _ _ => rfl)).op _
 
   slice_lhs 2 3 => rw [this]
-
   simp [AdjAlphaStar, homEquiv]
 
 
@@ -511,14 +539,15 @@ omit [HasForget C] [(forget C).ReflectsIsomorphisms] [HasFiniteLimits
 lemma CounitAlphaHomCompInvEqId : CounitAlphaAppApp K G ≫ CounitAlphaInv K G = 𝟙 _ := by
   apply colimit.hom_ext
   intro U
-  rw [← CounitAlphaEq K G]
+  rw [← CounitAlphaEq]
 
   let V : (KsubU_cat K relcCond)ᵒᵖ := op <| Vloc X K ((KsubUPtoQ K (λ _ _ => rfl)).obj U.unop)
   let f : U ⟶ V := by
     apply op
     apply homOfLE
     apply V_spec
-  simp
+
+  suffices (CounitAlphaV2Coconeι K G).app U ≫ CounitAlphaInv K G = colimit.ι (FU K (AlphaDownStarG G.carrier) relcCond) U by simpa
 
   have : (FU K (AlphaDownStarG G.carrier) relcCond).map f ≫ (CounitAlphaV2Coconeι K G).app V = (CounitAlphaV2Coconeι K G).app U := by
     rw [ (CounitAlphaV2Coconeι K G).naturality f]
@@ -557,7 +586,7 @@ theorem IsoAlphaCounit : IsIso (((AdjAlphaStarRc C X).counit.app G.carrier).app 
   apply CounitAlphaHomCompInvEqId
   apply CounitAlphaInvCompHomEqId
 
-theorem IsoAlphaShCoUnit : IsIso ((AdjShAlphaStarRc X C).counit.app G):= by
+theorem IsoAlphaRcShCoUnit : IsIso ((AdjShAlphaStarRc X C).counit.app G):= by
 
   have : IsIso ((KsheafToPre X C).map ((AdjShAlphaStarRc X C).counit.app G)) := by
     unfold AdjShAlphaStarRc
@@ -569,9 +598,19 @@ theorem IsoAlphaShCoUnit : IsIso ((AdjShAlphaStarRc X C).counit.app G):= by
     exact IsoAlphaCounit K.unop G
   apply CategoryTheory.isIso_of_fully_faithful (KsheafToPre X C)
 
+theorem IsoAlphaShCoUnit : IsIso ((AdjShAlphaStar X C).counit.app G):= by
+  let h := CategoryTheory.Adjunction.leftAdjointUniq (AdjShAlphaStar X C) (AdjShAlphaStarRc X C)
+
+  let e : (Functor.whiskerLeft _ h.hom) ≫ (AdjShAlphaStarRc X C).counit = (AdjShAlphaStar X C).counit := by
+    ext
+    simp [h]
+  rw [← e]
+  suffices IsIso ((AdjShAlphaStarRc X C).counit.app G) by simpa
+  exact IsoAlphaRcShCoUnit G
+
 /-- The isomorphism between the category of sheaves and the category of Ksheaves-/
 def KshIsoSh: (Sheaf C (of X)) ≌ (Ksheaf X C) := by
-   apply @Adjunction.toEquivalence _ _ _ _  _  _ (AdjShAlphaStarRc X C) (IsoAlphaShUnit ) (IsoAlphaShCoUnit)
+   apply @Adjunction.toEquivalence _ _ _ _  _  _ (AdjShAlphaStar X C) IsoAlphaShUnit IsoAlphaShCoUnit
 
 example : (Sheaf (Type w) (of X)) ≌ (Ksheaf X (Type w)) := by
   apply KshIsoSh
