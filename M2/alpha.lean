@@ -62,6 +62,10 @@ def UsupK_cat : Type w := ObjectProperty.FullSubcategory (UsupK U)
 
 instance : Category (UsupK_cat U) := ObjectProperty.FullSubcategory.category (UsupK U)
 
+instance : Bot (UsupK_cat U) := by
+  use ⊥
+  simp only [UsupK, coe_bot, Set.empty_subset]
+
 /-- The conversion from an open that contain K to a compact contained in U-/
 @[simps]
 def KsubUToUsupK {K : Compacts X} {P : Opens X → Prop} (U : KsubU_cat K P) : UsupK_cat U.obj := ⟨K, U.property.1⟩

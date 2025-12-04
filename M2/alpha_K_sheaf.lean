@@ -266,6 +266,56 @@ map {K L} f := homOfLE <| interior_mono <| leOfHom f
 @[simps!]
 def Fcirc : (UsupK_cat U)ᵒᵖ ⥤ C := (intFunc U).op.comp F.val
 
+
+#check ((intFunc U).obj : (UsupK_cat U) → Opens (of X))
+
+
+def func1 : (UsupK_cat U) ⥤ (ObjectProperty.FullSubcategory fun V ↦ ∃ i, V ≤ (intFunc U).obj i) where
+  obj L := ⟨(intFunc U).obj L, L, by rfl⟩
+  map f := (intFunc U).map f
+
+instance : IsCofilteredOrEmpty (UsupK_cat U) := by
+  constructor
+  · intro K L
+    let W : UsupK_cat U := ⟨ K.obj ⊓ L.obj, by
+      apply Set.Subset.trans
+      apply Set.inter_subset_left
+      exact K.property⟩
+    use W
+    use (homOfLE Set.inter_subset_left)
+    use (homOfLE Set.inter_subset_right)
+  · intro K L f g
+    use K
+    use 𝟙 _
+    rfl
+
+instance : (func1 U).Initial := by
+  apply (CategoryTheory.Functor.initial_iff_of_isCofiltered _ ).2
+  constructor
+  · intro V
+    use ⊥
+    apply Nonempty.intro
+    apply homOfLE
+    simp [func1, intFunc]
+
+    apply subset_trans (b := ⊥)
+    · suffices interior (⊥ : Set X) = ∅ by simp; exact this
+      apply interior_eq_iff_isOpen.2
+      simp only [Set.bot_eq_empty, isOpen_empty]
+    · simp
+  · intros _ K _ _
+    use K
+    use 𝟙 _
+    rfl
+
+def machin : (func1 U ) ⋙ (ObjectProperty.ι fun V ↦ ∃ i, V ≤ (intFunc U).obj i) ≅ (intFunc U) := by
+  apply eqToIso
+  rfl
+
+#check IsLimit.ofIsoLimit
+
+#check (CategoryTheory.Functor.Initial.limitIso (func1 U) ((ObjectProperty.ι fun V ↦ ∃ i, V ≤ (intFunc U).obj i)))
+
 @[simps]
 def trucπ : (Functor.const (UsupK_cat U)ᵒᵖ).obj (F.val.obj (op U)) ⟶ Fcirc F U where
   app K := F.val.map <| op <| homOfLE <| by apply subset_trans (interior_mono K.unop.property) (interior_subset)
@@ -274,10 +324,17 @@ def trucπ : (Functor.const (UsupK_cat U)ᵒᵖ).obj (F.val.obj (op U)) ⟶ Fcir
     rw [← F.val.map_comp]
     rfl
 
-def machin : (UsupK_cat U) → Opens (of X) := fun K => (intFunc U).obj K
 
 
-#check Classical.choice (TopCat.Presheaf.IsSheaf.isSheafOpensLeCover (F := F.val) (machin U) (by sorry))
+
+#check Classical.choice (TopCat.Presheaf.IsSheaf.isSheafOpensLeCover (F := F.val) ((intFunc U).obj) (by sorry))
+
+
+#check (F.val.mapCone (SheafCondition.opensLeCoverCocone ((intFunc U).obj )).op)
+
+def machin0 : (func1 U ).op ⋙ ((ObjectProperty.ι fun V ↦ ∃ i, V ≤ (intFunc U).obj i).op ⋙ F.val) ≅ Fcirc F U := by
+  apply eqToIso
+  rfl
 
 
 --@[simps]
@@ -285,10 +342,55 @@ def truc : Cone (Fcirc F U) where
   pt := F.val.obj (op U)
   π := trucπ F U
 
-def trucLimit: IsLimit (truc F U) where
+def machin2 : Cone (Fcirc F U) := by
+  apply (Cones.postcomposeEquivalence (machin0 F U)).functor.obj
+  apply (Functor.Initial.limitConeComp (func1 U).op _ ).cone
+
+
+  exact limit.cone ((func1 U).op ⋙ (ObjectProperty.ι fun V ↦ ∃ i, V ≤ (intFunc U).obj i).op ⋙ F.val)
+
+def machin2iso : machin2 F U ≅ truc F U := by
+  unfold truc
+  unfold machin2
+  #check Functor.Initial.limitIso
+  sorry
+
+def trucLimit: IsLimit (truc F U) := by
+
+
+  #check Functor.Initial.limitConeComp
+  let t := Classical.choice (TopCat.Presheaf.IsSheaf.isSheafOpensLeCover (F := F.val) ((intFunc U).obj) (by sorry))
+
+  apply IsLimit.ofIsoLimit _ (machin2iso F U)
+  apply IsLimit.ofPreservesConeTerminal
+
+  apply limit.isLimit
+
+
+
+  sorry
+
+
+
+def trucLimit2: IsLimit (truc F U) where
   lift s := by
+    let hl := Classical.choice (TopCat.Presheaf.IsSheaf.isSheafOpensLeCover (F := F.val) (machin U) (by sorry))
+
+    #check hl.lift
+
     dsimp [truc]
     #check s.π.app
+    let h := (F.val.mapCone (SheafCondition.opensLeCoverCocone (machin U)).op)
+
+    let x := h.pt
+    unfold h at x
+    have : h.pt = sorry := by
+      unfold h machin
+      simp
+      sorry
+
+    #check h.π
+
     sorry
 
 
