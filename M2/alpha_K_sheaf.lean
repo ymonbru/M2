@@ -235,197 +235,158 @@ def AdjShAlphaStarRc : (shAlphaUpStarRc X C ) ⊣ (shAlphaDownStar X C) := by
 --noncomputable section
 --adjonction donne une équivalence de catégorie
 
-
-
---variable  [ConcreteCategory C] [(forget C).ReflectsIsomorphisms ] [PreservesLimits (forget C)] [PreservesFilteredColimits (forget C)]
---variable [HasColimits C]
-/- sur d'avoir besoin de tout ça?, en tout cas pour stalk iso functeur oui-/
-
--- il semble que utiliser le fait que deux faiseaux soient isomorphes ssi ils le sont sur les stalks ajoute encore des hyp sur C donc on va essayer sans
-#check TopCat.Presheaf.isIso_of_stalkFunctor_map_iso
+--One can use that two sheaf are isomorphics iff they are at the level of stalks (cf blueprint) but TopCat.Presheaf.isIso_of_stalkFunctor_map_iso seems to add more hypothesis on the category C, so we will do without
 variable (G : Ksheaf X C) (F : Sheaf C (of X)) -- in order to get the variable in the right place for next theorems
 variable {X} {C}
 
 variable (U : Opens X)
 
-
-
-/-def infInfU : Set (Opens X) := fun (V  : Opens _ )=> (∃ L: Compacts _ , V.carrier ⊆ L.carrier ∧ L.carrier ⊆ U.carrier )
-
-def infInfU_cat : Type w := ObjectProperty.FullSubcategory (infInfU U)
-
-instance : Category (infInfU_cat U ) := ObjectProperty.FullSubcategory.category (infInfU U)
-
-def FresIIU : (infInfU_cat U)ᵒᵖ ⥤ C := (ObjectProperty.ι (infInfU U)).op.comp F.val-/
-
+/--The functor that send K ⊆ U to interior K-/
 @[simps]
 def intFunc : UsupK_cat U ⥤ Opens X where
 obj K := ⟨ interior K.obj.carrier, isOpen_interior⟩
 map {K L} f := homOfLE <| interior_mono <| leOfHom f
 
+/--The reistriction of F to interiors of compacts that contain U-/
 @[simps!]
 def Fcirc : (UsupK_cat U)ᵒᵖ ⥤ C := (intFunc U).op.comp F.val
 
-
-#check ((intFunc U).obj : (UsupK_cat U) → Opens (of X))
-
-
-def func1 : (UsupK_cat U) ⥤ (ObjectProperty.FullSubcategory fun V ↦ ∃ i, V ≤ (intFunc U).obj i) where
+/-The functor of base-change for the diagram induced by the coverging of U by interior of comapcts-/
+def BaseChangeCoverInt : (UsupK_cat U) ⥤ (ObjectProperty.FullSubcategory fun V ↦ ∃ i, V ≤ (intFunc U).obj i) where
   obj L := ⟨(intFunc U).obj L, L, by rfl⟩
   map f := (intFunc U).map f
 
-instance : IsCofilteredOrEmpty (UsupK_cat U) := by
+instance :  IsFilteredOrEmpty (UsupK_cat U) := by
   constructor
   · intro K L
-    let W : UsupK_cat U := ⟨ K.obj ⊓ L.obj, by
-      apply Set.Subset.trans
-      apply Set.inter_subset_left
-      exact K.property⟩
+    let W : UsupK_cat U := ⟨ K.obj ⊔ L.obj, by
+      unfold UsupK
+      simp only [coe_sup, Set.union_subset_iff]
+      exact ⟨K.property,L.property⟩⟩
     use W
-    use (homOfLE Set.inter_subset_left)
-    use (homOfLE Set.inter_subset_right)
-  · intro K L f g
+    use (homOfLE Set.subset_union_left)
+    use (homOfLE Set.subset_union_right)
+  · intro _ K _ _
     use K
     use 𝟙 _
     rfl
 
-instance : (func1 U).Initial := by
-  apply (CategoryTheory.Functor.initial_iff_of_isCofiltered _ ).2
+instance : (BaseChangeCoverInt U).Final := by
+  apply (CategoryTheory.Functor.final_iff_of_isFiltered _).2
   constructor
   · intro V
-    use ⊥
+    obtain ⟨i,hi⟩ := V.property
+    use i
     apply Nonempty.intro
-    apply homOfLE
-    simp [func1, intFunc]
-
-    apply subset_trans (b := ⊥)
-    · suffices interior (⊥ : Set X) = ∅ by simp; exact this
-      apply interior_eq_iff_isOpen.2
-      simp only [Set.bot_eq_empty, isOpen_empty]
-    · simp
-  · intros _ K _ _
+    exact homOfLE hi
+  · intro _ K _ _
     use K
     use 𝟙 _
     rfl
 
-def machin : (func1 U ) ⋙ (ObjectProperty.ι fun V ↦ ∃ i, V ≤ (intFunc U).obj i) ≅ (intFunc U) := by
-  apply eqToIso
-  rfl
-
-#check IsLimit.ofIsoLimit
-
-#check (CategoryTheory.Functor.Initial.limitIso (func1 U) ((ObjectProperty.ι fun V ↦ ∃ i, V ≤ (intFunc U).obj i)))
-
+/-- The natural transformation involved in FUOverCoverInt. For K⊆ U the map is the canonical map from F(°K) ⟶ F(U)-/
 @[simps]
-def trucπ : (Functor.const (UsupK_cat U)ᵒᵖ).obj (F.val.obj (op U)) ⟶ Fcirc F U where
+def FUOverCoverIntπ : (Functor.const (UsupK_cat U)ᵒᵖ).obj (F.val.obj (op U)) ⟶ Fcirc F U where
   app K := F.val.map <| op <| homOfLE <| by apply subset_trans (interior_mono K.unop.property) (interior_subset)
   naturality { K L} f := by
     simp
     rw [← F.val.map_comp]
     rfl
 
+/--F(U) as a cone over the compacts contained in U-/
+def FUOverCoverInt : Cone (Fcirc F U) where
+  pt := F.val.obj (op U)
+  π := FUOverCoverIntπ F U
 
-
-
-#check Classical.choice (TopCat.Presheaf.IsSheaf.isSheafOpensLeCover (F := F.val) ((intFunc U).obj) (by sorry))
-
-
-#check (F.val.mapCone (SheafCondition.opensLeCoverCocone ((intFunc U).obj )).op)
-
-def machin0 : (func1 U ).op ⋙ ((ObjectProperty.ι fun V ↦ ∃ i, V ≤ (intFunc U).obj i).op ⋙ F.val) ≅ Fcirc F U := by
+/-- The isomorphism that show the factorisation of Fcirc through BaseChangeCoverInt-/
+def FcircFactorBCCI : (BaseChangeCoverInt U ).op ⋙ ((ObjectProperty.ι fun V ↦ ∃ i, V ≤ (intFunc U).obj i).op ⋙ F.val) ≅ Fcirc F U := by
   apply eqToIso
   rfl
 
-
---@[simps]
-def truc : Cone (Fcirc F U) where
-  pt := F.val.obj (op U)
-  π := trucπ F U
-
-def machin2 : Cone (Fcirc F U) := by
-  apply (Cones.postcomposeEquivalence (machin0 F U)).functor.obj
-  apply (Functor.Initial.limitConeComp (func1 U).op _ ).cone
+/-- The cone over Fcirc induced by the sheaf condition of F over the covering of U by the interiors of comapcts-/
+def SheafConditionConeOfIntCover : Cone (Fcirc F U) := by
+  apply (Cones.postcomposeEquivalence (FcircFactorBCCI F U)).functor.obj
+  apply (Functor.Initial.conesEquiv _ _).inverse.obj
+  exact (F.val.mapCone (SheafCondition.opensLeCoverCocone (X := of X) ((intFunc U).obj )).op)
 
 
-  exact limit.cone ((func1 U).op ⋙ (ObjectProperty.ι fun V ↦ ∃ i, V ≤ (intFunc U).obj i).op ⋙ F.val)
+omit [T2Space X] [∀ (K1 K2 : Compacts X), Small.{v, w} (KsubU_cat K1 × KsubU_cat K2)ᵒᵖ] in
+lemma UIsCoveredByIntOfCompacts : (U : Opens (of X)) = (SheafCondition.opensLeCoverCocone (X := of X) (intFunc U).obj).pt  := by
+  apply Opens.coe_inj.mp
+  apply Set.Subset.antisymm
+  · simp only [SheafCondition.opensLeCoverCocone, ObjectProperty.ι_obj, Functor.const_obj_obj,
+    Opens.coe_iSup, coe_intFunc_obj, carrier_eq_coe]
+    intro x hx
+    let K : Compacts X := ⟨{x}, isCompact_singleton⟩
+    apply Set.mem_iUnion.2
+    let L := (Classical.choice (existsIntermedKAndU X K U (Set.singleton_subset_iff.2 hx)))
+    use ⟨⟨L.val,L.property.1⟩, L.property.2.2⟩
+    apply Set.singleton_subset_iff.1
+    exact L.property.2.1
+  · simp only [SheafCondition.opensLeCoverCocone, ObjectProperty.ι_obj, Functor.const_obj_obj,
+    Opens.coe_iSup, coe_intFunc_obj, carrier_eq_coe, Set.iUnion_subset_iff]
+    intro K
+    apply Set.Subset.trans
+    apply interior_subset
+    exact K.property
 
-def machin2iso : machin2 F U ≅ truc F U := by
-  unfold truc
-  unfold machin2
-  #check Functor.Initial.limitIso
-  sorry
+def SheafConditionConeOfIntCoverIso : SheafConditionConeOfIntCover F U ≅ FUOverCoverInt F U where
+  hom := ⟨F.val.map (op (homOfLE
+      (by
+        apply Eq.le
+        apply UIsCoveredByIntOfCompacts-- je ne comprend pas pourquoi la preuve du lemme ici ne marche pas (simp fais des trucs bizzares)
+        ))), by
+      intro K
+      simp [FUOverCoverInt, SheafConditionConeOfIntCover, FcircFactorBCCI]
+      rw[← F.val.map_comp]
+      rfl⟩
+  inv := ⟨F.val.map (op (homOfLE
+      (by
+        apply Eq.le
+        apply Eq.symm
+        apply UIsCoveredByIntOfCompacts
+        ))), by
+      intro K
+      simp [FUOverCoverInt, SheafConditionConeOfIntCover, FcircFactorBCCI]
+      rw[← F.val.map_comp]
+      rfl⟩
+  hom_inv_id := by
+    apply Limits.ConeMorphism.ext
+    simp only [Cocone.op_pt, homOfLE_leOfHom, Cone.category_comp_hom, Cone.category_id_hom]
+    rw [← F.val.map_comp]
+    apply F.val.map_id
+  inv_hom_id := by
+    apply Limits.ConeMorphism.ext
+    simp only [Cocone.op_pt, homOfLE_leOfHom, Cone.category_comp_hom, Cone.category_id_hom]
+    rw [← F.val.map_comp]
+    apply F.val.map_id
 
-def trucLimit: IsLimit (truc F U) := by
-
-
-  #check Functor.Initial.limitConeComp
-  let t := Classical.choice (TopCat.Presheaf.IsSheaf.isSheafOpensLeCover (F := F.val) ((intFunc U).obj) (by sorry))
-
-  apply IsLimit.ofIsoLimit _ (machin2iso F U)
+set_option maxHeartbeats 400000 in
+def FUOverCoverIntLimit: IsLimit (FUOverCoverInt F U) := by
+  apply IsLimit.ofIsoLimit _ (SheafConditionConeOfIntCoverIso F U)
   apply IsLimit.ofPreservesConeTerminal
-
-  apply limit.isLimit
-
-
-
-  sorry
-
-
-
-def trucLimit2: IsLimit (truc F U) where
-  lift s := by
-    let hl := Classical.choice (TopCat.Presheaf.IsSheaf.isSheafOpensLeCover (F := F.val) (machin U) (by sorry))
-
-    #check hl.lift
-
-    dsimp [truc]
-    #check s.π.app
-    let h := (F.val.mapCone (SheafCondition.opensLeCoverCocone (machin U)).op)
-
-    let x := h.pt
-    unfold h at x
-    have : h.pt = sorry := by
-      unfold h machin
-      simp
-      sorry
-
-    #check h.π
-
-    sorry
+  apply (Functor.Initial.isLimitWhiskerEquiv _ _).invFun
+  exact Classical.choice (TopCat.Presheaf.IsSheaf.isSheafOpensLeCover ((intFunc U).obj) F.cond)
 
 
 variable (U : (Opens X)ᵒᵖ )
-/-variable (U : (Opens X)ᵒᵖ ) (L : (UsupK_cat (unop U))ᵒᵖ)
-
-def biduleι :FU (unop L).obj F.val ⟶ (Functor.const (KsubU_cat (unop L).obj)ᵒᵖ).obj (F.val.obj U) where
-  app V := by
-    apply F.val.map
-    apply op
-    apply homOfLE
-    simp
-    -- un tel L n'existe pas même dans R....
-    sorry
-
-def bidule : Cocone (FU (unop L).obj F.val) where
-  pt  := F.val.obj U
-  ι := biduleι F U L-/
 
 @[simps]
-def truc3π : (Functor.const (UsupK_cat (unop U))ᵒᵖ).obj (((AlphaUpStar ⋙ AlphaDownStar).obj F.val).obj U) ⟶ GK (unop U) (AlphaUpStar.obj F.val) where
+def UnitAlphaInvConeπ : (Functor.const (UsupK_cat (unop U))ᵒᵖ).obj (((AlphaUpStar ⋙ AlphaDownStar).obj F.val).obj U) ⟶ GK (unop U) (AlphaUpStar.obj F.val) where
   app K := limit.π _ K
   naturality {K L} f:= by
     simp
     forceLimW
 
 @[simps]
-def truc3 : Cone  (GK U.unop (AlphaUpStar.obj F.val) ) where
+def UnitAlphaInvCone : Cone  (GK U.unop (AlphaUpStar.obj F.val) ) where
   pt := ((AlphaUpStar ⋙ AlphaDownStar ).obj F.val).obj U
-  π := truc3π F U
+  π := UnitAlphaInvConeπ F U
 
 variable (K : (UsupK_cat (unop U))ᵒᵖ)
 
 @[simps]
-def biduleCoconeι : FU (unop K).obj F.val ⟶ (Functor.const (KsubU_cat (unop K).obj)ᵒᵖ).obj (F.val.obj (op ((intFunc (unop U)).obj (unop K)))) where
+def UnitAlphaInvαCoconeι : FU (unop K).obj F.val ⟶ (Functor.const (KsubU_cat (unop K).obj)ᵒᵖ).obj (F.val.obj (op ((intFunc (unop U)).obj (unop K)))) where
   app V := F.val.map <| op <| homOfLE <| by apply subset_trans (interior_mono V.unop.property.1) (interior_subset)
   naturality { V W} f := by
     simp
@@ -433,14 +394,14 @@ def biduleCoconeι : FU (unop K).obj F.val ⟶ (Functor.const (KsubU_cat (unop K
     rfl
 
 @[simps]
-def biduleCocone : Cocone (FU (unop K).obj F.val) where
+def UnitAlphaInvαCocone : Cocone (FU (unop K).obj F.val) where
   pt := F.val.obj (op ((intFunc (unop U)).obj (unop K)))
-  ι := biduleCoconeι F U K
+  ι := UnitAlphaInvαCoconeι F U K
 
 @[simps]
-def bidule : (GK (unop U) (AlphaUpStar.obj F.val) ⟶ Fcirc F (unop U)) where
+def UnitAlphaInvα : (GK (unop U) (AlphaUpStar.obj F.val) ⟶ Fcirc F (unop U)) where
   app K:= by
-    apply colimit.desc _ (biduleCocone F U K)
+    apply colimit.desc _ (UnitAlphaInvαCocone F U K)
   naturality {K L } f  := by
     apply colimit.hom_ext
     intro V
@@ -449,24 +410,22 @@ def bidule : (GK (unop U) (AlphaUpStar.obj F.val) ⟶ Fcirc F (unop U)) where
     rfl
 
 
-def UnitAlphaInv : ((AlphaUpStar ⋙ AlphaDownStar ).obj F.val).obj U  ⟶ F.val.obj U := (trucLimit F U.unop).map (truc3 F U) (bidule F U)
+def UnitAlphaInv : ((AlphaUpStar ⋙ AlphaDownStar ).obj F.val).obj U  ⟶ F.val.obj U := (FUOverCoverIntLimit F U.unop).map (UnitAlphaInvCone F U) (UnitAlphaInvα F U)
 
 @[simps]
-def truc2π : (Functor.const (UsupK_cat (unop U))ᵒᵖ).obj (F.val.obj U) ⟶ GK (unop U) (AlphaUpStar.obj F.val)  where
+def AlphaUnitConeV2π : (Functor.const (UsupK_cat (unop U))ᵒᵖ).obj (F.val.obj U) ⟶ GK (unop U) (AlphaUpStar.obj F.val)  where
   app K := colimit.ι (FU (unop K).obj F.val) (op <| UsupKToKsubU (unop K))
 
 @[simps]
-def truc2 : Cone  (GK (unop U) (AlphaUpStar.obj F.val)) where
+def AlphaUnitConeV2 : Cone  (GK (unop U) (AlphaUpStar.obj F.val)) where
   pt := F.val.obj U
-  π := truc2π F U
-
---def UnitAlphaAppApp : F.val.obj U ⟶ ((AlphaUpStar ⋙ AlphaDownStar ).obj F.val).obj U := (AdjAlphaStar.unit.app F.val).app U
+  π := AlphaUnitConeV2π F U
 
 omit [T2Space X] [LocallyCompactSpace X] [HasForget C] [(forget C).ReflectsIsomorphisms] [HasFiniteLimits C] [∀ (K1 K2 : Compacts X), PreservesColimitsOfShape (KsubU_cat K1 × KsubU_cat K2)ᵒᵖ (forget C)] [PreservesFiniteLimits (forget C)] [∀ (K1 K2 : Compacts X), Small.{v, w} (KsubU_cat K1 × KsubU_cat K2)ᵒᵖ] in
-lemma machinEq : limit.lift _ (truc2 F U) = (AdjAlphaStar.unit.app F.val).app U := by
+lemma UnitAlphaAppEq : limit.lift _ (AlphaUnitConeV2 F U) = (AdjAlphaStar.unit.app F.val).app U := by
   apply limit.hom_ext
   intro K
-  simp --[UnitAlphaAppApp]
+  simp
   rfl
 
 omit [HasForget C] [(forget C).ReflectsIsomorphisms] [HasFiniteLimits
@@ -474,16 +433,15 @@ omit [HasForget C] [(forget C).ReflectsIsomorphisms] [HasFiniteLimits
 theorem IsoAlphaUnit : IsIso (((AdjAlphaStar).unit.app F.val).app U) := by
   use UnitAlphaInv F U
   constructor
-  · rw [← machinEq F U]
-    suffices limit.lift (GK (unop U) (AlphaUpStar.obj F.val)) (truc2 F U) ≫ IsLimit.map (truc3 F U) (trucLimit F (unop U)) (bidule F U) = 𝟙 (F.val.obj U) by simpa [UnitAlphaInv]
-    apply IsLimit.hom_ext (trucLimit F (unop U))
+  · rw [← UnitAlphaAppEq F U]
+    suffices limit.lift (GK (unop U) (AlphaUpStar.obj F.val)) (AlphaUnitConeV2 F U) ≫ IsLimit.map (UnitAlphaInvCone F U) (FUOverCoverIntLimit F (unop U)) (UnitAlphaInvα F U) = 𝟙 (F.val.obj U) by simpa [UnitAlphaInv]
+    apply IsLimit.hom_ext (FUOverCoverIntLimit F (unop U))
     intro K
-    suffices F.val.map (op (homOfLE _)) = (truc F (unop U)).π.app K by simpa
-    dsimp [truc]-- pourquoi diable si on met simps à truc il ne s'en sort pas
+    suffices F.val.map (op (homOfLE _)) = (FUOverCoverInt F (unop U)).π.app K by simpa
+    dsimp [FUOverCoverInt]
   · apply limit.hom_ext
     intro K
-    --unfold UnitAlphaInv
-    rw [← machinEq]
+    rw [← UnitAlphaAppEq]
 
     suffices UnitAlphaInv F U ≫ colimit.ι (FU (unop K).obj F.val) (op (UsupKToKsubU (unop K))) = limit.π (GK (unop U) (AlphaUpStar.obj F.val)) K by simpa
 
@@ -510,9 +468,9 @@ theorem IsoAlphaUnit : IsIso (((AdjAlphaStar).unit.app F.val).app U) := by
 
     rw [← colimit.w _ f]
 
-    have h := IsLimit.map_π (truc3 F U) (trucLimit F (unop U)) (bidule F U) L
+    have h := IsLimit.map_π (UnitAlphaInvCone F U) (FUOverCoverIntLimit F (unop U)) (UnitAlphaInvα F U) L
 
-    have : UnitAlphaInv F U ≫ (FU (unop K).obj F.val).map f  = (truc3 F U).π.app L ≫ (bidule F U).app L := by
+    have : UnitAlphaInv F U ≫ (FU (unop K).obj F.val).map f  = (UnitAlphaInvCone F U).π.app L ≫ (UnitAlphaInvα F U).app L := by
       rw [← h]-- mais par contre on ne peut pas rw h directement dans ce qui suit
       rfl
 
