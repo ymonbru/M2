@@ -360,7 +360,7 @@ variable [T2Space X]
 
 /-- The functor that send the pair (K1 ⊆ U1, K2 ⊆ U2) to the diagram U1 → U1 ∩ U2 ← U2-/
 @[simps]
-def UInterWC : (KsubU_cat K1 × KsubU_cat K2 )ᵒᵖ  ⥤ WalkingCospan ⥤ (Opens X)ᵒᵖ where
+def UInterWC : (KsubU_cat K1 × KsubU_cat K2 )ᵒᵖ ⥤ WalkingCospan ⥤ (Opens X)ᵒᵖ where
   obj U := cospan (op (homOfLE inf_le_left): op U.unop.1.obj ⟶ op (U.unop.1.obj ⊓ U.unop.2.obj) ) (op (homOfLE inf_le_right ): op U.unop.2.obj ⟶ op (U.unop.1.obj ⊓ U.unop.2.obj))
   map {U V} f := natTransCospan (op f.unop.1) (op ((subK1SubK2toSubK1InterK2 _ _).map f.unop)) (op f.unop.2) (rfl) (rfl)
 

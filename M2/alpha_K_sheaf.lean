@@ -466,6 +466,7 @@ theorem IsoAlphaUnit : IsIso (((AdjAlphaStar).unit.app F.val).app U) := by
       apply interior_subset
       apply V_closure
 
+    slice_lhs 2 3 =>
     rw [← colimit.w _ f]
 
     have h := IsLimit.map_π (UnitAlphaInvCone F U) (FUOverCoverIntLimit F (unop U)) (UnitAlphaInvα F U) L

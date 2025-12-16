@@ -60,6 +60,8 @@ variable [LocallyCompactSpace X]
 noncomputable def FUbarEquivFL : IsColimit (FUbarToFK K F) ≃ IsColimit (FLToFK K F) := Functor.Final.isColimitWhiskerEquiv (closureFuncK K).op  (FLToFK K F)
 
 
+#check let t:(IsColimit (FUbarToFK K F)) := sorry;t.fac
+
 --the pullback square that gives a complex sheaf like in some good cases in the axiom of K-sheaf
 
 --open ZeroObject
