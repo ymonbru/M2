@@ -11,14 +11,11 @@ open Topology CategoryTheory TopologicalSpace Opposite Limits
 
 namespace CategoryTheory
 
-class IsCofilteredOrEmptyOrder (E : Type u) [Preorder E] : Prop where
-  cone_objs : ∀ x y : E, ∃ (z : _) (_ : z ≤ x) (_ : z ≤ y), True
-
-instance (E : Type u) [Preorder E] [IsCofilteredOrEmptyOrder E] : IsCofilteredOrEmpty E where
+instance (E : Type u) [Preorder E] [IsCodirectedOrder E] : IsCofilteredOrEmpty E where
   cone_objs := by
     intro x y
-    obtain ⟨w,h1,h2,T⟩ := IsCofilteredOrEmptyOrder.cone_objs x y
-    exact ⟨w,homOfLE h1,homOfLE h2, T⟩
+    obtain ⟨w, h1, h2⟩ := exists_le_le x y
+    exact ⟨w,homOfLE h1,homOfLE h2, True.intro⟩
   cone_maps := by
     intro x _ _ _
     use x
@@ -29,10 +26,14 @@ end CategoryTheory
 
 namespace Monotone
 
-theorem initial_of_isCofilteredOrder {X : Type y} {Y : Type v} [Preorder X] [Preorder Y] [IsCofilteredOrEmptyOrder X] {f : X → Y} (h : Monotone f) (_ : ∀ d,∃ c, f c ≤ d) : Functor.Initial h.functor := by sorry
-#check Functor.initial_iff_of_isCofiltered
-
-#check Monotone.functor
+theorem initial_of_isCofilteredOrder {X : Type y} {Y : Type v} [Preorder X] [Preorder Y] [IsCodirectedOrder X] {f : X → Y} (hmf : Monotone f) (h : ∀ d,∃ c, f c ≤ d) : Functor.Initial hmf.functor := by
+  apply (Functor.initial_iff_of_isCofiltered _).2
+  constructor
+  · intro d
+    obtain ⟨c,hc⟩ := h d
+    exact ⟨c,Nonempty.intro <| homOfLE hc⟩
+  · intro _ c _ _
+    exact ⟨ c, 𝟙 c, rfl⟩
 
 end Monotone
 
@@ -47,6 +48,10 @@ def compactNhds (K : Compacts X) : Set (Compacts X) :=
 
 lemma subset_of_mem_compactNhds {K K' : Compacts X} (h : K' ∈ K.compactNhds) : K.carrier ⊆ K'.carrier :=
   fun x hx ↦ mem_of_mem_nhds (h ⟨x, hx⟩)
+
+lemma exists_open_nhds_sub_compact_nhds {K : Compacts X} (L : K.compactNhds) : ∃ U : Opens X, K.carrier ⊆ U.carrier ∧ U.carrier ⊆ L.1.carrier := by
+  obtain ⟨U, KsubU, openU, UsubL⟩ := exists_open_set_nhds (fun x hx ↦ L.2 ⟨x, hx⟩)
+  exact ⟨⟨U, openU⟩ , KsubU, UsubL⟩
 
 def openrelativelycompactNhds (K : Compacts X) : Set (Opens X) :=
   setOf (fun U ↦ IsCompact (closure U.carrier) ∧ K.carrier ⊆ U.carrier)
@@ -70,11 +75,9 @@ def orcNhds_to_compactNhds (K : Compacts X) : K.openrelativelycompactNhds → K.
 
 lemma mono_orcNhds_to_compactNhds (K : Compacts X) : Monotone K.orcNhds_to_compactNhds := fun _ _ h => closure_mono h
 
-
-
 variable [T2Space X] in
-instance (K : Compacts X): IsCofilteredOrEmptyOrder  K.openrelativelycompactNhds where
-  cone_objs U1 U2 := by
+instance (K : Compacts X): IsCodirectedOrder  K.openrelativelycompactNhds where
+  directed U1 U2 := by
     use ⟨U1 ⊓ U2, by
       constructor
       apply IsCompact.of_isClosed_subset
@@ -93,9 +96,13 @@ instance (K : Compacts X): IsCofilteredOrEmptyOrder  K.openrelativelycompactNhds
 
 
 instance {K : Compacts X} [T2Space X]: Functor.Initial K.mono_orcNhds_to_compactNhds.functor := by
-  apply (Functor.initial_iff_of_isCofiltered _).2
+  apply Monotone.initial_of_isCofilteredOrder
+  intro L
+  obtain ⟨U, h1, h2⟩ := exists_open_nhds_sub_compact_nhds L
+  have h3 : closure U.carrier ⊆ L.1.carrier := (IsClosed.closure_subset_iff (IsCompact.isClosed L.1.isCompact') ).2 h2
 
-  sorry
+  use ⟨U, ⟨ IsCompact.of_isClosed_subset L.1.isCompact' isClosed_closure h3, h1⟩⟩
+  exact h3
 
 end TopologicalSpace.Compacts
 
