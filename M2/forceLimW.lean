@@ -1,7 +1,7 @@
 import Lean
 import Mathlib.CategoryTheory.Limits.HasLimits
 
-open CategoryTheory CategoryTheory.Limits Opposite Lean Meta Elab Tactic
+open CategoryTheory CategoryTheory.Limits Opposite Lean Meta Elab Tacticki
 
 universe u v w x
 
