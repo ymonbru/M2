@@ -98,10 +98,11 @@ def FSuptoFRight : F.obj (op (K₁ ⊔  K₂)) ⟶ F.obj (op K₂) := F.map (opH
 /-- The commutative square F(K₁ ⊔  K₂) ⟶ F(K₁) ⟶ F(K₁ ⊓ K₂) = F(K₁ ⊔  K₂) ⟶ F(K₂) ⟶ F(K₁ ⊓ K₂) as a pullback cone -/
 @[simps!]
 def SquareSuptoInf : PullbackCone (FtoFInfLeft F K₁ K₂) ( FtoFInfRight _ _ _):= by
-  apply PullbackCone.mk (FSuptoFLeft _ _ _) (FSuptoFRight _ _ _)
-  repeat erw [← F.map_comp]
-  rfl
+  --apply PullbackCone.mk
 
+  apply PullbackCone.mk (FSuptoFLeft _ _ _) (FSuptoFRight _ _ _) (eq := by
+    repeat erw [← F.map_comp]
+    rfl)
 /-
 /--The zero map from 0 to F(K1 ∪ K2)-/
 --@[simps]

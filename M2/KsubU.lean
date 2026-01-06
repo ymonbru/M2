@@ -580,11 +580,8 @@ instance closureFuncIsInitial : Functor.Initial (closureFuncK K) := by
   use ⟨U, by
     constructor
     exact hU1
-    apply IsCompact.of_isClosed_subset
-    exact L.obj.isCompact'
-    exact isClosed_closure
-    apply containClosure
-    exact hU2⟩-- probablement utile de le factoriser non?
+    apply IsCompact.of_isClosed_subset L.obj.isCompact' isClosed_closure
+    exact  containClosure _ _ hU2⟩
 
   apply Nonempty.intro
   apply homOfLE
