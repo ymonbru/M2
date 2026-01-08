@@ -7,8 +7,6 @@ universe w v u
 
 open Topology CategoryTheory TopologicalSpace Opposite Limits
 
-
-
 namespace CategoryTheory
 
 instance (E : Type u) [Preorder E] [IsCodirectedOrder E] : IsCofilteredOrEmpty E where
@@ -121,10 +119,24 @@ def coconeOfCompacts (P : KPresheaf X A) (K : Compacts X) :
     rw [Category.comp_id, ← Functor.map_comp]
     rfl
 
-#check Cocone.whisker K.mono_orcNhds_to_compactNhds.functor.op
-
+def coconeOfClosureOfOpens (P : KPresheaf X A) (K : Compacts X)  := Cocone.whisker K.mono_orcNhds_to_compactNhds.functor.op <|  P.coconeOfCompacts K
 
 variable [T2Space X]
+
+noncomputable def truc (P : KPresheaf X A) (K : Compacts X) : IsColimit (P.coconeOfClosureOfOpens K) ≃ IsColimit (P.coconeOfCompacts K) := Functor.Final.isColimitWhiskerEquiv _ _
+
+variable (P : KPresheaf X A) (K : Compacts X)
+
+#check (P.truc K _ ).map
+
+noncomputable def truc2 (P : KPresheaf X A) (K : Compacts X) (h : (IsColimit (P.coconeOfCompacts K))) {G : (K.openrelativelycompactNhds)ᵒᵖ ⥤ A} (t : Cocone G) (α : (K.mono_orcNhds_to_compactNhds.functor.op ⋙ (Subtype.mono_coe K.compactNhds).functor.op ⋙ P) ⟶ G) : P.obj (op K) ⟶ t.pt := ((Functor.Final.isColimitWhiskerEquiv _ _).invFun h ).map t α
+
+noncomputable def truc3 (P : KPresheaf X A) (K : Compacts X) (h : (IsColimit (P.coconeOfCompacts K))) {W : A} (f f' : P.obj (op K) ⟶ W) : f = f' := by
+  #check ((Functor.Final.isColimitWhiskerEquiv _ _).invFun h ).hom_ext
+  sorry
+
+
+#check IsColimit.hom_ext
 
 structure IsKSheaf (P : KPresheaf X A) : Prop where
   nonempty_isTerminal : Nonempty (IsTerminal (P.obj (op ⊥)))
