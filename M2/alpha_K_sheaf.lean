@@ -44,6 +44,7 @@ theorem KshToSh: IsSheaf (AlphaDownStarG G.carrier : Presheaf C (of X)):= by
   unfold IsSheafPairwiseIntersections
   intro i U
   apply Nonempty.intro
+
   constructor
   · intro s j
     sorry
@@ -53,6 +54,7 @@ theorem KshToSh: IsSheaf (AlphaDownStarG G.carrier : Presheaf C (of X)):= by
     simp
     have h := s.π.app
     dsimp at h
+
 
     #check limit.lift
     sorry
@@ -174,7 +176,7 @@ def shAlphaUpStarG : (Ksheaf X C) where
   ksh3 K := by
     apply Limits.IsColimit.ofIsoColimit _ (FLToKIsoToColimColim _ ).symm
     apply IsColimit.ofPreservesCoconeInitial
-    apply colimIsColimColim _ _ (repOEx K) (repHEx K) (repLiftingEx K) _
+    apply colimIsColimColim _ (ucEx K)
     exact colimit.isColimit (FcupIaEx K F.val)
 
 /-- The structur of Ksheaf over (AlphaUpStarRc).obj F-/

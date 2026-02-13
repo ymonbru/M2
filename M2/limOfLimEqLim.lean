@@ -13,7 +13,7 @@ variable (F : A ⥤ Cat.{v2, u2})
 
 /-- The isomorphism one imagine (induced by equality) between (F.map (𝟙 _) ⋙ (G a) and  (G a)-/
 @[simps!]
-def GIdIso (F : A ⥤ Cat.{v2, u2}) (G : (a : A) → (F.obj a) ⥤ B) (a : A) : (F.map (𝟙 _) ⋙ (G a) ≅ (G a)) := eqToIso (by
+def GIdIso (F : A ⥤ Cat.{v2, u2}) (G : (a : A) → B ⥤ (F.obj a)) (a : A) : ( (G a) ⋙ F.map (𝟙 _) ≅ (G a)) := eqToIso (by
   apply CategoryTheory.Functor.ext
   intros _ _ _
   apply eq_of_heq
@@ -26,17 +26,17 @@ def GIdIso (F : A ⥤ Cat.{v2, u2}) (G : (a : A) → (F.obj a) ⥤ B) (a : A) : 
 
 /-- The isomorphism one imagine (induced by the equality F.map (f ≫ g) = F.map f ≫ F.map g ) between F.map (f ≫ g) ⋙ G c and G a-/
 @[simps!]
-def FmapCompGIso (F : A ⥤ Cat.{v2, u2}) (G : (a : A) → (F.obj a) ⥤ B) (iso : { a b : A} → (f : a ⟶ b) → (F.map f) ⋙ G b ≅ G a) {a b c : A } (f : a ⟶ b) (g :b ⟶ c) : F.map (f ≫ g) ⋙ G c ≅ G a := isoWhiskerRight (eqToIso (F.map_comp _ _)) (G c) ≪≫ associator (F.map f) (F.map g) (G c) ≪≫ isoWhiskerLeft (F.map f) (iso g) ≪≫ iso f
+def FmapCompGIso (F : A ⥤ Cat.{v2, u2}) (G : (a : A) → B ⥤ (F.obj a) ) (iso : { a b : A} → (f : a ⟶ b) →  G a ⋙ (F.map f) ≅ G b) {a b c : A } (f : a ⟶ b) (g : b ⟶ c) : G a ⋙ F.map (f ≫ g) ≅ G c :=by sorry
 
 variable (B : Type u3) [Category.{v3, u3} B]
 /-- The data of a Cocone for F, but with isomorphism instead of equality and the lemmas that allow computation
 
 B is not part of the structure to avoid issue in inferance later-/
-structure CoconeFunctor (F : A ⥤ Cat.{v2, u2}) where
+structure ConeFunctor (F : A ⥤ Cat.{v2, u2}) where
   /-- the canonial morphisms of the cocone-/
-  i : (x : A) → (F.obj x) ⥤ B
+  i : (x : A) → B ⥤ (F.obj x)
   /-- The w condition of the cocone as an isomorphism-/
-  iso : { x y : A} → (f : x ⟶ y) → (F.map f) ⋙ i y ≅ i x
+  iso : { x y : A} → (f : x ⟶ y) → i x ⋙ (F.map f) ≅ i y
   /-- The compatibility condition over iso 𝟙 _-/
   isoId : (x  : A) → (iso (𝟙 x)) = GIdIso F i x
   /-- The compatibility condition over iso(f ≫ g)-/
@@ -51,16 +51,11 @@ variable {B : Type u3} [Category.{v3, u3} B] {C : Type u4} [Category.{v4, u4} C]
 
 /-- Build a new CoconeFunctor by whiskering the data to the right-/
 @[simps]
-def  CoconeFWhisker (s : CoconeFunctor B F) (H : B ⥤ C) : CoconeFunctor C F where
-i x := s.i x ⋙ H
-iso f := (F.map f).associator  (s.i _) H ≪≫ (isoWhiskerRight (s.iso f) H)
-isoId _ := by
-  ext
-  suffices H.map (eqToHom _ ) = eqToHom _ by simpa [s.isoId ]
-  apply eqToHom_map
-isoComp _ _ := by
-  ext
-  simp [s.isoComp]
+def  ConeFWhisker (s : ConeFunctor B F) (H : C ⥤ B) : ConeFunctor C F where
+i x := H ⋙ s.i x 
+iso f := by sorry
+isoId _ := by sorry
+isoComp _ _ := by sorry
 
 end
 
@@ -68,7 +63,7 @@ section
 
 variable {A : Type u1} [Category.{v1, u1} A] {C : Type u2} [Category.{v2, u2} C] {D : Type u3} [Category.{v3, u3} D]
 
-variable {i : A ⥤ Cat.{v4, u4}} (iaSubC : CoconeFunctor C i) (FcupIa : C ⥤ D) (a : A)
+variable {i : A ⥤ Cat.{v4, u4}} (iaSubC : ConeFunctor C i) (FcupIa : C ⥤ D) (a : A)
 
 /-- The cocone induced by applying FcupIa to the diagram i. It's not a @[simp] so that simp try to find solution without unfolding it (for exemple in the def colimFia)-/
 def F : CoconeFunctor D i := CoconeFWhisker i iaSubC FcupIa
@@ -136,14 +131,6 @@ structure lifting {x : C} (r s : repObj iaSubC x) where
   /-- The compatilty condition between the liftings and the representing morphisms of r and s-/
   compat : r.rep.hom ≫ s.rep.inv = ((iaSubC.iso hom).inv).app r.ia ≫ (iaSubC.i s.a).map liftIso.hom
 
-variable (C) (i) in
-structure unionCat where
-  iaSubC : CoconeFunctor C i
-  repO : (x : C) → repObj iaSubC x
-  repH : {x y : C} → ( f: x ⟶ y) → repHom iaSubC f
-  repLifting : {x : C} → (r s : repObj iaSubC x) → (t : repObj iaSubC x) × (lifting iaSubC r t) × (lifting iaSubC s t)
-
-
 variable (repO : (x : C) → repObj iaSubC x)
 variable (repH : {x y : C} → ( f: x ⟶ y) → repHom iaSubC f)
 
@@ -201,36 +188,33 @@ theorem colimColimIndep {x : C} (s : Cocone (colimFia iaSubC FcupIa) ) (r q : re
   rw [colimColimIndepOfLift _ _ _ _ _ t lrt]
   rw [colimColimIndepOfLift _ _ _ _ _ t lqt]
 
-
-
-variable (uc: @unionCat A _ C _ _)
 /-- the natural transformation involved in colimColimFiaCoconeFcupIa-/
 @[simps]
-def colimColimFiaCoconeFcupIaι (uc: unionCat C i) (s : Cocone (colimFia uc.iaSubC FcupIa) ): FcupIa ⟶ (const C).obj s.pt where
-  app x := let xr := uc.repO x;
-      (FcupIa.map xr.rep.inv ≫ colimit.ι (uc.iaSubC.i xr.a ⋙ FcupIa) xr.ia) ≫ s.ι.app xr.a
+def colimColimFiaCoconeFcupIaι (s : Cocone (colimFia iaSubC FcupIa) ) : FcupIa ⟶ (const C).obj s.pt where
+  app x := let xr := repO x;
+      (FcupIa.map xr.rep.inv ≫ colimit.ι (iaSubC.i xr.a ⋙ FcupIa) xr.ia) ≫ s.ι.app xr.a
   naturality x y f:= by
-    let fr := uc.repH f
+    let fr := repH f
     suffices FcupIa.map f ≫ _ = _ by simpa
 
-    rw [colimColimIndep uc.iaSubC FcupIa uc.repLifting s (uc.repO y) (repHtoCd uc.iaSubC f fr)]
-    rw [colimColimIndep uc.iaSubC FcupIa uc.repLifting s (uc.repO x) (repHtoD uc.iaSubC f fr)]
+    rw [colimColimIndep iaSubC FcupIa repLifting s (repO y) (repHtoCd iaSubC f fr)]
+    rw [colimColimIndep iaSubC FcupIa repLifting s (repO x) (repHtoD iaSubC f fr)]
 
-    suffices FcupIa.map f ≫ FcupIa.map fr.repCoDom.inv ≫ colimit.ι (uc.iaSubC.i fr.a ⋙ FcupIa) fr.iaCoDom ≫ s.ι.app fr.a = FcupIa.map fr.repDom.inv ≫ colimit.ι (uc.iaSubC.i fr.a ⋙ FcupIa) fr.iaDom ≫ s.ι.app fr.a by simpa
+    suffices FcupIa.map f ≫ FcupIa.map fr.repCoDom.inv ≫ colimit.ι (iaSubC.i fr.a ⋙ FcupIa) fr.iaCoDom ≫ s.ι.app fr.a = FcupIa.map fr.repDom.inv ≫ colimit.ι (iaSubC.i fr.a ⋙ FcupIa) fr.iaDom ≫ s.ι.app fr.a by simpa
 
     -- ce serait cool d'avoir forceColimW qui s'occupe de ça mais on verra plus tard
 
-    rw [← colimit.w ((uc.iaSubC.i fr.a ⋙ FcupIa)) fr.hom]
+    rw [← colimit.w ((iaSubC.i fr.a ⋙ FcupIa)) fr.hom]
     rw [← Category.assoc]
 
     slice_lhs 1 1 => rw [← fr.rep]
     simp
 
 /-- If s is a cocone for colimFia then it induces a cocone over FcupIa with the same point-/
-@[simps!]
-def colimColimFiaCoconeFcupIa (uc: unionCat C i) (s : Cocone (colimFia uc.iaSubC FcupIa) ) : Cocone FcupIa where
+@[simps]
+def colimColimFiaCoconeFcupIa (s : Cocone (colimFia iaSubC FcupIa) ) : Cocone FcupIa where
   pt := s.pt
-  ι := colimColimFiaCoconeFcupIaι _ uc s
+  ι := colimColimFiaCoconeFcupIaι _ _ repO repH repLifting s
 
 /-
 include repLifting
@@ -273,27 +257,27 @@ variable [HasColimitsOfSize.{v1, u1} D]
 
 /-- The evidence that the colimit of colimit is a colimit over the "union of indexes"-/
 @[simps]
-def colimColimIsColim (uc: unionCat C i) (s : Cocone (colimFia uc.iaSubC FcupIa)) (hs : IsColimit s) : IsColimit (colimColimFiaCoconeFcupIa (i := i) FcupIa uc s) where
-  desc t :=hs.desc (fCupIaCoconeToColimFiaCocone uc.iaSubC FcupIa t)
+def colimColimIsColim (s : Cocone (colimFia iaSubC FcupIa)) (hs : IsColimit s) : IsColimit (colimColimFiaCoconeFcupIa iaSubC FcupIa repO repH repLifting s) where
+  desc t :=hs.desc (fCupIaCoconeToColimFiaCocone iaSubC FcupIa t)
   fac s x := by
     simp [F]
   uniq t (m : s.pt ⟶ t.pt) hm := by
-    apply hs.uniq (fCupIaCoconeToColimFiaCocone uc.iaSubC FcupIa t)
+    apply hs.uniq (fCupIaCoconeToColimFiaCocone iaSubC FcupIa t)
     intro a
 
     apply colimit.hom_ext
     intro x
 
-    suffices colimit.ι ((F uc.iaSubC FcupIa).i a) x ≫ s.ι.app a ≫ m = t.ι.app ((uc.iaSubC.i a).obj x) by simpa
+    suffices colimit.ι ((F iaSubC FcupIa).i a) x ≫ s.ι.app a ≫ m = t.ι.app ((iaSubC.i a).obj x) by simpa
 
     rw [← hm _]
 
     repeat rw [← Category.assoc]
     apply eq_whisker
 
-    suffices colimit.ι (uc.iaSubC.i a ⋙ FcupIa) x ≫ s.ι.app a = FcupIa.map (uc.repO ((uc.iaSubC.i a).obj x)).rep.inv ≫ colimit.ι (uc.iaSubC.i (uc.repO ((uc.iaSubC.i a).obj x)).a ⋙ FcupIa) (uc.repO ((uc.iaSubC.i a).obj x)).ia ≫ s.ι.app (uc.repO ((uc.iaSubC.i a).obj x)).a by simpa [F]
+    suffices colimit.ι (iaSubC.i a ⋙ FcupIa) x ≫ s.ι.app a = FcupIa.map (repO ((iaSubC.i a).obj x)).rep.inv ≫ colimit.ι (iaSubC.i (repO ((iaSubC.i a).obj x)).a ⋙ FcupIa) (repO ((iaSubC.i a).obj x)).ia ≫ s.ι.app (repO ((iaSubC.i a).obj x)).a by simpa [F]
 
-    rw [← colimColimIndep uc.iaSubC FcupIa uc.repLifting s (repCanO uc.iaSubC a x) (uc.repO ((uc.iaSubC.i a).obj x))]
+    rw [← colimColimIndep iaSubC FcupIa repLifting s (repCanO iaSubC a x) (repO ((iaSubC.i a).obj x))]
     simp
 
 
@@ -301,31 +285,22 @@ variable [HasColimitsOfSize.{v2, u2} D]
 
 /-- The evidence that the colimit over the "union of indexes" is the colimit of the colimit-/
 @[simps]
-def colimIsColimColim (uc: unionCat C i) ( s : Cocone FcupIa) (hs : IsColimit s): IsColimit (fCupIaCoconeToColimFiaCocone uc.iaSubC FcupIa s) where
-
-  desc t  := by
-    exact hs.desc (by --truc bizzare ici
-      apply colimColimFiaCoconeFcupIa _ uc
-      exact t)
+def colimIsColimColim ( s : Cocone FcupIa) (hs : IsColimit s): IsColimit (fCupIaCoconeToColimFiaCocone iaSubC FcupIa s) where
+  desc t := hs.desc (colimColimFiaCoconeFcupIa iaSubC FcupIa repO repH repLifting t)
   fac t a := by
     apply colimit.hom_ext
     intro x
-    suffices FcupIa.map (uc.repO ((uc.iaSubC.i a).obj x)).rep.inv ≫
-    colimit.ι (uc.iaSubC.i (uc.repO ((uc.iaSubC.i a).obj x)).a ⋙ FcupIa) (uc.repO ((uc.iaSubC.i a).obj x)).ia ≫
-      t.ι.app (uc.repO ((uc.iaSubC.i a).obj x)).a =
-  colimit.ι ((F uc.iaSubC FcupIa).i a) x ≫ t.ι.app a by simpa
+    suffices FcupIa.map (repO ((iaSubC.i a).obj x)).rep.inv ≫
+    colimit.ι (iaSubC.i (repO ((iaSubC.i a).obj x)).a ⋙ FcupIa) (repO ((iaSubC.i a).obj x)).ia ≫
+      t.ι.app (repO ((iaSubC.i a).obj x)).a =
+  colimit.ι ((F iaSubC FcupIa).i a) x ≫ t.ι.app a by simpa
 
-    rw [ ← colimColimIndep uc.iaSubC FcupIa uc.repLifting t (repCanO uc.iaSubC a _) (uc.repO ((uc.iaSubC.i a).obj _))]
+    rw [ ← colimColimIndep iaSubC FcupIa repLifting t (repCanO iaSubC a _) (repO ((iaSubC.i a).obj _))]
     simp [F]
   uniq t (m : s.pt ⟶ t.pt) hm := by
-    let c : Cocone FcupIa := by
-      --truc bizzare ici
-        apply colimColimFiaCoconeFcupIa  (uc := uc)
-        exact t
-    apply  hs.uniq c
+    apply hs.uniq (colimColimFiaCoconeFcupIa iaSubC FcupIa repO repH repLifting  t)
     intro
-    simp [ ← hm _, F, c]
-
+    simp [ ← hm _, F]
 
 /-variable (G: A ⥤ D) (Giso : G ≅ colimFia iaSubC FcupIa) (s : Cocone G) (t : Cocone (colimFia iaSubC FcupIa)) ( ht : IsColimit t)
 
@@ -515,12 +490,7 @@ def repLiftingEx {U : (KsubU_cat K trueCond)ᵒᵖ}  (r s : repObj (iaSubCEx K) 
   · apply liftingToSupLeft
   · apply liftingToSupRight
 
-def ucEx : unionCat (KsubU_cat K)ᵒᵖ (iEx K) where
-  iaSubC := (iaSubCEx K)
-  repO := (repOEx K)
-  repH := (repHEx K)
-  repLifting := (repLiftingEx K)
 
+#check colimColimIsColim (iaSubCEx K) (FcupIaEx K F) (repOEx K) (repHEx K) (repLiftingEx K)
 
-#check colimColimIsColim (FcupIaEx K F) (ucEx K)
 --#lint
