@@ -1,5 +1,5 @@
 import M2.Ksheaves
-
+import M2.forceColimW
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite
 
 universe u v w
@@ -54,7 +54,6 @@ def Fp : Cocone (Fres p F) := Cocone.mk _ <| Fp_transNat _ _  ≫ (Functor.const
 
 variable (C)
 
-#check pC p
 /--The functor that evaluate K-présheaves in {p}-/
 @[simps]
 def EvalInP : ((Compacts X)ᵒᵖ ⥤ C ) ⥤ C where
@@ -67,19 +66,20 @@ def pC2 : (pinK_cat p) := ⟨pC p,rfl⟩
 
 /-- The induced morphism from pC2 to any compact of pinK-/
 @[simps!]
-def PsubOfpinK (K:pinK_cat p) : (pC2 p) ⟶ K :=  homOfLE ( by
+def PsubOfpinK (K:pinK_cat p) : (pC2 p) ⟶ K :=  ⟨homOfLE ( by
   intro _ h
   rw [h]
-  exact K.property)
+  exact K.property)⟩
 
 /-- The evidence that the cocone (Fp p F) is a colimit cocone -/
 @[simps]
 def FpisCol : IsColimit (Fp p F) where
   desc s :=  s.ι.app <| op (pC2 _)
   fac s K :=  by
-    suffices (Fres _ _).map _ ≫ s.ι.app _ =
-  s.ι.app _ ≫ ((Functor.const _ ).obj _ ).map (op (PsubOfpinK p K.unop )) by simpa
-    apply s.ι.naturality
+    forceColimW
+    · exact Set.singleton_subset_iff.2 K.unop.property
+    · simp [Fp]
+      rfl
   uniq s m hm := by
     rw [← hm (op _ )]
     suffices (Fp _ _).ι.app (op (pC2 p)) = 𝟙 _ by
@@ -127,8 +127,9 @@ def KstalkFunctorSh : (Ksheaf X C) ⥤ C := (inducedFunctor fun (F : Ksheaf X C)
 def EvalInPSh : (Ksheaf X C) ⥤ C:= (inducedFunctor fun (F : Ksheaf X C) ↦ F.carrier ).comp (EvalInP C p)
 
 /--The isomorphism of functor between taking the stalks and evaluating in p for Kshaves-/
-def IsoKstalkEvalPSh : (KstalkFunctorSh C p) ≅ (EvalInPSh C p ) := isoWhiskerLeft _ (IsoKstalkEvalP C p)
+def IsoKstalkEvalPSh : (KstalkFunctorSh C p) ≅ (EvalInPSh C p ) := Functor.isoWhiskerLeft _ (IsoKstalkEvalP C p)
 
 end
 
-#lint
+#min_imports
+--#lint

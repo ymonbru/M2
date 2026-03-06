@@ -92,6 +92,7 @@ lemma IsFinalOpKsubUPtoQ: Functor.Final (Functor.op (KsubUPtoQ K hpq)) := by
     · intro U
       use ( V K U)
       apply Nonempty.intro
+      constructor
       apply homOfLE
       apply V_spec
     · intro _ U _ _
@@ -178,10 +179,10 @@ lemma V_interior : ∀ U, K.carrier ⊆ interior (Vloc X K U).obj.carrier  := by
 
 /-- The evidence that AlphaUpStarRc X C  and AlphaUpStar are isomorphics -/
 @[simps!]
-def AlphaUpStarToRc :  (@AlphaUpStarRc C _ X _ _ _) ≅ AlphaUpStar :=  IsoAlphaUpPtoQ _ (λ _ _ => rfl) (axiomPrc ) (Vloc X) (V_spec
+def AlphaUpStarToRc :  (@AlphaUpStarRc C _ X _ _) ≅ AlphaUpStar :=  IsoAlphaUpPtoQ _ (λ _ _ => rfl) (axiomPrc ) (Vloc X) (V_spec
 X)
 /-- The data of the adjunction betwee α^*RC and α_* deduced by the previous isomorphism and the adjunction of α^* and α_*-/
 @[simps!]
-def AdjAlphaStarRc : (@AlphaUpStarRc C _ X _ _ _) ⊣ AlphaDownStar := AdjAlphaStar.ofNatIsoLeft (AlphaUpStarToRc C X).symm
+def AdjAlphaStarRc : (@AlphaUpStarRc C _ X _ _) ⊣ AlphaDownStar := AdjAlphaStar.ofNatIsoLeft (AlphaUpStarToRc C X).symm
 
 #lint

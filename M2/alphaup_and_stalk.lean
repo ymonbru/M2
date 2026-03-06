@@ -21,8 +21,8 @@ noncomputable section
 /-- Functor from the neighbourhoods of p to the opens that contains p-/
 @[simp]
 def NhdsToPsubU : (@OpenNhds (of X) p) ⥤ (KsubU_cat (pC p) trueCond) where
-  obj U := ⟨U.obj, Set.singleton_subset_iff.2 U.property,rfl⟩
-  map f := homOfLE  (leOfHom f)
+  obj U := ⟨U.1, Set.singleton_subset_iff.2 U.property,rfl⟩
+  map f := ⟨homOfLE  (leOfHom f)⟩
 
 /-- The natural maps from F(U) (fo U containing p) to the stalk of F at p-/
 @[simps]
@@ -33,20 +33,16 @@ def FUtoStalkι : FU (pC p) F (trueCond ) ⟶ (Functor.const _ ).obj (F.stalk p)
 @[simps]
 def FUtoStalk : Cocone (FU (pC p) F (trueCond)):= Cocone.mk _ (FUtoStalkι X p F)
 
-variable (c:Cocone (FU (pC p) F trueCond))
+variable (c : Cocone (FU (pC p) F trueCond))
 
 
 /-- The natural maps from F at the neighbourhood of to a cocone of F(U) for U containing p-/
 @[simps]
 def CoconeFUpCtoOPenNhdspι :(OpenNhds.inclusion p).op ⋙ F ⟶ (Functor.const _).obj c.pt where
   app U:= c.ι.app <| op <| (@NhdsToPsubU (of X) _ (p:of X)).obj U.unop
-  naturality U V f := by
-    have : ∀ (X Y : (KsubU_cat (pC p) trueCond)ᵒᵖ) (f : X ⟶ Y), F.map f.unop.op ≫ c.ι.app Y = c.ι.app X ≫ 𝟙 c.pt := by
-      apply c.ι.naturality
-    suffices _ = c.ι.app (op ⟨U.unop.obj, _ ⟩ ) ≫ 𝟙 c.pt by simpa
-    rw [← this]
-    apply congr
-    repeat rfl
+  naturality _ _ _ := by
+    simp
+    forceColimW
 
 /-- The cocone indiced by the natural maps of CoconeFUpCtoOPenNhdspι -/
 @[simps]
@@ -78,7 +74,7 @@ def AlphaComStalkEval : (AlphaUpStar) ⋙ (EvalInP C p)⟶ @stalkFunctor _ _ _ (
   app F := (ColimitToFUstalk X C p F).hom
 
 /-- The natural transformation from α ≫ stalk in p to the stalk functor. It's induced by AlphaComStalkEval and the isomorphism of evaluation in p and stalk in p for K-presheaves -/
-def AlphaComStalk : (AlphaUpStar) ⋙ (KstalkFunctor p)⟶ @stalkFunctor C _ _ (of X) p := whiskerLeft _ (StalkToPFunc C p) ≫ AlphaComStalkEval _ _ _
+def AlphaComStalk : (AlphaUpStar) ⋙ (KstalkFunctor p)⟶ @stalkFunctor C _ _ (of X) p := Functor.whiskerLeft _ (StalkToPFunc C p) ≫ AlphaComStalkEval _ _ _
 
 instance : IsIso (AlphaComStalk X C p):= by
   suffices IsIso (AlphaComStalkEval X C p) by apply IsIso.comp_isIso

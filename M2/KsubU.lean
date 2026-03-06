@@ -1,5 +1,6 @@
 import M2.natTransWC
 import Mathlib.CategoryTheory.Filtered.Final
+import Mathlib.Combinatorics.Quiver.ReflQuiver
 import Mathlib.Topology.Sets.Compacts
 
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite
@@ -41,7 +42,7 @@ instance : Category (KsubU_cat K P) := ObjectProperty.FullSubcategory.category (
 def K1subK2subU {K₁ K₂ : Compacts X} (f : K₁ ⟶ K₂) : (KsubU_cat K₂ P) ⥤ (KsubU_cat K₁ P ) where
   obj W := (⟨W.obj,Set.Subset.trans (leOfHom f ) W.property.1
   , W.property.2⟩)
-  map i := homOfLE (leOfHom i)
+  map i := ⟨homOfLE (leOfHom i.hom)⟩
 
 /-- The diagram obtained by restricting F to the category KsubU-/
 @[simps!]
@@ -63,10 +64,10 @@ variable (U1 U2 : KsubU_cat K)
 #check U1 ⊓ U2-/
 
 /-- The morphism  U1 ⊓ U2 ⟶ U1 for elements of (KsubU_cat K P)-/
-def InfInLeftKSU (U1 U2 : KsubU_cat K P): (InfKsubU K axiomP U1 U2) ⟶ U1:= homOfLE (by simp)
+def InfInLeftKSU (U1 U2 : KsubU_cat K P): (InfKsubU K axiomP U1 U2) ⟶ U1:= ⟨homOfLE (by simp)⟩
 
 /-- The morphism U1 ⊓ U2 ⟶ U2 for elements of (KsubU_cat K P)-/
-def InfInRightKSU (U1 U2 : KsubU_cat K P ): (InfKsubU K axiomP U1 U2) ⟶ U2 := homOfLE (by simp)
+def InfInRightKSU (U1 U2 : KsubU_cat K P ): (InfKsubU K axiomP U1 U2) ⟶ U2 := ⟨homOfLE (by simp)⟩
 
 /-- The functor that send the pair (K1 ⊆ U1, K2 ⊆ U2) to K1 ⊓ K2 ⊆ U1 ∩ U2-/
 @[simps]
@@ -77,9 +78,9 @@ def subK1SubK2toSubK1InterK2 (K1 K2 : Compacts X) [T2Space X]: (KsubU_cat K1) ×
         exact U.1.property.1
         exact U.2.property.1
         rfl⟩
-  map { U V } f := homOfLE ( by
+  map { U V } f := ⟨homOfLE ( by
     suffices U.1.obj ⊓ U.2.obj ≤ V.1.obj ∧ U.1.obj ⊓ U.2.obj ≤ V.2.obj by simpa
-    exact ⟨Set.Subset.trans inf_le_left (leOfHom f.1), Set.Subset.trans inf_le_right (leOfHom f.2)⟩ )
+    exact ⟨Set.Subset.trans inf_le_left (leOfHom f.1.hom), Set.Subset.trans inf_le_right (leOfHom f.2.hom)⟩ )⟩
 
 include axiomP
 /-- The evidence that the category (KsubU_cat K P) is cofiltered-/
@@ -114,6 +115,7 @@ instance IsInitialKsubUBot : IsInitial ((instBotKsubU_catBotCompacts Pbot).bot :
     intro _ _
     rfl
   · intro
+    constructor
     apply homOfLE
     intro _ hx
     rcases hx
@@ -205,6 +207,7 @@ instance [T2Space X] : (subK1SubK2toSubK1InterK2 K1 K2).Initial := by
 
     use ⟨V1, V2⟩
     apply Nonempty.intro
+    constructor
     apply homOfLE
     exact hV3
 
@@ -335,22 +338,20 @@ def KsubUK1K2ProjCup: KsubU_cat K1 × KsubU_cat K2 ⥤ (KsubU_cat (K1 ⊔ K2) ) 
     · exact U.1.property.1
     · exact U.2.property.1
     rfl⟩
-  map {U V } f := by
-    apply homOfLE
+  map {U V } f := ⟨ homOfLE (by
     apply sup_le_sup
-    exact leOfHom f.1
-    exact leOfHom f.2
+    exact leOfHom f.1.hom
+    exact leOfHom f.2.hom)⟩
 
 instance : (KsubUK1K2ProjCup K1 K2).Initial := by
   apply (Functor.initial_iff_of_isCofiltered _).mpr
   constructor
   · intro U
     use ⟨(K1subK2subU _ (homOfLE (le_sup_left))).obj U, (K1subK2subU _ (homOfLE (le_sup_right))).obj U⟩
-
     apply Nonempty.intro
+    constructor
     apply homOfLE
     simp
-
   · intro _ V _ _
     use V
     use 𝟙 _
@@ -362,7 +363,7 @@ variable [T2Space X]
 @[simps]
 def UInterWC : (KsubU_cat K1 × KsubU_cat K2 )ᵒᵖ ⥤ WalkingCospan ⥤ (Opens X)ᵒᵖ where
   obj U := cospan (op (homOfLE inf_le_left): op U.unop.1.obj ⟶ op (U.unop.1.obj ⊓ U.unop.2.obj) ) (op (homOfLE inf_le_right ): op U.unop.2.obj ⟶ op (U.unop.1.obj ⊓ U.unop.2.obj))
-  map {U V} f := natTransCospan (op f.unop.1) (op ((subK1SubK2toSubK1InterK2 _ _).map f.unop)) (op f.unop.2) (rfl) (rfl)
+  map {U V} f := natTransCospan (op f.unop.1.hom) (op ((subK1SubK2toSubK1InterK2 _ _).map f.unop).hom) (op f.unop.2.hom) (rfl) (rfl)
 
 /-- The functor Left projection: (K1 ⊆ U1, K2 ⊆ U2) ↦ U1 induced by UInterWC-/
 @[simps!]
@@ -380,7 +381,7 @@ def jOne : (KsubU_cat K1 × KsubU_cat K2 )ᵒᵖ ⥤ (Opens X)ᵒᵖ := ( UInter
 @[simps!]
 def jCup : (KsubU_cat K1 × KsubU_cat K2 )ᵒᵖ ⥤ (Opens X)ᵒᵖ where
   obj U := op (U.unop.1.obj ⊔ U.unop.2.obj)
-  map f := op (homOfLE (sup_le_sup (leOfHom f.unop.1) (leOfHom f.unop.2)
+  map f := op (homOfLE (sup_le_sup (leOfHom f.unop.1.hom) (leOfHom f.unop.2.hom)
 ))
 
 /-- The natural transformation from jLeft to jOne : (K1 ⊆ U1, K2 ⊆ U2) ↦ (U1 ∩ U2 ⟶ U1)   -/
@@ -525,10 +526,10 @@ def InfSupSupK (L1 L2 : supSupK_cat K ) : (supSupK_cat K ) := ⟨(L1.obj) ⊓ (L
       exact Set.inter_subset_right ⟩
 
 /-- The morphisme L1 ⊓ L2 ⟶ L1 for elements of (supSupK_cat K)-/
-def InfInLeftSSK (L1 L2 : supSupK_cat K ): (InfSupSupK K L1 L2) ⟶ L1 := homOfLE (by simp)
+def InfInLeftSSK (L1 L2 : supSupK_cat K ): (InfSupSupK K L1 L2) ⟶ L1 := ⟨homOfLE (by simp)⟩
 
 /-- The morphisme L1 ⊓ L2 ⟶ L2 for elements of (supSupK_cat K)-/
-def InfInRightSSK (L1 L2 : supSupK_cat K ): (InfSupSupK K L1 L2) ⟶ L2 := homOfLE (by simp)
+def InfInRightSSK (L1 L2 : supSupK_cat K ): (InfSupSupK K L1 L2) ⟶ L2 := ⟨homOfLE (by simp)⟩
 
 instance : IsCofilteredOrEmpty (supSupK_cat K) where
   cone_objs := by
@@ -564,7 +565,7 @@ def closureFuncK : RelCN_cat K ⥤ supSupK_cat K where
     constructor
     exact U.property.1
     exact subset_closure ⟩
-  map i :=  homOfLE <| closure_mono <| leOfHom i
+  map i := ⟨homOfLE <| closure_mono <| leOfHom i.hom⟩
 
 omit [LocallyCompactSpace X] in
 lemma containClosure (U : Opens X) (L : Compacts X) (h : U.carrier ⊆ L.carrier) : closure U.carrier ⊆ L.carrier := by
@@ -582,8 +583,8 @@ instance closureFuncIsInitial : Functor.Initial (closureFuncK K) := by
     exact hU1
     apply IsCompact.of_isClosed_subset L.obj.isCompact' isClosed_closure
     exact  containClosure _ _ hU2⟩
-
   apply Nonempty.intro
+  constructor
   apply homOfLE
   apply containClosure
   exact hU2

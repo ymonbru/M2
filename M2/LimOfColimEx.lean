@@ -271,13 +271,13 @@ def limFUInterWCFlipLimLift : s.pt ⟶ jCup K1 K2 ⋙ F.val where
       match x with
         | .left =>
           have : (F.isLimitPullbackCone (unop U).1.obj (unop U).2.obj).lift (FUInterWCConeToPullbackCone K1 K2 F s U) ≫ (F.interUnionPullbackCone (unop U).1.obj (unop U).2.obj).fst = (s.π.app .left).app U := (Sheaf.isLimitPullbackCone F U.unop.1.obj U.unop.2.obj).fac (FUInterWCConeToPullbackCone K1 K2 F s U) .left
-          suffices (F.isLimitPullbackCone (unop U).1.obj (unop U).2.obj).lift (FUInterWCConeToPullbackCone K1 K2 F s U) ≫ F.val.map (op (homOfLE _)) ≫ (F.interUnionPullbackCone (unop V).1.obj (unop V).2.obj).fst = (s.π.app .left).app U ≫ F.val.map (op f.unop.1) by simpa
+          suffices (F.isLimitPullbackCone (unop U).1.obj (unop U).2.obj).lift (FUInterWCConeToPullbackCone K1 K2 F s U) ≫ F.val.map (op (homOfLE _)) ≫ (F.interUnionPullbackCone (unop V).1.obj (unop V).2.obj).fst = (s.π.app .left).app U ≫ F.val.map (op f.unop.1.hom) by simpa
           rw [←  this, Category.assoc, Sheaf.interUnionPullbackCone_fst, Sheaf.interUnionPullbackCone_fst, ← F.val.map_comp, ← F.val.map_comp ]
           rfl
         | .right =>
           have : (F.isLimitPullbackCone (unop U).1.obj (unop U).2.obj).lift (FUInterWCConeToPullbackCone K1 K2 F s U) ≫ (F.interUnionPullbackCone (unop U).1.obj (unop U).2.obj).snd = (s.π.app .right).app U := (Sheaf.isLimitPullbackCone F U.unop.1.obj U.unop.2.obj).fac (FUInterWCConeToPullbackCone K1 K2 F s U) .right
 
-          suffices (F.isLimitPullbackCone (unop U).1.obj (unop U).2.obj).lift (FUInterWCConeToPullbackCone K1 K2 F s U) ≫ F.val.map (op (homOfLE _)) ≫ (F.interUnionPullbackCone (unop V).1.obj (unop V).2.obj).snd = (s.π.app .right).app U ≫ F.val.map (op f.unop.2) by simpa
+          suffices (F.isLimitPullbackCone (unop U).1.obj (unop U).2.obj).lift (FUInterWCConeToPullbackCone K1 K2 F s U) ≫ F.val.map (op (homOfLE _)) ≫ (F.interUnionPullbackCone (unop V).1.obj (unop V).2.obj).snd = (s.π.app .right).app U ≫ F.val.map (op f.unop.2.hom) by simpa
           rw [←  this, Category.assoc, Sheaf.interUnionPullbackCone_snd, Sheaf.interUnionPullbackCone_snd, ← F.val.map_comp, ← F.val.map_comp ]
           rfl
         | .one =>

@@ -10,7 +10,7 @@ variable {C : Type u} [Category.{v,u} C] (F G : WalkingCospan ⥤ C)
 /--An helper to buil natural transformation between functors WalkingCospan ⥤ C. In particular it makes obvious for simp the naturality case for id, wich simp cant close in some particular cases-/
 @[simps]
 def natTransWcspFunc (fL: F.obj .left ⟶ G.obj .left)(fR: F.obj .right ⟶ G.obj .right) (fO: F.obj .one ⟶ G.obj .one) (hOL : F.map WalkingCospan.Hom.inl ≫ fO = fL ≫ G.map WalkingCospan.Hom.inl) (hOR : F.map WalkingCospan.Hom.inr ≫ fO = fR ≫ G.map WalkingCospan.Hom.inr) : F ⟶ G where
-  app x:= match x with
+  app x := match x with
     |.left => fL
     |.right => fR
     |.one => fO

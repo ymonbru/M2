@@ -1,5 +1,8 @@
 import M2.Ksheaves
 import M2.KsubU
+import M2.forceColimW
+import M2.forceLimW
+import M2.Suffices
 
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite
 
@@ -15,22 +18,21 @@ variable (F : (Opens X)ᵒᵖ ⥤ C)
 variable (P : Opens X → Prop := trueCond)
 
 /-- The natural transformation of change of basis for the diagram FU-/
-@[simps]
-def K1subK2natTrans {K₁ K₂ : Compacts X} (f : K₁ ⟶ K₂) : (FU _ F P) ⟶  (Functor.comp (K1subK2subU _ f).op (FU _ F _)) where
-  app _ := 𝟙 _
+@[simps!]
+def K1subK2natTrans {K₁ K₂ : Compacts X} (f : K₁ ⟶ K₂) : (FU _ F P) ⟶  (K1subK2subU _ f).op ⋙ (FU _ F _) := 𝟙 _
 
 /-- The functor α^*F-/
 @[simps]
 def AlphaUpStarF : (Compacts X)ᵒᵖ ⥤ C  where
   obj K := colimit (FU K.unop F P)
-  map f := colimMap (K1subK2natTrans F P f.unop) ≫ (colimit.pre (FU _ _ _) (K1subK2subU _ _ ).op)
+  map f := colimMap ((K1subK2natTrans F P f.unop)) ≫ (colimit.pre (FU _ _ _) (K1subK2subU _ _ ).op)
 
 variable {F₁ F₂ : (Opens X)ᵒᵖ ⥤ C} (τ : F₁ ⟶ F₂)
 
 /-- The restriction of the natural transformation between the digram FU over K₁ eand FU over K₂ -/
 @[simps]
 def τres : (FU K F₁ P) ⟶ (FU _ F₂ _) where
-  app U := τ.app <| op (U.unop.obj)
+  app U := τ.app <| op (U.unop.obj)-- supprimer ça pose des problemes plsu tard dans RCalpha
 
 /-- The natural transformation α^* τ between α^* F₁ and α^* F₂-/
 @[simps]
@@ -84,7 +86,7 @@ variable (U₁ U₂ : Opens X) (f : U₁ ⟶ U₂)-- U₁ ⊆ U₂
 @[simps]
 def U2supU1supK : (UsupK_cat U₁) ⥤ (UsupK_cat U₂) where
   obj W := (⟨W.obj,Set.Subset.trans W.property (leOfHom f)⟩ : UsupK_cat _)
-  map i := homOfLE (leOfHom i)
+  map i := ⟨homOfLE (leOfHom i.hom)⟩
 /-
 /-- The natural transformation of change of basis for the diagram GK-/
 @[simps]
@@ -142,12 +144,12 @@ def ConeFtoAG : Cone (GK U G) := Cone.mk _ (ConeFtoAGπ τ _)
 @[simps]
 def FtoAG : F ⟶ (AlphaDownStar).obj G where
   app U := limit.lift _ (ConeFtoAG τ U.unop)
-  naturality U V _ := by
+  naturality U V f := by
     --ext ne trouve pas limit.hom_ext
     apply limit.hom_ext
     intro _
-    suffices (FU _ _ _ ).map _ ≫ colimit.ι (FU _ _ _ ) (op ⟨V.unop, _ ⟩) ≫ _ = colimit.ι (FU _ _ _ ) (op ⟨U.unop, _ ⟩) ≫ _ by simpa
-    rw [← Category.assoc, ← colimit.w_assoc, Category.assoc]
+    suffices F.map f ≫ colimit.ι (FU _ F) (op { obj := unop V, property := _ }) ≫ τ.app _ = colimit.ι (FU _ F) (op { obj := unop U, property := _ }) ≫ τ.app (op _) by simpa
+    forceColimW
 
 
 /-- The naturals maps from the family of F(U) to  G(K) for U containing K -/
@@ -163,12 +165,14 @@ def CoconeAFtoG : Cocone (FU K F P) := Cocone.mk _ (CoconeAFtoGι σ K)
 @[simps]
 def AFtoG : ( (AlphaUpStar).obj F ⟶  G) where
   app K := colimit.desc _ (CoconeAFtoG _ K.unop)
-  naturality _ _ _ := by
+  naturality _ _ f := by
     apply colimit.hom_ext
     intro _
     suffices _ = σ.app _ ≫ limit.π (GK _ _ ) (op _ ) ≫ G.map _ by simpa
-    rw [← limit.w _ _ ]
-    rfl
+    forceLimW
+    · constructor
+      exact f.unop
+    · rfl
 
 /-- The bijection between hom(αF, G) and hom(F,αG) -/
 @[simps]
