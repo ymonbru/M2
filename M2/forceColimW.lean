@@ -45,11 +45,13 @@ def forceColimWLeft : TacticM Unit := withMainContext do
 
   -- apply the colimit.w lemma and try to solve it
   evalTactic <| ← `(tactic| let $(mkIdent fForce) := $( ← Term.exprToSyntax newGoal))
+
+  -- the con_rhs is there to ensure that if fForce is secretly the 𝟙 _ then the rw will not rewrite two times colimit.w
   match c with
     |none =>
-      evalTactic <| ← `(tactic| rw [ ← CategoryTheory.Limits.colimit.w _ $(mkIdent fForce)])
+      evalTactic <| ← `(tactic| conv_rhs => rw [ ← CategoryTheory.Limits.colimit.w _ $(mkIdent fForce)])
     |some c =>
-      evalTactic <| ← `(tactic| rw [ ← CategoryTheory.Limits.Cocone.w ($( ← Term.exprToSyntax c)) $(mkIdent fForce)])
+      evalTactic <| ← `(tactic| conv_rhs => (rw [ ← CategoryTheory.Limits.Cocone.w ($( ← Term.exprToSyntax c)) $(mkIdent fForce)]))
 
   evalTactic <| ← `(tactic| apply eq_whisker; first | aesop_cat| skip)
 
@@ -66,7 +68,7 @@ def forceColimWLeft : TacticM Unit := withMainContext do
           --evalTactic $ ← `(tactic| first | apply CategoryTheory.homOfLE | skip)
           evalTactic $ ← `(tactic| first | aesop_cat | skip)
 
-elab "forceColimW0" : tactic => withMainContext do forceColimWLeft
+elab "forceColimW0": tactic => withMainContext do forceColimWLeft
 
 elab "forceColimW" : tactic => withMainContext do
   let s0 ← saveState
@@ -103,3 +105,9 @@ example : (𝟙 _ ≫ (FfBis F f ≫ colimit.ι F ( op b)) = colimit.ι F (op a)
 
   sorry
 example : 1=1 := by forceColimW-/
+
+/-variable (C J K: Type) [Category C] [Category J] [Category K] (F : J ⥤ C) (E: K ⥤ J) ( EggF : K ⥤ C) (k : K)
+
+example : colimit.ι EggF k ≫ colimit.pre F E  = sorry := by sorry
+
+#check colimit.ι_pre-/
