@@ -107,4 +107,10 @@ instance {K : Compacts X} [T2Space X]: Functor.Initial K.mono_orcNhds_to_compact
 
 end TopologicalSpace.Compacts
 
+namespace TopologicalSpace.Opens
+
+def compactsInsd (U : Opens X) : Set (Compacts X) := setOf (fun K ↦ K.carrier ⊆ U.carrier)
+
+end TopologicalSpace.Opens
+
 #min_imports

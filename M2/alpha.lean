@@ -49,9 +49,6 @@ def AlphaUpStarP : ((Opens X)ᵒᵖ ⥤ C) ⥤ (Compacts X)ᵒᵖ ⥤ C where
 @[simps!]
 def AlphaUpStar : ((Opens X)ᵒᵖ ⥤ C) ⥤ ((Compacts X)ᵒᵖ ⥤ C) := AlphaUpStarP
 
-end
-
-noncomputable section
 --α_*
 
 variable (U : Opens X) (G : (Compacts X)ᵒᵖ ⥤ C)
@@ -130,8 +127,7 @@ variable {F : (Opens X)ᵒᵖ⥤ C} {G : (Compacts X)ᵒᵖ ⥤ C} (τ : (AlphaU
 @[simps]
 def ConeFtoAGπ : (Functor.const _ ).obj (F.obj (op U)) ⟶ GK U G where
   app L := colimit.ι (FU (ObjectProperty.ι _ |>.op.obj _ ).unop _ ) (op ⟨U,L.unop.property,rfl⟩) ≫ τ.app _
-
-  naturality _ L _ := by
+  naturality _ _ _ := by
     suffices _ = colimit.ι (FU _ _ _ ) (op ⟨U , _ ⟩) ≫ τ.app (op _ ) ≫ G.map _ by simpa
     rw [← (τ.naturality _)]
     simp [ K1subK2subU]
