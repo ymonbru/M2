@@ -113,4 +113,12 @@ def compactsInsd (U : Opens X) : Set (Compacts X) := setOf (fun K ↦ K.carrier 
 
 end TopologicalSpace.Opens
 
+namespace  Subtype
+
+def toOpenNhds {U : Opens X } (K : U.compactsInsd) : (K.val).openNhds := ⟨U, K.property⟩
+
+end Subtype
+
+
+
 #min_imports

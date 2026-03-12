@@ -22,14 +22,14 @@ def split_square_step (_ : Unit ) (e : Expr) : TacticM Unit := withMainContext d
       let hleft := hname.str "map_eq_left"
       let hright := hname.str "map_eq_right"
 
-      --evalTactic <| ← `(tactic| set $(mkIdent hmap) := $( ← Term.exprToSyntax c) ≫ $( ← Term.exprToSyntax d) with ← $(mkIdent hright))
-      --evalTactic <| ← `(tactic|rename' $(mkIdent hname) => $(mkIdent hleft))
+      evalTactic <| ← `(tactic| set $(mkIdent hmap):ident := $( ← Term.exprToSyntax c) ≫ $( ← Term.exprToSyntax d) with ← $(mkIdent hright):ident)
+      evalTactic <| ← `(tactic|rename' $(mkIdent hname) => $(mkIdent hleft))
 
-      evalTactic <| ← `(tactic| let $(mkIdent hmap) := $( ← Term.exprToSyntax c) ≫ $( ← Term.exprToSyntax d))
+      /-evalTactic <| ← `(tactic| let $(mkIdent hmap) := $( ← Term.exprToSyntax c) ≫ $( ← Term.exprToSyntax d))
       evalTactic <| ← `(tactic| have $(mkIdent hleft) : $( ← Term.exprToSyntax a) ≫ $( ← Term.exprToSyntax b) = $(mkIdent hmap) := by rw [ ($(mkIdent hname))])
       evalTactic <| ← `(tactic| have $(mkIdent hright) : $( ← Term.exprToSyntax c) ≫ $( ← Term.exprToSyntax d) = $(mkIdent hmap) := by rfl)
       evalTactic <| ← `(tactic|clear $(mkIdent hname))
-      --evalTactic <| ← `(tactic|rename' $(mkIdent hname) => $(mkIdent hleft))
+      --evalTactic <| ← `(tactic|rename' $(mkIdent hname) => $(mkIdent hleft))-/
 
     | none => return ()
 
