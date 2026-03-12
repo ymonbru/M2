@@ -200,11 +200,11 @@ def toαFtoG : alphaUpStar.obj F ⟶ G where
 
 /-- The bijection between hom(αF, G) and hom(F,αG) -/
 @[simps]
-def homEquiv: (AlphaUpStar.obj F ⟶ G) ≃ ( F ⟶ AlphaDownStar.obj G) where
-  toFun := fun τ => FtoAG τ
-  invFun := fun σ  => AFtoG σ
-  left_inv τ := by aesop_cat
-  right_inv σ := by aesop_cat
+def homEquiv: (alphaUpStar.obj F ⟶ G) ≃ ( F ⟶ alphaDownStar.obj G) where
+  toFun := fun τ => τ.toFtoαG
+  invFun := fun σ  => σ.toαFtoG
+  left_inv τ := sorry
+  right_inv σ := sorry
 
 
 /-- The data necessary to build the adjunction between α^* and α_*-/
