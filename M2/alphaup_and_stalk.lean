@@ -48,6 +48,7 @@ def CoconeFUpCtoOPenNhdspι :(OpenNhds.inclusion p).op ⋙ F ⟶ (Functor.const 
 @[simps]
 def CoconeFUpCtoOPenNhdsp : Cocone ((OpenNhds.inclusion p).op ⋙ F) := Cocone.mk _ (CoconeFUpCtoOPenNhdspι X p F c)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The evidence that that the cocone (FUtoStalk X p F) is colimit-/
 @[simps]
 def IsColimitFUtoStalk :IsColimit (FUtoStalk X p F) where
@@ -64,11 +65,13 @@ def IsColimitFUtoStalk :IsColimit (FUtoStalk X p F) where
 
 variable (C)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The morphism of colimit.cocone to FUtoStalk -/
 @[simps]
 def ColimitToFUstalk :(colimit.cocone (FU (pC p) F trueCond)) ⟶ (FUtoStalk X p F) where
   hom  := colimit.desc _ (FUtoStalk _ _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation from α ≫ evaluation in p to the stalk functor-/
 def AlphaComStalkEval : (AlphaUpStar) ⋙ (EvalInP C p)⟶ @stalkFunctor _ _ _ (of X) p  where
   app F := (ColimitToFUstalk X C p F).hom

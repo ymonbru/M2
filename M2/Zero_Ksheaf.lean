@@ -66,10 +66,10 @@ def ZKsheaf : Ksheaf X C where
   ksh2 K K' := by
     apply PullbackCone.isLimitAux _ 0
     · intro _
-      simp_all only [FZero, Pi.zero_apply, PullbackCone.π_app_left, zero_comp]
+      simp_all only [FZero, Pi.zero_apply, PullbackCone.π_app_left]
       ext : 1
     · intro s
-      simp_all only [FZero, Pi.zero_apply, PullbackCone.π_app_right, zero_comp]
+      simp_all only [FZero, Pi.zero_apply, PullbackCone.π_app_right]
       ext : 1
     · intro _ _ _
       apply IsZero.eq_zero_of_tgt (isZero_zero _)

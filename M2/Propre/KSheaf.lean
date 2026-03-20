@@ -24,15 +24,15 @@ def coconeOfCompacts (P : KPresheaf A X) (K : Compacts X) :
     rw [Category.comp_id, ← Functor.map_comp]
     rfl
 
-def coconeOfClosureOfOpens (P : KPresheaf A X) (K : Compacts X)  := Cocone.whisker K.mono_orcNhds_to_compactNhds.functor.op <|  P.coconeOfCompacts K
+def coconeOfClosureOfOpens (P : KPresheaf A X) (K : Compacts X)  := Cocone.whisker K.mono_oRcNhds_to_compactNhds.functor.op <|  P.coconeOfCompacts K
 
 variable [T2Space X]
 
 /-noncomputable def truc (P : KPresheaf X A) (K : Compacts X) : IsColimit (P.coconeOfClosureOfOpens K) ≃ IsColimit (P.coconeOfCompacts K) := Functor.Final.isColimitWhiskerEquiv _ _-/
+set_option backward.isDefEq.respectTransparency false in
+noncomputable def mapOfOpenClosure (P : KPresheaf A X) (K : Compacts X) (h : (IsColimit (P.coconeOfCompacts K))) {G : (K.openRcNhds)ᵒᵖ ⥤ A} (t : Cocone G) (α : (K.mono_oRcNhds_to_compactNhds.functor.op ⋙ (Subtype.mono_coe K.compactNhds).functor.op ⋙ P) ⟶ G) : P.obj (op K) ⟶ t.pt := ((Functor.Final.isColimitWhiskerEquiv _ _).invFun h ).map t α
 
-noncomputable def mapOfOpenClosure (P : KPresheaf A X) (K : Compacts X) (h : (IsColimit (P.coconeOfCompacts K))) {G : (K.openrelativelycompactNhds)ᵒᵖ ⥤ A} (t : Cocone G) (α : (K.mono_orcNhds_to_compactNhds.functor.op ⋙ (Subtype.mono_coe K.compactNhds).functor.op ⋙ P) ⟶ G) : P.obj (op K) ⟶ t.pt := ((Functor.Final.isColimitWhiskerEquiv _ _).invFun h ).map t α
-
-
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def hom_K_ext (P : KPresheaf A X) {K : Compacts X} (h : (IsColimit (P.coconeOfCompacts K))) {W : A} {f f' : P.obj (op K) ⟶ W} (w : ∀ V, (P.coconeOfClosureOfOpens K).ι.app V ≫ f = (P.coconeOfClosureOfOpens K).ι.app V ≫ f' ): f = f' := ((Functor.Final.isColimitWhiskerEquiv _ _).invFun h ).hom_ext w
 
 structure IsKSheaf (P : KPresheaf A X) : Prop where
@@ -48,18 +48,14 @@ end KPresheaf
 variable [T2Space X]
 
 variable (X A) in
-structure KSheaf where
-  val : KPresheaf A X
-  cond : KPresheaf.IsKSheaf val
-
+abbrev KSheaf := ObjectProperty.FullSubcategory (KPresheaf.IsKSheaf (X := X) (A := A))
 
 namespace Ksheaf
 
-noncomputable def mapOfOpenClosure (P : KSheaf A X) (K : Compacts X) {G : (K.openrelativelycompactNhds)ᵒᵖ ⥤ A} (t : Cocone G) (α : (K.mono_orcNhds_to_compactNhds.functor.op ⋙ (Subtype.mono_coe K.compactNhds).functor.op ⋙ P.val) ⟶ G) : P.val.obj (op K) ⟶ t.pt := ((Functor.Final.isColimitWhiskerEquiv _ _).invFun (Classical.choice <| P.cond.nonempty_isColimit_coconeOfCompacts K) ).map t α
+set_option backward.isDefEq.respectTransparency false in
+noncomputable def mapOfOpenClosure (P : KSheaf A X) (K : Compacts X) {G : (K.openRcNhds)ᵒᵖ ⥤ A} (t : Cocone G) (α : (K.mono_oRcNhds_to_compactNhds.functor.op ⋙ (Subtype.mono_coe K.compactNhds).functor.op ⋙ P.obj) ⟶ G) : P.obj.obj (op K) ⟶ t.pt := ((Functor.Final.isColimitWhiskerEquiv _ _).invFun (Classical.choice <| P.property.nonempty_isColimit_coconeOfCompacts K) ).map t α
 
-
-noncomputable def hom_K_ext (P : KSheaf A X) {K : Compacts X}  {W : A} {f f' : P.val.obj (op K) ⟶ W} (w : ∀ V, (P.val.coconeOfClosureOfOpens K).ι.app V ≫ f = (P.val.coconeOfClosureOfOpens K).ι.app V ≫ f' ): f = f' := ((Functor.Final.isColimitWhiskerEquiv _ _).invFun (Classical.choice <| P.cond.nonempty_isColimit_coconeOfCompacts K)).hom_ext w
-
-instance : Category (KSheaf A X) :=  InducedCategory.instCategory (F := fun x => x.val)
+set_option backward.isDefEq.respectTransparency false in
+noncomputable def hom_K_ext (P : KSheaf A X) {K : Compacts X}  {W : A} {f f' : P.obj.obj (op K) ⟶ W} (w : ∀ V, (P.obj.coconeOfClosureOfOpens K).ι.app V ≫ f = (P.obj.coconeOfClosureOfOpens K).ι.app V ≫ f' ): f = f' := ((Functor.Final.isColimitWhiskerEquiv _ _).invFun (Classical.choice <| P.property.nonempty_isColimit_coconeOfCompacts K)).hom_ext w
 
 #min_imports

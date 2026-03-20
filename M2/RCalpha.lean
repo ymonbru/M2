@@ -30,6 +30,8 @@ variable (V : ∀ K, KsubU_cat K Q → KsubU_cat K P)
 variable (V_spec : ∀ K,∀ U, (V K U).obj.carrier ⊆ U.obj.carrier)
 
 variable [HasColimitsOfSize.{w, w} C] [HasLimitsOfSize.{w, w} C]
+
+set_option backward.isDefEq.respectTransparency false in
 /-- The morphisme from α_P F to α_Q F induced by the inclusion of (KsubU_cat K P) into (KsubU_cat K Q )-/
 @[simps]
 def AlphaUpFPtoQ : (AlphaUpStarF F P) ⟶ (AlphaUpStarF F Q) where
@@ -57,6 +59,7 @@ naturality K L f:= by
   rw [this]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The morphism from α_P to α_Q induced by the natural transformation AlphaUpFPtoQ -/
 @[simps]
 def AlphaUpPPtoQ : (AlphaUpStarP P) ⟶ (@AlphaUpStarP _ _ C _ _ Q) where

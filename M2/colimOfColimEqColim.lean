@@ -87,6 +87,7 @@ noncomputable section
 
 variable [HasColimitsOfSize.{v4, u4} D]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The diagram a ↦ colim_(i.obj a) Fia-/
 @[simps]
 def colimFia : A ⥤ D where
@@ -161,6 +162,7 @@ def repCanO (a : A) (x : i.obj a) : repObj iaSubC ((iaSubC.i a).obj x) where
   ia := x
   rep := eqToIso rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- if r anq s are two compatible then the morphism FcupIa.obj x → colimit induced by the two representation are compatible with the structure of diagram of colimFia-/
 @[simp]
 lemma FcupColimIndepOfLift {x : C}  (r s : repObj iaSubC x) (l : lifting iaSubC r s) : (FcupIa.map r.rep.inv ≫ colimit.ι ((F iaSubC FcupIa).i r.a) r.ia) ≫ (colimFia iaSubC FcupIa).map l.hom = FcupIa.map s.rep.inv ≫ colimit.ι ((F iaSubC FcupIa).i s.a) s.ia := by
@@ -178,6 +180,7 @@ lemma FcupColimIndepOfLift {x : C}  (r s : repObj iaSubC x) (l : lifting iaSubC 
   --here rw [← colimit.w ]; rfl works but we have the tactic...
   forceColimW
 
+set_option backward.isDefEq.respectTransparency false in
 /-If the representation r is a lifting of the representation q then the morphism _ ≫ colimit.ι _ ≫ colimit.ι _ is the same for r and q.
 The lemma is valid for any cocone not just the colimit-/
 @[simp]
@@ -201,7 +204,9 @@ theorem colimColimIndep {x : C} (s : Cocone (colimFia iaSubC FcupIa) ) (r q : re
 
 
 
-variable (uc: @unionCat A _ C _ _)
+variable (uc: unionCat C i)
+
+set_option backward.isDefEq.respectTransparency false in
 /-- the natural transformation involved in colimColimFiaCoconeFcupIa-/
 @[simps]
 def colimColimFiaCoconeFcupIaι (uc: unionCat C i) (s : Cocone (colimFia uc.iaSubC FcupIa) ): FcupIa ⟶ (const C).obj s.pt where
@@ -237,7 +242,7 @@ theorem colimColimIndep {x : C}  (r s : repObj iaSubC x) : FcupIa.map r.rep.inv 
   exact machin6 iaSubC FcupIa repLifting (colimit.cocone (colimFia iaSubC FcupIa)) r s
 -/
 
-
+set_option backward.isDefEq.respectTransparency false in
 /--The natural transformation involved in fCupIaConeToFiaCone-/
 @[simps]
 def fCupIaCoconeToFiaCoconeι (s : Cocone FcupIa) : (F iaSubC FcupIa).i a ⟶ (const (i.obj a)).obj s.pt where
@@ -251,6 +256,7 @@ def fCupIaCoconeToFiaCocone (s : Cocone FcupIa) : Cocone ((F iaSubC FcupIa).i a)
   pt := s.pt
   ι := fCupIaCoconeToFiaCoconeι iaSubC FcupIa a s
 
+set_option backward.isDefEq.respectTransparency false in
 /--The natural transformation involved in fCupIaConeToLimFiaCone-/
 @[simps]
 def fCupIaCoconeToColimFiaCoconeι (s : Cocone FcupIa) : colimFia iaSubC FcupIa ⟶ (const A).obj s.pt where
@@ -269,6 +275,7 @@ def fCupIaCoconeToColimFiaCocone (s : Cocone FcupIa ) : Cocone (colimFia iaSubC 
 
 variable [HasColimitsOfSize.{v1, u1} D]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The evidence that the colimit of colimit is a colimit over the "union of indexes"-/
 @[simps]
 def colimColimIsColim (uc: unionCat C i) (s : Cocone (colimFia uc.iaSubC FcupIa)) (hs : IsColimit s) : IsColimit (colimColimFiaCoconeFcupIa (i := i) FcupIa uc s) where
@@ -297,6 +304,7 @@ def colimColimIsColim (uc: unionCat C i) (s : Cocone (colimFia uc.iaSubC FcupIa)
 
 variable [HasColimitsOfSize.{v2, u2} D]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The evidence that the colimit over the "union of indexes" is the colimit of the colimit-/
 @[simps]
 def colimIsColimColim (uc: unionCat C i) ( s : Cocone FcupIa) (hs : IsColimit s): IsColimit (fCupIaCoconeToColimFiaCocone uc.iaSubC FcupIa s) where
@@ -459,6 +467,7 @@ def repHEx {U V : (KsubU_cat K trueCond)ᵒᵖ} (f : U ⟶ V) : repHom (iaSubCEx
 omit [LocallyCompactSpace X] [T2Space X] in
 lemma iaExEqU {U : (KsubU_cat K trueCond)ᵒᵖ} (r : repObj (iaSubCEx K) U) : (unop r.ia).obj = (unop U).obj := antisymm (leOfHom (r.rep.inv.unop.hom)) (leOfHom (r.rep.hom.unop.hom))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- a representant lifting two reprentant : send (K ⊆ Li ⊆ U)_i to (K ⊆ L1 ∩ L2 ⊆ U)-/
 @[simps]
 def resupEx {U : (KsubU_cat K trueCond)ᵒᵖ}  (r s : repObj (iaSubCEx K) U) : (repObj (iaSubCEx K) U) where
@@ -480,6 +489,7 @@ def resupEx {U : (KsubU_cat K trueCond)ᵒᵖ}  (r s : repObj (iaSubCEx K) U) : 
     apply ObjectProperty.FullSubcategory.ext
     simp_all only [iaSubCEx, iaSubCExi, iaExEqU K r, iaExEqU K s, le_refl, inf_of_le_left]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The morphism commint with resupEx to the left , again no choice for the morphisms-/
 @[simps]
 def liftingToSupLeft {U : (KsubU_cat K trueCond)ᵒᵖ}  (r s : repObj (iaSubCEx K) U) : lifting (iaSubCEx K) r (resupEx K r s) where
@@ -493,6 +503,7 @@ def liftingToSupLeft {U : (KsubU_cat K trueCond)ᵒᵖ}  (r s : repObj (iaSubCEx
     simp only [iaSubCEx, iaSubCExi]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The morphism commint with resupEx to the right , again no choice for the morphisms-/
 @[simps]
 def liftingToSupRight {U : (KsubU_cat K trueCond)ᵒᵖ}  (r s : repObj (iaSubCEx K) U) : lifting (iaSubCEx K) s (resupEx K r s) where

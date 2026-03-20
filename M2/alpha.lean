@@ -21,12 +21,12 @@ variable (P : Opens X → Prop := trueCond)
 @[simps!]
 def K1subK2natTrans {K₁ K₂ : Compacts X} (f : K₁ ⟶ K₂) : (FU _ F P) ⟶  (K1subK2subU _ f).op ⋙ (FU _ F _) := 𝟙 _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor α^*F-/
 @[simps]
 def AlphaUpStarF : (Compacts X)ᵒᵖ ⥤ C  where
   obj K := colimit (FU K.unop F P)
   map f := colimMap ((K1subK2natTrans F P f.unop)) ≫ (colimit.pre (FU _ _ _) (K1subK2subU _ _ ).op)
-
 variable {F₁ F₂ : (Opens X)ᵒᵖ ⥤ C} (τ : F₁ ⟶ F₂)
 
 /-- The restriction of the natural transformation between the digram FU over K₁ eand FU over K₂ -/
@@ -34,11 +34,13 @@ variable {F₁ F₂ : (Opens X)ᵒᵖ ⥤ C} (τ : F₁ ⟶ F₂)
 def τres : (FU K F₁ P) ⟶ (FU _ F₂ _) where
   app U := τ.app <| op (U.unop.obj)-- supprimer ça pose des problemes plsu tard dans RCalpha
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation α^* τ between α^* F₁ and α^* F₂-/
 @[simps]
 def AlphaUpStarTau : (AlphaUpStarF F₁ P) ⟶ (AlphaUpStarF F₂ P) where
   app K := colimMap (τres K.unop P τ)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor α^* with the conditon P-/
 @[simps]
 def AlphaUpStarP : ((Opens X)ᵒᵖ ⥤ C) ⥤ (Compacts X)ᵒᵖ ⥤ C where
@@ -90,6 +92,7 @@ def U2supU1supK : (UsupK_cat U₁) ⥤ (UsupK_cat U₂) where
 def U2supU1natTrans : (GK _ G) ⟶  Functor.comp (U2supU1supK _ _ f).op (GK _ G) where
   app _ := 𝟙 _-/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor α_* G-/
 @[simps]
 def AlphaDownStarG : (Opens X)ᵒᵖ ⥤ C  where
@@ -104,11 +107,13 @@ variable (G₁ G₂:(Compacts X)ᵒᵖ ⥤ C) (σ : G₁ ⟶ G₂)
 def σres : (GK U G₁) ⟶ (GK _ G₂) where
   app K:= σ.app (op (K.unop.obj))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation α_* σ between α_* G₁ and /alpha_*G₂ -/
 @[simps]
 def AlphaDownStarSigma : (AlphaDownStarG G₁) ⟶ (AlphaDownStarG G₂) where
   app U := limMap <| σres U.unop _ _ σ
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor α_*-/
 @[simps]
 def AlphaDownStar : ((Compacts X)ᵒᵖ ⥤ C) ⥤ (Opens X)ᵒᵖ ⥤ C where
@@ -123,6 +128,7 @@ noncomputable section
 
 variable {F : (Opens X)ᵒᵖ⥤ C} {G : (Compacts X)ᵒᵖ ⥤ C} (τ : (AlphaUpStar).obj F ⟶ G) (σ : F ⟶ (AlphaDownStar).obj G) (K : Compacts X) (U : Opens X)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The naturals maps from F(U) to the family of G(K) for K contained in U-/
 @[simps]
 def ConeFtoAGπ : (Functor.const _ ).obj (F.obj (op U)) ⟶ GK U G where
@@ -136,6 +142,7 @@ def ConeFtoAGπ : (Functor.const _ ).obj (F.obj (op U)) ⟶ GK U G where
 @[simps]
 def ConeFtoAG : Cone (GK U G) := Cone.mk _ (ConeFtoAGπ τ _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation from F to α_*G induced taking the natural map from ConeFtoAG to the colimit-/
 @[simps]
 def FtoAG : F ⟶ (AlphaDownStar).obj G where
@@ -147,7 +154,7 @@ def FtoAG : F ⟶ (AlphaDownStar).obj G where
     suffices F.map f ≫ colimit.ι (FU _ F) (op { obj := unop V, property := _ }) ≫ τ.app _ = colimit.ι (FU _ F) (op { obj := unop U, property := _ }) ≫ τ.app (op _) by simpa
     forceColimW
 
-
+set_option backward.isDefEq.respectTransparency false in
 /-- The naturals maps from the family of F(U) to  G(K) for U containing K -/
 @[simps]
 def CoconeAFtoGι : FU K F P ⟶ (Functor.const _ ).obj (G.obj (op K))  where
@@ -157,6 +164,7 @@ def CoconeAFtoGι : FU K F P ⟶ (Functor.const _ ).obj (G.obj (op K))  where
 @[simps]
 def CoconeAFtoG : Cocone (FU K F P) := Cocone.mk _ (CoconeAFtoGι σ K)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation  from α^* F to G induced taking the natural map from the limit to CoconeAFtoG-/
 @[simps]
 def AFtoG : ( (AlphaUpStar).obj F ⟶  G) where
@@ -170,6 +178,7 @@ def AFtoG : ( (AlphaUpStar).obj F ⟶  G) where
       exact f.unop
     · rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The bijection between hom(αF, G) and hom(F,αG) -/
 @[simps]
 def homEquiv: (AlphaUpStar.obj F ⟶ G) ≃ ( F ⟶ AlphaDownStar.obj G) where
@@ -178,7 +187,7 @@ def homEquiv: (AlphaUpStar.obj F ⟶ G) ≃ ( F ⟶ AlphaDownStar.obj G) where
   left_inv τ := by aesop_cat
   right_inv σ := by aesop_cat
 
-
+set_option backward.isDefEq.respectTransparency false in
 /-- The data necessary to build the adjunction between α^* and α_*-/
 @[simps]
 def adjthm : Adjunction.CoreHomEquiv (AlphaUpStar) (@AlphaDownStar X _ C _ _) where

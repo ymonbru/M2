@@ -62,26 +62,27 @@ theorem KshToSh: IsSheaf (AlphaDownStarG G.carrier : Presheaf C (of X)):= by
 /-- α_* G as a sheaf-/
 @[simps]
 def shAlphaDownStarF : Sheaf C (of X) where
-  val:= (AlphaDownStar).obj (G.carrier)
-  cond := (KshToSh X C G)
+  obj := (AlphaDownStar).obj (G.carrier)
+  property := (KshToSh X C G)
 
 /-- The functor α_* reistricted to Ksheaves and coreistricted to sheaves-/
 @[simps]
 def shAlphaDownStar : (Ksheaf X C) ⥤ Sheaf C (of X) where
   obj _ := shAlphaDownStarF X C _
-  map f := Sheaf.Hom.mk ((AlphaDownStar).map f.hom)
-  map_id a := by
-    apply Sheaf.Hom.ext
+  map f := ObjectProperty.homMk ((AlphaDownStar).map f.hom)
+  map_id _ := by
+    apply ObjectProperty.hom_ext
     apply (AlphaDownStar).map_id
   map_comp _ _:= by
-    apply Sheaf.Hom.ext
+    apply ObjectProperty.hom_ext
     apply (AlphaDownStar).map_comp
 
 variable {X} {C}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- an isomorphism that represent FressSSK (used in ksh3 of ...) as a functor of the form colimFia-/
 @[simps]
-def AlphaUpFIsoColimFSubU : (FresSSK K (AlphaUpStar.obj F.val)) ≅ colimFia  (iaSubCEx K) (FcupIaEx K F.val) where
+def AlphaUpFIsoColimFSubU : (FresSSK K (AlphaUpStar.obj F.obj)) ≅ colimFia  (iaSubCEx K) (FcupIaEx K F.obj) where
   hom := ⟨fun _ => colimMap (eqToHom rfl),fun _ _ _ => by
     apply colimit.hom_ext
     intro
@@ -91,62 +92,67 @@ def AlphaUpFIsoColimFSubU : (FresSSK K (AlphaUpStar.obj F.val)) ≅ colimFia  (i
     intro
     simp [_root_.F]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphisme between the cocone that appear in ksh3 and the one that is in the generic theorem over colimits of colimits (transported through the isomorphism AlphaUpFIsoColimFSubU )-/
 @[simps]
-def FLToKIsoToColimColim {K :Compacts X} : (FLToFK K (AlphaUpStar.obj (F.val))) ≅ (Cocones.precomposeEquivalence (AlphaUpFIsoColimFSubU _ _ )).functor.obj (fCupIaCoconeToColimFiaCocone _ _ (colimit.cocone (FcupIaEx K F.val))) where
-  hom := ⟨𝟙 (colimit (FU K F.val )), by aesop⟩
-  inv := ⟨𝟙 (colimit (FcupIaEx K F.val)), by aesop⟩
+def FLToKIsoToColimColim {K :Compacts X} : (FLToFK K (AlphaUpStar.obj (F.obj))) ≅ (Cocone.precomposeEquivalence (AlphaUpFIsoColimFSubU _ _ )).functor.obj (fCupIaCoconeToColimFiaCocone _ _ (colimit.cocone (FcupIaEx K F.obj))) where
+  hom := ⟨𝟙 (colimit (FU K F.obj )), by aesop⟩
+  inv := ⟨𝟙 (colimit (FcupIaEx K F.obj)), by aesop⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism betwen the functor colimFUInterWCPt and colimit_{K1 ⊆ U}F(U) → colimit_{K1 ∩ K2 ⊆ U}F(U) ← colimit_{K2 ⊆ U} F(U)-/
 @[simps!]
-def colimFUInterWCIsoTwoVersion : (colimFUInterWC F.val K1 K2).pt ≅ cospan (FtoFInfLeft (AlphaUpStar.obj F.val) K1 K2) (FtoFInfRight (AlphaUpStar.obj F.val) K1 K2) := by
+def colimFUInterWCIsoTwoVersion : (colimFUInterWC F.obj K1 K2).pt ≅ cospan (FtoFInfLeft (AlphaUpStar.obj F.obj) K1 K2) (FtoFInfRight (AlphaUpStar.obj F.obj) K1 K2) := by
   refine IsoWcspFunc _ _ ?_ ?_ ?_ ?_ ?_
-  · exact HasColimit.isoOfNatIso (jCompFEqProjCompFULeft F.val K1 K2) ≪≫ Functor.Final.colimitIso (KsubUK1K2ProjLeft K1 K2).op (FU K1 F.val)
-  · exact HasColimit.isoOfNatIso (jCompFEqProjCompFURight F.val K1 K2) ≪≫ Functor.Final.colimitIso (KsubUK1K2ProjRight K1 K2).op (FU K2 F.val)
-  · exact HasColimit.isoOfNatIso (jCompFEqProjCompFUOne F.val K1 K2) ≪≫ Functor.Final.colimitIso (subK1SubK2toSubK1InterK2 K1 K2).op (FU (K1 ⊓ K2) F.val)
+  · exact HasColimit.isoOfNatIso (jCompFEqProjCompFULeft F.obj K1 K2) ≪≫ Functor.Final.colimitIso (KsubUK1K2ProjLeft K1 K2).op (FU K1 F.obj)
+  · exact HasColimit.isoOfNatIso (jCompFEqProjCompFURight F.obj K1 K2) ≪≫ Functor.Final.colimitIso (KsubUK1K2ProjRight K1 K2).op (FU K2 F.obj)
+  · exact HasColimit.isoOfNatIso (jCompFEqProjCompFUOne F.obj K1 K2) ≪≫ Functor.Final.colimitIso (subK1SubK2toSubK1InterK2 K1 K2).op (FU (K1 ⊓ K2) F.obj)
   · apply colimit.hom_ext
     intro U
-    suffices _ ≫ colimit.ι (FU (K1 ⊓ K2) F.val) (op ((subK1SubK2toSubK1InterK2 K1 K2).obj (unop U))) = colimit.ι (FU (K1 ⊓ K2) F.val) (op ((K1subK2subU _ (opHomOfLE _).unop).obj (unop U).1)) by simpa [FtoFInfLeft]
+    suffices _ ≫ colimit.ι (FU (K1 ⊓ K2) F.obj) (op ((subK1SubK2toSubK1InterK2 K1 K2).obj (unop U))) = colimit.ι (FU (K1 ⊓ K2) F.obj) (op ((K1subK2subU _ (opHomOfLE _).unop).obj (unop U).1)) by simpa [FtoFInfLeft]
     forceColimW
 
   · apply colimit.hom_ext
     intro U
-    suffices F.val.map ((jRToJO K1 K2).app U) ≫ colimit.ι (FU (K1 ⊓ K2) F.val) (op ((subK1SubK2toSubK1InterK2 K1 K2).obj (unop U))) = colimit.ι (FU (K1 ⊓ K2) F.val) (op ((K1subK2subU trueCond (opHomOfLE (by simp)).unop).obj (unop U).2)) by simpa [FtoFInfRight]
+    suffices F.obj.map ((jRToJO K1 K2).app U) ≫ colimit.ι (FU (K1 ⊓ K2) F.obj) (op ((subK1SubK2toSubK1InterK2 K1 K2).obj (unop U))) = colimit.ι (FU (K1 ⊓ K2) F.obj) (op ((K1subK2subU trueCond (opHomOfLE (by simp)).unop).obj (unop U).2)) by simpa [FtoFInfRight]
     forceColimW
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inverse morphism of SquareSuptoInfIsColimLim-/
 @[simps]
-def SquareSuptoInfIsColimLimInv : (SquareSuptoInf (AlphaUpStar.obj F.val) K1 K2) ⟶ (Cones.postcomposeEquivalence (colimFUInterWCIsoTwoVersion F K1 K2)).functor.obj (ConeOverColimLimF (limFUInterWCFlip F.val K1 K2) (colimFUInterWC F.val K1 K2) (colimLimFUInterWCFlip K1 K2 F) (colimLimFUInterWCFlipIsColim K1 K2 F)) where
-  hom := (HasColimit.isoOfNatIso (jCompFEqProjCompFUCup F.val K1 K2) ≪≫  Functor.Final.colimitIso (KsubUK1K2ProjCup K1 K2).op (FU (K1 ⊔ K2) F.val)).inv
+def SquareSuptoInfIsColimLimInv : (SquareSuptoInf (AlphaUpStar.obj F.obj) K1 K2) ⟶ (Cone.postcomposeEquivalence (colimFUInterWCIsoTwoVersion F K1 K2)).functor.obj (ConeOverColimLimF (limFUInterWCFlip F.obj K1 K2) (colimFUInterWC F.obj K1 K2) (colimLimFUInterWCFlip K1 K2 F) (colimLimFUInterWCFlipIsColim K1 K2 F)) where
+  hom := (HasColimit.isoOfNatIso (jCompFEqProjCompFUCup F.obj K1 K2) ≪≫  Functor.Final.colimitIso (KsubUK1K2ProjCup K1 K2).op (FU (K1 ⊔ K2) F.obj)).inv
   w x:= by
-    suffices ((Cones.postcomposeEquivalence (colimFUInterWCIsoTwoVersion F K1 K2)).functor.obj (ConeOverColimLimF (limFUInterWCFlip F.val K1 K2) (colimFUInterWC F.val K1 K2)  (colimLimFUInterWCFlip K1 K2 F) (colimLimFUInterWCFlipIsColim K1 K2 F))).π.app x = (HasColimit.isoOfNatIso (jCompFEqProjCompFUCup F.val K1 K2) ≪≫ Functor.Final.colimitIso (KsubUK1K2ProjCup K1 K2).op (FU (K1 ⊔ K2) F.val)).hom ≫(SquareSuptoInf (AlphaUpStar.obj F.val) K1 K2).π.app x by
+    suffices ((Cone.postcomposeEquivalence (colimFUInterWCIsoTwoVersion F K1 K2)).functor.obj (ConeOverColimLimF (limFUInterWCFlip F.obj K1 K2) (colimFUInterWC F.obj K1 K2)  (colimLimFUInterWCFlip K1 K2 F) (colimLimFUInterWCFlipIsColim K1 K2 F))).π.app x = (HasColimit.isoOfNatIso (jCompFEqProjCompFUCup F.obj K1 K2) ≪≫ Functor.Final.colimitIso (KsubUK1K2ProjCup K1 K2).op (FU (K1 ⊔ K2) F.obj)).hom ≫(SquareSuptoInf (AlphaUpStar.obj F.obj) K1 K2).π.app x by
       rw[this]
       simp
     apply colimit.hom_ext
     intro U
     match x with
       | .left =>
-        suffices F.val.map (op (homOfLE _)) ≫ colimit.ι (FU K1 F.val) (op (unop U).1) = colimit.ι (FU K1 F.val) (op ((K1subK2subU _ (opHomOfLE _).unop).obj ((KsubUK1K2ProjCup K1 K2).obj (unop U)))) by simpa [FSuptoFLeft, colimLimFUInterWCFlipIsColim]
+        suffices F.obj.map (op (homOfLE _)) ≫ colimit.ι (FU K1 F.obj) (op (unop U).1) = colimit.ι (FU K1 F.obj) (op ((K1subK2subU _ (opHomOfLE _).unop).obj ((KsubUK1K2ProjCup K1 K2).obj (unop U)))) by simpa [FSuptoFLeft, colimLimFUInterWCFlipIsColim]
         forceColimW
       | .right =>
-        suffices F.val.map (op (homOfLE _)) ≫ colimit.ι (FU K2 F.val ) (op (unop U).2) = colimit.ι (FU K2 F.val) (op ((K1subK2subU _ (opHomOfLE _).unop).obj ((KsubUK1K2ProjCup K1 K2).obj (unop U)))) by simpa [FSuptoFRight, colimLimFUInterWCFlipIsColim]
+        suffices F.obj.map (op (homOfLE _)) ≫ colimit.ι (FU K2 F.obj ) (op (unop U).2) = colimit.ι (FU K2 F.obj) (op ((K1subK2subU _ (opHomOfLE _).unop).obj ((KsubUK1K2ProjCup K1 K2).obj (unop U)))) by simpa [FSuptoFRight, colimLimFUInterWCFlipIsColim]
         forceColimW
       | .one =>
-        suffices F.val.map (op (homOfLE _)) ≫ colimit.ι (FU (K1 ⊓ K2) F.val) (op ((subK1SubK2toSubK1InterK2 K1 K2).obj (unop U))) = colimit.ι (FU (K1 ⊓ K2) F.val) (op ((K1subK2subU _ (opHomOfLE _).unop).obj ((K1subK2subU _ (opHomOfLE _).unop).obj ((KsubUK1K2ProjCup K1 K2).obj (unop U))))) by simpa [FSuptoFLeft, FtoFInfLeft, colimLimFUInterWCFlipIsColim]
+        suffices F.obj.map (op (homOfLE _)) ≫ colimit.ι (FU (K1 ⊓ K2) F.obj) (op ((subK1SubK2toSubK1InterK2 K1 K2).obj (unop U))) = colimit.ι (FU (K1 ⊓ K2) F.obj) (op ((K1subK2subU _ (opHomOfLE _).unop).obj ((K1subK2subU _ (opHomOfLE _).unop).obj ((KsubUK1K2ProjCup K1 K2).obj (unop U))))) by simpa [FSuptoFLeft, FtoFInfLeft, colimLimFUInterWCFlipIsColim]
         forceColimW
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The morphism of SquareSuptoInfIsColimLim-/
 @[simps]
-def SquareSuptoInfIsColimLimHom : (Cones.postcomposeEquivalence (colimFUInterWCIsoTwoVersion F K1 K2)).functor.obj (ConeOverColimLimF (limFUInterWCFlip F.val K1 K2) (colimFUInterWC F.val K1 K2) (colimLimFUInterWCFlip K1 K2 F) (colimLimFUInterWCFlipIsColim K1 K2 F)) ⟶ (SquareSuptoInf (AlphaUpStar.obj F.val) K1 K2) where
-  hom := (HasColimit.isoOfNatIso (jCompFEqProjCompFUCup F.val K1 K2) ≪≫  Functor.Final.colimitIso (KsubUK1K2ProjCup K1 K2).op (FU (K1 ⊔ K2) F.val)).hom
+def SquareSuptoInfIsColimLimHom : (Cone.postcomposeEquivalence (colimFUInterWCIsoTwoVersion F K1 K2)).functor.obj (ConeOverColimLimF (limFUInterWCFlip F.obj K1 K2) (colimFUInterWC F.obj K1 K2) (colimLimFUInterWCFlip K1 K2 F) (colimLimFUInterWCFlipIsColim K1 K2 F)) ⟶ (SquareSuptoInf (AlphaUpStar.obj F.obj) K1 K2) where
+  hom := (HasColimit.isoOfNatIso (jCompFEqProjCompFUCup F.obj K1 K2) ≪≫  Functor.Final.colimitIso (KsubUK1K2ProjCup K1 K2).op (FU (K1 ⊔ K2) F.obj)).hom
   w := by
     intro
     rw [← (SquareSuptoInfIsColimLimInv F K1 K2).w _]
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphisme between the cocone that appear in ksh2 and the one that is in the generic theorem over limits of colimits (transported through the isomorphism colimFUInterWCIsoTwoVersion )-/
 @[simps]
-def SquareSuptoInfIsColimLim: (Cones.postcomposeEquivalence (colimFUInterWCIsoTwoVersion F K1 K2)).functor.obj (ConeOverColimLimF (limFUInterWCFlip F.val K1 K2) (colimFUInterWC F.val K1 K2) (colimLimFUInterWCFlip K1 K2 F) (colimLimFUInterWCFlipIsColim K1 K2 F)) ≅ (SquareSuptoInf (AlphaUpStar.obj F.val) K1 K2) where
+def SquareSuptoInfIsColimLim: (Cone.postcomposeEquivalence (colimFUInterWCIsoTwoVersion F K1 K2)).functor.obj (ConeOverColimLimF (limFUInterWCFlip F.obj K1 K2) (colimFUInterWC F.obj K1 K2) (colimLimFUInterWCFlip K1 K2 F) (colimLimFUInterWCFlipIsColim K1 K2 F)) ≅ (SquareSuptoInf (AlphaUpStar.obj F.obj) K1 K2) where
   hom := SquareSuptoInfIsColimLimHom F K1 K2
   inv := SquareSuptoInfIsColimLimInv F K1 K2
 
@@ -158,50 +164,53 @@ variable [AB5OfSize.{w, w} C]
 /-- The structur of Ksheaf over (AlphaUpStar).obj F-/
 @[simps!]
 def shAlphaUpStarG : (Ksheaf X C) where
-  carrier:= (AlphaUpStar).obj F.val
+  carrier:= (AlphaUpStar).obj F.obj
   ksh1 := by
-    have : IsTerminal ((F.val).obj (op (⊥ : Opens X))) := by
+    have : IsTerminal ((F.obj).obj (op (⊥ : Opens X))) := by
       apply Sheaf.isTerminalOfBotCover F (⊥ : Opens X)
       intro _ hx
       rcases hx
     apply IsTerminal.ofIso this
-    apply @asIso _ _ _ _ _ (isIso_ι_of_isTerminal (IsTerminalKsubUOpBotOpTrue) (FU ⊥ F.val ))
+    apply @asIso _ _ _ _ _ (isIso_ι_of_isTerminal (IsTerminalKsubUOpBotOpTrue) (FU ⊥ F.obj ))
   ksh2 K1 K2 := by
     apply Limits.IsLimit.ofIsoLimit _ (SquareSuptoInfIsColimLim F K1 K2)
     apply IsLimit.ofPreservesConeTerminal
-    exact IsLimitConeOfColimF (limFUInterWCFlip F.val K1 K2) (colimFUInterWC F.val K1 K2) _ (limColimFUCap K1 K2 F) (limFUInterWCFlipLim K1 K2 F) (colimFUInterWCColim F.val K1 K2) _ (limColimFUCapIsLim K1 K2 F)
+    exact IsLimitConeOfColimF (limFUInterWCFlip F.obj K1 K2) (colimFUInterWC F.obj K1 K2) _ (limColimFUCap K1 K2 F) (limFUInterWCFlipLim K1 K2 F) (colimFUInterWCColim F.obj K1 K2) _ (limColimFUCapIsLim K1 K2 F)
   ksh3 K := by
     apply Limits.IsColimit.ofIsoColimit _ (FLToKIsoToColimColim _ ).symm
     apply IsColimit.ofPreservesCoconeInitial
     apply colimIsColimColim _ (ucEx K)
-    exact colimit.isColimit (FcupIaEx K F.val)
+    exact colimit.isColimit (FcupIaEx K F.obj)
 
 /-- The structur of Ksheaf over (AlphaUpStarRc).obj F-/
 @[simps!]
-def shAlphaUpStarRcG : (Ksheaf X C) := KsheafOfIso (AlphaUpStarRc.obj F.val) (shAlphaUpStarG X C F) ((AlphaUpStarToRc C X).app F.val)
+def shAlphaUpStarRcG : (Ksheaf X C) := KsheafOfIso (AlphaUpStarRc.obj F.obj) (shAlphaUpStarG X C F) ((AlphaUpStarToRc C X).app F.obj)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- α^* as a functor restricted to sheaves and corestricted to Ksheaves-/
 @[simps]
 def shAlphaUpStar : Sheaf C (of X) ⥤ (Ksheaf X C) where
   obj G := shAlphaUpStarG X C G
   map f := ⟨(AlphaUpStar).map ((Sheaf.forget _ _).map f)⟩
   map_id G := by
-    have : 𝟙 ((Sheaf.forget C (of X)).obj G) = 𝟙 G.val := by rfl
+    have : 𝟙 ((Sheaf.forget C (of X)).obj G) = 𝟙 G.obj := by rfl
     rw [(Sheaf.forget C (of X)).map_id, this, AlphaUpStar.map_id]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def shAlphaUpStarRc : Sheaf C (of X) ⥤ (Ksheaf X C) where
   obj G := shAlphaUpStarRcG X C G
   map f := ⟨(AlphaUpStarRc).map ((Sheaf.forget _ _).map f)⟩
   map_id G := by
     -- j'ai remplace Sheaf.forget F par F.val pour simplifier et du coup il ne sait plus faire ça
-    have : 𝟙 ((Sheaf.forget C (of X)).obj G) = 𝟙 G.val := by rfl
+    have : 𝟙 ((Sheaf.forget C (of X)).obj G) = 𝟙 G.obj := by rfl
     rw [(Sheaf.forget C (of X)).map_id, this, AlphaUpStarRc.map_id]
     rfl
 
 --Restrict the adjunction
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction between α^* and α_* restricted to sheaves and Ksheaves-/
 def AdjShAlphaStar : (shAlphaUpStar X C ) ⊣ (shAlphaDownStar X C) := by
   apply (Adjunction.restrictFullyFaithful  (@AdjAlphaStar X _ C _ _ _) _ _) _ _
@@ -214,6 +223,7 @@ def AdjShAlphaStar : (shAlphaUpStar X C ) ⊣ (shAlphaDownStar X C) := by
   exact ⟨𝟙 _,𝟙 _,by aesop_cat,by aesop_cat⟩
   exact ⟨𝟙 _,𝟙 _,by aesop_cat,by aesop_cat⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction between α^*RC and α_* restricted to sheaves and Ksheaves-/
 def AdjShAlphaStarRc : (shAlphaUpStarRc X C ) ⊣ (shAlphaDownStar X C) := by
   --exact (AdjShAlphaStar X C).ofNatIsoLeft (AlphaShUpStarToRc X C).symm
@@ -247,7 +257,7 @@ map {K L} f := homOfLE <| interior_mono <| leOfHom f.hom
 
 /--The reistriction of F to interiors of compacts that contain U-/
 @[simps!]
-def Fcirc : (UsupK_cat U)ᵒᵖ ⥤ C := (intFunc U).op.comp F.val
+def Fcirc : (UsupK_cat U)ᵒᵖ ⥤ C := (intFunc U).op.comp F.obj
 
 /-The functor of base-change for the diagram induced by the coverging of U by interior of comapcts-/
 def BaseChangeCoverInt : (UsupK_cat U) ⥤ (ObjectProperty.FullSubcategory fun V ↦ ∃ i, V ≤ (intFunc U).obj i) where
@@ -284,28 +294,28 @@ instance : (BaseChangeCoverInt U).Final := by
 
 /-- The natural transformation involved in FUOverCoverInt. For K⊆ U the map is the canonical map from F(°K) ⟶ F(U)-/
 @[simps]
-def FUOverCoverIntπ : (Functor.const (UsupK_cat U)ᵒᵖ).obj (F.val.obj (op U)) ⟶ Fcirc F U where
-  app K := F.val.map <| op <| homOfLE <| by apply subset_trans (interior_mono K.unop.property) (interior_subset)
+def FUOverCoverIntπ : (Functor.const (UsupK_cat U)ᵒᵖ).obj (F.obj.obj (op U)) ⟶ Fcirc F U where
+  app K := F.obj.map <| op <| homOfLE <| by apply subset_trans (interior_mono K.unop.property) (interior_subset)
   naturality { K L} f := by
     simp
-    rw [← F.val.map_comp]
+    rw [← F.obj.map_comp]
     rfl
 
 /--F(U) as a cone over the compacts contained in U-/
 def FUOverCoverInt : Cone (Fcirc F U) where
-  pt := F.val.obj (op U)
+  pt := F.obj.obj (op U)
   π := FUOverCoverIntπ F U
 
 /-- The isomorphism that show the factorisation of Fcirc through BaseChangeCoverInt-/
-def FcircFactorBCCI : (BaseChangeCoverInt U ).op ⋙ ((ObjectProperty.ι fun V ↦ ∃ i, V ≤ (intFunc U).obj i).op ⋙ F.val) ≅ Fcirc F U := by
+def FcircFactorBCCI : (BaseChangeCoverInt U ).op ⋙ ((ObjectProperty.ι fun V ↦ ∃ i, V ≤ (intFunc U).obj i).op ⋙ F.obj) ≅ Fcirc F U := by
   apply eqToIso
   rfl
 
 /-- The cone over Fcirc induced by the sheaf condition of F over the covering of U by the interiors of comapcts-/
 def SheafConditionConeOfIntCover : Cone (Fcirc F U) := by
-  apply (Cones.postcomposeEquivalence (FcircFactorBCCI F U)).functor.obj
+  apply (Cone.postcomposeEquivalence (FcircFactorBCCI F U)).functor.obj
   apply (Functor.Initial.conesEquiv _ _).inverse.obj
-  exact (F.val.mapCone (SheafCondition.opensLeCoverCocone (X := of X) ((intFunc U).obj )).op)
+  exact (F.obj.mapCone (SheafCondition.opensLeCoverCocone (X := of X) ((intFunc U).obj )).op)
 
 omit [T2Space X] in
 lemma UIsCoveredByIntOfCompacts : (U : Opens (of X)) = (SheafCondition.opensLeCoverCocone (X := of X) (intFunc U).obj).pt  := by
@@ -327,17 +337,18 @@ lemma UIsCoveredByIntOfCompacts : (U : Opens (of X)) = (SheafCondition.opensLeCo
     apply interior_subset
     exact K.property
 
+set_option backward.isDefEq.respectTransparency false in
 def SheafConditionConeOfIntCoverIso : SheafConditionConeOfIntCover F U ≅ FUOverCoverInt F U where
-  hom := ⟨F.val.map (op (homOfLE
+  hom := ⟨F.obj.map (op (homOfLE
       (by
         apply Eq.le
         apply UIsCoveredByIntOfCompacts-- je ne comprend pas pourquoi la preuve du lemme ici ne marche pas (simp fais des trucs bizzares)
         ))), by
       intro K
       simp [FUOverCoverInt, SheafConditionConeOfIntCover, FcircFactorBCCI]
-      rw[← F.val.map_comp]
+      rw[← F.obj.map_comp]
       rfl⟩
-  inv := ⟨F.val.map (op (homOfLE
+  inv := ⟨F.obj.map (op (homOfLE
       (by
         apply Eq.le
         apply Eq.symm
@@ -345,101 +356,105 @@ def SheafConditionConeOfIntCoverIso : SheafConditionConeOfIntCover F U ≅ FUOve
         ))), by
       intro K
       simp [FUOverCoverInt, SheafConditionConeOfIntCover, FcircFactorBCCI]
-      rw[← F.val.map_comp]
+      rw[← F.obj.map_comp]
       rfl⟩
   hom_inv_id := by
     apply Limits.ConeMorphism.ext
     simp only [Cocone.op_pt, homOfLE_leOfHom, Cone.category_comp_hom, Cone.category_id_hom]
-    rw [← F.val.map_comp]
-    apply F.val.map_id
+    rw [← F.obj.map_comp]
+    apply F.obj.map_id
   inv_hom_id := by
     apply Limits.ConeMorphism.ext
     simp only [Cocone.op_pt, homOfLE_leOfHom, Cone.category_comp_hom, Cone.category_id_hom]
-    rw [← F.val.map_comp]
-    apply F.val.map_id
+    rw [← F.obj.map_comp]
+    apply F.obj.map_id
 
 set_option maxHeartbeats 400000 in
 def FUOverCoverIntLimit: IsLimit (FUOverCoverInt F U) := by
   apply IsLimit.ofIsoLimit _ (SheafConditionConeOfIntCoverIso F U)
   apply IsLimit.ofPreservesConeTerminal
   apply (Functor.Initial.isLimitWhiskerEquiv _ _).invFun
-  exact Classical.choice (TopCat.Presheaf.IsSheaf.isSheafOpensLeCover ((intFunc U).obj) F.cond)
+  exact Classical.choice (TopCat.Presheaf.IsSheaf.isSheafOpensLeCover ((intFunc U).obj) F.property)
 
 
 variable (U : (Opens X)ᵒᵖ )
 
 @[simps]
-def UnitAlphaInvConeπ : (Functor.const (UsupK_cat (unop U))ᵒᵖ).obj (((AlphaUpStar ⋙ AlphaDownStar).obj F.val).obj U) ⟶ GK (unop U) (AlphaUpStar.obj F.val) where
+def UnitAlphaInvConeπ : (Functor.const (UsupK_cat (unop U))ᵒᵖ).obj (((AlphaUpStar ⋙ AlphaDownStar).obj F.obj).obj U) ⟶ GK (unop U) (AlphaUpStar.obj F.obj) where
   app K := limit.π _ K
   naturality {K L} f:= by
     simp
     forceLimW
 
 @[simps]
-def UnitAlphaInvCone : Cone  (GK U.unop (AlphaUpStar.obj F.val) ) where
-  pt := ((AlphaUpStar ⋙ AlphaDownStar ).obj F.val).obj U
+def UnitAlphaInvCone : Cone  (GK U.unop (AlphaUpStar.obj F.obj) ) where
+  pt := ((AlphaUpStar ⋙ AlphaDownStar ).obj F.obj).obj U
   π := UnitAlphaInvConeπ F U
 
 variable (K : (UsupK_cat (unop U))ᵒᵖ)
 
 @[simps]
-def UnitAlphaInvαCoconeι : FU (unop K).obj F.val ⟶ (Functor.const (KsubU_cat (unop K).obj)ᵒᵖ).obj (F.val.obj (op ((intFunc (unop U)).obj (unop K)))) where
-  app V := F.val.map <| op <| homOfLE <| by apply subset_trans (interior_mono V.unop.property.1) (interior_subset)
+def UnitAlphaInvαCoconeι : FU (unop K).obj F.obj ⟶ (Functor.const (KsubU_cat (unop K).obj)ᵒᵖ).obj (F.obj.obj (op ((intFunc (unop U)).obj (unop K)))) where
+  app V := F.obj.map <| op <| homOfLE <| by apply subset_trans (interior_mono V.unop.property.1) (interior_subset)
   naturality { V W} f := by
     simp
-    rw [← F.val.map_comp]
+    rw [← F.obj.map_comp]
     rfl
 
 @[simps]
-def UnitAlphaInvαCocone : Cocone (FU (unop K).obj F.val) where
-  pt := F.val.obj (op ((intFunc (unop U)).obj (unop K)))
+def UnitAlphaInvαCocone : Cocone (FU (unop K).obj F.obj) where
+  pt := F.obj.obj (op ((intFunc (unop U)).obj (unop K)))
   ι := UnitAlphaInvαCoconeι F U K
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
-def UnitAlphaInvα : (GK (unop U) (AlphaUpStar.obj F.val) ⟶ Fcirc F (unop U)) where
+def UnitAlphaInvα : (GK (unop U) (AlphaUpStar.obj F.obj) ⟶ Fcirc F (unop U)) where
   app K:= by
     apply colimit.desc _ (UnitAlphaInvαCocone F U K)
   naturality {K L } f  := by
     apply colimit.hom_ext
     intro V
     simp
-    rw [← F.val.map_comp]
+    rw [← F.obj.map_comp]
     rfl
 
 
-def UnitAlphaInv : ((AlphaUpStar ⋙ AlphaDownStar ).obj F.val).obj U  ⟶ F.val.obj U := (FUOverCoverIntLimit F U.unop).map (UnitAlphaInvCone F U) (UnitAlphaInvα F U)
+def UnitAlphaInv : ((AlphaUpStar ⋙ AlphaDownStar ).obj F.obj).obj U  ⟶ F.obj.obj U := (FUOverCoverIntLimit F U.unop).map (UnitAlphaInvCone F U) (UnitAlphaInvα F U)
+
+set_option backward.isDefEq.respectTransparency false in
+@[simps]
+def AlphaUnitConeV2π : (Functor.const (UsupK_cat (unop U))ᵒᵖ).obj (F.obj.obj U) ⟶ GK (unop U) (AlphaUpStar.obj F.obj)  where
+  app K := colimit.ι (FU (unop K).obj F.obj) (op <| UsupKToKsubU (unop K))
 
 @[simps]
-def AlphaUnitConeV2π : (Functor.const (UsupK_cat (unop U))ᵒᵖ).obj (F.val.obj U) ⟶ GK (unop U) (AlphaUpStar.obj F.val)  where
-  app K := colimit.ι (FU (unop K).obj F.val) (op <| UsupKToKsubU (unop K))
-
-@[simps]
-def AlphaUnitConeV2 : Cone  (GK (unop U) (AlphaUpStar.obj F.val)) where
-  pt := F.val.obj U
+def AlphaUnitConeV2 : Cone  (GK (unop U) (AlphaUpStar.obj F.obj)) where
+  pt := F.obj.obj U
   π := AlphaUnitConeV2π F U
 
+set_option backward.isDefEq.respectTransparency false in
 omit [T2Space X] [LocallyCompactSpace X] [AB5OfSize.{w, w, v, u} C] in
-lemma UnitAlphaAppEq : limit.lift _ (AlphaUnitConeV2 F U) = (AdjAlphaStar.unit.app F.val).app U := by
+lemma UnitAlphaAppEq : limit.lift _ (AlphaUnitConeV2 F U) = (AdjAlphaStar.unit.app F.obj).app U := by
   apply limit.hom_ext
   intro K
   simp
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 omit [AB5OfSize.{w, w, v, u} C] in
-theorem IsoAlphaUnit : IsIso (((AdjAlphaStar).unit.app F.val).app U) := by
+theorem IsoAlphaUnit : IsIso (((AdjAlphaStar).unit.app F.obj).app U) := by
   use UnitAlphaInv F U
   constructor
   · rw [← UnitAlphaAppEq F U]
-    suffices limit.lift (GK (unop U) (AlphaUpStar.obj F.val)) (AlphaUnitConeV2 F U) ≫ IsLimit.map (UnitAlphaInvCone F U) (FUOverCoverIntLimit F (unop U)) (UnitAlphaInvα F U) = 𝟙 (F.val.obj U) by simpa [UnitAlphaInv]
+    suffices limit.lift (GK (unop U) (AlphaUpStar.obj F.obj)) (AlphaUnitConeV2 F U) ≫ IsLimit.map (UnitAlphaInvCone F U) (FUOverCoverIntLimit F (unop U)) (UnitAlphaInvα F U) = 𝟙 (F.obj.obj U) by simpa [UnitAlphaInv]
     apply IsLimit.hom_ext (FUOverCoverIntLimit F (unop U))
     intro K
-    suffices F.val.map (op (homOfLE _)) = (FUOverCoverInt F (unop U)).π.app K by simpa
+    suffices F.obj.map (op (homOfLE _)) = (FUOverCoverInt F (unop U)).π.app K by simpa
     dsimp [FUOverCoverInt]
   · apply limit.hom_ext
     intro K
     rw [← UnitAlphaAppEq]
 
-    suffices UnitAlphaInv F U ≫ colimit.ι (FU (unop K).obj F.val) (op (UsupKToKsubU (unop K))) = limit.π (GK (unop U) (AlphaUpStar.obj F.val)) K by simpa
+    suffices UnitAlphaInv F U ≫ colimit.ι (FU (unop K).obj F.obj) (op (UsupKToKsubU (unop K))) = limit.π (GK (unop U) (AlphaUpStar.obj F.obj)) K by simpa
 
     let L : (UsupK_cat (unop U))ᵒᵖ := by
       apply op
@@ -468,7 +483,7 @@ theorem IsoAlphaUnit : IsIso (((AdjAlphaStar).unit.app F.val).app U) := by
 
     have h := IsLimit.map_π (UnitAlphaInvCone F U) (FUOverCoverIntLimit F (unop U)) (UnitAlphaInvα F U) L
 
-    have : UnitAlphaInv F U ≫ (FU (unop K).obj F.val).map f  = (UnitAlphaInvCone F U).π.app L ≫ (UnitAlphaInvα F U).app L := by
+    have : UnitAlphaInv F U ≫ (FU (unop K).obj F.obj).map f  = (UnitAlphaInvCone F U).π.app L ≫ (UnitAlphaInvα F U).app L := by
       rw [← h]-- mais par contre on ne peut pas rw h directement dans ce qui suit
       rfl
 
@@ -484,10 +499,11 @@ theorem IsoAlphaUnit : IsIso (((AdjAlphaStar).unit.app F.val).app U) := by
     · apply colimit.hom_ext
       intro V
       simp
-      suffices F.val.map (op (homOfLE _)) ≫ colimit.ι (FU (unop K).obj F.val) (op { obj := (intFunc (unop U)).obj (unop L), property := KsubL }) = colimit.ι (FU (unop K).obj F.val) (op ((K1subK2subU trueCond fForce.unop.hom).obj (unop V))) by simpa
+      suffices F.obj.map (op (homOfLE _)) ≫ colimit.ι (FU (unop K).obj F.obj) (op { obj := (intFunc (unop U)).obj (unop L), property := KsubL }) = colimit.ι (FU (unop K).obj F.obj) (op ((K1subK2subU trueCond fForce.unop.hom).obj (unop V))) by simpa
       forceColimW
       exact Set.Subset.trans interior_subset V.unop.property.1
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsoAlphaShUnit : IsIso ((AdjShAlphaStar X C).unit.app F):= by
   have : IsIso ((Sheaf.forget C (of X)).map ((AdjShAlphaStar X C).unit.app F)) := by
     unfold AdjShAlphaStar
@@ -527,6 +543,7 @@ def GUbarToAlphaDownStarGCone : Cone (GK U.obj G.carrier) where
   pt := (FUbar K G.carrier).obj <| op U
   π := GUbarToAlphaDownStarGConeπ K G U
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def GUbarToAlphaDownStarG : FUbar K G.carrier ⟶ FU K (AlphaDownStar.obj G.carrier) relcCond where
   app U := limit.lift _ (GUbarToAlphaDownStarGCone K G U.unop)
@@ -554,6 +571,7 @@ def CounitAlphaInv : G.carrier.obj (op K) ⟶ ((AlphaDownStar ⋙ AlphaUpStarRc)
 
 def CounitAlphaAppApp : ((AlphaDownStar ⋙ AlphaUpStarRc).obj G.carrier).obj (op K) ⟶ G.carrier.obj (op K) := ((AdjAlphaStarRc C X).counit.app G.carrier).app (op K)
 
+set_option backward.isDefEq.respectTransparency false in
 def CounitAlphaV2Coconeι : FU K (AlphaDownStarG G.carrier) relcCond ⟶ (Functor.const (KsubU_cat K relcCond)ᵒᵖ).obj (G.carrier.obj (op K)) where
   app U := limit.π (GK (unop U).obj G.carrier) (op (KsubUToUsupK U.unop))
 
@@ -562,6 +580,7 @@ def CounitAlphaV2Cocone : Cocone (FU K (AlphaDownStarG G.carrier) relcCond) wher
   pt := G.carrier.obj (op K)
   ι := CounitAlphaV2Coconeι K G
 
+set_option backward.isDefEq.respectTransparency false in
 omit [AB5OfSize.{w, w, v, u} C] in
 lemma CounitAlphaEq : colimit.desc _ (CounitAlphaV2Cocone K G) = CounitAlphaAppApp K G := by
   apply colimit.hom_ext
@@ -576,7 +595,7 @@ lemma CounitAlphaEq : colimit.desc _ (CounitAlphaV2Cocone K G) = CounitAlphaAppA
   simp [AdjAlphaStar, homEquiv]
   rfl
 
-
+set_option backward.isDefEq.respectTransparency false in
 omit [AB5OfSize.{w, w, v, u} C] in
 lemma CounitAlphaInvCompHomEqId : CounitAlphaInv K G ≫ CounitAlphaAppApp K G = 𝟙 _ := by
   apply IsColimit.hom_ext ((FUbarEquivFL K G.carrier).invFun (G.ksh3 K))
@@ -592,7 +611,7 @@ lemma CounitAlphaInvCompHomEqId : CounitAlphaInv K G ≫ CounitAlphaAppApp K G =
   slice_lhs 2 3 => rw [this]
   simp [AdjAlphaStar, homEquiv]
 
-
+set_option backward.isDefEq.respectTransparency false in
 omit [AB5OfSize.{w, w, v, u} C] in
 -- but rendre ce lemme qui suit propre avec pleins de tactiques
 lemma CounitAlphaHomCompInvEqId : CounitAlphaAppApp K G ≫ CounitAlphaInv K G = 𝟙 _ := by
@@ -654,6 +673,7 @@ theorem IsoAlphaCounit : IsIso (((AdjAlphaStarRc C X).counit.app G.carrier).app 
   apply CounitAlphaHomCompInvEqId
   apply CounitAlphaInvCompHomEqId
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsoAlphaRcShCoUnit : IsIso ((AdjShAlphaStarRc X C).counit.app G):= by
 
   have : IsIso ((KsheafToPre X C).map ((AdjShAlphaStarRc X C).counit.app G)) := by
@@ -666,6 +686,7 @@ theorem IsoAlphaRcShCoUnit : IsIso ((AdjShAlphaStarRc X C).counit.app G):= by
     exact IsoAlphaCounit K.unop G
   apply CategoryTheory.isIso_of_fully_faithful (KsheafToPre X C)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsoAlphaShCoUnit : IsIso ((AdjShAlphaStar X C).counit.app G):= by
   let h := CategoryTheory.Adjunction.leftAdjointUniq (AdjShAlphaStar X C) (AdjShAlphaStarRc X C)
 

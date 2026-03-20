@@ -1,219 +1,322 @@
 import M2.Propre.KSheaf
 import M2.forceColimW
+import M2.Suffices
+import M2.forceLimW-- a remetre au niveau par rapport à forceColimW
 import Mathlib.Topology.Sheaves.Sheaf
 
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite TopCat
 
 universe u v w
 
+variable {A : Type u} [Category.{v, u} A]
 variable {X : Type w} [TopologicalSpace X]
-variable {A : Type u} [Category.{v, u} A] [HasColimitsOfSize.{w, w} A] [HasLimitsOfSize.{w, w} A ]
+
 
 /-def baseChangeCompactNhds {K L : Compacts X} (h : K.carrier ⊆ L.carrier) : L.compactNhds → K.compactNhds := fun M => ⟨M.1, fun ⟨x,hx⟩ => M.2 ⟨x, h hx ⟩⟩
 
 lemma monoBaseChangeCompactNhds {K L : Compacts X} (h : K.carrier ⊆ L.carrier) : Monotone <| baseChangeCompactNhds h := fun _ _ hyp => fun _ hx => hyp hx-/
 
-
-def Quiver.Hom.baseChangeOpenNhds {K L : Compacts X} (h : K ⟶ L) : L.openNhds → K.openNhds := fun ⟨U,hU⟩ => ⟨U, fun _ hx => Set.mem_of_subset_of_mem hU (leOfHom h hx)⟩
-
-lemma monoBaseChangeOpenNhds {K L : Compacts X} (h : K ⟶ L) : Monotone <| h.baseChangeOpenNhds := fun  _ _ hUV _ hx => SetLike.mem_coe.mpr (hUV hx)
-
-def Quiver.Hom.baseChangeCompactsInsd {U V : Opens X} (h : U ⟶ V) : U.compactsInsd → V.compactsInsd := fun ⟨K,hK⟩ => ⟨K, fun _ hx => by
-  apply Set.mem_of_subset_of_mem (leOfHom h) (hK hx)⟩
-
-lemma monoBaseChangeCompactsInsd {U V : Opens X} (h : U ⟶ V) : Monotone <| h.baseChangeCompactsInsd := fun  _ _ hKL _ hx => SetLike.mem_coe.mpr (hKL hx)
-
 noncomputable section
+
 namespace TopCat.Presheaf
 
+variable [HasColimitsOfSize.{w, w} A] (F : Presheaf A (of X)) {K : (Compacts X)ᵒᵖ}
+
+def alphaUpStarObjObj (K : (Compacts X)ᵒᵖ ) : A := colimit ((Subtype.mono_coe K.unop.openNhds).functor.op ⋙ F)
+
+def alphaUpStarObjObj_ι (U : (K.unop.openNhds )ᵒᵖ ) : F.obj (op U.unop.val)  ⟶ F.alphaUpStarObjObj K := colimit.ι ((Subtype.mono_coe K.unop.openNhds).functor.op ⋙ F) _
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma alphaUpStarObjObj_w {U V : (K.unop.openNhds)ᵒᵖ} (i : U ⟶ V) : F.map i ≫ F.alphaUpStarObjObj_ι V = F.alphaUpStarObjObj_ι U := by
+  unfold alphaUpStarObjObj_ι
+  forceColimW
+
+@[simp]
+lemma alphaUpStarObjObj_w_assoc {U V : (K.unop.openNhds)ᵒᵖ} (i : U ⟶ V) {Z : A} (h : _ ⟶ Z ): F.map i ≫ F.alphaUpStarObjObj_ι V ≫ h = F.alphaUpStarObjObj_ι U ≫ h := by
+  rw [← Category.assoc, alphaUpStarObjObj_w]
+
+@[ext]
+lemma alphaUpStarObjObj_hom_ext {Y : A} (f g : F.alphaUpStarObjObj K ⟶ Y) : (∀ U : (K.unop.openNhds)ᵒᵖ, F.alphaUpStarObjObj_ι U ≫ f = F.alphaUpStarObjObj_ι U ≫ g) → f = g := colimit.hom_ext
+
+def alphaUpStarObjObj_desc {K : (Compacts X)ᵒᵖ} (c : Cocone <| (Subtype.mono_coe K.unop.openNhds).functor.op ⋙ F) : F.alphaUpStarObjObj K ⟶ c.pt := colimit.desc _ c
+
+@[simp]
+lemma alphaUpStarObjObj_ι_desc {K : (Compacts X)ᵒᵖ} (c : Cocone <| (Subtype.mono_coe K.unop.openNhds).functor.op ⋙ F) (U : (K.unop.openNhds)ᵒᵖ ) : F.alphaUpStarObjObj_ι U ≫ F.alphaUpStarObjObj_desc c = c.ι.app U := colimit.ι_desc c U
+
+@[simp]
+lemma alphaUpStarObjObj_ι_desc_assoc {K : (Compacts X)ᵒᵖ} (c : Cocone <| (Subtype.mono_coe K.unop.openNhds).functor.op ⋙ F) (U : (K.unop.openNhds)ᵒᵖ ) {Z : A} (h : _ ⟶ Z) : F.alphaUpStarObjObj_ι U ≫ F.alphaUpStarObjObj_desc c ≫ h = c.ι.app U ≫ h:= colimit.ι_desc_assoc c U _
+
+def alphaUpStarObjMap {K L : (Compacts X)ᵒᵖ} (i : K ⟶ L) : F.alphaUpStarObjObj K ⟶ F.alphaUpStarObjObj L := colimit.pre ((Subtype.mono_coe L.unop.openNhds).functor.op ⋙ F) (monoBaseChangeOpenNhds i.unop).functor.op
+
+@[simp]
+lemma alphaUpStarObjObj_ι_pre {K L : (Compacts X)ᵒᵖ} (i : L ⟶ K) (U : (L.unop.openNhds )ᵒᵖ ): F.alphaUpStarObjObj_ι U ≫ F.alphaUpStarObjMap i = F.alphaUpStarObjObj_ι ( (monoBaseChangeOpenNhds i.unop).functor.op.obj U) := by
+  unfold alphaUpStarObjObj_ι alphaUpStarObjMap
+  rw [← colimit.ι_pre]
+  rfl
+
+@[simp]
+lemma alphaUpStarObjObj_ι_pre_assoc {K L : (Compacts X)ᵒᵖ} (i : L ⟶ K) (U : (L.unop.openNhds )ᵒᵖ ) { Z : A} (h : _ ⟶ Z): F.alphaUpStarObjObj_ι U ≫ F.alphaUpStarObjMap i ≫ h = F.alphaUpStarObjObj_ι ( (monoBaseChangeOpenNhds i.unop).functor.op.obj U) ≫ h := by
+  rw [← Category.assoc, alphaUpStarObjObj_ι_pre]
+  rfl
+
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
-def alphaUpStarObj (F : Presheaf A (of X)): (Compacts X)ᵒᵖ ⥤ A where
-  obj K := colimit ((Subtype.mono_coe K.unop.openNhds).functor.op ⋙ F)
-  map {K L} i := colimit.pre ((Subtype.mono_coe L.unop.openNhds).functor.op ⋙ F) (monoBaseChangeOpenNhds i.unop).functor.op
-  map_id _ := by
-    apply colimit.hom_ext
-    intro
-    rw [CategoryTheory.Limits.colimit.ι_pre]
-    exact Eq.symm (Category.comp_id _)-- pourquoi ça ne marche pas tout seul?
-  map_comp {K L M} f g := by
+def alphaUpStarObj (F : Presheaf A (of X)) : (Compacts X)ᵒᵖ ⥤ A where
+  obj := F.alphaUpStarObjObj
+  map  := F.alphaUpStarObjMap
+  map_comp _ _ := by
+    ext
+    rw [← Category.assoc]
+    aesop_cat
 
-    apply colimit.hom_ext
-    intro U
-    rw [colimit.ι_pre]
-    --ça il faut le forcer avec une tactique
+end TopCat.Presheaf
 
-    let Eforce := (monoBaseChangeOpenNhds f.unop).functor.op
-    let Fforce := (Subtype.mono_coe (unop L).openNhds).functor.op ⋙ F
-    let kforce := U
+namespace CategoryTheory.NatTrans
+variable [HasColimitsOfSize.{w, w} A ]
 
-    --have : Eforce ⋙ Fforce = (monoBaseChangeOpenNhds (f ≫ g).unop).functor.op ⋙ (Subtype.mono_coe (unop M).openNhds).functor.op ⋙ F := by rfl
-    --ici il arrive à identifier Eforce ⋙ Fforce, mais il ne devrait pas en général→ en fait si?
-    slice_rhs 1 2 => erw [ colimit.ι_pre Fforce Eforce _]
+def alphaUpStarNatTransApp { F1 F2 : Presheaf A (of X)} (τ : F1 ⟶ F2) (K : (Compacts X)ᵒᵖ): F1.alphaUpStarObjObj K  ⟶ F2.alphaUpStarObjObj K := colimMap <| Functor.whiskerLeft _ τ
 
-    unfold Fforce Eforce
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma alphaUpStar_ι_NatTrans { F1 F2 : Presheaf A (of X)} (τ : F1 ⟶ F2) {K : (Compacts X)ᵒᵖ} (U : (K.unop.openNhds)ᵒᵖ) : F1.alphaUpStarObjObj_ι U ≫ τ.alphaUpStarNatTransApp K = τ.app (op U.unop.val) ≫ F2.alphaUpStarObjObj_ι U := by
+  unfold Presheaf.alphaUpStarObjObj_ι alphaUpStarNatTransApp
+  simp
 
-    let Eforce := (monoBaseChangeOpenNhds g.unop).functor.op
-    let Fforce := (Subtype.mono_coe (unop M).openNhds).functor.op ⋙ F
-    let kforce := (monoBaseChangeOpenNhds f.unop).functor.op.obj U
+@[simp]
+lemma alphaUpStar_ι_NatTrans_assoc { F1 F2 : Presheaf A (of X)} (τ : F1 ⟶ F2) {K : (Compacts X)ᵒᵖ} (U : (K.unop.openNhds)ᵒᵖ) {Z : A} ( h : _ ⟶ Z): F1.alphaUpStarObjObj_ι U ≫ τ.alphaUpStarNatTransApp K ≫ h = τ.app (op U.unop.val) ≫ F2.alphaUpStarObjObj_ι U ≫ h:= by
+  rw [← Category.assoc,alphaUpStar_ι_NatTrans, Category.assoc]
 
-    erw [ colimit.ι_pre Fforce Eforce _]
-
-    rfl
-
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
-def alphaUpStarNatTrans { F1 F2 : Presheaf A (of X)} (τ : F1 ⟶ F2) : F1.alphaUpStarObj  ⟶ F2.alphaUpStarObj where
-app K := colimMap <| Functor.whiskerLeft _ τ
-naturality K L i:= by
-  apply colimit.hom_ext
+def alphaUpStarNatTrans {F1 F2 : Presheaf A (of X)} (τ : F1 ⟶ F2) : F1.alphaUpStarObj  ⟶ F2.alphaUpStarObj where
+app := alphaUpStarNatTransApp τ
+naturality _ _ _ := by
+  apply F1.alphaUpStarObjObj_hom_ext-- je voudrais que ext marche
   intro
-  simp only [Functor.comp_obj, Functor.op_obj, Monotone.functor_obj, alphaUpStarObj_obj, alphaUpStarObj_map, ι_colimMap_assoc, Functor.whiskerLeft_app]
-  -- par une tactique (sinon ça cassera)
-  let Eforce := (alphaUpStarObj._proof_3 i).functor.op
-  let Fforce := (alphaUpStarObj._proof_1 L).functor.op ⋙ F1
-
-  slice_lhs 1 2 => erw [colimit.ι_pre Fforce Eforce]
-  unfold Fforce Eforce
-
-  --re tactique
-  let Eforce := (alphaUpStarObj._proof_3 i).functor.op
-  let Fforce := (alphaUpStarObj._proof_1 L).functor.op ⋙ F2
-
-  slice_rhs 2 3 => erw [colimit.ι_pre Fforce Eforce]
-  unfold Fforce Eforce
-
+  rw [← Category.assoc, ← Category.assoc]
   simp;rfl
 
+end CategoryTheory.NatTrans
+
+namespace TopCat.Presheaf
+
+variable [HasColimitsOfSize.{w, w} A ]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simps]
 def alphaUpStar : Presheaf A (of X) ⥤ KPresheaf A X where
   obj := alphaUpStarObj
-  map := alphaUpStarNatTrans
+  map := NatTrans.alphaUpStarNatTrans
   map_id _ := by
     ext
-    apply colimit.hom_ext
+    apply alphaUpStarObjObj_hom_ext
     intro
-    simp only [Functor.comp_obj, Functor.op_obj, Monotone.functor_obj, alphaUpStarObj_obj, alphaUpStarNatTrans_app, ι_colimMap, Functor.whiskerLeft_app, NatTrans.id_app, Category.comp_id]
-    forceColimW
-    · exact 𝟙 _
-    · unfold CategoryStruct.id fForce ;simp;rfl
-
+    simp [CategoryStruct.id]
 
 end TopCat.Presheaf
 
 
 namespace TopCat.KPresheaf
 
-@[simps]
-def alphaDownStarObj (G : KPresheaf A X): (Opens X)ᵒᵖ ⥤ A where
-  obj U := limit ((Subtype.mono_coe U.unop.compactsInsd).functor.op ⋙ G)
-  map {U V} i:= limit.pre ((Subtype.mono_coe U.unop.compactsInsd).functor.op ⋙ G) ( monoBaseChangeCompactsInsd i.unop).functor.op
-  map_comp {U V W} i j := by
-    ext K
-    rw [limit.pre_π]
+variable [HasLimitsOfSize.{w, w} A] (G : KPresheaf A (of X)) {U : (Opens X)ᵒᵖ}
 
-    --avec tactique
-    let Eforce := (monoBaseChangeCompactsInsd j.unop).functor.op
-    let Fforce := (Subtype.mono_coe (unop V).compactsInsd).functor.op ⋙ G
-    slice_rhs 2 3 => erw [ limit.pre_π Fforce Eforce]
+def alphaDownStarObjObj (U : (Opens X)ᵒᵖ ) : A := limit ((Subtype.mono_coe U.unop.compactInsd).functor.op ⋙ G)
 
-    erw [limit.pre_π]
-    rfl
+def alphaDownStarObjObj_π (K : (U.unop.compactInsd )ᵒᵖ ) :  G.alphaDownStarObjObj U ⟶ G.obj (op K.unop.val) := limit.π ((Subtype.mono_coe U.unop.compactInsd).functor.op ⋙ G) _
 
-@[simps]
-def alphaDownStarNatTrans { G1 G2 : KPresheaf A X} (τ : G1 ⟶ G2) : G1.alphaDownStarObj  ⟶ G2.alphaDownStarObj where
-app K := limMap <| Functor.whiskerLeft _ τ
-naturality {U V i}:= by
-  apply limit.hom_ext
-  intro
-  simp only [alphaDownStarObj_obj, Functor.comp_obj, Functor.op_obj, Monotone.functor_obj, alphaDownStarObj_map, Category.assoc, limMap_π, Functor.whiskerLeft_app]
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma alphaDownStarObjObj_w {K L : (U.unop.compactInsd)ᵒᵖ} (i : K ⟶ L) : G.alphaDownStarObjObj_π K ≫ G.map i = G.alphaDownStarObjObj_π L := by
+  unfold alphaDownStarObjObj_π
+  forceLimW
 
-  erw [limit.pre_π]
+@[simp]
+lemma alphaDownStarObjObj_w_assoc {K L : (U.unop.compactInsd)ᵒᵖ} (i : K ⟶ L) {Z : A} (h : _ ⟶ Z): G.alphaDownStarObjObj_π K ≫ G.map i ≫ h = G.alphaDownStarObjObj_π L ≫ h := by
+  rw [← Category.assoc,alphaDownStarObjObj_w]
 
-  slice_lhs 1 2  => erw [limit.pre_π]
-  simp
+@[ext]
+lemma alphaDownStarObjObj_hom_ext {Y : A} (f g : Y ⟶ G.alphaDownStarObjObj U) : (∀ K : (U.unop.compactInsd)ᵒᵖ, f ≫ G.alphaDownStarObjObj_π K = g ≫ G.alphaDownStarObjObj_π K ) → f = g := limit.hom_ext
+
+def alphaDownStarObjMap {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) : G.alphaDownStarObjObj U ⟶ G.alphaDownStarObjObj V := limit.pre ((Subtype.mono_coe U.unop.compactInsd).functor.op ⋙ G) (monoBaseChangeCompactInsd i.unop).functor.op
+
+@[simp]
+lemma alphaDownStarObjObj_pre_π {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) (K : (V.unop.compactInsd )ᵒᵖ ): G.alphaDownStarObjMap i ≫  G.alphaDownStarObjObj_π K = G.alphaDownStarObjObj_π ( (monoBaseChangeCompactInsd i.unop).functor.op.obj K) := by
+  unfold alphaDownStarObjObj_π alphaDownStarObjMap
+  rw [← limit.pre_π]
   rfl
 
+@[simp]
+lemma alphaDownStarObjObj_pre_π_assoc {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) (K : (V.unop.compactInsd )ᵒᵖ ) {Z : A} (h : _ ⟶ Z): G.alphaDownStarObjMap i ≫  G.alphaDownStarObjObj_π K ≫ h = G.alphaDownStarObjObj_π ( (monoBaseChangeCompactInsd i.unop).functor.op.obj K) ≫ h:= by
+  rw [← Category.assoc, alphaDownStarObjObj_pre_π]
+  rfl
+
+def alphaDownStarObjObj_lift {U : (Opens X)ᵒᵖ} (c : Cone <| (Subtype.mono_coe U.unop.compactInsd).functor.op ⋙ G) : c.pt ⟶ G.alphaDownStarObjObj U := limit.lift _ c
+
+@[simp]
+lemma alphaDownStarObjObj_lift_π {U : (Opens X)ᵒᵖ} (c : Cone <| (Subtype.mono_coe U.unop.compactInsd).functor.op ⋙ G) (K : (U.unop.compactInsd)ᵒᵖ): G.alphaDownStarObjObj_lift c
+ ≫ G.alphaDownStarObjObj_π K = c.π.app K := limit.lift_π c K
+
+ @[simp]
+lemma alphaDownStarObjObj_lift_π_assoc {U : (Opens X)ᵒᵖ} (c : Cone <| (Subtype.mono_coe U.unop.compactInsd).functor.op ⋙ G) (K : (U.unop.compactInsd)ᵒᵖ) {Z : A} (h : _ ⟶ Z ): G.alphaDownStarObjObj_lift c
+ ≫ G.alphaDownStarObjObj_π K ≫ h = c.π.app K ≫ h:= limit.lift_π_assoc c K _
+
+set_option backward.isDefEq.respectTransparency false in
+@[simps]
+def alphaDownStarObj (G : KPresheaf A (of X)) : (Opens X)ᵒᵖ ⥤ A where
+  obj := G.alphaDownStarObjObj
+  map  := G.alphaDownStarObjMap
+
+end TopCat.KPresheaf
+
+namespace CategoryTheory.NatTrans
+variable [HasLimitsOfSize.{w, w} A ]
+
+def alphaDownStarNatTransApp { G1 G2 : KPresheaf A (of X)} (σ : G1 ⟶ G2) (U : (Opens X)ᵒᵖ): G1.alphaDownStarObjObj U  ⟶ G2.alphaDownStarObjObj U := limMap <| Functor.whiskerLeft _ σ
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma alphaDownStar_NatTrans_π { G1 G2 : KPresheaf A (of X)} (σ : G1 ⟶ G2) {U : (Opens X)ᵒᵖ} (K : (U.unop.compactInsd)ᵒᵖ) :  σ.alphaDownStarNatTransApp U ≫ G2.alphaDownStarObjObj_π K = G1.alphaDownStarObjObj_π K ≫ σ.app (op K.unop.val) := by
+  unfold TopCat.KPresheaf.alphaDownStarObjObj_π alphaDownStarNatTransApp
+  simp
+
+@[simp]
+lemma alphaDownStar_NatTrans_π_assoc { G1 G2 : KPresheaf A (of X)} (σ : G1 ⟶ G2) {U : (Opens X)ᵒᵖ} (K : (U.unop.compactInsd)ᵒᵖ) {Z : A} (h : Z ⟶ _) : (h ≫ σ.alphaDownStarNatTransApp U) ≫ G2.alphaDownStarObjObj_π K = (h ≫ G1.alphaDownStarObjObj_π K) ≫ σ.app (op K.unop.val) := by
+  rw [ Category.assoc, alphaDownStar_NatTrans_π, ← Category.assoc]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simps]
+def alphaDownStarNatTrans {G1 G2 : KPresheaf A (of X)} (σ : G1 ⟶ G2) : G1.alphaDownStarObj  ⟶ G2.alphaDownStarObj where
+app := alphaDownStarNatTransApp σ
+
+end CategoryTheory.NatTrans
+
+namespace TopCat.KPresheaf
+
+variable [HasLimitsOfSize.{w, w} A ]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simps]
 def alphaDownStar : KPresheaf A X ⥤ Presheaf A (of X) where
   obj := alphaDownStarObj
-  map := alphaDownStarNatTrans
+  map := NatTrans.alphaDownStarNatTrans
   map_id _ := by
     apply NatTrans.ext
     ext
-    apply limit.hom_ext
+    apply alphaDownStarObjObj_hom_ext
     intro
     simp [CategoryStruct.id]
   map_comp _ _ := by
     apply NatTrans.ext
     ext
-    rw [NatTrans.comp_app]
-    apply limit.hom_ext
+    apply alphaDownStarObjObj_hom_ext
     intro
+    rw [ NatTrans.comp_app]
+    slice_rhs 2 3 => rw [ NatTrans.alphaDownStarNatTrans_app,
+      NatTrans.alphaDownStar_NatTrans_π]
+    slice_rhs 1 2 => rw [ NatTrans.alphaDownStarNatTrans_app,
+      NatTrans.alphaDownStar_NatTrans_π]
     simp
-
 
 end TopCat.KPresheaf
 
 namespace CategoryTheory.NatTrans
 
+variable [HasColimitsOfSize.{w, w} A] [HasLimitsOfSize.{w, w} A]
+
 open TopCat.KPresheaf TopCat.Presheaf
 variable {F : Presheaf A (of X)} {G : KPresheaf A X} (τ : (alphaUpStar).obj F ⟶ G) (σ : F ⟶ (alphaDownStar).obj G) (K : Compacts X) (U : Opens X)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
-def toFtoαGConeπ : (Functor.const (Subtype U.compactsInsd)ᵒᵖ).obj (F.obj (op U)) ⟶ (Subtype.mono_coe U.compactsInsd).functor.op ⋙ G where
-  app K := (colimit.ι ((alphaUpStarObj._proof_1 (op (unop K).val)).functor.op ⋙ F) (op K.unop.toOpenNhds)) ≫ τ.app (op K.unop.val)
+def toFtoαGConeπ : (Functor.const (Subtype U.compactInsd)ᵒᵖ).obj (F.obj (op U)) ⟶ (Subtype.mono_coe U.compactInsd).functor.op ⋙ G where
+  app K := F.alphaUpStarObjObj_ι (K := op (K.unop.val)) ( op K.unop.toOpenNhds) ≫ τ.app (op K.unop.val)
   naturality {K L} i := by
-    simp only [Functor.const_obj_obj, Functor.comp_obj, Functor.op_obj, Monotone.functor_obj,
-      Functor.const_obj_map, Category.id_comp, Functor.comp_map, Functor.op_map, Category.assoc]
-    rw [← τ.naturality, ← Category.assoc]
-    apply eq_whisker
-    simp [alphaUpStar]
-
-    let Fforce := (alphaUpStarObj._proof_1 (op (unop L).val)).functor.op ⋙ F
-    let Eforce := (alphaUpStarObj._proof_3 ((Subtype.mono_coe U.compactsInsd).functor.map i.unop).op).functor.op
-
-    erw [colimit.ι_pre Fforce Eforce];rfl
+    rw [Functor.comp_map, Category.assoc, ← τ.naturality]
+    simp;rfl
 
 @[simps]
-def toFtoαGCone : Cone <| (Subtype.mono_coe U.compactsInsd).functor.op ⋙ G := Cone.mk _ (τ.toFtoαGConeπ _ )
+def toFtoαGCone : Cone <| (Subtype.mono_coe U.compactInsd).functor.op ⋙ G := Cone.mk _ (τ.toFtoαGConeπ _ )
 
+set_option backward.isDefEq.respectTransparency false in
+@[simps]
 def toFtoαG : F ⟶ alphaDownStar.obj G where
-  app U := limit.lift _ (τ.toFtoαGCone U.unop)
+  app U := alphaDownStarObjObj_lift _ (τ.toFtoαGCone U.unop)
   naturality {U V} i := by
-    apply limit.hom_ext
+    apply alphaDownStarObjObj_hom_ext
     intro K
-    simp [alphaDownStar]
-    sorry
+    simp
+    unfold alphaUpStarObjObj_ι
+    forceColimW
 
+    /- --tout le bazard qui suit c'est parceque les lemmes en _w n'ont pas la bonne forme...
+
+    let W := (op (unop K).toOpenNhds)
+    let Z : (↑((unop K).val).openNhds)ᵒᵖ:= (op (Subtype.toOpenNhds (i.unop.baseChangeCompactInsd (unop K))))
+
+
+
+    #check F.alphaUpStarObjObj_w (K := op K.unop.val) (U := W) (V := Z) ⟨by
+      unfold W Z
+      simp
+      apply?
+      simp at Z
+      sorry⟩
+    erw [F.alphaUpStarObjObj_w_assoc _ (τ.app (op (unop K).val))]
+    unfold alphaUpStarObjObj_ι
+    forceColimW-/
+
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def toαFtoGCoconeι : (Subtype.mono_coe K.openNhds).functor.op ⋙ F ⟶ (Functor.const (Subtype K.openNhds)ᵒᵖ).obj (G.obj (op K))  where
-  app K := by
-    apply σ.app _ ≫ _
-
-    simp
-    sorry
-  naturality {K L} i := by sorry
+  app U := σ.app _ ≫ G.alphaDownStarObjObj_π (U := op (U.unop.val)) (op U.unop.toCompactInsd)
 
 @[simps]
 def toαFtoGCocone : Cocone <| (Subtype.mono_coe K.openNhds).functor.op ⋙ F := Cocone.mk _ (σ.toαFtoGCoconeι _ )
 
-def toαFtoG : alphaUpStar.obj F ⟶ G where
-  app K := colimit.desc _ (σ.toαFtoGCocone K.unop)
-  naturality {U V} i := by sorry
-
-/-- The bijection between hom(αF, G) and hom(F,αG) -/
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
-def homEquiv: (alphaUpStar.obj F ⟶ G) ≃ ( F ⟶ alphaDownStar.obj G) where
+def toαFtoG : alphaUpStar.obj F ⟶ G where
+  app K := F.alphaUpStarObjObj_desc  (σ.toαFtoGCocone _)
+  naturality {K L} i := by
+    apply alphaUpStarObjObj_hom_ext
+    intro U
+    simp
+    unfold alphaDownStarObjObj_π
+    forceLimW
+
+end NatTrans
+
+--namespace TopCat.KPresheaf-- ça fait des trucs bizzares avec homEquiv
+
+open TopCat.Presheaf TopCat.KPresheaf
+
+
+variable [HasColimitsOfSize.{w, w, v, u} A] [HasLimitsOfSize.{w, w, v, u} A] (F : Presheaf A (of X)) (G : KPresheaf A X)
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The bijection between hom(αF, G) and hom(F,αG) -/
+def homEquivAlpha: (alphaUpStar.obj F ⟶ G) ≃ ( F ⟶ alphaDownStar.obj G) where
   toFun := fun τ => τ.toFtoαG
   invFun := fun σ  => σ.toαFtoG
-  left_inv τ := sorry
-  right_inv σ := sorry
+  left_inv _ := by aesop_cat
+  right_inv _ := by aesop_cat
 
-
+set_option backward.isDefEq.respectTransparency false in
 /-- The data necessary to build the adjunction between α^* and α_*-/
-@[simps]
-def adjthm : Adjunction.CoreHomEquiv (alphaUpStar (A := A) (X := X)) alphaDownStar where
-homEquiv := sorry
-homEquiv_naturality_left_symm _ _ := by sorry
-homEquiv_naturality_right _ _ := by sorry
+def adjAlphaThm : Adjunction.CoreHomEquiv (alphaUpStar (A := A) (X := X)) alphaDownStar where
+homEquiv := homEquivAlpha
+homEquiv_naturality_left_symm _ _ := by
+  ext
+  apply alphaUpStarObjObj_hom_ext
+  intro
+  simp [homEquivAlpha]
+homEquiv_naturality_right {F G1 G2} τ σ := by
+  ext U
+  apply alphaDownStarObjObj_hom_ext
+  intro K
+  simp [homEquivAlpha]
 
 /-- The adjunction between α^* and α_*-/
 @[simps!]
-def AdjAlphaStar : (alphaUpStar (A := A) (X := X)) ⊣ (alphaDownStar ) := Adjunction.mkOfHomEquiv (adjthm)
+def AdjAlpha : (alphaUpStar (A := A) (X := X)) ⊣ (alphaDownStar ) := Adjunction.mkOfHomEquiv (adjAlphaThm)

@@ -1,13 +1,9 @@
-import Mathlib.Topology.Maps.Proper.Basic
-import Mathlib.Topology.Sheaves.Functors
 import M2.alpha_K_sheaf
 import M2.lemmeTopologique
-
 
 universe u v w
 
 open CategoryTheory Limits TopologicalSpace Compacts Opposite Functor TopCat
-
 
 variable {X Y : Type w} [TopologicalSpace X] [T2Space X] [TopologicalSpace Y] [T2Space Y] [LocallyCompactSpace Y]
 
@@ -154,6 +150,7 @@ instance : (preimageRes proper_f K).Initial := by
 
 variable (F : (Opens X)ᵒᵖ ⥤ C)
 
+set_option backward.isDefEq.respectTransparency false in
 /--For F a presheaf the natural transformation from f* α* F to α* f* F -/
 @[simps]
 def PushforwardCommAlphaUpF  : ((Presheaf.pushforward C (ofHom ⟨_ , proper_f.toContinuous⟩)).comp AlphaUpStar ).obj F ⟶ ((AlphaUpStar ).comp (fDownStar proper_f)).obj F  where
@@ -195,6 +192,7 @@ instance : IsIso (PushforwardCommAlphaUpF proper_f F) := by
 
 variable (C)
 
+set_option backward.isDefEq.respectTransparency false in
 /--The natural transformation from f* α* to α* f* over presheaves -/
 @[simps]
 def PushforwardCommAlphaUp  : (Presheaf.pushforward C (ofHom ⟨_ , proper_f.toContinuous⟩)).comp AlphaUpStar  ⟶ (AlphaUpStar ).comp (fDownStar proper_f) where
@@ -251,6 +249,7 @@ def PushforwardCommAlphaUpShInv : (shAlphaUpStar X C).comp (KsheafPushforward pr
     apply InducedCategory.Hom.ext
     apply (inv (PushforwardCommAlphaUp proper_f C)).naturality
 
+set_option backward.isDefEq.respectTransparency false in
 /--The natural isomorphism between  α* f* and f* α* for -/
 @[simps]
 def PushforwardCommAlphaUpSh : (Sheaf.pushforward C (ofHom ⟨_ , proper_f.toContinuous⟩)).comp (shAlphaUpStar Y C) ≅ (shAlphaUpStar X C).comp (KsheafPushforward proper_f) where
@@ -272,3 +271,4 @@ def PushforwardCommAlphaUpSh : (Sheaf.pushforward C (ofHom ⟨_ , proper_f.toCon
     rfl
 
 #lint
+#min_imports

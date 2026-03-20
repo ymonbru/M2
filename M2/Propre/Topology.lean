@@ -56,48 +56,59 @@ lemma exists_open_nhds_sub_compact_nhds {K : Compacts X} (L : K.compactNhds) : �
 
 def openNhds (K : Compacts X) : Set (Opens X) := setOf (fun U ↦ K.carrier ⊆ U.carrier)
 
-def openrelativelycompactNhds (K : Compacts X) : Set (Opens X) :=
+def openRcNhds (K : Compacts X) : Set (Opens X) :=
   setOf (fun U ↦ IsCompact (closure U.carrier) ∧ K.carrier ⊆ U.carrier)
 
-lemma subset_of_mem_openrelativelycompactNhds {K : Compacts X} {U : Opens X} (h : U ∈ K.openrelativelycompactNhds) : K.carrier ⊆ U.carrier :=
+lemma subset_of_mem_openRcNhds {K : Compacts X} {U : Opens X} (h : U ∈ K.openRcNhds) : K.carrier ⊆ U.carrier :=
   fun _ hx => h.right hx
 
-lemma compactclosure_of_mem_openrelativelycompactNhds {K : Compacts X} {U : Opens X} (h : U ∈ K.openrelativelycompactNhds) : IsCompact (closure U.carrier) := h.left
+lemma compactclosure_of_mem_openRcNhds {K : Compacts X} {U : Opens X} (h : U ∈ K.openRcNhds) : IsCompact (closure U.carrier) := h.left
 
-lemma is_compactNhds_of_isopenrelativelycompactNhds {K : Compacts X} {U : Opens X} (h : U ∈ K.openrelativelycompactNhds) : ⟨closure U.carrier,   compactclosure_of_mem_openrelativelycompactNhds h⟩ ∈ K.compactNhds := by
+lemma is_compactNhds_of_isopenRcNhds {K : Compacts X} {U : Opens X} (h : U ∈ K.openRcNhds) : ⟨closure U.carrier,   compactclosure_of_mem_openRcNhds h⟩ ∈ K.compactNhds := by
   intro
   apply Filter.sets_of_superset
   · apply IsOpen.mem_nhds
     · exact U.is_open'
-    · apply Compacts.subset_of_mem_openrelativelycompactNhds h
+    · apply Compacts.subset_of_mem_openRcNhds h
       exact Subtype.coe_prop _
   · exact subset_closure
 
-def orcNhds_to_compactNhds (K : Compacts X) : K.openrelativelycompactNhds → K.compactNhds := fun U => ⟨_,is_compactNhds_of_isopenrelativelycompactNhds (Subtype.coe_prop U)⟩
+def oRcNhds_to_openNhds (K : Compacts X) : K.openRcNhds → K.openNhds := fun U => ⟨_, U.property.2⟩
 
-lemma mono_orcNhds_to_compactNhds (K : Compacts X) : Monotone K.orcNhds_to_compactNhds := fun _ _ h => closure_mono h
+lemma mono_oRcNhds_to_openNhds (K : Compacts X) : Monotone K.oRcNhds_to_openNhds := fun _ _ h => h
+
+def oRcNhds_to_compactNhds (K : Compacts X) : K.openRcNhds → K.compactNhds := fun U => ⟨_,is_compactNhds_of_isopenRcNhds (Subtype.coe_prop U)⟩
+
+lemma mono_oRcNhds_to_compactNhds (K : Compacts X) : Monotone K.oRcNhds_to_compactNhds := fun _ _ h => closure_mono h
 
 variable [T2Space X] in
-instance (K : Compacts X): IsCodirectedOrder  K.openrelativelycompactNhds where
+instance (K : Compacts X): IsCodirectedOrder  K.openRcNhds where
   directed U1 U2 := by
     use ⟨U1 ⊓ U2, by
       constructor
       apply IsCompact.of_isClosed_subset
       · apply IsCompact.inter
-        apply compactclosure_of_mem_openrelativelycompactNhds
+        apply compactclosure_of_mem_openRcNhds
         exact Subtype.coe_prop U1
-        apply compactclosure_of_mem_openrelativelycompactNhds
+        apply compactclosure_of_mem_openRcNhds
         exact Subtype.coe_prop U2
       · exact isClosed_closure
       · apply closure_inter_subset_inter_closure
       apply le_inf
-      · exact subset_of_mem_openrelativelycompactNhds (Subtype.coe_prop U1)
-      · exact subset_of_mem_openrelativelycompactNhds (Subtype.coe_prop U2)⟩
+      · exact subset_of_mem_openRcNhds (Subtype.coe_prop U1)
+      · exact subset_of_mem_openRcNhds (Subtype.coe_prop U2)⟩
     use Subtype.coe_le_coe.mp  inf_le_left
     use Subtype.coe_le_coe.mp  inf_le_right
 
+instance {K : Compacts X} [T2Space X] [LocallyCompactSpace X]: K.mono_oRcNhds_to_openNhds.functor.Initial := by
+  apply (Monotone.initial_functor_iff _).2
+  intro U
+  obtain ⟨L, h1, h2, h3⟩ := exists_compact_between K.isCompact U.val.isOpen U.property
+  use ⟨⟨interior L, isOpen_interior⟩, ⟨IsCompact.of_isClosed_subset h1 isClosed_closure
+          (closure_minimal interior_subset (IsCompact.isClosed h1)), h2⟩⟩
+  apply Set.Subset.trans interior_subset h3
 
-instance {K : Compacts X} [T2Space X]: Functor.Initial K.mono_orcNhds_to_compactNhds.functor := by
+instance {K : Compacts X} [T2Space X] : K.mono_oRcNhds_to_compactNhds.functor.Initial := by
   apply (Monotone.initial_functor_iff _).2
   intro L
   obtain ⟨U, h1, h2⟩ := exists_open_nhds_sub_compact_nhds L
@@ -109,15 +120,26 @@ end TopologicalSpace.Compacts
 
 namespace TopologicalSpace.Opens
 
-def compactsInsd (U : Opens X) : Set (Compacts X) := setOf (fun K ↦ K.carrier ⊆ U.carrier)
+def compactInsd (U : Opens X) : Set (Compacts X) := setOf (fun K ↦ K.carrier ⊆ U.carrier)
 
 end TopologicalSpace.Opens
 
 namespace  Subtype
 
-def toOpenNhds {U : Opens X } (K : U.compactsInsd) : (K.val).openNhds := ⟨U, K.property⟩
+def toOpenNhds {U : Opens X } (K : U.compactInsd) : (K.val).openNhds := ⟨U, K.property⟩
+
+def toCompactInsd {K : Compacts X} (U : K.openNhds) : (U.val).compactInsd := ⟨K, U.property⟩
 
 end Subtype
+
+def Quiver.Hom.baseChangeOpenNhds {K L : Compacts X} (h : K ⟶ L) : L.openNhds → K.openNhds := fun ⟨U,hU⟩ => ⟨U, fun _ hx => Set.mem_of_subset_of_mem hU (leOfHom h hx)⟩
+
+lemma monoBaseChangeOpenNhds {K L : Compacts X} (h : K ⟶ L) : Monotone <| h.baseChangeOpenNhds := fun  _ _ hUV _ hx => SetLike.mem_coe.mpr (hUV hx)
+
+def Quiver.Hom.baseChangeCompactInsd {U V : Opens X} (h : U ⟶ V) : U.compactInsd → V.compactInsd := fun ⟨K,hK⟩ => ⟨K, fun _ hx => by
+  apply Set.mem_of_subset_of_mem (leOfHom h) (hK hx)⟩
+
+lemma monoBaseChangeCompactInsd {U V : Opens X} (h : U ⟶ V) : Monotone <| h.baseChangeCompactInsd := fun  _ _ hKL _ hx => SetLike.mem_coe.mpr (hKL hx)
 
 
 

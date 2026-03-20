@@ -20,6 +20,7 @@ variable (limF : Cone F) (colimF : Cocone F.flip) (colimLimF : Cocone limF.pt) (
 
 variable (hLimF : IsLimit limF) (hColimF : IsColimit colimF) (hColimLimF : IsColimit colimLimF) (hLimColimF : IsLimit limColimF)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For any j, the natural transformation from F(j) to colimF.pt(j)-/
 @[simps]
 def FjToColimFj (j : J) : F.obj j ⟶ (Functor.const K).obj (colimF.pt.obj j) where
@@ -35,6 +36,7 @@ def FjToColimFj (j : J) : F.obj j ⟶ (Functor.const K).obj (colimF.pt.obj j) wh
 @[simps]
 def CoconeOverColimFj (j : J) : Cocone limF.pt := ⟨ colimF.pt.obj j, limF.π.app j ≫ ( FjToColimFj _ _ )⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation involved in ConeOverColimLimF-/
 @[simps]
 def ConeOverColimLimFπ : (Functor.const J).obj colimLimF.pt ⟶ colimF.pt where
@@ -88,6 +90,7 @@ def IsoCoconeToIsoPt {F : J ⥤ C} {s t : Cocone F} (h : s ≅ t) : s.pt ≅ t.p
 It's composition of (colimitLimitIso F) and the canonicals isomorphisms-/
 noncomputable def limColimFPtIsoColimLimFPt : limColimF.pt ≅ colimLimF.pt := (IsoConeToIsoPt (IsLimit.uniqueUpToIso hLimColimF (limit.isLimit colimF.pt)) ≪≫ HasLimit.isoOfNatIso ( IsoCoconeToIsoPt (IsColimit.uniqueUpToIso hColimF (colimit.isColimit F.flip))) ≪≫ (colimitLimitIso F).symm ≪≫ HasColimit.isoOfNatIso ( IsoConeToIsoPt (IsLimit.uniqueUpToIso hLimF (limit.isLimit F))).symm ≪≫ IsoCoconeToIsoPt (IsColimit.uniqueUpToIso hColimLimF (colimit.isColimit limF.pt)).symm)
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def IsLimitConeOfColimF : IsLimit (ConeOverColimLimF _ colimF colimLimF (hColimLimF) ) where
   lift s := hLimColimF.lift s ≫ (limColimFPtIsoColimLimFPt _ _ _ _ hLimF hColimF hColimLimF hLimColimF).hom
   fac s j := by

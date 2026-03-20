@@ -25,6 +25,7 @@ instance : Category (pinK_cat p) := ObjectProperty.FullSubcategory.category (pin
 @[simps!]
 def Fres : (pinK_cat p)ᵒᵖ ⥤ C := (ObjectProperty.ι (pinK p)).op.comp F
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor that send a K-presheaf to it's stalk in p-/
 @[simps]
 def KstalkFunctor : ((Compacts X)ᵒᵖ ⥤ C) ⥤ C where
@@ -89,6 +90,7 @@ def FpisCol : IsColimit (Fp p F) where
     rw [← F.map_id]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--The cone morphism from the stalk at p tp the cone with point F(p)-/
 @[simps]
 def StalkToP : (colimit.cocone _ ) ⟶ (Fp p F) where
@@ -96,11 +98,13 @@ def StalkToP : (colimit.cocone _ ) ⟶ (Fp p F) where
 
 instance IsIsoStalkToP : IsIso (StalkToP C p F) := IsColimit.hom_isIso ( colimit.isColimit _ ) (FpisCol _ _ _ ) _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical natural transformation from the stalk functor to the functor evaluation in p-/
 @[simps]
 def StalkToPFunc : (KstalkFunctor p ) ⟶ (EvalInP C p )  where
   app _ :=  (StalkToP C p _ ).hom
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsIso (StalkToPFunc C p):= by
   apply ( NatTrans.isIso_iff_isIso_app _).2
   intro _

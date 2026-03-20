@@ -135,6 +135,7 @@ def repCanO (a : A) (x : i.obj a) : repObj iaSubC ((iaSubC.i a).obj x) where
   rep := eqToIso rfl
 
 /- If the representation r is a lifting of the representation s then the morphism limit.π _ ≫ limit.π _ is the same for r and s -/
+set_option backward.isDefEq.respectTransparency false in
 omit [∀ (a : A), HasLimitsOfSize.{v3, u3, v4, u4} ↑(i.obj a)] [HasLimitsOfSize.{v2, u2, v3, u3} D] in
 lemma limLimIndepOfLift {x : C}  (r s : repObj iaSubC x) (l : lifting iaSubC r s) : limit.π (limFia iaSubC FcupIa ) (op r.a) ≫ limit.π ((F iaSubC FcupIa).i r.a) r.ia ≫ FcupIa.map r.rep.hom = limit.π (limFia iaSubC FcupIa ) (op s.a) ≫ limit.π ((F iaSubC FcupIa).i s.a) s.ia ≫ FcupIa.map s.rep.hom := by
 
@@ -156,7 +157,7 @@ omit [∀ (a : A), HasLimitsOfSize.{v3, u3, v4, u4} ↑(i.obj a)] [HasLimitsOfSi
 theorem limLimIndep {x : C}  (r s : repObj iaSubC x) : limit.π (limFia iaSubC FcupIa ) (op r.a) ≫ limit.π ((F iaSubC FcupIa).i r.a) r.ia ≫ FcupIa.map r.rep.hom = limit.π (limFia iaSubC FcupIa ) (op s.a) ≫ limit.π ((F iaSubC FcupIa).i s.a) s.ia ≫ FcupIa.map s.rep.hom := Eq.trans (limLimIndepOfLift iaSubC FcupIa r (repLifting r s).fst (repLifting r s).snd.1)
       (Eq.symm (limLimIndepOfLift iaSubC FcupIa s (repLifting r s).fst (repLifting r s).snd.2))
 
-
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation involved in limLimFIaConeFcupIa-/
 @[simps]
 def limLimFiaConeFcupIaπ : (const C).obj (limit (limFia iaSubC FcupIa)) ⟶ FcupIa where
@@ -190,6 +191,7 @@ def limLimFiaConeFcupIa : Cone FcupIa where
   pt := limit (limFia iaSubC FcupIa )
   π := limLimFiaConeFcupIaπ iaSubC FcupIa repO repH repLifting
 
+set_option backward.isDefEq.respectTransparency false in
 /--The natural transformation involved in fCupIaConeToFiaCone-/
 @[simps]
 def fCupIaConeToFiaConeπ (s : Cone FcupIa) : (const (i.obj a)).obj s.pt ⟶ (F iaSubC FcupIa).i a where
@@ -203,6 +205,7 @@ def fCupIaConeToFiaCone (s : Cone FcupIa) : Cone ((F iaSubC FcupIa).i a) where
   pt := s.pt
   π := fCupIaConeToFiaConeπ iaSubC FcupIa a s
 
+set_option backward.isDefEq.respectTransparency false in
 /--The natural transformation involved in fCupIaConeToLimFiaCone-/
 @[simps]
 def fCupIaConeToLimFiaConeπ (s : Cone FcupIa) : (const Aᵒᵖ).obj s.pt ⟶ limFia iaSubC FcupIa where
@@ -218,7 +221,7 @@ def fCupIaConeToLimFiaCone (s : Cone FcupIa ) : Cone (limFia iaSubC FcupIa) wher
   pt := s.pt
   π := fCupIaConeToLimFiaConeπ iaSubC FcupIa s
 
-
+set_option backward.isDefEq.respectTransparency false in
 /-- The evidence that the limit of limit is a limit -/
 @[simps]
 def limLimIsLim : IsLimit (limLimFiaConeFcupIa iaSubC FcupIa repO repH repLifting) where
@@ -353,6 +356,7 @@ def repHEx {U V : (KsubU_cat K trueCond)ᵒᵖ} (f : U ⟶ V) : repHom (iaSubCEx
 omit [LocallyCompactSpace X] [T2Space X] in
 lemma iaExEqU {U : (KsubU_cat K trueCond)ᵒᵖ} (r : repObj (iaSubCEx K) U) : (unop r.ia).obj = (unop U).obj := antisymm (leOfHom (r.rep.inv.unop.hom)) (leOfHom (r.rep.hom.unop.hom))
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def resupEx {U : (KsubU_cat K trueCond)ᵒᵖ}  (r s : repObj (iaSubCEx K) U) : (repObj (iaSubCEx K) U) where
   a := op <| InfSupSupK K r.a.unop s.a.unop
@@ -373,6 +377,7 @@ def resupEx {U : (KsubU_cat K trueCond)ᵒᵖ}  (r s : repObj (iaSubCEx K) U) : 
     apply ObjectProperty.FullSubcategory.ext
     simp_all only [iaSubCEx, iaSubCExi, iaExEqU K r, iaExEqU K s, le_refl, inf_of_le_left]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def liftingToSupLeft {U : (KsubU_cat K trueCond)ᵒᵖ}  (r s : repObj (iaSubCEx K) U) : lifting (iaSubCEx K) r (resupEx K r s) where
   hom := op <| InfInLeftSSK K (unop r.a) (unop s.a)
@@ -385,6 +390,7 @@ def liftingToSupLeft {U : (KsubU_cat K trueCond)ᵒᵖ}  (r s : repObj (iaSubCEx
     simp only [iaSubCEx, iaSubCExi]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def liftingToSupRight {U : (KsubU_cat K trueCond)ᵒᵖ}  (r s : repObj (iaSubCEx K) U) : lifting (iaSubCEx K) s (resupEx K r s) where
   hom := op <| InfInRightSSK K (unop r.a) (unop s.a)

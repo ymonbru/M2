@@ -23,6 +23,7 @@ def FUInterWC : (KsubU_cat K1 × KsubU_cat K2 ) ᵒᵖ ⥤ (WalkingCospan ⥤ C)
 @[simps!]
 def colimFUInterWCPt : WalkingCospan ⥤ C := cospan (colimMap ( Functor.whiskerRight (jLToJO K1 K2) F)) (colimMap ( Functor.whiskerRight (jRToJO K1 K2) F))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- the natural transformation that makes colimFUInterWCPt a Cocone over FUInterWC-/
 @[simps]
 def colimFUInterWCι : FUInterWC F K1 K2 ⟶ (Functor.const (KsubU_cat K1 × KsubU_cat K2 )ᵒᵖ).obj (colimFUInterWCPt F K1 K2) where
@@ -82,6 +83,7 @@ def colimFUInterWCDescCoconeX (j : (KsubU_cat K1 × KsubU_cat K2)ᵒᵖ ⥤ (Ope
   pt := s.pt.obj x
   ι := colimFUInterWCDescCoconeXι F K1 K2 s x j h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The desc morphism from colimFUInterWCPt to the point of a cocone over FUInterWC-/
 @[simps!]
 def colimFUInterWCDesc : colimFUInterWCPt F K1 K2 ⟶ s.pt := by
@@ -114,6 +116,7 @@ def colimFUInterWCDesc : colimFUInterWCPt F K1 K2 ⟶ s.pt := by
     rw [← Category.assoc, ← F.map_comp, ← Category.assoc, ← F.map_comp]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The evidence that colimFUInterWC is a colimit.-/
 @[simps]
 def colimFUInterWCColim : IsColimit (colimFUInterWC F K1 K2) where
@@ -168,6 +171,7 @@ def colimFUInterWCColim : IsColimit (colimFUInterWC F K1 K2) where
           simp
         rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation sending (K1 ⊆ U1, K2 ⊆ U2 ) to (F(U1 ∪ U2) ⟶ F( Ux)), Ux being U1, U2 or U1 ∩ U2 acording to the value of x (.left, .right, .one)-/
 @[simps]
 def JCupFToFUInterWC : jCup K1 K2 ⋙ F ⟶ (FUInterWC F K1 K2).flip.obj x where
@@ -202,29 +206,29 @@ open TopCat
 
 variable (F : Sheaf C (of X))
 
-variable (s : Cone (FUInterWC F.val K1 K2).flip) (U : (KsubU_cat K1 × KsubU_cat K2 )ᵒᵖ)
+variable (s : Cone (FUInterWC F.obj K1 K2).flip) (U : (KsubU_cat K1 × KsubU_cat K2 )ᵒᵖ)
 
 /--For any U = (K1 ⊆ U1, K2 ⊆ U2), translate a cone over FUInterWC ( ie U ⥤ the diagram F(U1) → F(U1 ∩ U2) ← F(U2)) as a cone over F(U1) → F(U1 ∩ U2) ← F(U2)). It's basicaly "évaluating the cocone" -/
 @[simps]
-def FUInterWCConeToPullbackCone (U : (KsubU_cat K1 × KsubU_cat K2)ᵒᵖ) : PullbackCone (F.val.map (homOfLE inf_le_left : U.unop.1.obj ⊓ U.unop.2.obj ⟶ _).op) (F.val.map (homOfLE inf_le_right).op) where
+def FUInterWCConeToPullbackCone (U : (KsubU_cat K1 × KsubU_cat K2)ᵒᵖ) : PullbackCone (F.obj.map (homOfLE inf_le_left : U.unop.1.obj ⊓ U.unop.2.obj ⟶ _).op) (F.obj.map (homOfLE inf_le_right).op) where
   pt := s.pt.obj U
   π := by
     refine natTransWcspFunc _ _ ?_ ?_ ?_ ?_ ?_
     · exact (s.π.app .left).app U
     · exact (s.π.app .right).app U
     · exact (s.π.app .one).app U
-    · have : s.π.app .one = s.π.app .left ≫ (FUInterWC F.val K1 K2).flip.map WalkingCospan.Hom.inl:= by
+    · have : s.π.app .one = s.π.app .left ≫ (FUInterWC F.obj K1 K2).flip.map WalkingCospan.Hom.inl:= by
         rw [← s.π.naturality (WalkingCospan.Hom.inl)]
         simp
       rw [this]
-      suffices 𝟙 (s.pt.obj U) ≫ (s.π.app .left).app U ≫ F.val.map (op (homOfLE _)) = (s.π.app .left).app U ≫ F.val.map (homOfLE _).op by dsimp; assumption
+      suffices 𝟙 (s.pt.obj U) ≫ (s.π.app .left).app U ≫ F.obj.map (op (homOfLE _)) = (s.π.app .left).app U ≫ F.obj.map (homOfLE _).op by dsimp; assumption
       rw [Category.id_comp]
       rfl
-    · have : s.π.app .one = s.π.app .right ≫ (FUInterWC F.val K1 K2).flip.map WalkingCospan.Hom.inr:= by
+    · have : s.π.app .one = s.π.app .right ≫ (FUInterWC F.obj K1 K2).flip.map WalkingCospan.Hom.inr:= by
         rw [← s.π.naturality (WalkingCospan.Hom.inr)]
         simp
       rw [this]
-      suffices 𝟙 (s.pt.obj U) ≫ (s.π.app .right).app U ≫ F.val.map (op (homOfLE _)) = (s.π.app .right).app U ≫ F.val.map (homOfLE _).op by dsimp; assumption
+      suffices 𝟙 (s.pt.obj U) ≫ (s.π.app .right).app U ≫ F.obj.map (op (homOfLE _)) = (s.π.app .right).app U ≫ F.obj.map (homOfLE _).op by dsimp; assumption
       rw [Category.id_comp]
       rfl
 
@@ -246,9 +250,11 @@ lemma bidule : f x = (match x with
       | .left => rfl
       | .right => rfl
       | .one => rfl-/
+
+set_option backward.isDefEq.respectTransparency false in
 /-- The lifting morphism from the limFUInterWCFlipLim evidence-/
 @[simps]
-def limFUInterWCFlipLimLift : s.pt ⟶ jCup K1 K2 ⋙ F.val where
+def limFUInterWCFlipLimLift : s.pt ⟶ jCup K1 K2 ⋙ F.obj where
   app U := (Sheaf.isLimitPullbackCone F U.unop.1.obj U.unop.2.obj).lift (FUInterWCConeToPullbackCone K1 K2 F s U)
   naturality {U V } f := by
     let h := (Sheaf.isLimitPullbackCone F V.unop.1.obj V.unop.2.obj).uniq ((FUInterWCConeToPullbackCone K1 K2 F s V).extend (s.pt.map f))
@@ -271,30 +277,31 @@ def limFUInterWCFlipLimLift : s.pt ⟶ jCup K1 K2 ⋙ F.val where
       match x with
         | .left =>
           have : (F.isLimitPullbackCone (unop U).1.obj (unop U).2.obj).lift (FUInterWCConeToPullbackCone K1 K2 F s U) ≫ (F.interUnionPullbackCone (unop U).1.obj (unop U).2.obj).fst = (s.π.app .left).app U := (Sheaf.isLimitPullbackCone F U.unop.1.obj U.unop.2.obj).fac (FUInterWCConeToPullbackCone K1 K2 F s U) .left
-          suffices (F.isLimitPullbackCone (unop U).1.obj (unop U).2.obj).lift (FUInterWCConeToPullbackCone K1 K2 F s U) ≫ F.val.map (op (homOfLE _)) ≫ (F.interUnionPullbackCone (unop V).1.obj (unop V).2.obj).fst = (s.π.app .left).app U ≫ F.val.map (op f.unop.1.hom) by simpa
-          rw [←  this, Category.assoc, Sheaf.interUnionPullbackCone_fst, Sheaf.interUnionPullbackCone_fst, ← F.val.map_comp, ← F.val.map_comp ]
+          suffices (F.isLimitPullbackCone (unop U).1.obj (unop U).2.obj).lift (FUInterWCConeToPullbackCone K1 K2 F s U) ≫ F.obj.map (op (homOfLE _)) ≫ (F.interUnionPullbackCone (unop V).1.obj (unop V).2.obj).fst = (s.π.app .left).app U ≫ F.obj.map (op f.unop.1.hom) by simpa
+          rw [←  this, Category.assoc, Sheaf.interUnionPullbackCone_fst, Sheaf.interUnionPullbackCone_fst, ← F.obj.map_comp, ← F.obj.map_comp ]
           rfl
         | .right =>
           have : (F.isLimitPullbackCone (unop U).1.obj (unop U).2.obj).lift (FUInterWCConeToPullbackCone K1 K2 F s U) ≫ (F.interUnionPullbackCone (unop U).1.obj (unop U).2.obj).snd = (s.π.app .right).app U := (Sheaf.isLimitPullbackCone F U.unop.1.obj U.unop.2.obj).fac (FUInterWCConeToPullbackCone K1 K2 F s U) .right
 
-          suffices (F.isLimitPullbackCone (unop U).1.obj (unop U).2.obj).lift (FUInterWCConeToPullbackCone K1 K2 F s U) ≫ F.val.map (op (homOfLE _)) ≫ (F.interUnionPullbackCone (unop V).1.obj (unop V).2.obj).snd = (s.π.app .right).app U ≫ F.val.map (op f.unop.2.hom) by simpa
-          rw [←  this, Category.assoc, Sheaf.interUnionPullbackCone_snd, Sheaf.interUnionPullbackCone_snd, ← F.val.map_comp, ← F.val.map_comp ]
+          suffices (F.isLimitPullbackCone (unop U).1.obj (unop U).2.obj).lift (FUInterWCConeToPullbackCone K1 K2 F s U) ≫ F.obj.map (op (homOfLE _)) ≫ (F.interUnionPullbackCone (unop V).1.obj (unop V).2.obj).snd = (s.π.app .right).app U ≫ F.obj.map (op f.unop.2.hom) by simpa
+          rw [←  this, Category.assoc, Sheaf.interUnionPullbackCone_snd, Sheaf.interUnionPullbackCone_snd, ← F.obj.map_comp, ← F.obj.map_comp ]
           rfl
         | .one =>
-          have : (F.isLimitPullbackCone (unop U).1.obj (unop U).2.obj).lift (FUInterWCConeToPullbackCone K1 K2 F s U) ≫ (F.interUnionPullbackCone (unop U).1.obj (unop U).2.obj).fst ≫ F.val.map (homOfLE (inf_le_left : (unop U).1.obj ⊓ (unop U).2.obj ≤ (unop U).1.obj)).op = (s.π.app WalkingCospan.one).app U :=  (Sheaf.isLimitPullbackCone F U.unop.1.obj U.unop.2.obj).fac (FUInterWCConeToPullbackCone K1 K2 F s U) .one
+          have : (F.isLimitPullbackCone (unop U).1.obj (unop U).2.obj).lift (FUInterWCConeToPullbackCone K1 K2 F s U) ≫ (F.interUnionPullbackCone (unop U).1.obj (unop U).2.obj).fst ≫ F.obj.map (homOfLE (inf_le_left : (unop U).1.obj ⊓ (unop U).2.obj ≤ (unop U).1.obj)).op = (s.π.app WalkingCospan.one).app U :=  (Sheaf.isLimitPullbackCone F U.unop.1.obj U.unop.2.obj).fac (FUInterWCConeToPullbackCone K1 K2 F s U) .one
 
-          suffices (F.isLimitPullbackCone (unop U).1.obj (unop U).2.obj).lift (FUInterWCConeToPullbackCone K1 K2 F s U) ≫ F.val.map (op (homOfLE _)) ≫ (F.interUnionPullbackCone (unop V).1.obj (unop V).2.obj).fst ≫ F.val.map (homOfLE (inf_le_left : (unop V).1.obj ⊓ (unop V).2.obj ≤ (unop V).1.obj)).op = (s.π.app WalkingCospan.one).app U ≫ F.val.map (op (homOfLE _)) by simpa
-          rw [← this, Category.assoc, Sheaf.interUnionPullbackCone_fst, Sheaf.interUnionPullbackCone_fst, ← F.val.map_comp,← F.val.map_comp, ← F.val.map_comp, ← F.val.map_comp ]
+          suffices (F.isLimitPullbackCone (unop U).1.obj (unop U).2.obj).lift (FUInterWCConeToPullbackCone K1 K2 F s U) ≫ F.obj.map (op (homOfLE _)) ≫ (F.interUnionPullbackCone (unop V).1.obj (unop V).2.obj).fst ≫ F.obj.map (homOfLE (inf_le_left : (unop V).1.obj ⊓ (unop V).2.obj ≤ (unop V).1.obj)).op = (s.π.app WalkingCospan.one).app U ≫ F.obj.map (op (homOfLE _)) by simpa
+          rw [← this, Category.assoc, Sheaf.interUnionPullbackCone_fst, Sheaf.interUnionPullbackCone_fst, ← F.obj.map_comp,← F.obj.map_comp, ← F.obj.map_comp, ← F.obj.map_comp ]
           rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The evidence that for a sheaf F,  U : (K1 ⊆ U1, K2 ⊆ U2 ) ⥤ F(U1 ∪ U2 ) is (as a cone, cf limFUInterWCFlip) a limit (of U ⥤ F(U1) → F(U1 ∩ U2) ← F(U2))
 It is the case because for F a sheaf F(U1 ∪ U2) is the limit of F(U1) → F(U1 ∩ U2) ← F(U2)-/
 @[simps]
-def limFUInterWCFlipLim : IsLimit (limFUInterWCFlip F.val K1 K2) where
+def limFUInterWCFlipLim : IsLimit (limFUInterWCFlip F.obj K1 K2) where
   lift s := limFUInterWCFlipLimLift K1 K2 F s
   fac s x:= by
     ext U
-    suffices (F.isLimitPullbackCone (unop U).1.obj (unop U).2.obj).lift (FUInterWCConeToPullbackCone K1 K2 F s U) ≫ F.val.map (op (homOfLE _)) =  (s.π.app x).app U by simpa
+    suffices (F.isLimitPullbackCone (unop U).1.obj (unop U).2.obj).lift (FUInterWCConeToPullbackCone K1 K2 F s U) ≫ F.obj.map (op (homOfLE _)) =  (s.π.app x).app U by simpa
 
     match x with
       | .left =>
@@ -308,11 +315,11 @@ def limFUInterWCFlipLim : IsLimit (limFUInterWCFlip F.val K1 K2) where
         rw [← this, Sheaf.interUnionPullbackCone_snd]
         rfl
       | .one =>
-        have : (F.isLimitPullbackCone (unop U).1.obj (unop U).2.obj).lift (FUInterWCConeToPullbackCone K1 K2 F s U) ≫ (F.interUnionPullbackCone (unop U).1.obj (unop U).2.obj).fst ≫ F.val.map (homOfLE (inf_le_left : (unop U).1.obj ⊓ (unop U).2.obj ≤ (unop U).1.obj)).op = (s.π.app WalkingCospan.one).app U :=  (Sheaf.isLimitPullbackCone F U.unop.1.obj U.unop.2.obj).fac (FUInterWCConeToPullbackCone K1 K2 F s U) .one
+        have : (F.isLimitPullbackCone (unop U).1.obj (unop U).2.obj).lift (FUInterWCConeToPullbackCone K1 K2 F s U) ≫ (F.interUnionPullbackCone (unop U).1.obj (unop U).2.obj).fst ≫ F.obj.map (homOfLE (inf_le_left : (unop U).1.obj ⊓ (unop U).2.obj ≤ (unop U).1.obj)).op = (s.π.app WalkingCospan.one).app U :=  (Sheaf.isLimitPullbackCone F U.unop.1.obj U.unop.2.obj).fac (FUInterWCConeToPullbackCone K1 K2 F s U) .one
 
-        rw [← this, Sheaf.interUnionPullbackCone_fst, ← F.val.map_comp]
+        rw [← this, Sheaf.interUnionPullbackCone_fst, ← F.obj.map_comp]
         rfl
-  uniq s (m : s.pt ⟶ jCup K1 K2 ⋙ F.val) hm:= by
+  uniq s (m : s.pt ⟶ jCup K1 K2 ⋙ F.obj) hm:= by
     ext U
     apply (F.isLimitPullbackCone (unop U).1.obj (unop U).2.obj).uniq (FUInterWCConeToPullbackCone K1 K2 F s U)
     intro x
@@ -326,23 +333,23 @@ def limFUInterWCFlipLim : IsLimit (limFUInterWCFlip F.val K1 K2) where
         rw [Sheaf.interUnionPullbackCone_snd, ← hm]
         rfl
       | .one =>
-        suffices m.app U ≫ (F.interUnionPullbackCone (unop U).1.obj (unop U).2.obj).fst ≫ F.val.map (homOfLE _).op =
+        suffices m.app U ≫ (F.interUnionPullbackCone (unop U).1.obj (unop U).2.obj).fst ≫ F.obj.map (homOfLE _).op =
   (s.π.app WalkingCospan.one).app U by simpa
-        rw [Sheaf.interUnionPullbackCone_fst, ← hm, ← F.val.map_comp]
+        rw [Sheaf.interUnionPullbackCone_fst, ← hm, ← F.obj.map_comp]
         rfl
 
 /-- A choice of limit of the diagram U ⥤ colimit_{K1 ⊆ U}F(U) → colimit_{K1 ∩ K2 ⊆ U}F(U) ← colimit_{K2 ⊆ U} F(U)-/
-def limColimFUCap : Cone ((colimFUInterWC F.val K1 K2 ).pt) := limit.cone ((colimFUInterWC F.val K1 K2 ).pt)
+def limColimFUCap : Cone ((colimFUInterWC F.obj K1 K2 ).pt) := limit.cone ((colimFUInterWC F.obj K1 K2 ).pt)
 
-variable (s : Cone (colimFUInterWC F.val K1 K2).pt)
+variable (s : Cone (colimFUInterWC F.obj K1 K2).pt)
 
 /-- The evidence that limColimFUCap is a limit-/
-def limColimFUCapIsLim : IsLimit (limColimFUCap K1 K2 F ) := limit.isLimit ((colimFUInterWC F.val K1 K2 ).pt)
+def limColimFUCapIsLim : IsLimit (limColimFUCap K1 K2 F ) := limit.isLimit ((colimFUInterWC F.obj K1 K2 ).pt)
 
 /-- A choice of a colimit of the diagram U ⥤ F( U1 ∪ U.2)-/
-def colimLimFUInterWCFlip : Cocone ((limFUInterWCFlip F.val K1 K2).pt) := colimit.cocone (limFUInterWCFlip F.val K1 K2).pt
+def colimLimFUInterWCFlip : Cocone ((limFUInterWCFlip F.obj K1 K2).pt) := colimit.cocone (limFUInterWCFlip F.obj K1 K2).pt
 
 /-- The evidence that colimLimFUInterWCFlip is a colimit-/
-def colimLimFUInterWCFlipIsColim : IsColimit (colimLimFUInterWCFlip K1 K2 F) := colimit.isColimit (limFUInterWCFlip F.val K1 K2).pt
+def colimLimFUInterWCFlipIsColim : IsColimit (colimLimFUInterWCFlip K1 K2 F) := colimit.isColimit (limFUInterWCFlip F.obj K1 K2).pt
 
 #lint

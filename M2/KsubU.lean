@@ -64,10 +64,10 @@ variable (U1 U2 : KsubU_cat K)
 #check U1 ⊓ U2-/
 
 /-- The morphism  U1 ⊓ U2 ⟶ U1 for elements of (KsubU_cat K P)-/
-def InfInLeftKSU (U1 U2 : KsubU_cat K P): (InfKsubU K axiomP U1 U2) ⟶ U1:= ⟨homOfLE (by simp)⟩
+def InfInLeftKSU (U1 U2 : KsubU_cat K P): (InfKsubU K axiomP U1 U2) ⟶ U1:= ⟨homOfLE inf_le_left⟩
 
 /-- The morphism U1 ⊓ U2 ⟶ U2 for elements of (KsubU_cat K P)-/
-def InfInRightKSU (U1 U2 : KsubU_cat K P ): (InfKsubU K axiomP U1 U2) ⟶ U2 := ⟨homOfLE (by simp)⟩
+def InfInRightKSU (U1 U2 : KsubU_cat K P ): (InfKsubU K axiomP U1 U2) ⟶ U2 := ⟨homOfLE inf_le_right⟩
 
 /-- The functor that send the pair (K1 ⊆ U1, K2 ⊆ U2) to K1 ⊓ K2 ⊆ U1 ∩ U2-/
 @[simps]
@@ -79,7 +79,7 @@ def subK1SubK2toSubK1InterK2 (K1 K2 : Compacts X) [T2Space X]: (KsubU_cat K1) ×
         exact U.2.property.1
         rfl⟩
   map { U V } f := ⟨homOfLE ( by
-    suffices U.1.obj ⊓ U.2.obj ≤ V.1.obj ∧ U.1.obj ⊓ U.2.obj ≤ V.2.obj by simpa
+    suffices U.1.obj ⊓ U.2.obj ≤ V.1.obj ∧ U.1.obj ⊓ U.2.obj ≤ V.2.obj by exact le_inf_iff.mpr this
     exact ⟨Set.Subset.trans inf_le_left (leOfHom f.1.hom), Set.Subset.trans inf_le_right (leOfHom f.2.hom)⟩ )⟩
 
 include axiomP
@@ -349,9 +349,8 @@ instance : (KsubUK1K2ProjCup K1 K2).Initial := by
   · intro U
     use ⟨(K1subK2subU _ (homOfLE (le_sup_left))).obj U, (K1subK2subU _ (homOfLE (le_sup_right))).obj U⟩
     apply Nonempty.intro
-    constructor
-    apply homOfLE
-    simp
+    exact ⟨homOfLE <| sup_le le_rfl le_rfl⟩
+
   · intro _ V _ _
     use V
     use 𝟙 _
@@ -386,19 +385,19 @@ def jCup : (KsubU_cat K1 × KsubU_cat K2 )ᵒᵖ ⥤ (Opens X)ᵒᵖ where
 
 /-- The natural transformation from jLeft to jOne : (K1 ⊆ U1, K2 ⊆ U2) ↦ (U1 ∩ U2 ⟶ U1)   -/
 def jLToJO : (jLeft K1 K2) ⟶ (jOne K1 K2) where
-  app U := op (homOfLE (by simp))
+  app U := op (homOfLE inf_le_left)
 
 /-- The natural transformation from jRight to jOne : (K1 ⊆ U1, K2 ⊆ U2) ↦ (U1 ∩ U2 ⟶ U2)-/
 def jRToJO : (jRight K1 K2) ⟶ (jOne K1 K2) where
-  app U := op (homOfLE (by simp))
+  app U := op (homOfLE inf_le_right)
 
 /-- The natural transformation from jLeft to jOne : (K1 ⊆ U1, K2 ⊆ U2) ↦ (U1 ⟶ U1 ∪ U2)-/
 def jCToJL : (jCup K1 K2) ⟶ (jLeft K1 K2)  where
-  app U := op (homOfLE (by dsimp;simp))
+  app U := op (homOfLE le_sup_left)
 
 /-- The natural transformation from jRight to jOne : (K1 ⊆ U1, K2 ⊆ U2) ↦ (U2 ⟶ U1 ∪ U2)-/
 def jCToJR : (jCup K1 K2) ⟶ (jRight K1 K2) where
-  app U := op (homOfLE (by simp))
+  app U := op (homOfLE le_sup_right)
 
 /-- The equality isomorphism between the two ways defined in the file to see the operation (K1 ⊆ U1, K2 ⊆ U2) ↦ F(U1)-/
 @[simps!]
@@ -463,7 +462,11 @@ instance : Nonempty (RelCN_cat K) := by
 instance : Bot (KsubU_cat (⊥ : Compacts X) relcCond) := by
   apply instBotKsubU_catBotCompacts
   apply Set.Finite.isCompact
-  simp
+  suffices closure (X := X) ↑(⊥ : Opens X) = ∅ by
+    rw [this]
+    apply Set.finite_empty
+  rw[closure_empty_iff]
+  rfl
 
 def IsInitialKsubUBotRc : IsInitial (⊥ :(KsubU_cat (⊥ : Compacts X) relcCond)) := by
   apply IsInitialKsubUBot

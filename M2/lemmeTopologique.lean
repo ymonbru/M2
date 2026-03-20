@@ -1,4 +1,3 @@
-import Mathlib
 import M2.KsubU
 
 open Topology Set
@@ -31,7 +30,7 @@ lemma existsIntermedFrepKAndL :  Nonempty ({ K' // IsCompact K' ∧ K.carrier �
 
 /-- a Compact K' such that K ⊆⊆  and such that f⁻¹ K' ⊆ L-/
 @[simps]
-def existsIntermedFrepKAndLCompact : supSupK_cat K where
+noncomputable def existsIntermedFrepKAndLCompact : supSupK_cat K where
   obj := by
     let ⟨K', hK'⟩ := Classical.choice (existsIntermedFrepKAndL closed_f K L hKL)
 
@@ -47,9 +46,10 @@ def existsIntermedFrepKAndLCompact : supSupK_cat K where
 /-- The specification of existsIntermedFrepKAndLCompact-/
 def existsIntermedFrepKAndLSpec : f ⁻¹' ( existsIntermedFrepKAndLCompact closed_f K L hKL).obj.carrier ⊆ L := (Classical.choice (existsIntermedFrepKAndL closed_f K L hKL)).2.2.2
 
+
 /-- an open  U such that K ⊆ U  and such that f⁻¹ U ⊆ L-/
 @[simps]
-def existsIntermedFrepKAndLOpen : KsubU_cat K trueCond where
+noncomputable def existsIntermedFrepKAndLOpen : KsubU_cat K trueCond where
   obj :=
     let ⟨K', hK'⟩ := Classical.choice (existsIntermedFrepKAndL closed_f K L hKL);
     ⟨interior K', isOpen_interior⟩
@@ -58,3 +58,5 @@ def existsIntermedFrepKAndLOpen : KsubU_cat K trueCond where
     constructor
     · exact hK'.2.1
     · rfl
+
+#min_imports

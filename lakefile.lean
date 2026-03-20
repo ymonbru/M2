@@ -11,8 +11,6 @@ package «M2» where
 
 --require mathlib from git "https://github.com/leanprover-community/mathlib4.git"
 
-require "leanprover-community" / "mathlib" @ git "v4.28.0"
-
 
 @[default_target]
 lean_lib «M2» where
@@ -24,3 +22,5 @@ require checkdecls from git "https://github.com/PatrickMassot/checkdecls.git" --
 --meta if get_config? env = some "dev" then
 require «doc-gen4» from git
   "https://github.com/leanprover/doc-gen4" @ "main"
+
+require "leanprover-community" / "mathlib" @ git "v4.29.0-rc6"
