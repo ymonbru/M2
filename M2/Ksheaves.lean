@@ -149,7 +149,7 @@ structure Ksheaf where
   /--A continuity condition that state that a "regular function on K" is defined at the neighbourhood of K-/
   ksh3 : ∀ K : Compacts X, (IsColimit (FLToFK K carrier))
 
-instance :  Category (Ksheaf X C) := InducedCategory.category (·.carrier)
+instance :  Category (Ksheaf X C) := InducedCategory.instCategory (F := fun x => x.carrier)
 
 /-- the forget functor from Ksheaf to K-presheaf-/
 @[simps!]

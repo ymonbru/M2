@@ -1,13 +1,9 @@
-import Mathlib.Topology.Maps.Proper.Basic
-import Mathlib.Topology.Sheaves.Functors
 import M2.alpha_K_sheaf
 import M2.lemmeTopologique
-
 
 universe u v w
 
 open CategoryTheory Limits TopologicalSpace Compacts Opposite Functor TopCat
-
 
 variable {X Y : Type w} [TopologicalSpace X] [T2Space X] [TopologicalSpace Y] [T2Space Y] [LocallyCompactSpace Y]
 
@@ -59,7 +55,7 @@ def preimageResSubSub : supSupK_cat K ⥤ supSupK_cat ((preimageCompact proper_f
       exact hU1 ha
     · intro _ ha
       exact hU2 ha
-  map _ := (preimageCompact proper_f).map _
+  map f := ⟨(preimageCompact proper_f).map f.hom⟩
 
 
 
@@ -72,6 +68,7 @@ instance : (preimageResSubSub proper_f K).Initial := by
       use existsIntermedFrepKAndLCompact closed_f K L.obj.carrier (supSupKtoKsubInt _ L)
 
       apply Nonempty.intro
+      constructor
       apply homOfLE
       exact existsIntermedFrepKAndLSpec closed_f K L.obj.carrier (supSupKtoKsubInt _ L)
     · intro _ U _ _
@@ -106,11 +103,7 @@ def fDownStarFsh (F : Ksheaf X C) : Ksheaf Y C where
 @[simps]
 def KsheafPushforward : (Ksheaf X C ) ⥤ (Ksheaf Y C) where
   obj := fDownStarFsh proper_f
-  map := by
-    intro _ _ τ
-    constructor
-    intro _ _ _
-    apply τ.naturality
+  map τ := ⟨fun _ => τ.hom.app _ ,by simp⟩
 
 /-- The inverse image of a proper map as functor over neighbourhods of a compact K -/
 @[simps]
@@ -121,7 +114,7 @@ def preimageRes : KsubU_cat K trueCond ⥤ KsubU_cat ((preimageCompact proper_f)
     constructor
     exact Set.preimage_mono U.property.1
     rfl
-  map _ := (preimageOpen proper_f).map _
+  map f := ⟨(preimageOpen proper_f).map f.hom⟩
 
 instance : (preimageRes proper_f K).Initial := by
     have :  IsCofilteredOrEmpty (KsubU_cat K trueCond) := by
@@ -143,6 +136,7 @@ instance : (preimageRes proper_f K).Initial := by
       use supSupKToKsubU _ L
 
       apply Nonempty.intro
+      constructor
       apply homOfLE
 
       apply Set.Subset.trans _ (existsIntermedFrepKAndLSpec closed_f K U.obj.carrier this)
@@ -156,6 +150,7 @@ instance : (preimageRes proper_f K).Initial := by
 
 variable (F : (Opens X)ᵒᵖ ⥤ C)
 
+set_option backward.isDefEq.respectTransparency false in
 /--For F a presheaf the natural transformation from f* α* F to α* f* F -/
 @[simps]
 def PushforwardCommAlphaUpF  : ((Presheaf.pushforward C (ofHom ⟨_ , proper_f.toContinuous⟩)).comp AlphaUpStar ).obj F ⟶ ((AlphaUpStar ).comp (fDownStar proper_f)).obj F  where
@@ -197,6 +192,7 @@ instance : IsIso (PushforwardCommAlphaUpF proper_f F) := by
 
 variable (C)
 
+set_option backward.isDefEq.respectTransparency false in
 /--The natural transformation from f* α* to α* f* over presheaves -/
 @[simps]
 def PushforwardCommAlphaUp  : (Presheaf.pushforward C (ofHom ⟨_ , proper_f.toContinuous⟩)).comp AlphaUpStar  ⟶ (AlphaUpStar ).comp (fDownStar proper_f) where
@@ -235,22 +231,25 @@ instance : IsIso (PushforwardCommAlphaUp proper_f C) := by
     exact instIsIsoFunctorOppositeCompactsCarrierOfPushforwardCommAlphaUpF proper_f F
   exact NatIso.isIso_of_isIso_app _
 
-variable [HasForget C] [(forget C).ReflectsIsomorphisms] [HasFiniteLimits C] [∀ (K1 K2 : Compacts X), PreservesColimitsOfShape (KsubU_cat K1 × KsubU_cat K2)ᵒᵖ (forget C)] [∀ (K1 K2 : Compacts Y), PreservesColimitsOfShape (KsubU_cat K1 × KsubU_cat K2)ᵒᵖ (forget C)] [PreservesFiniteLimits (forget C)] [∀ (K1 K2 : Compacts X), Small.{v, w} (KsubU_cat K1 × KsubU_cat K2)ᵒᵖ] [∀ (K1 K2 : Compacts Y), Small.{v, w} (KsubU_cat K1 × KsubU_cat K2)ᵒᵖ]
+variable [AB5OfSize.{w, w, v, u} C]
 
 /--The natural transformation from f* α* to α* f* for sheaves -/
 @[simps]
 def PushforwardCommAlphaUpShHom : (Sheaf.pushforward C (ofHom ⟨_ , proper_f.toContinuous⟩)).comp (shAlphaUpStar Y C) ⟶ (shAlphaUpStar X C).comp (KsheafPushforward proper_f) where
-  app F := (whiskerLeft (Sheaf.forget C (of X)) (PushforwardCommAlphaUp proper_f C)).app F
-  naturality F G τ := by
+  app F := ⟨ (Functor.whiskerLeft (Sheaf.forget C (of X)) (PushforwardCommAlphaUp proper_f C)).app F⟩
+  naturality _ _ τ := by
+    apply InducedCategory.Hom.ext
     apply (PushforwardCommAlphaUp proper_f C).naturality
 
 /--The inverse natural transformation from α* f* to f* α* for sheaves -/
 @[simps]
 def PushforwardCommAlphaUpShInv : (shAlphaUpStar X C).comp (KsheafPushforward proper_f) ⟶ (Sheaf.pushforward C (ofHom ⟨_ , proper_f.toContinuous⟩)).comp (shAlphaUpStar Y C) where
-  app F := (whiskerLeft (Sheaf.forget C (of X)) ( inv (PushforwardCommAlphaUp proper_f C))).app F
-  naturality F G τ := by
+  app F := ⟨(Functor.whiskerLeft (Sheaf.forget C (of X)) ( inv (PushforwardCommAlphaUp proper_f C))).app F⟩
+  naturality _ _ τ := by
+    apply InducedCategory.Hom.ext
     apply (inv (PushforwardCommAlphaUp proper_f C)).naturality
 
+set_option backward.isDefEq.respectTransparency false in
 /--The natural isomorphism between  α* f* and f* α* for -/
 @[simps]
 def PushforwardCommAlphaUpSh : (Sheaf.pushforward C (ofHom ⟨_ , proper_f.toContinuous⟩)).comp (shAlphaUpStar Y C) ≅ (shAlphaUpStar X C).comp (KsheafPushforward proper_f) where
@@ -258,13 +257,18 @@ def PushforwardCommAlphaUpSh : (Sheaf.pushforward C (ofHom ⟨_ , proper_f.toCon
   inv := PushforwardCommAlphaUpShInv proper_f C
   hom_inv_id := by
     ext
-    suffices PushforwardCommAlphaUpF proper_f _ ≫ inv _ = 𝟙 _ by simpa
-    apply (comp_inv_eq_id _ ).mpr
+    apply InducedCategory.Hom.ext
+    simp [PushforwardCommAlphaUpShHom, PushforwardCommAlphaUpShInv]
+    rw [InducedCategory.comp_hom]-- c'est fou qu'il ai besoin d'aide à ce point avec 27 et 28
+    simp
     rfl
   inv_hom_id := by
     ext
-    suffices inv _ ≫ PushforwardCommAlphaUpF proper_f _  = 𝟙 _ by simpa
-    apply (inv_comp_eq_id _ ).mpr
+    apply InducedCategory.Hom.ext
+    simp [PushforwardCommAlphaUpShHom, PushforwardCommAlphaUpShInv]
+    rw [InducedCategory.comp_hom]-- c'est fou qu'il ai besoin d'aide à ce point avec 27 et 28
+    simp
     rfl
 
 #lint
+#min_imports

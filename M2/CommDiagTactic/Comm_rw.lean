@@ -1,5 +1,4 @@
 import Mathlib.Tactic
-import Mathlib.Data.Nat.Defs
 import Lean
 import M2.CommDiagTactic.rw_assoc
 /- Bon alors du coup dans ce fichier l'algo est correct mais est trop loin d'être complet...-/

@@ -30,6 +30,8 @@ variable (V : ∀ K, KsubU_cat K Q → KsubU_cat K P)
 variable (V_spec : ∀ K,∀ U, (V K U).obj.carrier ⊆ U.obj.carrier)
 
 variable [HasColimitsOfSize.{w, w} C] [HasLimitsOfSize.{w, w} C]
+
+set_option backward.isDefEq.respectTransparency false in
 /-- The morphisme from α_P F to α_Q F induced by the inclusion of (KsubU_cat K P) into (KsubU_cat K Q )-/
 @[simps]
 def AlphaUpFPtoQ : (AlphaUpStarF F P) ⟶ (AlphaUpStarF F Q) where
@@ -57,6 +59,7 @@ naturality K L f:= by
   rw [this]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The morphism from α_P to α_Q induced by the natural transformation AlphaUpFPtoQ -/
 @[simps]
 def AlphaUpPPtoQ : (AlphaUpStarP P) ⟶ (@AlphaUpStarP _ _ C _ _ Q) where
@@ -92,6 +95,7 @@ lemma IsFinalOpKsubUPtoQ: Functor.Final (Functor.op (KsubUPtoQ K hpq)) := by
     · intro U
       use ( V K U)
       apply Nonempty.intro
+      constructor
       apply homOfLE
       apply V_spec
     · intro _ U _ _
@@ -178,10 +182,10 @@ lemma V_interior : ∀ U, K.carrier ⊆ interior (Vloc X K U).obj.carrier  := by
 
 /-- The evidence that AlphaUpStarRc X C  and AlphaUpStar are isomorphics -/
 @[simps!]
-def AlphaUpStarToRc :  (@AlphaUpStarRc C _ X _ _ _) ≅ AlphaUpStar :=  IsoAlphaUpPtoQ _ (λ _ _ => rfl) (axiomPrc ) (Vloc X) (V_spec
+def AlphaUpStarToRc :  (@AlphaUpStarRc C _ X _ _) ≅ AlphaUpStar :=  IsoAlphaUpPtoQ _ (λ _ _ => rfl) (axiomPrc ) (Vloc X) (V_spec
 X)
 /-- The data of the adjunction betwee α^*RC and α_* deduced by the previous isomorphism and the adjunction of α^* and α_*-/
 @[simps!]
-def AdjAlphaStarRc : (@AlphaUpStarRc C _ X _ _ _) ⊣ AlphaDownStar := AdjAlphaStar.ofNatIsoLeft (AlphaUpStarToRc C X).symm
+def AdjAlphaStarRc : (@AlphaUpStarRc C _ X _ _) ⊣ AlphaDownStar := AdjAlphaStar.ofNatIsoLeft (AlphaUpStarToRc C X).symm
 
 #lint

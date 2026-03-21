@@ -94,7 +94,7 @@ def consE (l : List Expr) (t : Expr) : TacticM Expr := do
   List.foldrM (fun e l => mkAppM ``List.cons #[e, l]) nil l
 
 /-- An helper to define the Expr coresponding to this type-/
-def mkTypeAux (l : List Cate) : Type v := (Σ a b : Fin l.length, List.get l a ⟶ List.get l b)
+def mkTypeAux [Quiver Cate] (l : List Cate) : Type v := (Σ a b : Fin l.length, List.get l a ⟶ List.get l b)
 
 def replace (a : Expr) (e : Expr) : MetaM Expr := do logInfo m!"{a}";match e with
   |.bvar _ => return e
@@ -166,8 +166,8 @@ elab "BuildDiagram_of" c:term : tactic => do
 
   --Add the diagram to the context
   --evalTactic <| ← `(tactic| set $(mkIdent `J) : Type := $(← Term.exprToSyntax J))
-  evalTactic <| ← `(tactic| set $(mkIdent "QuivJ".toName) := $(← Term.exprToSyntax instQuiverJ))
-  evalTactic <| ← `(tactic| set $(mkIdent "Diag".toName) := $(← Term.exprToSyntax DiagJ))
+  evalTactic <| ← `(tactic| let $(mkIdent "QuivJ".toName) := $(← Term.exprToSyntax instQuiverJ))
+  evalTactic <| ← `(tactic| let $(mkIdent "Diag".toName) := $(← Term.exprToSyntax DiagJ))
 
 variable (C2: Type u) [Quiver.{v+1,u} C2]
 

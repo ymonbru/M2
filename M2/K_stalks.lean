@@ -1,5 +1,5 @@
 import M2.Ksheaves
-
+import M2.forceColimW
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite
 
 universe u v w
@@ -25,6 +25,7 @@ instance : Category (pinK_cat p) := ObjectProperty.FullSubcategory.category (pin
 @[simps!]
 def Fres : (pinK_cat p)ᵒᵖ ⥤ C := (ObjectProperty.ι (pinK p)).op.comp F
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor that send a K-presheaf to it's stalk in p-/
 @[simps]
 def KstalkFunctor : ((Compacts X)ᵒᵖ ⥤ C) ⥤ C where
@@ -54,7 +55,6 @@ def Fp : Cocone (Fres p F) := Cocone.mk _ <| Fp_transNat _ _  ≫ (Functor.const
 
 variable (C)
 
-#check pC p
 /--The functor that evaluate K-présheaves in {p}-/
 @[simps]
 def EvalInP : ((Compacts X)ᵒᵖ ⥤ C ) ⥤ C where
@@ -67,19 +67,20 @@ def pC2 : (pinK_cat p) := ⟨pC p,rfl⟩
 
 /-- The induced morphism from pC2 to any compact of pinK-/
 @[simps!]
-def PsubOfpinK (K:pinK_cat p) : (pC2 p) ⟶ K :=  homOfLE ( by
+def PsubOfpinK (K:pinK_cat p) : (pC2 p) ⟶ K :=  ⟨homOfLE ( by
   intro _ h
   rw [h]
-  exact K.property)
+  exact K.property)⟩
 
 /-- The evidence that the cocone (Fp p F) is a colimit cocone -/
 @[simps]
 def FpisCol : IsColimit (Fp p F) where
   desc s :=  s.ι.app <| op (pC2 _)
   fac s K :=  by
-    suffices (Fres _ _).map _ ≫ s.ι.app _ =
-  s.ι.app _ ≫ ((Functor.const _ ).obj _ ).map (op (PsubOfpinK p K.unop )) by simpa
-    apply s.ι.naturality
+    forceColimW
+    · exact Set.singleton_subset_iff.2 K.unop.property
+    · simp [Fp]
+      rfl
   uniq s m hm := by
     rw [← hm (op _ )]
     suffices (Fp _ _).ι.app (op (pC2 p)) = 𝟙 _ by
@@ -89,6 +90,7 @@ def FpisCol : IsColimit (Fp p F) where
     rw [← F.map_id]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--The cone morphism from the stalk at p tp the cone with point F(p)-/
 @[simps]
 def StalkToP : (colimit.cocone _ ) ⟶ (Fp p F) where
@@ -96,11 +98,13 @@ def StalkToP : (colimit.cocone _ ) ⟶ (Fp p F) where
 
 instance IsIsoStalkToP : IsIso (StalkToP C p F) := IsColimit.hom_isIso ( colimit.isColimit _ ) (FpisCol _ _ _ ) _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical natural transformation from the stalk functor to the functor evaluation in p-/
 @[simps]
 def StalkToPFunc : (KstalkFunctor p ) ⟶ (EvalInP C p )  where
   app _ :=  (StalkToP C p _ ).hom
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsIso (StalkToPFunc C p):= by
   apply ( NatTrans.isIso_iff_isIso_app _).2
   intro _
@@ -127,8 +131,9 @@ def KstalkFunctorSh : (Ksheaf X C) ⥤ C := (inducedFunctor fun (F : Ksheaf X C)
 def EvalInPSh : (Ksheaf X C) ⥤ C:= (inducedFunctor fun (F : Ksheaf X C) ↦ F.carrier ).comp (EvalInP C p)
 
 /--The isomorphism of functor between taking the stalks and evaluating in p for Kshaves-/
-def IsoKstalkEvalPSh : (KstalkFunctorSh C p) ≅ (EvalInPSh C p ) := isoWhiskerLeft _ (IsoKstalkEvalP C p)
+def IsoKstalkEvalPSh : (KstalkFunctorSh C p) ≅ (EvalInPSh C p ) := Functor.isoWhiskerLeft _ (IsoKstalkEvalP C p)
 
 end
 
-#lint
+#min_imports
+--#lint

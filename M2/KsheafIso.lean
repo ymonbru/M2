@@ -19,7 +19,7 @@ def DiagIsoKsh2 : cospan (FtoFInfLeft F K1 K2) (FtoFInfRight F K1 K2) ≅ cospan
   inv := natTransWcspFunc _ _ (τ.inv.app (op K1)) (τ.inv.app (op K2)) (τ.inv.app (op (K1 ⊓ K2))) (by simp [FtoFInfLeft]) (by simp [FtoFInfRight])
 
 @[simps!]
-def CoconeIsoKsh2 : (SquareSuptoInf F K1 K2) ≅ (Cones.postcomposeEquivalence (DiagIsoKsh2 F G τ K1 K2)).inverse.obj (SquareSuptoInf G.carrier K1 K2) where
+def CoconeIsoKsh2 : (SquareSuptoInf F K1 K2) ≅ (Cone.postcomposeEquivalence (DiagIsoKsh2 F G τ K1 K2)).inverse.obj (SquareSuptoInf G.carrier K1 K2) where
   hom := ⟨τ.hom.app _, by
     intro x
     match x with
@@ -36,7 +36,7 @@ def CoconeIsoKsh2 : (SquareSuptoInf F K1 K2) ≅ (Cones.postcomposeEquivalence (
 @[simps!]
 def DiagIsoKsh3 : (FresSSK K F) ≅ (FresSSK K G.carrier) := (ObjectProperty.ι (supSupK K)).op.isoWhiskerLeft τ
 
-def CoconeIsoKsh3: (FLToFK K F) ≅ (Cocones.precomposeEquivalence (DiagIsoKsh3 K F G τ)).functor.obj (FLToFK K G.carrier) where
+def CoconeIsoKsh3: (FLToFK K F) ≅ (Cocone.precomposeEquivalence (DiagIsoKsh3 K F G τ)).functor.obj (FLToFK K G.carrier) where
   hom := ⟨τ.hom.app _, by aesop ⟩
   inv := ⟨τ.inv.app _, by aesop ⟩
 
