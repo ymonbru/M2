@@ -8,12 +8,12 @@ universe u v w x
 /-- try to identify e as _ ≫ colim.ι F a = colim.ι F b and return the parameters-/
 def is_colimitwLeft (e : Expr) : MetaM <| Option ( Expr × Expr) := do
   let e ← whnf e
-  guard <| e.isAppOf ``Eq
+  guard <| e.isAppOfArity ``Eq 3
   let e1 := e.getArg! 1
   let e2 := e.getArg! 2
-  guard <| e1.isAppOf ``CategoryStruct.comp && e2.isAppOf ``CategoryTheory.Limits.colimit.ι
+  guard <| e1.isAppOfArity ``CategoryStruct.comp 7 && e2.isAppOfArity ``CategoryTheory.Limits.colimit.ι 7
   let colimLeft := e1.getArg! 6
-  guard <| colimLeft.isAppOf ``CategoryTheory.Limits.colimit.ι
+  guard <| colimLeft.isAppOfArity ``CategoryTheory.Limits.colimit.ι 7
 
   -- if the two functor on wich the colimits are taken are equal
   guard <| ← isDefEq (colimLeft.getArg! 4) (e2.getArg! 4)
@@ -82,19 +82,20 @@ elab "forceColimW" : tactic => withMainContext do
                    throwError "The goal is not of the form : _ ≫ colimit.ι F x = colimit.ι F y"
 
 
-/-variable {C : Type u} [Category.{v, u} C] {D : Type w} [Category.{x, w} D] (F : Cᵒᵖ  ⥤ D) [HasColimit F] { a b : C} ( f: b ⟶ a)
+variable {C : Type u} [Category.{v, u} C] {D : Type w} [Category.{x, w} D] (F : Cᵒᵖ  ⥤ D) [HasColimit F] { a b : C} ( f: b ⟶ a)
 
 def FfBis : F.obj (op a) ⟶ F.obj ( op b) := let truc := f;sorry--F.map (op f)
 
 example : (𝟙 _ ≫ (FfBis F f ≫ colimit.ι F ( op b)) = colimit.ι F (op a)) := by
 
   forceColimW
-
-
-  exact f
-
-
-
   sorry
+
+
+  --exact f
+
+
+
+/- sorry
 example : 1=1 := by forceColimW-/
 #min_imports
