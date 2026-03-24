@@ -162,7 +162,7 @@ variable [AB5OfSize.{w, w} C]
 -- It's for a^* F to be a K-sheaf
 
 /-- The structur of Ksheaf over (AlphaUpStar).obj F-/
-@[simps!]
+@[simps]
 def shAlphaUpStarG : (Ksheaf X C) where
   carrier:= (AlphaUpStar).obj F.obj
   ksh1 := by

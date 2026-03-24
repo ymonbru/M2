@@ -9,7 +9,7 @@ universe u v w x
 /-- try to identify e as _ ≫ colim.ι F a = colim.ι F b and return the parameters-/
 def get_colimitwParamLeft (e : Expr) : TacticM <| Expr × Expr × Option Expr := do
   let e ← whnf e
-  guard <| e.isAppOfArityArity ``Eq 3 3
+  guard <| e.isAppOfArity ``Eq 3
   let e1 := e.getArg! 1
   let e2 := e.getArg! 2
   guard <| e1.isAppOfArity ``CategoryStruct.comp 7
@@ -111,4 +111,4 @@ example : 1=1 := by forceColimW-/
 
 example : colimit.ι EggF k ≫ colimit.pre F E  = sorry := by sorry
 
-#check colimit.ι_pre-/
+#check colimit.ι_pre-/-/
