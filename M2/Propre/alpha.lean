@@ -26,6 +26,8 @@ def alphaUpStarObjObj (K : (Compacts X)ᵒᵖ ) : A := colimit ((Subtype.mono_co
 
 def alphaUpStarObjObj_ι (U : (K.unop.openNhds )ᵒᵖ ) : F.obj (op U.unop.val)  ⟶ F.alphaUpStarObjObj K := colimit.ι ((Subtype.mono_coe K.unop.openNhds).functor.op ⋙ F) _
 
+
+--cette version ne ser à rien
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma alphaUpStarObjObj_w {U V : (K.unop.openNhds)ᵒᵖ} (i : U ⟶ V) : F.map i ≫ F.alphaUpStarObjObj_ι V = F.alphaUpStarObjObj_ι U := by
@@ -46,6 +48,45 @@ lemma alphaUpStarObjObj_ι_desc {K : (Compacts X)ᵒᵖ} (c : Cocone <| (Subtype
 
 @[simp]
 lemma alphaUpStarObjObj_ι_desc_assoc {K : (Compacts X)ᵒᵖ} (c : Cocone <| (Subtype.mono_coe K.unop.openNhds).functor.op ⋙ F) (U : (K.unop.openNhds)ᵒᵖ ) {Z : A} (h : _ ⟶ Z) : F.alphaUpStarObjObj_ι U ≫ F.alphaUpStarObjObj_desc c ≫ h = c.ι.app U ≫ h:= colimit.ι_desc_assoc c U _
+
+def alphaUpStarObjObjRc_ι (U : (K.unop.openRcNhds )ᵒᵖ ) : F.obj (op U.unop.val)  ⟶ F.alphaUpStarObjObj K := colimit.ι ((Subtype.mono_coe K.unop.openRcNhds).functor.op ⋙ F) _ ≫ colimit.pre ((Subtype.mono_coe K.unop.openNhds).functor.op ⋙ F) (K.unop.mono_oRcNhds_to_openNhds.functor.op)
+
+@[simp]
+lemma alphaUpStarObObj_Rc_ι_Eq_ι (U : (K.unop.openRcNhds )ᵒᵖ ) : F.alphaUpStarObjObjRc_ι U = F.alphaUpStarObjObj_ι (K.unop.mono_oRcNhds_to_openNhds.functor.op.obj U) := by
+  unfold alphaUpStarObjObjRc_ι alphaUpStarObjObj_ι
+  rw [← colimit.ι_pre]
+  rfl
+
+@[ext]
+lemma alphaUpStarObjObjRc_hom_ext [T2Space X] [LocallyCompactSpace X] {Y : A} (f g : F.alphaUpStarObjObj K ⟶ Y) : (∀ U : (K.unop.openRcNhds)ᵒᵖ, F.alphaUpStarObjObjRc_ι U ≫ f = F.alphaUpStarObjObjRc_ι U ≫ g) → f = g := by
+  intro h
+  apply ((Functor.Final.isColimitWhiskerEquiv ((K.unop.mono_oRcNhds_to_openNhds.functor.op)) _).invFun  (colimit.isColimit _)).hom_ext
+  intro U
+  let h := h U
+  rw [alphaUpStarObObj_Rc_ι_Eq_ι] at h
+  exact h
+
+def alphaUpStarObjObjRc_desc [T2Space X] [LocallyCompactSpace X] {K : (Compacts X)ᵒᵖ} (c : Cocone <| (Subtype.mono_coe K.unop.openRcNhds).functor.op ⋙ F) : F.alphaUpStarObjObj K ⟶ c.pt := ((Functor.Final.isColimitWhiskerEquiv ((K.unop.mono_oRcNhds_to_openNhds.functor.op)) _).invFun  (colimit.isColimit _)).desc _
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma alphaUpStarObjObjRc_ι_desc [T2Space X] [LocallyCompactSpace X] {K : (Compacts X)ᵒᵖ} (c : Cocone <| (Subtype.mono_coe K.unop.openRcNhds).functor.op ⋙ F) (U : (K.unop.openRcNhds)ᵒᵖ ) : F.alphaUpStarObjObjRc_ι U ≫ F.alphaUpStarObjObjRc_desc c = c.ι.app U := by
+  rw [← ((Functor.Final.isColimitWhiskerEquiv ((K.unop.mono_oRcNhds_to_openNhds.functor.op)) _).invFun  (colimit.isColimit ((Subtype.mono_coe K.unop.openNhds).functor.op ⋙ F))).fac c U]
+  simp
+  rfl
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma alphaUpStarObjObjRc_desc_Rc_Eq_desc [T2Space X] [LocallyCompactSpace X] {K : (Compacts X)ᵒᵖ} (c : Cocone <| (Subtype.mono_coe K.unop.openNhds).functor.op ⋙ F) : F.alphaUpStarObjObj_desc c = F.alphaUpStarObjObjRc_desc (Cocone.whisker (K.unop.mono_oRcNhds_to_openNhds.functor.op) c) := by
+  ext
+  rw [alphaUpStarObjObjRc_ι_desc]
+  simp
+
+@[simp]
+lemma alphaUpStarObjObjRc_ι_desc_assoc [T2Space X] [LocallyCompactSpace X] {K : (Compacts X)ᵒᵖ} (c : Cocone <| (Subtype.mono_coe K.unop.openRcNhds).functor.op ⋙ F) (U : (K.unop.openRcNhds)ᵒᵖ ) {Z : A} (h : _ ⟶ Z) : F.alphaUpStarObjObjRc_ι U ≫ F.alphaUpStarObjObjRc_desc c ≫ h = c.ι.app U ≫ h:= by
+  rw [← Category.assoc, alphaUpStarObjObjRc_ι_desc]
+  rfl
+
 
 def alphaUpStarObjMap {K L : (Compacts X)ᵒᵖ} (i : K ⟶ L) : F.alphaUpStarObjObj K ⟶ F.alphaUpStarObjObj L := colimit.pre ((Subtype.mono_coe L.unop.openNhds).functor.op ⋙ F) (monoBaseChangeOpenNhds i.unop).functor.op
 
@@ -291,7 +332,6 @@ end NatTrans
 
 open TopCat.Presheaf TopCat.KPresheaf
 
-
 variable [HasColimitsOfSize.{w, w, v, u} A] [HasLimitsOfSize.{w, w, v, u} A] (F : Presheaf A (of X)) (G : KPresheaf A X)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -312,11 +352,10 @@ homEquiv_naturality_left_symm _ _ := by
   intro
   simp [homEquivAlpha]
 homEquiv_naturality_right {F G1 G2} τ σ := by
-  ext U
+  ext
   apply alphaDownStarObjObj_hom_ext
-  intro K
+  intro
   simp [homEquivAlpha]
 
 /-- The adjunction between α^* and α_*-/
-@[simps!]
 def AdjAlpha : (alphaUpStar (A := A) (X := X)) ⊣ (alphaDownStar ) := Adjunction.mkOfHomEquiv (adjAlphaThm)
