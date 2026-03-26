@@ -15,7 +15,7 @@
    "type": "git",
    "subDir": null,
    "scope": "",
-   "rev": "68a23ef0da7598345429a493ca8d4250fd44087f",
+   "rev": "f5f957cf052287676783478feec60f7ddf757c0a",
    "name": "«doc-gen4»",
    "manifestFile": "lake-manifest.json",
    "inputRev": "main",

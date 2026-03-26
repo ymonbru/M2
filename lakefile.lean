@@ -11,8 +11,6 @@ package «M2» where
 
 --require mathlib from git "https://github.com/leanprover-community/mathlib4.git"
 
-require "leanprover-community" / "mathlib" @ git "v4.29.0-rc6"
-
 
 @[default_target]
 lean_lib «M2» where
