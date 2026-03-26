@@ -56,6 +56,19 @@ lemma exists_open_nhds_sub_compact_nhds {K : Compacts X} (L : K.compactNhds) : �
 
 def openNhds (K : Compacts X) : Set (Opens X) := setOf (fun U ↦ K.carrier ⊆ U.carrier)
 
+instance : Bot (⊥ : Compacts X).openNhds := ⟨⊥, fun _ h => h⟩
+
+instance : IsInitial (⊥ : (⊥ : Compacts X).openNhds ) := by
+  apply IsInitial.ofUniqueHom
+  · intro _ _
+    apply eq_of_comp_right_eq
+    intro _ _
+    rfl
+  · intro
+    apply homOfLE
+    intro _ hx
+    rcases hx
+
 def openRcNhds (K : Compacts X) : Set (Opens X) :=
   setOf (fun U ↦ IsCompact (closure U.carrier) ∧ K.carrier ⊆ U.carrier)
 
