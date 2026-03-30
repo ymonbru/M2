@@ -9,7 +9,7 @@ open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Comp
 universe u v w
 
 variable {A : Type u} [Category.{v, u} A]
-variable {X : Type w} [TopologicalSpace X]
+variable {X : TopCat.{w}}
 
 /-def baseChangeCompactNhds {K L : Compacts X} (h : K.carrier ⊆ L.carrier) : L.compactNhds → K.compactNhds := fun M => ⟨M.1, fun ⟨x,hx⟩ => M.2 ⟨x, h hx ⟩⟩
 
@@ -19,7 +19,7 @@ noncomputable section
 
 namespace TopCat.Presheaf
 
-variable [HasColimitsOfSize.{w, w} A] (F : Presheaf A (of X)) {K : Compacts X}
+variable [HasColimitsOfSize.{w, w} A] (F : Presheaf A X) {K : Compacts X}
 
 variable (K) in
 def alphaUpStarObjObj : A := colimit ((Subtype.mono_coe K.openNhds).functor.op ⋙ F)
@@ -74,26 +74,26 @@ lemma ι_alphaUpStarObjMap {K L : Compacts X} (i : K ⟶ L) (U : L.openNhds ) : 
 
 set_option backward.isDefEq.respectTransparency false in
 @[simps]
-def alphaUpStarObj (F : Presheaf A (of X)) : (Compacts X)ᵒᵖ ⥤ A where
+def alphaUpStarObj (F : Presheaf A X) : KPresheaf A X where
   obj K := F.alphaUpStarObjObj (K.unop)
   map i := F.alphaUpStarObjMap i.unop
 
-def alphaUpStarMapApp { F1 F2 : Presheaf A (of X)} (τ : F1 ⟶ F2) (K : Compacts X): F1.alphaUpStarObjObj K ⟶ F2.alphaUpStarObjObj K := colimMap <| Functor.whiskerLeft _ τ
+def alphaUpStarMapApp { F1 F2 : Presheaf A X} (τ : F1 ⟶ F2) (K : Compacts X): F1.alphaUpStarObjObj K ⟶ F2.alphaUpStarObjObj K := colimMap <| Functor.whiskerLeft _ τ
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
-lemma ι_alphaUpStarMapApp { F1 F2 : Presheaf A (of X)} (τ : F1 ⟶ F2) {K : Compacts X} (U : K.openNhds) : F1.ιAlphaUpStarObjObj U ≫ alphaUpStarMapApp τ K = τ.app (op U.val) ≫ F2.ιAlphaUpStarObjObj U := Limits.ι_colimMap _ _
+lemma ι_alphaUpStarMapApp { F1 F2 : Presheaf A X} (τ : F1 ⟶ F2) {K : Compacts X} (U : K.openNhds) : F1.ιAlphaUpStarObjObj U ≫ alphaUpStarMapApp τ K = τ.app (op U.val) ≫ F2.ιAlphaUpStarObjObj U := Limits.ι_colimMap _ _
 
 attribute [local simp] Quiver.Hom.baseChangeOpenNhds in
 @[simps]
-def alphaUpStarMap {F1 F2 : Presheaf A (of X)} (τ : F1 ⟶ F2) : F1.alphaUpStarObj ⟶ F2.alphaUpStarObj where
+def alphaUpStarMap {F1 F2 : Presheaf A X} (τ : F1 ⟶ F2) : F1.alphaUpStarObj ⟶ F2.alphaUpStarObj where
   app K := alphaUpStarMapApp τ K.unop
 
 -- a envoyer dans l'api de `TopCat.Presheaf` du coup
 @[simp] theorem id_app {C : Type*} [Category* C] {X : TopCat} (P : Presheaf C X) (U : (Opens X)ᵒᵖ) : NatTrans.app (𝟙 P) U = 𝟙 _ := rfl
 
 @[simps]
-def alphaUpStar : Presheaf A (of X) ⥤ KPresheaf A X where
+def alphaUpStar : Presheaf A X ⥤ KPresheaf A X where
   obj := alphaUpStarObj
   map := alphaUpStarMap
 
@@ -101,7 +101,7 @@ end TopCat.Presheaf
 
 namespace TopCat.KPresheaf
 
-variable [HasLimitsOfSize.{w, w} A] (G : KPresheaf A (of X)) {U : Opens X}
+variable [HasLimitsOfSize.{w, w} A] (G : KPresheaf A X) {U : Opens X}
 
 variable (U) in
 def alphaDownStarObjObj (U : Opens X) : A := limit ((Subtype.mono_coe U.compactInsd).functor.op ⋙ G)
@@ -134,10 +134,9 @@ lemma alphaDownStarObjObj_lift_π {U : Opens X} (c : Cone <| (Subtype.mono_coe U
 
 set_option backward.isDefEq.respectTransparency false in
 @[simps]
-def alphaDownStarObj (G : KPresheaf A (of X)) : (Opens X)ᵒᵖ ⥤ A where
+def alphaDownStarObj (G : KPresheaf A (of X)) : Presheaf A (of X) where
  obj U := G.alphaDownStarObjObj U.unop
  map i := G.alphaDownStarObjMap i.unop
-
 
 def alphaDownStarMapApp { G1 G2 : KPresheaf A (of X)} (σ : G1 ⟶ G2) (U : Opens X): G1.alphaDownStarObjObj U ⟶ G2.alphaDownStarObjObj U := limMap <| Functor.whiskerLeft _ σ
 
@@ -146,32 +145,14 @@ lemma alphaDownStarMapApp_π { G1 G2 : KPresheaf A (of X)} (σ : G1 ⟶ G2) {U :
 
 set_option backward.isDefEq.respectTransparency false in
 @[simps]
-def alphaDownStarMap {G1 G2 : KPresheaf A (of X)} (σ : G1 ⟶ G2) : G1.alphaDownStarObj ⟶ G2.alphaDownStarObj where
+def alphaDownStarMap {G1 G2 : KPresheaf A X} (σ : G1 ⟶ G2) : G1.alphaDownStarObj ⟶ G2.alphaDownStarObj where
 app U := alphaDownStarMapApp σ U.unop
-
-@[simp] theorem id_app {C : Type*} [Category* C] (P : KPresheaf C X) (K : (Compacts X)ᵒᵖ) :
-    NatTrans.app (𝟙 P) K = 𝟙 _ := rfl
-
 
 set_option backward.isDefEq.respectTransparency false in
 @[simps]
-def alphaDownStar : KPresheaf A X ⥤ Presheaf A (of X) where
- obj := alphaDownStarObj
- map := alphaDownStarMap
- map_id G := by
-  apply NatTrans.ext
-  ext : 2
-  simp_all only [alphaDownStarObj_obj, alphaDownStarMap_app,TopCat.Presheaf, NatTrans.id_app]--aesop ne trouve pas TopCat.Presheaf
-  -- TopCat.Presheaf n'est pas pareil que TopCat.KPresheaf
-  ext : 1
-  simp_all only [alphaDownStarMapApp_π, id_app, Category.id_comp, Category.comp_id]
- map_comp _ _ := by
-  apply NatTrans.ext
-  ext
-  apply alphaDownStarObjObj_hom_ext
-  intro
-  rw [ NatTrans.comp_app]
-  simp
+def alphaDownStar : KPresheaf A (of X) ⥤ Presheaf A (of X) where
+  obj := alphaDownStarObj
+  map := alphaDownStarMap
 
 end TopCat.KPresheaf
 
@@ -184,7 +165,7 @@ variable {F : Presheaf A (of X)} {G : KPresheaf A X} (τ : (alphaUpStar).obj F �
 
 set_option backward.isDefEq.respectTransparency false in
 @[simps]
-def toFtoαGCone : Cone <| (Subtype.mono_coe U.compactInsd).functor.op ⋙ G where--:= Cone.mk _ (τ.toFtoαGConeπ _ )
+def toFtoαGCone : Cone <| (Subtype.mono_coe U.compactInsd).functor.op ⋙ G where
   pt := F.obj (op U)
   π.app K := F.ιAlphaUpStarObjObj ( K.unop.toOpenNhds) ≫ τ.app (op K.unop.val)
   π.naturality {K L} i:= by
@@ -198,8 +179,24 @@ def toFtoαG : F ⟶ alphaDownStar.obj G where
  naturality {U V} i := by
   apply alphaDownStarObjObj_hom_ext
   intro K
-  simp [Quiver.Hom.baseChangeCompactInsd, ιAlphaUpStarObjObj]
+  simp [Quiver.Hom.baseChangeCompactInsd]
+  unfold ιAlphaUpStarObjObj
   forceColimW
+  /-let x := (i.unop.baseChangeCompactInsd K).toOpenNhds
+  simp [Quiver.Hom.baseChangeCompactInsd] at x
+
+  let y := K.toOpenNhds
+
+  have f : K.toOpenNhds ⟶ (i.unop.baseChangeCompactInsd K).toOpenNhds := by
+    apply homOfLE
+    simp [Quiver.Hom.baseChangeCompactInsd, Subtype.toOpenNhds]
+    exact leOfHom i.unop
+  simp
+
+  erw [← alphaUpStarObjObj_w F (op f)]
+  simp only [Quiver.Hom.baseChangeCompactInsd]
+  rw [← Category.assoc]
+  apply eq_whisker-/
 
 set_option backward.isDefEq.respectTransparency false in
 @[simps]
@@ -219,34 +216,23 @@ def toαFtoG : alphaUpStar.obj F ⟶ G where
 
 end NatTrans
 
---namespace TopCat.KPresheaf-- ça fait des trucs bizzares avec homEquiv
-
 open TopCat.Presheaf TopCat.KPresheaf
 
-variable [HasColimitsOfSize.{w, w, v, u} A] [HasLimitsOfSize.{w, w, v, u} A] (F : Presheaf A (of X)) (G : KPresheaf A X)
+variable [HasColimitsOfSize.{w, w, v, u} A] [HasLimitsOfSize.{w, w, v, u} A] (F : Presheaf A X) (G : KPresheaf A X)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The bijection between hom(αF, G) and hom(F,αG) -/
 def homEquivAlpha: (alphaUpStar.obj F ⟶ G) ≃ ( F ⟶ alphaDownStar.obj G) where
  toFun := fun τ => τ.toFtoαG
  invFun := fun σ => σ.toαFtoG
- left_inv _ := by aesop_cat
- right_inv _ := by aesop_cat
+ left_inv _ := by aesop
+ right_inv _ := by aesop
 
 set_option backward.isDefEq.respectTransparency false in
+attribute [local simp] homEquivAlpha in
 /-- The data necessary to build the adjunction between α^* and α_*-/
 def adjAlphaThm : Adjunction.CoreHomEquiv (alphaUpStar (A := A) (X := X)) alphaDownStar where
 homEquiv := homEquivAlpha
-homEquiv_naturality_left_symm _ _ := by
-  ext
-  apply alphaUpStarObjObj_hom_ext
-  intro
-  simp [homEquivAlpha]
-homEquiv_naturality_right {F G1 G2} τ σ := by
-  ext
-  apply alphaDownStarObjObj_hom_ext
-  intro
-  simp [homEquivAlpha]
 
 /-- The adjunction between α^* and α_*-/
 def AdjAlpha : (alphaUpStar (A := A) (X := X)) ⊣ (alphaDownStar ) := Adjunction.mkOfHomEquiv (adjAlphaThm)

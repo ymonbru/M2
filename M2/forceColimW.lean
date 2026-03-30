@@ -1,13 +1,61 @@
 import Lean.Elab.Tactic.Basic
 import Mathlib.CategoryTheory.Limits.HasLimits
+import Qq
 
 
-open CategoryTheory CategoryTheory.Limits Opposite Lean Meta Elab Tactic
+open Qq CategoryTheory CategoryTheory.Limits Opposite Lean Meta Elab Tactic
 
 universe u v w x
 
+--ça marche, mais dans le cas ou c'est un colimi.ι qui est renomé, le colim.w ne se réécrit plus donc il faut réflechir plus
+def test (e : Expr) : TacticM <| Expr × Expr × Option (Expr) := withMainContext do
+  let u1 ← mkFreshLevelMVar
+  let u2 ← mkFreshLevelMVar
+  let v1 ← mkFreshLevelMVar
+  let v2 ← mkFreshLevelMVar
+
+  let type1Q := Expr.sort (.succ u1)
+  let type2Q := Expr.sort (.succ u2)
+
+  let J ← mkFreshExprMVar type1Q
+  let C ← mkFreshExprMVar type2Q
+
+  let JCatE := Expr.app (Expr.const `CategoryTheory.Category [v1, u1]) J
+  let JCat ← mkFreshExprMVar JCatE
+
+  let CCatE := Expr.app (Expr.const `CategoryTheory.Category [v2, u2]) C
+  let CCat ← mkFreshExprMVar CCatE
+
+  let FuncJtoC ← mkAppOptM ``CategoryTheory.Functor #[J, JCat, C, CCat]
+
+  let F ← mkFreshExprMVar FuncJtoC
+  let hasColE ← mkAppOptM ``CategoryTheory.Limits.HasColimit #[J,JCat,C,CCat,F]
+  let hasCol ← mkFreshExprMVar hasColE
+
+  let j1 ← mkFreshExprMVar J
+  let j2 ← mkFreshExprMVar J
+
+  let colimRight ← mkAppOptM ``CategoryTheory.Limits.colimit.ι #[J, JCat, C, CCat, F, hasCol, j1]
+  let colimLeft ← mkAppOptM ``CategoryTheory.Limits.colimit.ι #[J, JCat, C, CCat, F, hasCol, j2]
+
+  let e ← whnf e
+  guard <| e.isAppOfArity ``Eq 3
+  let e1 := e.getArg! 1
+  let eRight := e.getArg! 2
+  guard <| e1.isAppOfArity ``CategoryStruct.comp 7
+  let eLeft := e1.getArg! 6
+  guard <| ← isDefEq eLeft colimLeft
+  guard <| ← isDefEq eRight colimRight
+
+  return ⟨j1, j2, none⟩
+
+elab "test" : tactic => do
+  let (a,b,c) ← test (← getMainTarget)
+  logInfo m!"{a}, {b}, {c}"
+
+
 /-- try to identify e as _ ≫ colim.ι F a = colim.ι F b and return the parameters-/
-def get_colimitwParamLeft (e : Expr) : TacticM <| Expr × Expr × Option Expr := do
+def get_colimitwParamLeft (e : Expr) : TacticM <| Expr × Expr × Option Expr := withMainContext do
   let e ← whnf e
   guard <| e.isAppOfArity ``Eq 3
   let e1 := e.getArg! 1
@@ -37,6 +85,7 @@ def get_colimitwParamLeft (e : Expr) : TacticM <| Expr × Expr × Option Expr :=
 /-- if the main target is of the form _ ≫ colim.ι F a = colim.ι F b, then try to solve it by forcing the application of the colimit.w lemma-/
 def forceColimWLeft : TacticM Unit := withMainContext do
   let (a,b, c) ← get_colimitwParamLeft (← getMainTarget)
+  --let (a,b, c) ← test (← getMainTarget)
   let fForce := "fForce".toName
   -- make the intermediate goal fForce : a ⟶ b
   let newtarget ← mkAppM ``Quiver.Hom #[a, b]

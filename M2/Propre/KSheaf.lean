@@ -1,18 +1,44 @@
 import M2.Propre.Topology
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 import Mathlib.Combinatorics.Quiver.ReflQuiver
+--import Mathlib.Order.BourbakiWitt
 import Mathlib.Order.CompleteLattice.MulticoequalizerDiagram
+import Mathlib.Topology.Category.TopCat.Basic
+--import Mathlib
 
 universe w v u
 
 open Topology CategoryTheory TopologicalSpace Opposite Limits
 
-variable {A : Type u} [Category.{v} A] {X : Type w} [TopologicalSpace X]
+variable {A : Type u} [Category.{v} A] {X : TopCat.{w}}
+
+namespace TopCat
 
 variable (A X) in
-abbrev KPresheaf := (Compacts X)ᵒᵖ ⥤ A
+def KPresheaf : Type max u v w :=
+  (Compacts X)ᵒᵖ ⥤ A
+
+instance : Category (KPresheaf.{w, v, u} A X) :=
+  inferInstanceAs (Category ((Compacts X)ᵒᵖ ⥤ A : Type max u v w))
+
+/-variable (A X) in
+abbrev KPresheaf := (Compacts X)ᵒᵖ ⥤ A-/
+
 
 namespace KPresheaf
+
+@[simp]
+theorem id_app (P : KPresheaf A X) (K : (Compacts X)ᵒᵖ) : NatTrans.app (𝟙 P) K = 𝟙 _ := rfl
+
+@[simp]
+theorem comp_app (P Q R : KPresheaf A X) (K : (Compacts X)ᵒᵖ) (f : P ⟶ Q) (g :Q ⟶ R) : (f ≫ g).app K = f.app K ≫ g.app K := rfl
+
+@[ext]
+lemma ext (P Q : KPresheaf A X) (f g : P ⟶ Q) (w : ∀ K : Compacts X, f.app (op K) = g.app (op K)) : f = g:= by
+  apply NatTrans.ext
+  ext K
+  induction K with | _ K => ?_
+  apply w
 
 @[simps]
 def coconeOfCompacts (P : KPresheaf A X) (K : Compacts X) :
@@ -33,6 +59,7 @@ set_option backward.isDefEq.respectTransparency false in
 noncomputable def mapOfOpenClosure (P : KPresheaf A X) (K : Compacts X) (h : (IsColimit (P.coconeOfCompacts K))) {G : (K.openRcNhds)ᵒᵖ ⥤ A} (t : Cocone G) (α : (K.mono_oRcNhds_to_compactNhds.functor.op ⋙ (Subtype.mono_coe K.compactNhds).functor.op ⋙ P) ⟶ G) : P.obj (op K) ⟶ t.pt := ((Functor.Final.isColimitWhiskerEquiv _ _).invFun h ).map t α
 
 set_option backward.isDefEq.respectTransparency false in
+@[ext]
 noncomputable def hom_K_ext (P : KPresheaf A X) {K : Compacts X} (h : (IsColimit (P.coconeOfCompacts K))) {W : A} {f f' : P.obj (op K) ⟶ W} (w : ∀ V, (P.coconeOfClosureOfOpens K).ι.app V ≫ f = (P.coconeOfClosureOfOpens K).ι.app V ≫ f' ): f = f' := ((Functor.Final.isColimitWhiskerEquiv _ _).invFun h ).hom_ext w
 
 structure IsKSheaf (P : KPresheaf A X) : Prop where
@@ -50,12 +77,17 @@ variable [T2Space X]
 variable (X A) in
 abbrev KSheaf := ObjectProperty.FullSubcategory (KPresheaf.IsKSheaf (X := X) (A := A))
 
-namespace Ksheaf
+namespace KSheaf
 
 set_option backward.isDefEq.respectTransparency false in
 noncomputable def mapOfOpenClosure (P : KSheaf A X) (K : Compacts X) {G : (K.openRcNhds)ᵒᵖ ⥤ A} (t : Cocone G) (α : (K.mono_oRcNhds_to_compactNhds.functor.op ⋙ (Subtype.mono_coe K.compactNhds).functor.op ⋙ P.obj) ⟶ G) : P.obj.obj (op K) ⟶ t.pt := ((Functor.Final.isColimitWhiskerEquiv _ _).invFun (Classical.choice <| P.property.nonempty_isColimit_coconeOfCompacts K) ).map t α
 
 set_option backward.isDefEq.respectTransparency false in
+@[ext]
 noncomputable def hom_K_ext (P : KSheaf A X) {K : Compacts X}  {W : A} {f f' : P.obj.obj (op K) ⟶ W} (w : ∀ V, (P.obj.coconeOfClosureOfOpens K).ι.app V ≫ f = (P.obj.coconeOfClosureOfOpens K).ι.app V ≫ f' ): f = f' := ((Functor.Final.isColimitWhiskerEquiv _ _).invFun (Classical.choice <| P.property.nonempty_isColimit_coconeOfCompacts K)).hom_ext w
+
+end KSheaf
+
+end TopCat
 
 #min_imports
