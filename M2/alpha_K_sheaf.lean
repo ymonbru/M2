@@ -95,9 +95,9 @@ def AlphaUpFIsoColimFSubU : (FresSSK K (AlphaUpStar.obj F.obj)) ≅ colimFia  (i
 set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphisme between the cocone that appear in ksh3 and the one that is in the generic theorem over colimits of colimits (transported through the isomorphism AlphaUpFIsoColimFSubU )-/
 @[simps]
-def FLToKIsoToColimColim {K :Compacts X} : (FLToFK K (AlphaUpStar.obj (F.obj))) ≅ (Cocone.precomposeEquivalence (AlphaUpFIsoColimFSubU _ _ )).functor.obj (fCupIaCoconeToColimFiaCocone _ _ (colimit.cocone (FcupIaEx K F.obj))) where
-  hom := ⟨𝟙 (colimit (FU K F.obj )), by aesop⟩
-  inv := ⟨𝟙 (colimit (FcupIaEx K F.obj)), by aesop⟩
+def FLToKIsoToColimColim {K :Compacts X} : (FLToFK K (AlphaUpStar.obj (F.obj))) ≅ (Cocone.precomposeEquivalence (AlphaUpFIsoColimFSubU _ _ )).inverse.obj (fCupIaCoconeToColimFiaCocone _ _ (colimit.cocone (FcupIaEx K F.obj))) where
+  hom := ⟨𝟙 _, by aesop⟩
+  inv := ⟨𝟙 _, by aesop⟩
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism betwen the functor colimFUInterWCPt and colimit_{K1 ⊆ U}F(U) → colimit_{K1 ∩ K2 ⊆ U}F(U) ← colimit_{K2 ⊆ U} F(U)-/
@@ -120,10 +120,10 @@ def colimFUInterWCIsoTwoVersion : (colimFUInterWC F.obj K1 K2).pt ≅ cospan (Ft
 set_option backward.isDefEq.respectTransparency false in
 /-- The inverse morphism of SquareSuptoInfIsColimLim-/
 @[simps]
-def SquareSuptoInfIsColimLimInv : (SquareSuptoInf (AlphaUpStar.obj F.obj) K1 K2) ⟶ (Cone.postcomposeEquivalence (colimFUInterWCIsoTwoVersion F K1 K2)).functor.obj (ConeOverColimLimF (limFUInterWCFlip F.obj K1 K2) (colimFUInterWC F.obj K1 K2) (colimLimFUInterWCFlip K1 K2 F) (colimLimFUInterWCFlipIsColim K1 K2 F)) where
+def SquareSuptoInfIsColimLimInv : (SquareSuptoInf (AlphaUpStar.obj F.obj) K1 K2) ⟶ (Cone.postcomposeEquivalence (colimFUInterWCIsoTwoVersion F K1 K2)).functor.obj (ConeOverColimLimF2 (limFUInterWCFlip F.obj K1 K2) (colimFUInterWC F.obj K1 K2) (colimLimFUInterWCFlip K1 K2 F) (colimLimFUInterWCFlipIsColim K1 K2 F)) where
   hom := (HasColimit.isoOfNatIso (jCompFEqProjCompFUCup F.obj K1 K2) ≪≫  Functor.Final.colimitIso (KsubUK1K2ProjCup K1 K2).op (FU (K1 ⊔ K2) F.obj)).inv
   w x:= by
-    suffices ((Cone.postcomposeEquivalence (colimFUInterWCIsoTwoVersion F K1 K2)).functor.obj (ConeOverColimLimF (limFUInterWCFlip F.obj K1 K2) (colimFUInterWC F.obj K1 K2)  (colimLimFUInterWCFlip K1 K2 F) (colimLimFUInterWCFlipIsColim K1 K2 F))).π.app x = (HasColimit.isoOfNatIso (jCompFEqProjCompFUCup F.obj K1 K2) ≪≫ Functor.Final.colimitIso (KsubUK1K2ProjCup K1 K2).op (FU (K1 ⊔ K2) F.obj)).hom ≫(SquareSuptoInf (AlphaUpStar.obj F.obj) K1 K2).π.app x by
+    suffices ((Cone.postcomposeEquivalence (colimFUInterWCIsoTwoVersion F K1 K2)).functor.obj (ConeOverColimLimF2 (limFUInterWCFlip F.obj K1 K2) (colimFUInterWC F.obj K1 K2)  (colimLimFUInterWCFlip K1 K2 F) (colimLimFUInterWCFlipIsColim K1 K2 F))).π.app x = (HasColimit.isoOfNatIso (jCompFEqProjCompFUCup F.obj K1 K2) ≪≫ Functor.Final.colimitIso (KsubUK1K2ProjCup K1 K2).op (FU (K1 ⊔ K2) F.obj)).hom ≫(SquareSuptoInf (AlphaUpStar.obj F.obj) K1 K2).π.app x by
       rw[this]
       simp
     apply colimit.hom_ext
@@ -142,7 +142,7 @@ def SquareSuptoInfIsColimLimInv : (SquareSuptoInf (AlphaUpStar.obj F.obj) K1 K2)
 set_option backward.isDefEq.respectTransparency false in
 /-- The morphism of SquareSuptoInfIsColimLim-/
 @[simps]
-def SquareSuptoInfIsColimLimHom : (Cone.postcomposeEquivalence (colimFUInterWCIsoTwoVersion F K1 K2)).functor.obj (ConeOverColimLimF (limFUInterWCFlip F.obj K1 K2) (colimFUInterWC F.obj K1 K2) (colimLimFUInterWCFlip K1 K2 F) (colimLimFUInterWCFlipIsColim K1 K2 F)) ⟶ (SquareSuptoInf (AlphaUpStar.obj F.obj) K1 K2) where
+def SquareSuptoInfIsColimLimHom : (Cone.postcomposeEquivalence (colimFUInterWCIsoTwoVersion F K1 K2)).functor.obj (ConeOverColimLimF2 (limFUInterWCFlip F.obj K1 K2) (colimFUInterWC F.obj K1 K2) (colimLimFUInterWCFlip K1 K2 F) (colimLimFUInterWCFlipIsColim K1 K2 F)) ⟶ (SquareSuptoInf (AlphaUpStar.obj F.obj) K1 K2) where
   hom := (HasColimit.isoOfNatIso (jCompFEqProjCompFUCup F.obj K1 K2) ≪≫  Functor.Final.colimitIso (KsubUK1K2ProjCup K1 K2).op (FU (K1 ⊔ K2) F.obj)).hom
   w := by
     intro
@@ -152,7 +152,7 @@ def SquareSuptoInfIsColimLimHom : (Cone.postcomposeEquivalence (colimFUInterWCIs
 set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphisme between the cocone that appear in ksh2 and the one that is in the generic theorem over limits of colimits (transported through the isomorphism colimFUInterWCIsoTwoVersion )-/
 @[simps]
-def SquareSuptoInfIsColimLim: (Cone.postcomposeEquivalence (colimFUInterWCIsoTwoVersion F K1 K2)).functor.obj (ConeOverColimLimF (limFUInterWCFlip F.obj K1 K2) (colimFUInterWC F.obj K1 K2) (colimLimFUInterWCFlip K1 K2 F) (colimLimFUInterWCFlipIsColim K1 K2 F)) ≅ (SquareSuptoInf (AlphaUpStar.obj F.obj) K1 K2) where
+def SquareSuptoInfIsColimLim: (Cone.postcomposeEquivalence (colimFUInterWCIsoTwoVersion F K1 K2)).functor.obj (ConeOverColimLimF2 (limFUInterWCFlip F.obj K1 K2) (colimFUInterWC F.obj K1 K2) (colimLimFUInterWCFlip K1 K2 F) (colimLimFUInterWCFlipIsColim K1 K2 F)) ≅ (SquareSuptoInf (AlphaUpStar.obj F.obj) K1 K2) where
   hom := SquareSuptoInfIsColimLimHom F K1 K2
   inv := SquareSuptoInfIsColimLimInv F K1 K2
 
@@ -173,9 +173,10 @@ def shAlphaUpStarG : (Ksheaf X C) where
     apply IsTerminal.ofIso this
     apply @asIso _ _ _ _ _ (isIso_ι_of_isTerminal (IsTerminalKsubUOpBotOpTrue) (FU ⊥ F.obj ))
   ksh2 K1 K2 := by
+
     apply Limits.IsLimit.ofIsoLimit _ (SquareSuptoInfIsColimLim F K1 K2)
     apply IsLimit.ofPreservesConeTerminal
-    exact IsLimitConeOfColimF (limFUInterWCFlip F.obj K1 K2) (colimFUInterWC F.obj K1 K2) _ (limColimFUCap K1 K2 F) (limFUInterWCFlipLim K1 K2 F) (colimFUInterWCColim F.obj K1 K2) _ (limColimFUCapIsLim K1 K2 F)
+    exact IsLimitConeOfColimF2 (limFUInterWCFlip F.obj K1 K2) (colimFUInterWC F.obj K1 K2) _ (limColimFUCap K1 K2 F) (limFUInterWCFlipLim K1 K2 F) (colimFUInterWCColim F.obj K1 K2) _ (limColimFUCapIsLim K1 K2 F)
   ksh3 K := by
     apply Limits.IsColimit.ofIsoColimit _ (FLToKIsoToColimColim _ ).symm
     apply IsColimit.ofPreservesCoconeInitial

@@ -23,4 +23,4 @@ require checkdecls from git "https://github.com/PatrickMassot/checkdecls.git" --
 require «doc-gen4» from git
   "https://github.com/leanprover/doc-gen4" @ "main"
 
-require "leanprover-community" / "mathlib" @ git "v4.29.0-rc6"
+require "leanprover-community" / "mathlib" @ git "v4.29.0"

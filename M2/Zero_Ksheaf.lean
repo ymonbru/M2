@@ -85,6 +85,4 @@ def ZKsheaf : Ksheaf X C where
 instance : Inhabited (Ksheaf X C) where
   default := ZKsheaf C
 
-#check colimit.isoColimitCocone
-
 #lint

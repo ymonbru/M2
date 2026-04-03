@@ -36,7 +36,7 @@ def CoconeIsoKsh2 : (SquareSuptoInf F K1 K2) ≅ (Cone.postcomposeEquivalence (D
 @[simps!]
 def DiagIsoKsh3 : (FresSSK K F) ≅ (FresSSK K G.carrier) := (ObjectProperty.ι (supSupK K)).op.isoWhiskerLeft τ
 
-def CoconeIsoKsh3: (FLToFK K F) ≅ (Cocone.precomposeEquivalence (DiagIsoKsh3 K F G τ)).functor.obj (FLToFK K G.carrier) where
+def CoconeIsoKsh3: (FLToFK K F) ≅ (Cocone.precomposeEquivalence (DiagIsoKsh3 K F G τ)).inverse.obj (FLToFK K G.carrier) where
   hom := ⟨τ.hom.app _, by aesop ⟩
   inv := ⟨τ.inv.app _, by aesop ⟩
 

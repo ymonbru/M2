@@ -20,6 +20,30 @@ variable (limF : Cone F) (colimF : Cocone F.flip) (colimLimF : Cocone limF.pt) (
 
 variable (hLimF : IsLimit limF) (hColimF : IsColimit colimF) (hColimLimF : IsColimit colimLimF) (hLimColimF : IsLimit limColimF)
 
+/-- Translate an isomorphism of cones into an isomorphism between the undeling points-/
+@[simp]
+def IsoConeToIsoPt {F : J ⥤ C} {s t : Cone F} (h : s ≅ t) : s.pt ≅ t.pt where
+  hom := h.hom.hom
+  inv := h.inv.hom
+
+/-- Translate an isomorphism of cocones into an isomorphism between the undeling points-/
+@[simp]
+def IsoCoconeToIsoPt {F : J ⥤ C} {s t : Cocone F} (h : s ≅ t) : s.pt ≅ t.pt where
+  hom := h.hom.hom
+  inv := h.inv.hom
+
+/-- The isomorphism between limcolim F and colimLimF for any cone and cocones.
+It's composition of (colimitLimitIso F) and the canonicals isomorphisms-/
+noncomputable def limColimFPtIsoColimLimFPt : limColimF.pt ≅ colimLimF.pt := (IsoConeToIsoPt (IsLimit.uniqueUpToIso hLimColimF (limit.isLimit colimF.pt)) ≪≫ HasLimit.isoOfNatIso ( IsoCoconeToIsoPt (IsColimit.uniqueUpToIso hColimF (colimit.isColimit F.flip))) ≪≫ (colimitLimitIso F).symm ≪≫ HasColimit.isoOfNatIso ( IsoConeToIsoPt (IsLimit.uniqueUpToIso hLimF (limit.isLimit F))).symm ≪≫ IsoCoconeToIsoPt (IsColimit.uniqueUpToIso hColimLimF (colimit.isColimit limF.pt)).symm)
+
+/-- The cone structure over coliLimF.pt -/
+@[simp]
+noncomputable def ConeOverColimLimF : Cone colimF.pt := Cone.extend _ (limColimFPtIsoColimLimFPt limF colimF colimLimF limColimF hLimF hColimF hColimLimF hLimColimF).inv
+
+noncomputable def IsLimitConeOfColimF : IsLimit (ConeOverColimLimF limF colimF colimLimF limColimF hLimF hColimF hColimLimF hLimColimF) := IsLimit.extendIso _ hLimColimF
+
+--tout ce qui suit c'est poubelle normalement: je le garde pour que la version pas propre continue à compiler
+
 set_option backward.isDefEq.respectTransparency false in
 /-- For any j, the natural transformation from F(j) to colimF.pt(j)-/
 @[simps]
@@ -58,45 +82,17 @@ def ConeOverColimLimFπ : (Functor.const J).obj colimLimF.pt ⟶ colimF.pt where
 
 /-- The cone structure over coliLimF.pt -/
 @[simp]
-def ConeOverColimLimF : Cone colimF.pt where
+def ConeOverColimLimF2 : Cone colimF.pt where
   pt := colimLimF.pt
   π := ConeOverColimLimFπ _ _ _ hColimLimF
 
-/-- Translate an isomorphism of cones into an isomorphism between the undeling points-/
-@[simp]
-def IsoConeToIsoPt {F : J ⥤ C} {s t : Cone F} (h : s ≅ t) : s.pt ≅ t.pt where
-  hom := h.hom.hom
-  inv := h.inv.hom
-  hom_inv_id := by
-    calc h.hom.hom ≫ h.inv.hom = (h.hom ≫ h.inv).hom := by rfl
-      _ = 𝟙 s.pt := by simp
-  inv_hom_id := by
-    calc h.inv.hom ≫ h.hom.hom = (h.inv ≫ h.hom).hom := by rfl
-      _ = 𝟙 t.pt := by simp
-
-/-- Translate an isomorphism of cocones into an isomorphism between the undeling points-/
-@[simp]
-def IsoCoconeToIsoPt {F : J ⥤ C} {s t : Cocone F} (h : s ≅ t) : s.pt ≅ t.pt where
-  hom := h.hom.hom
-  inv := h.inv.hom
-  hom_inv_id := by
-    calc h.hom.hom ≫ h.inv.hom = (h.hom ≫ h.inv).hom := by rfl
-      _ = 𝟙 s.pt := by simp
-  inv_hom_id := by
-    calc h.inv.hom ≫ h.hom.hom = (h.inv ≫ h.hom).hom := by rfl
-      _ = 𝟙 t.pt := by simp
-
-/-- The isomorphism between limcolim F and colimLimF for any cone and cocones.
-It's composition of (colimitLimitIso F) and the canonicals isomorphisms-/
-noncomputable def limColimFPtIsoColimLimFPt : limColimF.pt ≅ colimLimF.pt := (IsoConeToIsoPt (IsLimit.uniqueUpToIso hLimColimF (limit.isLimit colimF.pt)) ≪≫ HasLimit.isoOfNatIso ( IsoCoconeToIsoPt (IsColimit.uniqueUpToIso hColimF (colimit.isColimit F.flip))) ≪≫ (colimitLimitIso F).symm ≪≫ HasColimit.isoOfNatIso ( IsoConeToIsoPt (IsLimit.uniqueUpToIso hLimF (limit.isLimit F))).symm ≪≫ IsoCoconeToIsoPt (IsColimit.uniqueUpToIso hColimLimF (colimit.isColimit limF.pt)).symm)
-
 set_option backward.isDefEq.respectTransparency false in
-noncomputable def IsLimitConeOfColimF : IsLimit (ConeOverColimLimF _ colimF colimLimF (hColimLimF) ) where
+noncomputable def IsLimitConeOfColimF2 : IsLimit (ConeOverColimLimF2 _ colimF colimLimF (hColimLimF) ) where
   lift s := hLimColimF.lift s ≫ (limColimFPtIsoColimLimFPt _ _ _ _ hLimF hColimF hColimLimF hLimColimF).hom
   fac s j := by
     rw [ ← hLimColimF.fac s j, Category.assoc]
     apply whisker_eq
-    suffices (ConeOverColimLimF  limF colimF colimLimF hColimLimF).π.app j = (limColimFPtIsoColimLimFPt limF colimF colimLimF limColimF hLimF hColimF hColimLimF hLimColimF).inv ≫ limColimF.π.app j by
+    suffices (ConeOverColimLimF2  limF colimF colimLimF hColimLimF).π.app j = (limColimFPtIsoColimLimFPt limF colimF colimLimF limColimF hLimF hColimF hColimLimF hLimColimF).inv ≫ limColimF.π.app j by
       rw [this]
       simp
     apply Eq.symm

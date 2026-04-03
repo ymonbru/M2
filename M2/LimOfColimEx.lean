@@ -1,6 +1,7 @@
 import M2.KsubU
 import M2.LimOfColimEqColimOfLim
 import M2.natTransWC
+import M2.alpha
 import M2.forceColimW
 import Mathlib.Topology.Sheaves.SheafCondition.PairwiseIntersections
 
@@ -22,6 +23,20 @@ def FUInterWC : (KsubU_cat K1 × KsubU_cat K2 ) ᵒᵖ ⥤ (WalkingCospan ⥤ C)
 /-- The diaram colimit_{K1 ⊆ U}F(U) → colimit_{K1 ∩ K2 ⊆ U}F(U) ← colimit_{K2 ⊆ U} F(U) (moraly because all the colimits are taken over (K1 ⊆ U1, K2 ⊆ U2) and the suitable projections are added.)-/
 @[simps!]
 def colimFUInterWCPt : WalkingCospan ⥤ C := cospan (colimMap ( Functor.whiskerRight (jLToJO K1 K2) F)) (colimMap ( Functor.whiskerRight (jRToJO K1 K2) F))
+/-
+@[simps!]
+def colimFUInterWCPt2 : WalkingCospan ⥤ C := cospan (FtoFInfLeft (AlphaUpStar.obj F) K1 K2) (FtoFInfRight (AlphaUpStar.obj F) K1 K2)
+
+def colimFUInterWCι2 : FUInterWC F K1 K2 ⟶ (Functor.const (KsubU_cat K1 × KsubU_cat K2 )ᵒᵖ).obj (colimFUInterWCPt2 F K1 K2) where
+  app U := by
+    apply (cospanCompIso _ _ _).hom ≫ _
+    refine natTransCospan ?_ ?_ ?_ ?_ ?_
+    dsimp
+    · exact colimit.ι (FU K1 F) (op U.unop.1)
+    · exact colimit.ι (FU (K1 ⊓ K2) F) ((subK1SubK2toSubK1InterK2 K1 K2).op.obj U)
+    · exact colimit.ι (FU K2 F) (op U.unop.2)
+    · sorry
+    · sorry-/
 
 set_option backward.isDefEq.respectTransparency false in
 /-- the natural transformation that makes colimFUInterWCPt a Cocone over FUInterWC-/

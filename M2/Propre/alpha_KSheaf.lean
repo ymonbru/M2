@@ -18,8 +18,8 @@ open TopCat.Presheaf
 
 --variable (F : Sheaf A (of X))
 
-def alphaUpStar : Sheaf A (of X) ⥤ KSheaf A X := by
-  apply ObjectProperty.lift _ (Sheaf.forget A (of X) ⋙ TopCat.Presheaf.alphaUpStar)
+def toSheaf [AB5OfSize.{w, w, v, u} A]: Sheaf A (of X) ⥤ KSheaf A (of X) := by
+  apply ObjectProperty.lift _ (Sheaf.forget A (of X) ⋙ toKPresheafFunctor)
   intro F
   constructor
   · apply Nonempty.intro
@@ -27,10 +27,8 @@ def alphaUpStar : Sheaf A (of X) ⥤ KSheaf A X := by
       apply Sheaf.isTerminalOfBotCover F (⊥ : Opens X)
       intro _ h
       rcases h
-
     apply IsTerminal.ofIso this
-
-    apply @asIso _ _ _ _ (((forget A (of X)).obj F).alphaUpStarObjObj_ι (op (⊥ : (⊥ : Compacts X).openNhds ))) (by
+    apply @asIso _ _ _ _ (((forget A (of X)).obj F).ιToKPresheafFunctorObjObj (⊥ : (⊥ : Compacts X).openNhds )) (by
       apply isIso_ι_of_isTerminal _ _
       apply IsInitial.op
       exact instIsInitialElemOpensOpenNhdsBot)
@@ -44,10 +42,15 @@ def alphaUpStar : Sheaf A (of X) ⥤ KSheaf A X := by
       let K := (K1.openNhds × K4.openNhds)ᵒᵖ
       let Diag : J ⥤ K ⥤ A := sorry
 
-      #check IsLimitConeOfColimF (F := Diag)
+      #check IsLimitConeOfColimF (J := WalkingCospan) (K := (K1.openNhds × K4.openNhds)ᵒᵖ) (F := by
+
+
+        sorry)
+
+
       sorry
     · constructor
-      aesop
+      sorry
   · sorry
 
 #min_imports
