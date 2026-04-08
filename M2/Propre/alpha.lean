@@ -1,7 +1,7 @@
 import M2.Propre.KSheaf
 import Mathlib.Topology.Sheaves.Presheaf
 
-open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite TopCat
+open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite TopCat Opens
 
 universe u v w
 
@@ -86,7 +86,7 @@ def toKPresheafFunctorMapApp { F1 F2 : Presheaf A X} (τ : F1 ⟶ F2) (K : Compa
 @[reassoc (attr := simp)]
 lemma ι_toKPresheafFunctorMapApp { F1 F2 : Presheaf A X} (τ : F1 ⟶ F2) {K : Compacts X} (U : K.openNhds) : F1.ιToKPresheafFunctorObjObj U ≫ toKPresheafFunctorMapApp τ K = τ.app (op U.val) ≫ F2.ιToKPresheafFunctorObjObj U := Limits.ι_colimMap _ _
 
-attribute [local simp] Quiver.Hom.baseChangeOpenNhds in
+attribute [local simp] baseChangeOpenNhds in
 /-- The natural transformation between Kpresheaves induced by a natural transformation between their coresponding presheaves.-/
 @[simps]
 def toKPresheafFunctorMap {F1 F2 : Presheaf A X} (τ : F1 ⟶ F2) : F1.toKPresheafFunctorObj ⟶ F2.toKPresheafFunctorObj where
@@ -178,7 +178,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def homEquivToFunCone : Cone <| (Subtype.mono_coe U.compactInsd).functor.op ⋙ G where
   pt := F.obj (op U)
-  π.app K := F.ιToKPresheafFunctorObjObj ( K.unop.toOpenNhds) ≫ τ.app (op K.unop.val)
+  π.app K := F.ιToKPresheafFunctorObjObj ( toOpenNhds K.unop) ≫ τ.app (op K.unop.val)
   π.naturality {K L} i:= by
     simp [← τ.naturality]
     rfl
@@ -190,13 +190,13 @@ def homEquivToFun : F ⟶ toPresheafFunctor.obj G where
  naturality {U V} i := by
   apply toPresheafFunctorObjObj_hom_ext
   intro K
-  simpa [Quiver.Hom.baseChangeCompactInsd] using toKPresheafFunctorObjObj_w_assoc _ (show op (i.unop.baseChangeCompactInsd K).toOpenNhds ⟶ op (Subtype.toOpenNhds K) from i) _
+  simpa [baseChangeCompactInsd] using toKPresheafFunctorObjObj_w_assoc _ (show op (toOpenNhds (baseChangeCompactInsd i.unop K)) ⟶ op (toOpenNhds K) from i) _
 
 set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def homEquivInvFunCocone : Cocone <| (Subtype.mono_coe K.openNhds).functor.op ⋙ F where
   pt := G.obj (op K)
-  ι.app U := σ.app _ ≫ G.πToPresheafFunctorObjObj (U.unop.toCompactInsd)
+  ι.app U := σ.app _ ≫ G.πToPresheafFunctorObjObj (toCompactInsd U.unop)
 
 set_option backward.isDefEq.respectTransparency false in
 @[simps]
@@ -205,7 +205,7 @@ def homEquivInvFun : toKPresheafFunctor.obj F ⟶ G where
  naturality {K L} i := by
   apply toKPresheafFunctorObjObj_hom_ext
   intro U
-  simpa [Quiver.Hom.baseChangeOpenNhds] using whisker_eq _ (toPresheafFunctorObjObj_w G  (show op U.toCompactInsd ⟶ op (i.unop.baseChangeOpenNhds U).toCompactInsd from i)).symm
+  simpa [baseChangeOpenNhds] using whisker_eq _ (toPresheafFunctorObjObj_w G  (show op (toCompactInsd U) ⟶ op (toCompactInsd (baseChangeOpenNhds i.unop U)) from i)).symm
 
 variable (F) in
 set_option backward.isDefEq.respectTransparency false in

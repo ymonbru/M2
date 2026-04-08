@@ -66,8 +66,7 @@ lemma is_compactNhds_of_isopenRcNhds {K : Compacts X} {U : Opens X} (h : U ∈ K
   apply Filter.sets_of_superset
   · apply IsOpen.mem_nhds
     · exact U.is_open'
-    · apply Compacts.subset_of_mem_openRcNhds h
-      exact Subtype.coe_prop _
+    · exact Compacts.subset_of_mem_openRcNhds h ( Subtype.coe_prop _)
   · exact subset_closure
 
 /-- The converting map from relatively compact opens neighbourhood of a compact subset to its opens neighbourhood-/
@@ -87,9 +86,8 @@ instance (K : Compacts X): IsCodirectedOrder  K.openRcNhds where
       apply IsCompact.of_isClosed_subset
       · apply IsCompact.inter
         apply compactclosure_of_mem_openRcNhds
-        exact Subtype.coe_prop U1
-        apply compactclosure_of_mem_openRcNhds
-        exact Subtype.coe_prop U2
+        · exact Subtype.coe_prop U1
+        · exact compactclosure_of_mem_openRcNhds U2.coe_prop
       · exact isClosed_closure
       · apply closure_inter_subset_inter_closure
       apply le_inf
@@ -102,8 +100,7 @@ instance {K : Compacts X} [T2Space X] [LocallyCompactSpace X]: K.mono_oRcNhds_to
   apply (Monotone.initial_functor_iff _).2
   intro U
   obtain ⟨L, h1, h2, h3⟩ := exists_compact_between K.isCompact U.val.isOpen U.property
-  use ⟨⟨interior L, isOpen_interior⟩, ⟨IsCompact.of_isClosed_subset h1 isClosed_closure
-          (closure_minimal interior_subset (IsCompact.isClosed h1)), h2⟩⟩
+  use ⟨⟨interior L, isOpen_interior⟩, ⟨IsCompact.of_isClosed_subset h1 isClosed_closure (closure_minimal interior_subset (IsCompact.isClosed h1)), h2⟩⟩
   apply Set.Subset.trans interior_subset h3
 
 instance {K : Compacts X} [T2Space X] : K.mono_oRcNhds_to_compactNhds.functor.Initial := by
@@ -121,28 +118,28 @@ namespace TopologicalSpace.Opens
 /-- The set of compacts inside an open subset.-/
 def compactInsd (U : Opens X) : Set (Compacts X) := setOf (fun K ↦ K.carrier ⊆ U.carrier)
 
-end TopologicalSpace.Opens
-
-namespace  Subtype
-
 /-If K is a compact subset insde an open subset U, then U has a structure of open neighbourhood of K.-/
 def toOpenNhds {U : Opens X } (K : U.compactInsd) : (K.val).openNhds := ⟨U, K.property⟩
+
+/-- If U is a open subset included in a open subset V then there is a map sending compacts inside U to the ones inside V.-/
+def baseChangeCompactInsd {U V : Opens X} (h : U ⟶ V) : U.compactInsd → V.compactInsd := fun ⟨K,hK⟩ => ⟨K, fun _ hx => by
+  apply Set.mem_of_subset_of_mem (leOfHom h) (hK hx)⟩
+
+lemma monoBaseChangeCompactInsd {U V : Opens X} (h : U ⟶ V) : Monotone <| baseChangeCompactInsd h := fun  _ _ hKL _ hx => SetLike.mem_coe.mpr (hKL hx)
+
+end TopologicalSpace.Opens
+
+namespace TopologicalSpace.Compacts
 
 /-- If U is an open neighbourhood of K, then K has a structure of compact insde U.-/
 def toCompactInsd {K : Compacts X} (U : K.openNhds) : (U.val).compactInsd := ⟨K, U.property⟩
 
-end Subtype
-
 /-- If K is a compact subset included in a compact subset L then there is a map sending open neighbourhoods of L to the ones of K.-/
-def Quiver.Hom.baseChangeOpenNhds {K L : Compacts X} (h : K ⟶ L) : L.openNhds → K.openNhds := fun ⟨U,hU⟩ => ⟨U, fun _ hx => Set.mem_of_subset_of_mem hU (leOfHom h hx)⟩
+def baseChangeOpenNhds {K L : Compacts X} (h : K ⟶ L) : L.openNhds → K.openNhds := fun ⟨U,hU⟩ => ⟨U, fun _ hx => Set.mem_of_subset_of_mem hU (leOfHom h hx)⟩
 
-lemma monoBaseChangeOpenNhds {K L : Compacts X} (h : K ⟶ L) : Monotone <| h.baseChangeOpenNhds := fun  _ _ hUV _ hx => SetLike.mem_coe.mpr (hUV hx)
+lemma monoBaseChangeOpenNhds {K L : Compacts X} (h : K ⟶ L) : Monotone <| baseChangeOpenNhds h := fun  _ _ hUV _ hx => SetLike.mem_coe.mpr (hUV hx)
 
-/-@[simp]
-lemma baseChangeOpenNhds_comp {K L M : Compacts X} (h : K ⟶ L) (k : L ⟶ M) (U : M.openNhds) : (h ≫ k).baseChangeOpenNhds U = h.baseChangeOpenNhds (k.baseChangeOpenNhds U) := by rfl-/
+@[simp]
+lemma baseChangeOpenNhds_comp {K L M : Compacts X} (h : K ⟶ L) (k : L ⟶ M) (U : M.openNhds) : baseChangeOpenNhds (h ≫ k) U = baseChangeOpenNhds h (baseChangeOpenNhds k U) := by rfl
 
-/-- If U is a open subset included in a open subset V then there is a map sending compacts inside U to the ones inside V.-/
-def Quiver.Hom.baseChangeCompactInsd {U V : Opens X} (h : U ⟶ V) : U.compactInsd → V.compactInsd := fun ⟨K,hK⟩ => ⟨K, fun _ hx => by
-  apply Set.mem_of_subset_of_mem (leOfHom h) (hK hx)⟩
-
-lemma monoBaseChangeCompactInsd {U V : Opens X} (h : U ⟶ V) : Monotone <| h.baseChangeCompactInsd := fun  _ _ hKL _ hx => SetLike.mem_coe.mpr (hKL hx)
+end TopologicalSpace.Compacts

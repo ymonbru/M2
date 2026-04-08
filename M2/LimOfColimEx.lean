@@ -7,6 +7,8 @@ import Mathlib.Topology.Sheaves.SheafCondition.PairwiseIntersections
 
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite
 
+
+
 noncomputable section
 
 universe u v w z
