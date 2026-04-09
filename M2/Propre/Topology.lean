@@ -108,9 +108,7 @@ instance {K : Compacts X} [T2Space X] : K.mono_oRcNhds_to_compactNhds.functor.In
   intro L
   obtain ⟨U, h1, h2⟩ := exists_open_nhds_sub_compact_nhds L
   have h3 : closure U.carrier ⊆ L.1.carrier := (IsClosed.closure_subset_iff (IsCompact.isClosed L.1.isCompact') ).2 h2
-  use ⟨U, ⟨ IsCompact.of_isClosed_subset L.1.isCompact' isClosed_closure h3, h1⟩⟩
-  exact h3
-
+  exact ⟨⟨U, ⟨ IsCompact.of_isClosed_subset L.1.isCompact' isClosed_closure h3, h1⟩⟩, h3⟩
 end TopologicalSpace.Compacts
 
 namespace TopologicalSpace.Opens

@@ -33,7 +33,7 @@ def union : K1.openNhds × K2.openNhds ⥤ Opens X where
   map i := homOfLE (sup_le_sup (leOfHom i.1) (leOfHom i.2))
 
 @[simps!]
-def DiagO : WalkingCospan ⥤ (K1.openNhds × K2.openNhds)ᵒᵖ ⥤ (Opens X)ᵒᵖ := cospan (X := (forgetRight K1 K2).op) (Y := (forgetLeft K1 K2).op) (Z := (inter K1 K2).op) (NatTrans.op ⟨fun U => homOfLE (inf_le_right ),by aesop_cat⟩) (NatTrans.op ⟨fun U => homOfLE (inf_le_left),by aesop_cat⟩)
+def DiagO : WalkingCospan ⥤ (K1.openNhds × K2.openNhds)ᵒᵖ ⥤ (Opens X)ᵒᵖ := cospan (X := (forgetLeft K1 K2).op) (Y := (forgetRight K1 K2).op) (Z := (inter K1 K2).op) (NatTrans.op ⟨fun U => homOfLE (inf_le_left ),by aesop_cat⟩) (NatTrans.op ⟨fun U => homOfLE (inf_le_right),by aesop_cat⟩)
 
 /-def DiagO : (K1.openNhds × K2.openNhds)ᵒᵖ ⥤ WalkingCospan ⥤ (Opens X)ᵒᵖ  where
   obj U := cospan (op (homOfLE inf_le_left): op U.unop.1.val ⟶ op (U.unop.1.val ⊓ U.unop.2.val) ) (op (homOfLE inf_le_right ): op U.unop.2.val ⟶ op (U.unop.1.val ⊓ U.unop.2.val))
@@ -44,52 +44,68 @@ def DiagO : WalkingCospan ⥤ (K1.openNhds × K2.openNhds)ᵒᵖ ⥤ (Opens X)�
     exact inf_le_inf (leOfHom i.unop.1) (leOfHom i.unop.2)-/
 
 @[simps!]
-def Diag : WalkingCospan ⥤ (K1.openNhds × K2.openNhds)ᵒᵖ  ⥤ A :=
-  let W := (Functor.whiskeringRight (K1.openNhds × K2.openNhds)ᵒᵖ _ _).obj F;
-  ((Functor.whiskeringRight WalkingCospan _ _).obj W).obj (DiagO K1 K2)
+def Diag : WalkingCospan ⥤ (K1.openNhds × K2.openNhds)ᵒᵖ  ⥤ A := ((Functor.whiskeringRight WalkingCospan _ _).obj ((Functor.whiskeringRight (K1.openNhds × K2.openNhds)ᵒᵖ _ _).obj F)).obj (DiagO K1 K2)
 
 def LjD : Cone (Diag F K2 K3) where
   pt := (union K2 K3).op ⋙ F
   π:= by
+
     refine cospanHomMk ?_ ?_ ?_ ?_ ?_
     · apply Functor.whiskerRight
       exact NatTrans.op ⟨fun U => homOfLE (inf_le_sup),by aesop_cat⟩
     · apply Functor.whiskerRight
-      exact NatTrans.op ⟨fun U => homOfLE (le_sup_right),by aesop_cat⟩
-    · apply Functor.whiskerRight
       exact NatTrans.op ⟨fun U => homOfLE (le_sup_left),by aesop_cat⟩
-    · ext
-      simp
-      rw [← F.map_comp]
-      rfl
-    · ext
-      simp
-      rw [← F.map_comp]
-      rfl
+    · apply Functor.whiskerRight
+      exact NatTrans.op ⟨fun U => homOfLE (le_sup_right),by aesop_cat⟩
+    repeat ext; simp; rw [← F.map_comp]; rfl
 
-set_option backward.isDefEq.respectTransparency false in
-def CategoryTheory.Limits.Cone.eval {J K C : Type*} [Category J] [Category K] [Category C] { F : J ⥤ K ⥤ C } (c : Cone F) (U : K ) : (Cone (F.flip.obj U)) where
+@[simps]
+def CategoryTheory.Limits.Cone.eval {J K C : Type*} [Category J] [Category K] [Category C] { F : J ⥤ K ⥤ C } (c : Cone F) (U : K) : Cone (F.flip.obj U) where
   pt := c.pt.obj U
   π.app j := (c.π.app j).app U
-  π.naturality {j k} f:= by
+  π.naturality {_ _} _:= by
     dsimp
-    rw [← NatTrans.comp_app, c.π.naturality' f]
+    rw [← NatTrans.comp_app, c.w _]
     simp
+
+def CategoryTheory.Limits.Cone.evalHom {J K C : Type*} [Category J] [Category K] [Category C] { F : J ⥤ K ⥤ C } (c : Cone F) {U V: K} (i : U ⟶ V) : (Cone.postcompose (F.flip.map i)).obj (c.eval U) ⟶ c.eval V where
+  hom := c.pt.map i
+
 
 
 
 def hLjD (F : Sheaf A (of X)): IsLimit (LjD F.obj K2 K3) where
-  lift s := ⟨fun U => by
+  lift s := ⟨fun U =>
+      let i : cospan (F.obj.map (homOfLE (inf_le_left (a := U.unop.1.val) (b := U.unop.2.val))).op) (F.obj.map (homOfLE inf_le_right).op) ≅ (Diag F.obj K2 K3).flip.obj U:= cospanIsoMk (Iso.refl _ ) (Iso.refl _ ) (Iso.refl _ )
+      let c := (Cone.postcomposeEquivalence i).inverse.obj (s.eval U)
+      (Sheaf.isLimitPullbackCone F U.unop.1.val U.unop.2.val).lift c
+      --(Sheaf.isLimitPullbackCone F U.unop.1.val U.unop.2.val).lift ((Cone.postcomposeEquivalence (cospanIsoMk (Iso.refl _ ) (Iso.refl _ ) (Iso.refl _ ) :cospan (F.obj.map (homOfLE (inf_le_left (a := U.unop.1.val) (b := U.unop.2.val))).op) (F.obj.map (homOfLE inf_le_right).op) ≅ (Diag F.obj K2 K3).flip.obj U )).inverse.obj (s.eval U))
 
-      let c : PullbackCone (F.obj.map (homOfLE (inf_le_left (a := U.unop.1.val) (b := U.unop.2.val))).op) (F.obj.map (homOfLE inf_le_right).op) := by
-        unfold PullbackCone
-        let c := s.eval U
-        unfold Diag DiagO at c
-        simp at c
-        exact c
-      let c:= s.eval U
+      ,by
+        intro U V f
+        let i : cospan (F.obj.map (homOfLE (inf_le_left (a := U.unop.1.val) (b := U.unop.2.val))).op) (F.obj.map (homOfLE inf_le_right).op) ≅ (Diag F.obj K2 K3).flip.obj U:= cospanIsoMk (Iso.refl _ ) (Iso.refl _ ) (Iso.refl _ )
+        let c := (Cone.postcomposeEquivalence i).inverse.obj (s.eval U)
 
-      exact (Sheaf.isLimitPullbackCone F U.unop.1.val U.unop.2.val).lift c,sorry⟩
+
+        beta_reduce
+        apply Eq.trans
+
+        apply (F.isLimitPullbackCone U.unop.1.val U.unop.2.val).uniq (c.extend (s.pt.map f))
+
+
+        apply IsLimit.hom_ext (F.isLimitPullbackCone V.unop.1.val V.unop.2.val)
+        rintro (j | j |j)
+        · simp
+
+          simp [LjD]
+
+
+          rw [← F.obj.map_comp]
+
+          sorry
+        dsimp
+        simp
+        sorry⟩
     --sorry
 
 def LkD : Cocone (Diag F K2 K3).flip where

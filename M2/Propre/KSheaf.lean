@@ -88,5 +88,3 @@ noncomputable def hom_K_ext (P : KSheaf A X) {K : Compacts X}  {W : A} {f f' : P
 end KSheaf
 
 end TopCat
-
-#min_imports

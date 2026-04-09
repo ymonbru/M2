@@ -222,9 +222,7 @@ attribute [local simp] homEquiv in
 def coreHomEquiv : Adjunction.CoreHomEquiv (toKPresheafFunctor (A := A) (X := X)) toPresheafFunctor where
 homEquiv := adjunction.homEquiv
 
-/-- The adjunction between α^* and α_*-/
+/-- The adjunction between `toKpresheafFunctor` and `toPresheafFunctor`-/
 def Adjunction : (toKPresheafFunctor (A := A) (X := X)) ⊣ (toPresheafFunctor ) := Adjunction.mkOfHomEquiv coreHomEquiv
 
 end TopCat.KPresheaf.adjunction
-
-#min_imports
