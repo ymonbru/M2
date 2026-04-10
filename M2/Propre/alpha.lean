@@ -80,6 +80,9 @@ def toKPresheafFunctorObj (F : Presheaf A X) : KPresheaf A X where
   obj K := F.toKPresheafFunctorObjObj (K.unop)
   map i := F.toKPresheafFunctorObjMap i.unop
 
+@[simp]
+lemma toKPresheafFunctorObjMap_comp {K L M : Compacts X} (i : K ⟶ L) (j : L ⟶ M) : F.toKPresheafFunctorObjMap (i ≫ j) = F.toKPresheafFunctorObjMap j ≫ F.toKPresheafFunctorObjMap i := F.toKPresheafFunctorObj.map_comp _ _
+
 /-- The `.app` component of `TopCat.Presheaf.toKPresheafFunctorMap`.-/
 def toKPresheafFunctorMapApp { F1 F2 : Presheaf A X} (τ : F1 ⟶ F2) (K : Compacts X): F1.toKPresheafFunctorObjObj K ⟶ F2.toKPresheafFunctorObjObj K := colimMap <| Functor.whiskerLeft _ τ
 

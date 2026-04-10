@@ -358,8 +358,6 @@ def limFUInterWCFlipLim : IsLimit (limFUInterWCFlip F.obj K1 K2) where
 /-- A choice of limit of the diagram U ⥤ colimit_{K1 ⊆ U}F(U) → colimit_{K1 ∩ K2 ⊆ U}F(U) ← colimit_{K2 ⊆ U} F(U)-/
 def limColimFUCap : Cone ((colimFUInterWC F.obj K1 K2 ).pt) := limit.cone ((colimFUInterWC F.obj K1 K2 ).pt)
 
-variable (s : Cone (colimFUInterWC F.obj K1 K2).pt)
-
 /-- The evidence that limColimFUCap is a limit-/
 def limColimFUCapIsLim : IsLimit (limColimFUCap K1 K2 F ) := limit.isLimit ((colimFUInterWC F.obj K1 K2 ).pt)
 

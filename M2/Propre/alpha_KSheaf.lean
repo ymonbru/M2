@@ -49,7 +49,6 @@ def Diag : WalkingCospan ⥤ (K1.openNhds × K2.openNhds)ᵒᵖ  ⥤ A := ((Func
 def LjD : Cone (Diag F K2 K3) where
   pt := (union K2 K3).op ⋙ F
   π:= by
-
     refine cospanHomMk ?_ ?_ ?_ ?_ ?_
     · apply Functor.whiskerRight
       exact NatTrans.op ⟨fun U => homOfLE (inf_le_sup),by aesop_cat⟩
@@ -59,7 +58,7 @@ def LjD : Cone (Diag F K2 K3) where
       exact NatTrans.op ⟨fun U => homOfLE (le_sup_right),by aesop_cat⟩
     repeat ext; simp; rw [← F.map_comp]; rfl
 
-@[simps]
+/-@[simps]
 def CategoryTheory.Limits.Cone.eval {J K C : Type*} [Category J] [Category K] [Category C] { F : J ⥤ K ⥤ C } (c : Cone F) (U : K) : Cone (F.flip.obj U) where
   pt := c.pt.obj U
   π.app j := (c.π.app j).app U
@@ -69,13 +68,13 @@ def CategoryTheory.Limits.Cone.eval {J K C : Type*} [Category J] [Category K] [C
     simp
 
 def CategoryTheory.Limits.Cone.evalHom {J K C : Type*} [Category J] [Category K] [Category C] { F : J ⥤ K ⥤ C } (c : Cone F) {U V: K} (i : U ⟶ V) : (Cone.postcompose (F.flip.map i)).obj (c.eval U) ⟶ c.eval V where
-  hom := c.pt.map i
+  hom := c.pt.map i-/
 
 
 
 
 def hLjD (F : Sheaf A (of X)): IsLimit (LjD F.obj K2 K3) where
-  lift s := ⟨fun U =>
+  lift s := sorry/-⟨fun U =>
       let i : cospan (F.obj.map (homOfLE (inf_le_left (a := U.unop.1.val) (b := U.unop.2.val))).op) (F.obj.map (homOfLE inf_le_right).op) ≅ (Diag F.obj K2 K3).flip.obj U:= cospanIsoMk (Iso.refl _ ) (Iso.refl _ ) (Iso.refl _ )
       let c := (Cone.postcomposeEquivalence i).inverse.obj (s.eval U)
       (Sheaf.isLimitPullbackCone F U.unop.1.val U.unop.2.val).lift c
@@ -90,7 +89,7 @@ def hLjD (F : Sheaf A (of X)): IsLimit (LjD F.obj K2 K3) where
         beta_reduce
         apply Eq.trans
 
-        apply (F.isLimitPullbackCone U.unop.1.val U.unop.2.val).uniq (c.extend (s.pt.map f))
+        --apply (F.isLimitPullbackCone U.unop.1.val U.unop.2.val).uniq (c.extend (s.pt.map f))
 
 
         apply IsLimit.hom_ext (F.isLimitPullbackCone V.unop.1.val V.unop.2.val)
@@ -106,18 +105,28 @@ def hLjD (F : Sheaf A (of X)): IsLimit (LjD F.obj K2 K3) where
         dsimp
         simp
         sorry⟩
-    --sorry
+    --sorry-/
 
+@[simps]
 def LkD : Cocone (Diag F K2 K3).flip where
-  pt := cospan (F.toKPresheafFunctorObjMap (homOfLE h.le₁₃)) (F.toKPresheafFunctorObjMap (homOfLE h.le₁₂))
+  pt := cospan (F.toKPresheafFunctorObjMap (homOfLE h.le₁₂)) (F.toKPresheafFunctorObjMap (homOfLE h.le₁₃))
   ι.app U := by
     refine cospanHomMk ?_ ?_ ?_ ?_ ?_
     · exact  F.ιToKPresheafFunctorObjObj ⟨_,by
       apply Set.subset_inter
       exact Set.Subset.trans h.le₁₂ U.unop.1.property
       exact Set.Subset.trans h.le₁₃ U.unop.2.property⟩
-    · exact  F.ιToKPresheafFunctorObjObj ⟨_, U.unop.2.property⟩
     · exact  F.ιToKPresheafFunctorObjObj ⟨_, U.unop.1.property⟩
+    · exact  F.ιToKPresheafFunctorObjObj ⟨_, U.unop.2.property⟩
+
+    · simp
+      unfold TopCat.Presheaf.ιToKPresheafFunctorObjObj
+      forceColimW
+
+      apply op
+      apply homOfLE
+      simp [baseChangeOpenNhds]
+      exact Subtype.mk_le_mk.mpr inf_le_left
 
     · simp [Diag, DiagO, ]
       unfold TopCat.Presheaf.ιToKPresheafFunctorObjObj
@@ -127,37 +136,23 @@ def LkD : Cocone (Diag F K2 K3).flip where
       apply homOfLE
       simp [baseChangeOpenNhds]
       exact Subtype.mk_le_mk.mpr inf_le_right
-
-    · simp [Diag, DiagO, ]
-      unfold TopCat.Presheaf.ιToKPresheafFunctorObjObj
+  ι.naturality {U V} i := by
+    ext (x|x|x)
+    · simp [TopCat.Presheaf.ιToKPresheafFunctorObjObj]
       forceColimW
-
       apply op
       apply homOfLE
-      simp [baseChangeOpenNhds]
-      exact Subtype.mk_le_mk.mpr inf_le_left
-  ι.naturality {U V} i := by
-    simp [Diag, DiagO]
-    ext x
-    match x with
-      | .one =>
-        simp [TopCat.Presheaf.ιToKPresheafFunctorObjObj]
-        forceColimW
-        apply op
-        apply homOfLE
-        exact Subtype.mk_le_mk.mpr (inf_le_inf (leOfHom i.unop.1) (leOfHom i.unop.2) )
-      | .left =>
-        simp [TopCat.Presheaf.ιToKPresheafFunctorObjObj]
-        forceColimW
-        apply op
-        apply homOfLE
-        exact Subtype.mk_le_mk.mpr (leOfHom i.unop.2)
-      | .right =>
-        simp [TopCat.Presheaf.ιToKPresheafFunctorObjObj]
-        forceColimW
-        apply op
-        apply homOfLE
-        exact Subtype.mk_le_mk.mpr (leOfHom i.unop.1)
+      exact Subtype.mk_le_mk.mpr (inf_le_inf (leOfHom i.unop.1) (leOfHom i.unop.2) )
+    · simp [TopCat.Presheaf.ιToKPresheafFunctorObjObj]
+      forceColimW
+      apply op
+      apply homOfLE
+      exact Subtype.mk_le_mk.mpr (leOfHom i.unop.1)
+    · simp [TopCat.Presheaf.ιToKPresheafFunctorObjObj]
+      forceColimW
+      apply op
+      apply homOfLE
+      exact Subtype.mk_le_mk.mpr (leOfHom i.unop.2)
 
 def hLkD : IsColimit (LkD F K1 K2 K3 K4 h) where
   desc := sorry
@@ -166,16 +161,31 @@ def LkLjD : Cocone (LjD F K1 K2).pt := colimit.cocone _
 
 def hLkLjD : IsColimit (LkLjD F K1 K2 ) := colimit.isColimit (LjD F K1 K2).pt
 
+
+set_option backward.isDefEq.respectTransparency false in
+@[simps]
 def LjLkD : Cone (LkD F K1 K2 K3 K4 h).pt where
   pt := F.toKPresheafFunctorObjObj K4
   π.app x := match x with
     |.one => F.toKPresheafFunctorObjMap (homOfLE <| h.le₁₂.trans h.le₂₄)
-    |.left =>  F.toKPresheafFunctorObjMap (homOfLE <| h.le₃₄)
-    |.right =>  F.toKPresheafFunctorObjMap (homOfLE <| h.le₂₄)
-  π.naturality := by sorry
+    |.left =>  F.toKPresheafFunctorObjMap (homOfLE <| h.le₂₄)
+    |.right =>  F.toKPresheafFunctorObjMap (homOfLE <| h.le₃₄)
+  π.naturality {x y} := by
+    rintro (f| f| f)
+    repeat aesop_cat
+
 
 def hLjLkD : IsLimit (LjLkD F K1 K2 K3 K4 h) where
-  lift := by sorry
+  lift s := by
+    simp only [LkD ]at s
+    #check (F.isColimitToKPresheafFunctorObjObjCocone K4).desc
+    simp
+    let f := s.π.app .one
+    apply f ≫ F.toKPresheafFunctorObjMap ?_
+
+
+
+    sorry
 
 
 
