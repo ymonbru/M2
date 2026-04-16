@@ -63,8 +63,8 @@ There is no coresponding Grothendieck topology on compact subsets, in particular
 structure IsKSheaf (P : KPresheaf A X) : Prop where
   nonempty_isTerminal : Nonempty (IsTerminal (P.obj (op ⊥)))
   isPullback {K₁ K₂ K₃ K₄ : Compacts X} (h : Lattice.BicartSq K₁ K₂ K₃ K₄) :
-    IsPullback (P.map ((homOfLE h.le₃₄).op)) (P.map ((homOfLE h.le₂₄).op))
-      (P.map ((homOfLE h.le₁₃).op)) (P.map ((homOfLE h.le₁₂).op))
+    IsPullback (P.map ((homOfLE h.le₂₄).op)) (P.map ((homOfLE h.le₃₄).op))
+      (P.map ((homOfLE h.le₁₂).op)) (P.map ((homOfLE h.le₁₃).op))
   nonempty_isColimit_coconeOfCompacts (K : Compacts X) :
       Nonempty (IsColimit (P.coconeOfCompacts K))
 

@@ -7,7 +7,6 @@ open Topology CategoryTheory TopologicalSpace Opposite Limits
 
 #check Monotone.final_functor_iff
 -- to put with Monotone.final_functor_iff
--- c'est la même preuve, donc peut être qu'on peut l'avoir avec dual?
 theorem Monotone.initial_functor_iff {J₁ J₂ : Type*} [Preorder J₁] [Preorder J₂] [IsCodirectedOrder J₁] {f : J₁ → J₂} (hf : Monotone f) : hf.functor.Initial ↔ ( ∀ j₁,∃ j₂, f j₂ ≤ j₁) := by
   rw [Functor.initial_iff_of_isCofiltered]
   constructor
@@ -39,9 +38,15 @@ lemma exists_open_nhds_sub_compact_nhds {K : Compacts X} (L : K.compactNhds) : �
 /-- The set of opens neighbourhood of a compact subset.-/
 def openNhds (K : Compacts X) : Set (Opens X) := setOf (fun U ↦ K.carrier ⊆ U.carrier)
 
+instance (K : Compacts X): IsCodirectedOrder  K.openNhds where
+  directed U1 U2 := ⟨⟨U1.val ⊓ U2.val, Set.subset_inter U1.property U2.property⟩,⟨Subtype.mk_le_mk.2 inf_le_left,Subtype.mk_le_mk.2 inf_le_right⟩⟩
+
+instance (K : Compacts X) : Top K.openNhds := ⟨⊤, Set.subset_univ _⟩
+-- in particular K.openNhds is not empty and thus the catgory is cofiltered
+
 instance : Bot (⊥ : Compacts X).openNhds := ⟨⊥, fun _ h => h⟩
 
-instance : IsInitial (⊥ : (⊥ : Compacts X).openNhds ) := by
+instance : IsInitial (⊥ : (⊥ : Compacts X).openNhds) := by
   apply IsInitial.ofUniqueHom
   · intro _ _
     apply eq_of_comp_right_eq
@@ -109,6 +114,7 @@ instance {K : Compacts X} [T2Space X] : K.mono_oRcNhds_to_compactNhds.functor.In
   obtain ⟨U, h1, h2⟩ := exists_open_nhds_sub_compact_nhds L
   have h3 : closure U.carrier ⊆ L.1.carrier := (IsClosed.closure_subset_iff (IsCompact.isClosed L.1.isCompact') ).2 h2
   exact ⟨⟨U, ⟨ IsCompact.of_isClosed_subset L.1.isCompact' isClosed_closure h3, h1⟩⟩, h3⟩
+
 end TopologicalSpace.Compacts
 
 namespace TopologicalSpace.Opens

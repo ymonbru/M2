@@ -145,32 +145,16 @@ variable (K1 K2 : Compacts X)
 def KsubUK1K2ProjLeft : KsubU_cat K1 × KsubU_cat K2 ⥤ KsubU_cat K1 := (CategoryTheory.Prod.fst (KsubU_cat K1) (KsubU_cat K2))
 
 instance : (KsubUK1K2ProjLeft K1 K2).Initial := by
-  apply (Functor.initial_iff_of_isCofiltered _).mpr
-  constructor
-  · intro U
-    use ⟨ U, ⊤⟩
-    apply Nonempty.intro
-    exact  𝟙 _
-  · intro _ V _ _
-    use V
-    use 𝟙 _
-    rfl
+  unfold KsubUK1K2ProjLeft
+  infer_instance
 
 /-- The functor that send the pair (K1 ⊆ U1, K2 ⊆ U2) to K2 ⊆ U2-/
 @[simps!]
 def KsubUK1K2ProjRight : KsubU_cat K1 × KsubU_cat K2 ⥤ KsubU_cat K2 := (CategoryTheory.Prod.snd (KsubU_cat K1) (KsubU_cat K2))
 
 instance : (KsubUK1K2ProjRight K1 K2).Initial := by
-  apply (Functor.initial_iff_of_isCofiltered _).mpr
-  constructor
-  · intro U
-    use ⟨ ⊤, U⟩
-    apply Nonempty.intro
-    exact  𝟙 _
-  · intro _ V _ _
-    use V
-    use 𝟙 _
-    rfl
+  unfold KsubUK1K2ProjRight
+  infer_instance
 
 instance [T2Space X] : (subK1SubK2toSubK1InterK2 K1 K2).Initial := by
   apply (Functor.initial_iff_of_isCofiltered _).mpr
