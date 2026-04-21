@@ -19,21 +19,24 @@ variable (limF : Cone F) (colimF : Cocone F.flip) (colimLimF : Cocone limF.pt) (
 
 variable (hLimF : IsLimit limF) (hColimF : IsColimit colimF) (hColimLimF : IsColimit colimLimF) (hLimColimF : IsLimit limColimF)
 
+/- est-ce qu'il le faut ou pas?
 /-- Translate an isomorphism of cones into an isomorphism between the undeling points-/
 @[simp]
-def IsoConeToIsoPt {F : J ⥤ C} {s t : Cone F} (h : s ≅ t) : s.pt ≅ t.pt where
+def IsoConeToIsoPt {F : J ⥤ C} {s t : Cone F} (h : s ≅ t) : s.pt ≅ t.pt := (Cone.forget F).mapIso h
+  where
   hom := h.hom.hom
   inv := h.inv.hom
 
 /-- Translate an isomorphism of cocones into an isomorphism between the undeling points-/
 @[simp]
-def IsoCoconeToIsoPt {F : J ⥤ C} {s t : Cocone F} (h : s ≅ t) : s.pt ≅ t.pt where
+def Cocone.forget_mapIso {F : J ⥤ C} {s t : Cocone F} (h : s ≅ t) : s.pt ≅ t.pt := (Cocone.forget F).mapIso h
+where
   hom := h.hom.hom
-  inv := h.inv.hom
+  inv := h.inv.hom-/
 
 /-- The isomorphism between limcolim F and colimLim F for any cone and cocones.
 It's composition of (colimitLimitIso F) and the canonicals isomorphisms-/
-noncomputable def limColimFPtIsoColimLimFPt : limColimF.pt ≅ colimLimF.pt := (IsoConeToIsoPt (IsLimit.uniqueUpToIso hLimColimF (limit.isLimit colimF.pt)) ≪≫ HasLimit.isoOfNatIso ( IsoCoconeToIsoPt (IsColimit.uniqueUpToIso hColimF (colimit.isColimit F.flip))) ≪≫ (colimitLimitIso F).symm ≪≫ HasColimit.isoOfNatIso ( IsoConeToIsoPt (IsLimit.uniqueUpToIso hLimF (limit.isLimit F))).symm ≪≫ IsoCoconeToIsoPt (IsColimit.uniqueUpToIso hColimLimF (colimit.isColimit limF.pt)).symm)
+noncomputable def limColimFPtIsoColimLimFPt : limColimF.pt ≅ colimLimF.pt := ((Cone.forget _).mapIso (IsLimit.uniqueUpToIso hLimColimF (limit.isLimit colimF.pt)) ≪≫ HasLimit.isoOfNatIso ( (Cocone.forget _).mapIso (IsColimit.uniqueUpToIso hColimF (colimit.isColimit F.flip))) ≪≫ (colimitLimitIso F).symm ≪≫ HasColimit.isoOfNatIso ( (Cone.forget _).mapIso (IsLimit.uniqueUpToIso hLimF (limit.isLimit F))).symm ≪≫ (Cocone.forget _).mapIso (IsColimit.uniqueUpToIso hColimLimF (colimit.isColimit limF.pt)).symm)
 
 noncomputable def IsLimitConeOfColimF : IsLimit (Cone.extend _ (limColimFPtIsoColimLimFPt limF colimF colimLimF limColimF hLimF hColimF hColimLimF hLimColimF).inv) := IsLimit.extendIso _ hLimColimF
 

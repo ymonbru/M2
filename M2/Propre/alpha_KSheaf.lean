@@ -159,6 +159,15 @@ def CategoryTheory.Limits.Cone.eval {J K C : Type*} [Category J] [Category K] [C
     rw [← NatTrans.comp_app, c.w _]
     simp
 
+@[simps]
+def CategoryTheory.Limits.Cocone.eval {J K C : Type*} [Category J] [Category K] [Category C] { F : J ⥤ K ⥤ C } (c : Cocone F) (U : K) : Cocone (F.flip.obj U) where
+  pt := c.pt.obj U
+  ι.app j := (c.ι.app j).app U
+  ι.naturality {_ _} _:= by
+    dsimp
+    rw [← NatTrans.comp_app, c.w _]
+    simp
+
 /-def CategoryTheory.Limits.Cone.evalHom {J K C : Type*} [Category J] [Category K] [Category C] { F : J ⥤ K ⥤ C } (c : Cone F) {U V: K} (i : U ⟶ V) : (Cone.postcompose (F.flip.map i)).obj (c.eval U) ⟶ c.eval V where
   hom := c.pt.map i-/
 
@@ -282,24 +291,9 @@ def LkD : Cocone (Diag F h).flip where
 def hLkD : IsColimit (LkD F h) where
   desc s := by
     refine cospanHomMk ?_ ?_ ?_ ?_ ?_
-    · exact (Functor.Final.colimitCoconeComp (inter h).op ⟨_, F.isColimitToKPresheafFunctorObjObjCocone K1⟩ ).isColimit.desc ⟨s.pt.obj WalkingCospan.one, ⟨fun U => (s.ι.app U).app .one,by
-        intro _ _ f
-        dsimp
-        rw [ ← s.w f]
-        dsimp [Diag]
-        aesop_cat⟩⟩
-    · exact (Functor.Final.colimitCoconeComp ((CategoryTheory.Prod.fst K2.openNhds K3.openNhds).op) ⟨_, F.isColimitToKPresheafFunctorObjObjCocone K2⟩ ).isColimit.desc ⟨s.pt.obj WalkingCospan.left, ⟨fun U => (s.ι.app U).app .left, by
-        intro _ _ f
-        dsimp
-        rw [ ← s.w f]
-        dsimp [Diag]
-        aesop_cat⟩⟩
-    · exact (Functor.Final.colimitCoconeComp ((CategoryTheory.Prod.snd K2.openNhds K3.openNhds).op) ⟨_, F.isColimitToKPresheafFunctorObjObjCocone K3⟩ ).isColimit.desc ⟨s.pt.obj WalkingCospan.right, ⟨fun U => (s.ι.app U).app .right, by
-        intro U V f
-        dsimp
-        rw [ ← s.w f]
-        dsimp [Diag]
-        aesop_cat⟩⟩
+    · exact (Functor.Final.colimitCoconeComp (inter h).op ⟨_, F.isColimitToKPresheafFunctorObjObjCocone K1⟩ ).isColimit.desc (s.eval .one)
+    · exact (Functor.Final.colimitCoconeComp ((CategoryTheory.Prod.fst K2.openNhds K3.openNhds).op) ⟨_, F.isColimitToKPresheafFunctorObjObjCocone K2⟩ ).isColimit.desc (s.eval .left)
+    · exact (Functor.Final.colimitCoconeComp ((CategoryTheory.Prod.snd K2.openNhds K3.openNhds).op) ⟨_, F.isColimitToKPresheafFunctorObjObjCocone K3⟩ ).isColimit.desc (s.eval .right)
     · apply (Functor.Final.colimitCoconeComp ((CategoryTheory.Prod.fst K2.openNhds K3.openNhds).op) ⟨_, F.isColimitToKPresheafFunctorObjObjCocone K2⟩ ).isColimit.hom_ext
 
       intro U
@@ -307,26 +301,16 @@ def hLkD : IsColimit (LkD F h) where
       dsimp
 
       --let h := (s.ι.app U).naturality WalkingCospan.Hom.inl
-      let hyp := (Functor.Final.colimitCoconeComp (inter h).op ⟨_, F.isColimitToKPresheafFunctorObjObjCocone K1⟩ ).isColimit.fac ⟨s.pt.obj WalkingCospan.one, ⟨fun U => (s.ι.app U).app .one,by
-        intro _ _ f
-        dsimp
-        rw [ ← s.w f]
-        dsimp [Diag]
-        aesop_cat⟩⟩ U
+      let hyp := (Functor.Final.colimitCoconeComp (inter h).op ⟨_, F.isColimitToKPresheafFunctorObjObjCocone K1⟩ ).isColimit.fac (s.eval .one) U
 
-      dsimp [inter] at hyp
+      simp [inter] at hyp
       --unfold inter at hyp
 
       --rw [h]
 
       let h := ((Functor.Final.isColimitWhiskerEquiv (CategoryTheory.Prod.fst ↑K2.openNhds ↑K3.openNhds).op
                 (F.toKPresheafFunctorObjObjCocone K2)).symm
-            (F.isColimitToKPresheafFunctorObjObjCocone K2)).fac ⟨s.pt.obj WalkingCospan.left, ⟨fun U => (s.ι.app U).app .left, by
-        intro _ _ f
-        dsimp
-        rw [ ← s.w f]
-        dsimp [Diag]
-        aesop_cat⟩⟩ U
+            (F.isColimitToKPresheafFunctorObjObjCocone K2)).fac (s.eval .left) U
 
       simp at h
 
@@ -349,15 +333,8 @@ def LjLkD : Cone (LkD F h).pt := limit.cone _
 
 def hLjLkD : IsLimit (LjLkD F h) := limit.isLimit _
 
-lemma CategoryTheory.Limits.ConeMorphism.isIso_of_isIso_hom {C D : Type*} [Category C] [Category D] {F: Functor C D} {s t : Cone F} (τ : s ⟶ t) (h : IsIso τ.hom) : IsIso τ := by
-  constructor
-  obtain ⟨σhom,h1,h2⟩ := h
-  exact ⟨⟨σhom,by
-    intro _
-    rw [← τ.w, ← Category.assoc, h2, Category.id_comp]⟩,⟨by aesop, by aesop⟩⟩
-
 def CategoryTheory.Limits.ConeMorphism.iso_of_iso_hom {C D : Type*} [Category C] [Category D] {F: Functor C D} {s t : Cone F} (τ : s ⟶ t) (h : IsIso τ.hom) : s ≅ t  := by
-  have : IsIso τ := isIso_of_isIso_hom τ h
+  have : IsIso τ := CategoryTheory.Limits.Cone.cone_iso_of_hom_iso τ
   apply asIso τ
 
 namespace TopCat.Sheaf
@@ -393,11 +370,10 @@ def toSheaf [AB5OfSize.{w, w, v, u} A]: Sheaf A (of X) ⥤ KSheaf A (of X) := by
           intro j
           apply (Functor.Final.colimitCoconeComp (union h).op ⟨_, F2.isColimitToKPresheafFunctorObjObjCocone K4⟩ ).isColimit.hom_ext
           intro U
-          simp [limColimFPtIsoColimLimFPt]
+          dsimp [limColimFPtIsoColimLimFPt]
           let hyp := (hLkLjD F2 h).fac (colimit.cocone (LjD F2 h).pt) U
           dsimp [LkLjD ] at hyp
           slice_rhs 1 2 => rw [hyp]
-
           simp [LjD]
           match j with
             |.one =>
