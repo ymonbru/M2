@@ -56,7 +56,6 @@ def match_eq (e : Expr) : Option (List Expr × List Expr) := do
 
 /-- check if the expression correspond to  a ≫ b = c or c = a ≫ b and gives the three morphisms involved -/
 def is_triangle (e : Expr) :  Option ( Expr × Expr × Expr × Bool) := do
-
   guard <| e.isAppOf ``Eq
   let e1 := e.getArg! 1
   let e2 := e.getArg! 2
