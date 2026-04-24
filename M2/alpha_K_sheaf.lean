@@ -5,7 +5,6 @@ import M2.Suffices
 import M2.RCalpha
 import M2.KsheafIso
 import Mathlib.Topology.Sheaves.Stalks
-
 import Mathlib
 
 open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Compacts Opposite TopCat TopCat.Presheaf
@@ -593,7 +592,7 @@ lemma CounitAlphaEq : colimit.desc _ (CounitAlphaV2Cocone K G) = CounitAlphaAppA
         exact colimit.ι_pre (FU K (AlphaDownStarG G.carrier) fun x ↦ true = true) (KsubUPtoQ K (λ _ _ => rfl)).op _
   slice_rhs 1 2 => rw [this]
 
-  simp [AdjAlphaStar, homEquiv]
+  simp
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
@@ -683,7 +682,8 @@ theorem IsoAlphaRcShCoUnit : IsIso ((AdjShAlphaStarRc X C).counit.app G):= by
     apply ((CategoryTheory.NatTrans.isIso_iff_isIso_app) _).2
     intro K
     suffices IsIso (colimit.pre (FU (unop K) (AlphaDownStarG G.carrier) fun x ↦ true = true) (KsubUPtoQ (unop K) _).op ≫
-    ((AdjAlphaStar.homEquiv (AlphaDownStarG G.carrier) G.carrier).symm (𝟙 (AlphaDownStarG G.carrier))).app K) by simpa
+    colimit.desc (FU (unop K) (AlphaDownStarG G.carrier)) (CoconeAFtoG (𝟙 (AlphaDownStarG G.carrier)) (unop K))) by simpa
+
     exact IsoAlphaCounit K.unop G
   apply CategoryTheory.isIso_of_fully_faithful (KsheafToPre X C)
 
