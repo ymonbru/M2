@@ -70,8 +70,8 @@ def Cocone.whisker {D : Type*} [Bicategory D] (E : D ⥤ᵖ B) (c : Cocone F) : 
 
 
 
-variable {B : Type*} [Category B]
-variable {I : LocallyDiscrete B ⥤ᵖ Cat} (c : Cocone I)
+variable {B : Type u1 } [Category.{v1, u1} B]
+variable {I : LocallyDiscrete B ⥤ᵖ Cat.{v2, u2}} (c : Cocone I)
 
 set_option backward.isDefEq.respectTransparency false in
 @[simps]
@@ -138,6 +138,33 @@ variable (F : c.pt ⟶ D)
 
 set_option backward.isDefEq.respectTransparency false in
 lemma hey : truc (c.extend F) = truc c ⋙ F.toFunctor := Functor.ext (by simp) (by simp)
+
+set_option backward.isDefEq.respectTransparency false in
+@[simps]
+noncomputable def CoconeFunctor.colim [HasColimitsOfSize.{v2, u2} c.pt] : B ⥤ c.pt where
+  obj a := colimit (c.ι.app ⟨a⟩).toFunctor
+  map {a b} f := by
+    have : HasColimit.{v2, u2} (c.ι.app { as := b }).toFunctor := by
+      sorry
+    have : HasColimit ((I.map { as := f }).toFunctor ⋙ (c.ι.app { as := b }).toFunctor) := by sorry
+
+    #check I.map
+
+    refine ?_ ≫ colimit.pre (c.ι.app ⟨b⟩).toFunctor (I.map ⟨f⟩).toFunctor
+
+
+
+    apply (HasColimit.isoOfNatIso _ ).hom
+
+
+    --#check (c.ι.naturality ⟨f⟩).symm
+    simp at iso
+    #check Functor.mapIso Cat.Hom.toFunctor
+
+    #check HasColimit.isoOfNatIso iso
+    sorry--(HasColimit.isoOfNatIso (s.iso f).symm).hom ≫ colimit.pre (sD.i _) (I.map f).toFunctor
+  map_id := sorry
+  map_comp := sorry
 
 
 
