@@ -102,14 +102,14 @@ def forceColimWLeft : TacticM Unit := withMainContext do
     |some c =>
       evalTactic <| ← `(tactic| conv_rhs => (rw [ ← CategoryTheory.Limits.Cocone.w ($( ← Term.exprToSyntax c)) $(mkIdent fForce)]))
 
-  evalTactic <| ← `(tactic| apply eq_whisker; first | aesop_cat| skip)
+  evalTactic <| ← `(tactic| first | (apply eq_whisker; first | aesop_cat| skip) | skip)
+  -- it can happend that the previous tactic succed
 
   match ← getUnsolvedGoals with -- maybe the aesop_cat tactic closed everything if the morphism is obvious
         | [] => return
         | _ => -- go to the morphism goal (if it is already solved by the previous simplifications ) and the try to solve it
 
           evalTactic $ ← `(tactic| first | swap| skip)
-
 
           --La il faut trouver un algo intelligent
           evalTactic $ ← `(tactic| first | apply Opposite.op; constructor; apply Quiver.Hom.unop;assumption | apply Opposite.op; constructor; apply CategoryTheory.homOfLE|skip)

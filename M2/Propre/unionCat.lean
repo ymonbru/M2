@@ -5,6 +5,16 @@ import Mathlib
 open CategoryTheory Limits TopologicalSpace Compacts Opposite Functor Pseudofunctor.StrongTrans
 
 universe u1 u2 u3 u4 v1 v2 v3 v4
+
+@[simps]
+def CategoryTheory.Functor.ofCatHom {C D : Cat} : (C ⟶ D) ⥤ (C.1 ⥤ D.1) where
+  obj F := F.toFunctor
+  map {F G} τ := τ.toNatTrans
+
+#check ofCatHom.mapIso
+
+
+
 namespace CategoryTheory.Bicategory
 variable {B C : Type*} [Bicategory B] [Bicategory C]
 variable {F : B ⥤ᵖ C}
@@ -73,9 +83,30 @@ def Cocone.whisker {D : Type*} [Bicategory D] (E : D ⥤ᵖ B) (c : Cocone F) : 
 variable {B : Type u1 } [Category.{v1, u1} B]
 variable {I : LocallyDiscrete B ⥤ᵖ Cat.{v2, u2}} (c : Cocone I)
 
+
+def Cocone.ιF (b : B): I.obj ⟨b⟩ ⥤ c.pt := (c.ι.app ⟨b⟩).toFunctor
+
+@[simps!]
+def Cocone.wF {a b : B} ( f : a ⟶ b) : (I.map ⟨f⟩).toFunctor ⋙ c.ιF b ≅ c.ιF a := Functor.ofCatHom.mapIso (c.ι.naturality ⟨f⟩)
+
+#check c.ι.naturality_id
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma Cocone.idF (b : B) : c.wF (𝟙 b) = isoWhiskerRight (Functor.ofCatHom.mapIso (I.mapId ⟨b⟩)) (c.ιF b) ≪≫ Functor.leftUnitor (c.ιF b) := by
+  ext x
+  simpa using funext_iff.1 (NatTrans.ext_iff.1 (Cat.Hom₂.ext_iff.1 (c.ι.naturality_id ⟨b⟩))) x
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma Cocone.compF {a b d : B} (f : a ⟶ b) (g : b ⟶ d) : c.wF (f ≫ g) = (isoWhiskerRight (ofCatHom.mapIso (I.mapComp ⟨f⟩ ⟨g⟩)) (c.ιF d) ≪≫ (I.map ⟨f⟩).toFunctor.isoWhiskerLeft (c.wF g)) ≪≫ c.wF f := by
+  ext x
+  simpa using funext_iff.1 (NatTrans.ext_iff.1 (Cat.Hom₂.ext_iff.1 (c.ι.naturality_comp ⟨f⟩ ⟨g⟩))) x
+
+
 set_option backward.isDefEq.respectTransparency false in
 @[simps]
-def truc : I.Grothendieck ⥤ c.pt where
+def Cocone.fromGrothendieck : I.Grothendieck ⥤ c.pt where
   obj g := (c.ι.app ⟨g.1⟩).toFunctor.obj g.2
   map {g h} f := (c.ι.naturality f.1.toLoc).inv.toNatTrans.app g.2 ≫ (c.ι.app ⟨h.1⟩).toFunctor.map f.2
   map_id x := by
@@ -87,38 +118,24 @@ def truc : I.Grothendieck ⥤ c.pt where
     rw [this]
     simp
   map_comp {x y z } f g:= by
-
-    suffices (c.ι.app { as := z.base }).toFunctor.map (f ≫ g).fiber = (c.ι.naturality (f ≫ g).base.toLoc).hom.toNatTrans.app x.fiber ≫ ?_ by
+    suffices (c.ι.app { as := z.base }).toFunctor.map (f ≫ g).fiber = (c.ι.naturality (f.1.toLoc ≫ g.1.toLoc)).hom.toNatTrans.app x.fiber ≫ ?_ by
       rw [this, ← Category.assoc]
       simp
       rfl
-
-    let h := c.ι.naturality_comp f.1.toLoc g.1.toLoc
-    --let h := NatTrans.ext_iff.1 (Cat.Hom₂.ext_iff.1 (c.ι.naturality_comp f.1.toLoc g.1.toLoc))
-
+    let h := funext_iff.1 (NatTrans.ext_iff.1 (Cat.Hom₂.ext_iff.1 (c.ι.naturality_comp f.1.toLoc g.1.toLoc))) x.fiber
     simp at h
-
-    have : (c.ι.naturality (f.base.toLoc ≫ g.base.toLoc)).hom = ?_ ≫ (α_ (c.ι.app { as := x.base }) (𝟙 c.pt) (𝟙 c.pt)).inv≫ (ρ_ (c.ι.app { as := x.base } ≫ 𝟙 c.pt)).hom := by
-      --simpa using h
-      sorry
-
-    --rw [← h]
-    sorry
-    sorry
+    rw [h]
+    simp
 
 instance : IsCofilteredOrEmpty I.Grothendieck where
   cone_objs d1 d2 := by
 
-
-
-
     sorry
   cone_maps d1 d2 f1 f2 := by
 
-
     sorry
 
-instance : (truc c).Initial := by
+instance : c.fromGrothendieck.Initial := by
   rw [Functor.initial_iff_of_isCofiltered]
   constructor
   · intro d
@@ -137,37 +154,81 @@ variable (F : c.pt ⟶ D)
 #check Bicategory.Cocone.extend c
 
 set_option backward.isDefEq.respectTransparency false in
-lemma hey : truc (c.extend F) = truc c ⋙ F.toFunctor := Functor.ext (by simp) (by simp)
+lemma hey : (c.extend F).fromGrothendieck = c.fromGrothendieck ⋙ F.toFunctor := Functor.ext (by simp) (by simp)
+
+
+variable [HasColimitsOfSize.{v2, u2} c.pt]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simps]
 noncomputable def CoconeFunctor.colim [HasColimitsOfSize.{v2, u2} c.pt] : B ⥤ c.pt where
-  obj a := colimit (c.ι.app ⟨a⟩).toFunctor
-  map {a b} f := by
-    have : HasColimit.{v2, u2} (c.ι.app { as := b }).toFunctor := by
-      sorry
-    have : HasColimit ((I.map { as := f }).toFunctor ⋙ (c.ι.app { as := b }).toFunctor) := by sorry
+  obj b := colimit (c.ιF b)
+  map {a b} f := (HasColimit.isoOfNatIso (c.wF f).symm).hom ≫ colimit.pre (c.ιF b) (I.map ⟨f⟩).toFunctor
+  map_id b := by
+    ext x
+    simp
+    forceColimW
+  map_comp {a b d} f g := by
+    ext x
+    simp
+    apply whisker_eq
+    apply whisker_eq
+    forceColimW
 
-    #check I.map
+variable [HasColimitsOfSize.{v1, u1} c.pt] [HasColimitsOfSize.{max v1 v2, max u1 u2} c.pt]
 
-    refine ?_ ≫ colimit.pre (c.ι.app ⟨b⟩).toFunctor (I.map ⟨f⟩).toFunctor
+set_option backward.isDefEq.respectTransparency false in
+@[simps]
+noncomputable def bidule : Limits.Cocone (Cocone.fromGrothendieck c) where
+  pt := colimit (CoconeFunctor.colim c)
+  ι.app x := colimit.ι (c.ιF x.1) x.2 ≫ colimit.ι (CoconeFunctor.colim c) x.1
+  ι.naturality {x y } f := by
+    simp
+    sorry
+
+set_option backward.isDefEq.respectTransparency false in
+@[simps]
+def machin (s : Limits.Cocone (Cocone.fromGrothendieck c)) (b : B) : Limits.Cocone (c.ιF b) where
+  pt := s.pt
+  ι.app x := s.ι.app ⟨b,x⟩
+  ι.naturality x y f:= by
+    have : ?_ = s.ι.app { base := b, fiber := x } := by simpa using s.ι.naturality (⟨𝟙 _, ((I.mapId ⟨b⟩).hom).toNatTrans.app x ≫ f⟩ : (⟨b,x⟩ : I.Grothendieck) ⟶ ⟨b,y⟩)
+    rw [← this]
+    suffices (c.ι.naturality (𝟙 { as := b })).hom.toNatTrans.app x = (c.ι.app { as := b }).toFunctor.map ((I.mapId { as := b }).hom.toNatTrans.app x) by
+      rw [← this]
+      simp;rfl
+    simpa using funext_iff.1 (NatTrans.ext_iff.1 ( Cat.Hom₂.ext_iff.1 (c.ι.naturality_id ⟨b⟩))) x
+
+set_option backward.isDefEq.respectTransparency false in
+@[simps]
+noncomputable def machin2 (s : Limits.Cocone (Cocone.fromGrothendieck c)) : Limits.Cocone (CoconeFunctor.colim c) where
+  pt := s.pt
+  ι.app b := colimit.desc _ (machin c s b)
+  ι.naturality {a b} f := by
+    apply colimit.hom_ext
+    intro x
+
+    let h : (⟨a, x⟩ : I.Grothendieck) ⟶ ⟨b, (I.map { as := f }).toFunctor.obj x ⟩ := ⟨f, eqToHom rfl⟩
 
 
+    let hyp := s.ι.naturality h
+    simp at hyp
+    simp [machin]
+    rw [← hyp]
+    simp [h];rfl
 
-    apply (HasColimit.isoOfNatIso _ ).hom
+set_option backward.isDefEq.respectTransparency false in
+noncomputable def biduleColimit : IsColimit (bidule c) where
+  desc s := colimit.desc _ (machin2 c s)
+  uniq s m hm := by
+    apply colimit.hom_ext (F := (CoconeFunctor.colim c))
+    intro b
+    apply colimit.hom_ext
+    intro x
+    simpa using hm ⟨b,x⟩
 
 
-    --#check (c.ι.naturality ⟨f⟩).symm
-    simp at iso
-    #check Functor.mapIso Cat.Hom.toFunctor
-
-    #check HasColimit.isoOfNatIso iso
-    sorry--(HasColimit.isoOfNatIso (s.iso f).symm).hom ≫ colimit.pre (sD.i _) (I.map f).toFunctor
-  map_id := sorry
-  map_comp := sorry
-
-
-
+noncomputable def truc : colimit (CoconeFunctor.colim c) ≅ colimit (Cocone.fromGrothendieck c) := Limits.IsColimit.coconePointUniqueUpToIso (biduleColimit c) (Limits.colimit.isColimit _)
 
 end CategoryTheory.Bicategory
 

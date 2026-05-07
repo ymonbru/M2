@@ -13,7 +13,6 @@ noncomputable section
 variable {A : Type u} [Category.{v, u} A] [HasLimitsOfSize.{w, w, v,u} A] [HasColimitsOfSize.{w, w, v, u} A] [AB5OfSize.{w, w, v, u} A]
 variable {X : Type w} [TopologicalSpace X] [T2Space X]
 
-
 variable (F : Presheaf A (of X)) {K1 K2 K3 K4: Compacts X} (h : Lattice.BicartSq K1 K2 K3 K4)
 
 @[simps]
