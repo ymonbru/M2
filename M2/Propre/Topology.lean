@@ -35,6 +35,15 @@ lemma exists_open_nhds_sub_compact_nhds {K : Compacts X} (L : K.compactNhds) : �
   obtain ⟨U, KsubU, openU, UsubL⟩ := exists_open_set_nhds (fun x hx ↦ L.2 ⟨x, hx⟩)
   exact ⟨⟨U, openU⟩, KsubU, UsubL⟩
 
+/-- The compact neigbourhood induced by the existence of an open subset between two compacts-/
+def compactNhds_of_existsOpenSubsetBetween {K : Compacts X} (L: Compacts X) (U : Opens X) (h1: K.carrier ⊆ U.carrier) (h2 : U.carrier ⊆ L.carrier) : K.compactNhds := ⟨L, fun _ => Filter.mem_of_superset (IsOpen.mem_nhds U.is_open' (h1 (Subtype.coe_prop _))) h2⟩
+
+instance [T2Space X] (K : Compacts X) : SemilatticeInf (K.compactNhds) where
+  inf L M := ⟨L.1 ⊓ M.1, fun x => Filter.inter_mem_iff.2 ⟨L.2 x, M.2 x⟩⟩
+  inf_le_right _ _ := Subtype.coe_le_coe.mp inf_le_right
+  inf_le_left _ _:= Subtype.coe_le_coe.mp inf_le_left
+  le_inf _ _ _ h k := Subtype.coe_le_coe.mp (le_inf (Subtype.coe_le_coe.mpr h) (Subtype.coe_le_coe.mpr k))
+
 /-- The set of opens neighbourhood of a compact subset.-/
 def openNhds (K : Compacts X) : Set (Opens X) := setOf (fun U ↦ K.carrier ⊆ U.carrier)
 
