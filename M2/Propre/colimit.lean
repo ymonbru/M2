@@ -30,7 +30,9 @@ noncomputable def IsColimitCoconeOfLimF : IsColimit (Cocone.extend _ (limColimFP
 
 end CategoryTheory.Limits
 
-namespace CategoryTheory.Limits
+
+
+/-namespace CategoryTheory.Limits
 
 open UnionCat
 
@@ -188,4 +190,4 @@ end
 
 
 
-end CategoryTheory.Limits
+end CategoryTheory.Limits-/

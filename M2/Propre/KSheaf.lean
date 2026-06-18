@@ -34,6 +34,8 @@ lemma ext (P Q : KPresheaf A X) (f g : P ⟶ Q) (w : ∀ K : Compacts X, f.app (
   induction K with | _ K => ?_
   apply w
 
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- If P is a KPresheaf, and K a compact subset then P(K) is equiped with a structure of cocone over the diagramm defined by the P(L) for L a compact neighbourhood of K-/
 @[simps]
 def coconeOfCompacts (P : KPresheaf A X) (K : Compacts X) :
@@ -42,11 +44,10 @@ def coconeOfCompacts (P : KPresheaf A X) (K : Compacts X) :
   ι.app K' := P.map (homOfLE (Compacts.subset_of_mem_compactNhds K'.unop.prop)).op
   ι.naturality _ _ _ := by
     dsimp
-    rw [Category.comp_id, ← Functor.map_comp]
+    rw [← P.map_comp, Category.comp_id]
     rfl
-
 /-- If P is a KPresheaf, and K a compact subset then P(K) is equiped with a structure of cocone over the diagramm defined by the P(closure U) for U an open neighbourhood of K-/
-def coconeOfClosureOfOpens (P : KPresheaf A X) (K : Compacts X)  := Cocone.whisker K.mono_oRcNhds_to_compactNhds.functor.op <|  P.coconeOfCompacts K
+def coconeOfClosureOfOpens (P : KPresheaf A X) (K : Compacts X) := Cocone.whisker K.mono_oRcNhds_to_compactNhds.functor.op <| P.coconeOfCompacts K
 
 variable [T2Space X]
 
@@ -83,7 +84,7 @@ noncomputable def mapOfOpenClosure (P : KSheaf A X) (K : Compacts X) {G : (K.ope
 
 set_option backward.isDefEq.respectTransparency false in
 @[ext]
-noncomputable def hom_K_ext (P : KSheaf A X) {K : Compacts X}  {W : A} {f f' : P.obj.obj (op K) ⟶ W} (w : ∀ V, (P.obj.coconeOfClosureOfOpens K).ι.app V ≫ f = (P.obj.coconeOfClosureOfOpens K).ι.app V ≫ f' ): f = f' := ((Functor.Final.isColimitWhiskerEquiv _ _).invFun (Classical.choice <| P.property.nonempty_isColimit_coconeOfCompacts K)).hom_ext w
+noncomputable def hom_K_ext (P : KSheaf A X) {K : Compacts X} {W : A} {f f' : P.obj.obj (op K) ⟶ W} (w : ∀ V, (P.obj.coconeOfClosureOfOpens K).ι.app V ≫ f = (P.obj.coconeOfClosureOfOpens K).ι.app V ≫ f' ): f = f' := ((Functor.Final.isColimitWhiskerEquiv _ _).invFun (Classical.choice <| P.property.nonempty_isColimit_coconeOfCompacts K)).hom_ext w
 
 end KSheaf
 
