@@ -41,7 +41,7 @@ def compactNhds_of_existsOpenSubsetBetween {K : Compacts X} (L: Compacts X) (U :
 instance [T2Space X] (K : Compacts X) : SemilatticeInf (K.compactNhds) where
   inf L M := ⟨L.1 ⊓ M.1, fun x => Filter.inter_mem_iff.2 ⟨L.2 x, M.2 x⟩⟩
   inf_le_right _ _ := Subtype.coe_le_coe.mp inf_le_right
-  inf_le_left _ _:= Subtype.coe_le_coe.mp inf_le_left
+  inf_le_left _ _ := Subtype.coe_le_coe.mp inf_le_left
   le_inf _ _ _ h k := Subtype.coe_le_coe.mp (le_inf (Subtype.coe_le_coe.mpr h) (Subtype.coe_le_coe.mpr k))
 
 /-- The set of opens neighbourhood of a compact subset.-/
@@ -110,7 +110,7 @@ instance (K : Compacts X): IsCodirectedOrder  K.openRcNhds where
     use Subtype.coe_le_coe.mp  inf_le_left
     use Subtype.coe_le_coe.mp  inf_le_right
 
-instance {K : Compacts X} [T2Space X] [LocallyCompactSpace X]: K.mono_oRcNhds_to_openNhds.functor.Initial := by
+instance {K : Compacts X} [T2Space X] [LocallyCompactSpace X] : K.mono_oRcNhds_to_openNhds.functor.Initial := by
   apply (Monotone.initial_functor_iff _).2
   intro U
   obtain ⟨L, h1, h2, h3⟩ := exists_compact_between K.isCompact U.val.isOpen U.property
@@ -131,7 +131,7 @@ namespace TopologicalSpace.Opens
 /-- The set of compacts inside an open subset.-/
 def compactInsd (U : Opens X) : Set (Compacts X) := setOf (fun K ↦ K.carrier ⊆ U.carrier)
 
-/-If K is a compact subset insde an open subset U, then U has a structure of open neighbourhood of K.-/
+/-- If K is a compact subset insde an open subset U, then U has a structure of open neighbourhood of K.-/
 def toOpenNhds {U : Opens X } (K : U.compactInsd) : (K.val).openNhds := ⟨U, K.property⟩
 
 /-- If U is a open subset included in a open subset V then there is a map sending compacts inside U to the ones inside V.-/

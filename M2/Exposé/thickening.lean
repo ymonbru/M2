@@ -34,10 +34,9 @@ lemma isOpenThickening : ∀ e (A : Set X), IsOpen <| thickening A e := sorry
 /- In a T2 space one can draw a line between a compact and a close subset-/
 lemma disjointThickenings : ∀ A B : Set X, IsCompact A → IsClosed B → Disjoint A B → ∃ e, Disjoint (thickening A e) (thickening B e) := sorry
 
-variable [LocallyCompactSpace X] [T2Space X]
-
 lemma compactInOpenThickening : ∀ K O : Set X, IsCompact K → IsOpen O → K ⊆ O →  ∃ e, thickening K e ⊆ O := by
   intro K O hK hO h
+
   let F := Oᶜ
   have : IsClosed F := by
     exact isClosed_compl_iff.mpr hO
@@ -45,8 +44,7 @@ lemma compactInOpenThickening : ∀ K O : Set X, IsCompact K → IsOpen O → K 
   have : Disjoint K F := by
     exact Set.disjoint_compl_right_iff_subset.mpr h
 
-  let e := (disjointThickenings K F (by assumption) (by assumption) (by assumption)).choose
-  let he : Disjoint (thickening K e) (thickening F e):= (disjointThickenings K F (by assumption) (by assumption) (by assumption)).choose_spec
+  obtain ⟨e,he⟩ := disjointThickenings K F (by assumption) (by assumption) (by assumption)
 
   use e
   apply Set.disjoint_compl_right_iff_subset.1
@@ -54,6 +52,12 @@ lemma compactInOpenThickening : ∀ K O : Set X, IsCompact K → IsOpen O → K 
   apply Disjoint.mono_right
   apply selfSubThickening e
   assumption
+
+
+
+  sorry
+
+variable [LocallyCompactSpace X] [T2Space X]
 
 variable (K1 K2 U : Set X) (h1 : IsCompact K1) (h2: IsCompact K2) (hU : IsOpen U) (h : K1 ∩ K2 ⊆ U)
 /- The theorem i want to show-/
@@ -170,3 +174,21 @@ example : ∃ V1 V2 : Set X, IsOpen V1 ∧ IsOpen V2 ∧ K1 ⊆ V1 ∧ K2 ⊆ V2
     apply this
     apply contra
     exact hx
+
+/-intro K O hK hO h
+  let F := Oᶜ
+  have : IsClosed F := by
+    exact isClosed_compl_iff.mpr hO
+
+  have : Disjoint K F := by
+    exact Set.disjoint_compl_right_iff_subset.mpr h
+
+  let e := (disjointThickenings K F (by assumption) (by assumption) (by assumption)).choose
+  let he : Disjoint (thickening K e) (thickening F e):= (disjointThickenings K F (by assumption) (by assumption) (by assumption)).choose_spec
+
+  use e
+  apply Set.disjoint_compl_right_iff_subset.1
+
+  apply Disjoint.mono_right
+  apply selfSubThickening e
+  assumption-/

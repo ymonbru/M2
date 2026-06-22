@@ -1,6 +1,6 @@
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
-import M2.Propre.unionCat
+--import M2.Propre.unionCat
 
 open CategoryTheory Limits
 
@@ -30,7 +30,9 @@ noncomputable def IsColimitCoconeOfLimF : IsColimit (Cocone.extend _ (limColimFP
 
 end CategoryTheory.Limits
 
-namespace CategoryTheory.Limits
+
+
+/-namespace CategoryTheory.Limits
 
 open UnionCat
 
@@ -188,4 +190,4 @@ end
 
 
 
-end CategoryTheory.Limits
+end CategoryTheory.Limits-/

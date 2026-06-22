@@ -237,8 +237,8 @@ def cEx : Bicategory.Cocone (IEx K) where
 instance : IsFilteredOrEmpty (IEx K).Grothendieck where
   cocone_objs d1 d2 := by
     use ⟨op (d1.1.unop ⊓ d2.1.unop), op ⟨d1.2.unop ⊓ d2.2.unop,by dsimp [openNhds]; exact inf_le_inf d1.2.unop.2 d2.2.unop.2⟩⟩
-    use ⟨op (homOfLE inf_le_left), op (homOfLE (by simp [IEx, iEx, baseChangeOpenNhds]; exact inf_le_left))⟩
-    use ⟨op (homOfLE inf_le_right), op (homOfLE (by simp [IEx,iEx,baseChangeOpenNhds]; exact inf_le_right))⟩
+    use ⟨op (homOfLE inf_le_left), op (homOfLE (by simp [IEx, iEx, baseChangeOpenNhds]))⟩
+    use ⟨op (homOfLE inf_le_right), op (homOfLE (by simp [IEx,iEx,baseChangeOpenNhds]))⟩
   cocone_maps _ x _ _ := by
     use x
     use 𝟙 _
