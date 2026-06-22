@@ -8,6 +8,52 @@ open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Comp
 
 universe u v w
 
+section
+
+variable (X : Type u) (Y : Type v) [Preorder X] [Preorder Y]
+
+def ProdPreorder : Type (max u v) := X × Y
+
+instance : Category (ProdPreorder X Y) := CategoryTheory.prod' X Y
+
+instance : Preorder (ProdPreorder X Y) := Prod.instPreorder
+
+instance [IsCofilteredOrEmpty X] [IsCofilteredOrEmpty Y] : IsCofilteredOrEmpty (ProdPreorder X Y) := instIsCofilteredOrEmptyProd
+
+
+/- ça n'y est même pas avec IsCodirectedOrder <| X × Y
+instance [IsCodirectedOrder X] [IsCodirectedOrder Y] : IsCodirectedOrder <| ProdPreorder X Y := by
+  constructor
+  intro a b
+  obtain ⟨c1,h1⟩ := exists_le_le a.1 b.1
+  obtain ⟨c2,h2⟩ := exists_le_le a.2 b.2
+  use ⟨c1,c2⟩
+  constructor
+  exact ⟨h1.1,h2.1⟩
+  exact ⟨h1.2,h2.2⟩-/
+
+@[simps]
+def Monotone.functor_prod {X Y Z: Type*} [Preorder X] [Preorder Y] [Preorder Z] (f : X × Y → Z ) (h : Monotone f) : ProdPreorder X Y ⥤ Z where
+obj := f
+map {a b } i := homOfLE (h ⟨leOfHom i.1, leOfHom i.2⟩)
+
+theorem Monotone.initial_functorProd_iff {X Y Z : Type*} [Preorder X] [Preorder Y] [Preorder Z] [IsCodirectedOrder X] [IsCodirectedOrder Y] {f : X × Y → Z} (hf : Monotone f) : hf.functor_prod.Initial ↔ ( ∀ z, ∃ xy, f xy ≤ z) := by
+  rw [Functor.initial_iff_of_isCofiltered]
+  constructor
+  · intro ⟨ho,hm⟩ z
+    obtain ⟨c, ⟨hc⟩⟩ := ho z
+    exact ⟨c, leOfHom hc⟩
+  · intro h
+    constructor
+    · intro d
+      obtain ⟨xy,hxy⟩ := h d
+      exact ⟨xy, ⟨homOfLE hxy⟩⟩
+    · intro _ c _ _
+      exact ⟨c, 𝟙 _, rfl⟩
+
+end
+
+
 noncomputable section
 
 variable {A : Type u} [Category.{v, u} A] [HasLimitsOfSize.{w, w, v,u} A] [HasColimitsOfSize.{w, w, v, u} A] [AB5OfSize.{w, w, v, u} A]
@@ -15,77 +61,47 @@ variable {X : Type w} [TopologicalSpace X] [T2Space X]
 
 variable (F : Presheaf A (of X)) {K1 K2 K3 K4: Compacts X} (h : Lattice.BicartSq K1 K2 K3 K4)
 
-@[simps]
-def Monotone.functor_prod {X Y Z: Type*} [Preorder X] [Preorder Y] [Preorder Z] (f : X × Y → Z ) (h : Monotone f) : (@CategoryTheory.Functor _ (CategoryTheory.prod' X Y)  Z _) where
-obj := f
-map {a b } i := homOfLE (h ⟨leOfHom i.1, leOfHom i.2⟩)
+def inter : K2.openNhds × K3.openNhds → K1.openNhds := fun U ↦ ⟨U.1.val ⊓ U.2.val, Set.Subset.trans (le_inf h.le₁₂ h.le₁₃) (inf_le_inf U.1.property U.2.property)⟩
 
-def inter : K2.openNhds × K3.openNhds → K1.openNhds := fun U => ⟨U.1.val ⊓ U.2.val, Set.Subset.trans (le_inf h.le₁₂ h.le₁₃) (inf_le_inf U.1.property U.2.property)⟩
-
-lemma inter_mono : Monotone (inter h) := fun _ _ h => Subtype.mk_le_mk.2 (inf_le_inf h.1 h.2)
-
-/-@[simps]
-def inter : K2.openNhds × K3.openNhds ⥤ K1.openNhds where
-  obj U := ⟨U.1.val ⊓ U.2.val, Set.Subset.trans (le_inf h.le₁₂ h.le₁₃) (inf_le_inf U.1.property U.2.property)⟩
-  map i := homOfLE (Subtype.mk_le_mk.2 ((inf_le_inf (leOfHom i.1) (leOfHom i.2))))-/
+lemma inter_mono : Monotone (inter h) := fun _ _ h ↦ Subtype.mk_le_mk.2 (inf_le_inf h.1 h.2)
 
 instance : (inter_mono h).functor_prod.Initial := by
-  apply (Functor.initial_iff_of_isCofiltered _).mpr
-  constructor
-  · intro U
+  apply (Monotone.initial_functorProd_iff _ ).mpr
+  intro U
+  let FK1 := nhdsSet K2.carrier
+  let FK2 := nhdsSet K3.carrier
 
-    let FK1 := nhdsSet K2.carrier
-    let FK2 := nhdsSet K3.carrier
+  have : U.1.carrier ∈ (nhdsSet K2.carrier) ⊓ (nhdsSet K3.carrier) := by
+    rw [← IsCompact.nhdsSet_inter_eq K2.isCompact' K3.isCompact']
+    apply (IsOpen.mem_nhdsSet _).mpr
+    apply Set.Subset.trans _ U.property
+    apply subset_of_eq
+    rw [← h.inf_eq]
+    simp only [carrier_eq_coe, coe_inf]
+    exact U.val.is_open'
 
-    have : U.1.carrier ∈ (nhdsSet K2.carrier) ⊓ (nhdsSet K3.carrier) := by
-      rw [← IsCompact.nhdsSet_inter_eq K2.isCompact' K3.isCompact']
-      apply (IsOpen.mem_nhdsSet _).mpr
-      apply Set.Subset.trans _ U.property
-      apply subset_of_eq
-      rw [← h.inf_eq]
-      simp only [carrier_eq_coe, coe_inf]
-      exact U.val.is_open'
+  let h := (Filter.HasBasis.mem_iff (Filter.HasBasis.inf (hasBasis_nhdsSet _) (hasBasis_nhdsSet _))).1 this
 
-    let h := (Filter.HasBasis.mem_iff (Filter.HasBasis.inf (hasBasis_nhdsSet _) (hasBasis_nhdsSet _))).1 this
+  let V := h.choose
+  obtain ⟨⟨hV1,hV2⟩,hV3⟩ := h.choose_spec
 
-    let V := h.choose
-    obtain ⟨⟨hV1,hV2⟩,hV3⟩ := h.choose_spec
+  use ⟨⟨⟨V.1, hV1.1⟩, hV1.2⟩, ⟨⟨V.2, hV2.1⟩, hV2.2⟩⟩
+  exact hV3
 
-    use ⟨⟨⟨V.1, hV1.1⟩, hV1.2⟩, ⟨⟨V.2, hV2.1⟩, hV2.2⟩⟩
-    exact Nonempty.intro (homOfLE hV3)
-
-  · intro _ c _ _
-    use c
-    use 𝟙 _
-    rfl
-
-def union : K2.openNhds × K3.openNhds → K4.openNhds := fun U => ⟨U.1.val ⊔ U.2.val, by
+def union : K2.openNhds × K3.openNhds → K4.openNhds := fun U ↦ ⟨U.1.val ⊔ U.2.val, by
     apply Set.Subset.trans _ (sup_le_sup U.1.property U.2.property)
     --pas beau du tout
     apply subset_of_eq
     rw [← h.sup_eq]
     simp only [carrier_eq_coe, coe_sup, Set.sup_eq_union]⟩
 
-lemma union_mono : Monotone (union h) := fun _ _ h => Subtype.mk_le_mk.2 (sup_le_sup h.1 h.2)
+lemma union_mono : Monotone (union h) := fun _ _ h ↦ Subtype.mk_le_mk.2 (sup_le_sup h.1 h.2)
 
 instance : (union_mono h).functor_prod.Initial := by
-  --probleme de diamand entre produit et prendre la catégorie associée à un préordre
-
-  apply (Functor.initial_iff_of_isCofiltered _).mpr
-  constructor
-  · intro U
-    use ⟨⟨U.val, Set.Subset.trans h.le₂₄ U.property⟩, ⟨U.val, Set.Subset.trans h.le₃₄ U.property⟩⟩
-    apply Nonempty.intro
-    apply homOfLE
-    apply Subtype.mk_le_mk.2
-    simp
-    apply sup_le
-    apply le_refl
-    apply le_refl
-  · intro _ c _ _
-    use c
-    use 𝟙 c
-    rfl
+  apply (Monotone.initial_functorProd_iff _ ).mpr
+  intro U
+  use ⟨⟨U.val, Set.Subset.trans h.le₂₄ U.property⟩, ⟨U.val, Set.Subset.trans h.le₃₄ U.property⟩⟩
+  exact Subtype.mk_le_mk.2 <| sup_le (le_refl _) (le_refl _)
 
 variable (K1 K2) in
 @[simps!]
@@ -96,7 +112,7 @@ variable (K1 K2) in
 def forgetRight : K1.openNhds × K2.openNhds ⥤ Opens X := (CategoryTheory.Prod.snd K1.openNhds K2.openNhds) ⋙ (Subtype.mono_coe K2.openNhds).functor
 
 @[simps!]
-def DiagO : WalkingCospan ⥤ (K2.openNhds × K3.openNhds)ᵒᵖ ⥤ (Opens X)ᵒᵖ := cospan (X := (forgetLeft K2 K3).op) (Y := (forgetRight K2 K3).op) (Z := ((inter_mono h).functor_prod ⋙ (Subtype.mono_coe K1.openNhds).functor).op) (NatTrans.op ⟨fun U => homOfLE (inf_le_left ),by aesop_cat⟩) (NatTrans.op ⟨fun U => homOfLE (inf_le_right),by aesop_cat⟩)
+def DiagO : WalkingCospan ⥤ (K2.openNhds × K3.openNhds)ᵒᵖ ⥤ (Opens X)ᵒᵖ := cospan (X := (forgetLeft K2 K3).op) (Y := (forgetRight K2 K3).op) (Z := ((inter_mono h).functor_prod ⋙ (Subtype.mono_coe K1.openNhds).functor).op) (NatTrans.op ⟨fun U ↦ homOfLE (inf_le_left ),by aesop_cat⟩) (NatTrans.op ⟨fun U ↦ homOfLE (inf_le_right),by aesop_cat⟩)
 
 @[simps!]
 def DiagBis : WalkingCospan ⥤ (K2.openNhds × K3.openNhds)ᵒᵖ  ⥤ A := ((Functor.whiskeringRight WalkingCospan _ _).obj ((Functor.whiskeringRight (K2.openNhds × K3.openNhds)ᵒᵖ _ _).obj F)).obj (DiagO h)
@@ -107,9 +123,9 @@ def Diag : WalkingCospan ⥤ (K2.openNhds × K3.openNhds)ᵒᵖ  ⥤ A := cospan
 def LjD : Cone (Diag F h) := by
   apply PullbackCone.mk (W := ((union_mono h).functor_prod ⋙ (Subtype.mono_coe K4.openNhds).functor).op ⋙ F) (eq := _)
   · apply Functor.whiskerRight
-    exact NatTrans.op ⟨fun U => homOfLE (le_sup_left),by aesop_cat⟩
+    exact NatTrans.op ⟨fun U ↦ homOfLE (le_sup_left),by aesop_cat⟩
   · apply Functor.whiskerRight
-    exact NatTrans.op ⟨fun U => homOfLE (le_sup_right),by aesop_cat⟩
+    exact NatTrans.op ⟨fun U ↦ homOfLE (le_sup_right),by aesop_cat⟩
   · ext; simp; rw [← F.map_comp, ← F.map_comp]; rfl
 
 @[simps]
@@ -137,7 +153,7 @@ def hLjD (F : Sheaf A (of X)): IsLimit (LjD F.obj h) := by
 
   refine PullbackCone.IsLimit.mk _ ?_ ?_ ?_ ?_
   · intro s
-    exact ⟨fun U => (Sheaf.isLimitPullbackCone F U.unop.1.val U.unop.2.val).lift (c s U), set_option backward.isDefEq.respectTransparency false in by
+    exact ⟨fun U ↦ (Sheaf.isLimitPullbackCone F U.unop.1.val U.unop.2.val).lift (c s U), set_option backward.isDefEq.respectTransparency false in by
     intro U V f
 
     apply PullbackCone.IsLimit.hom_ext (F.isLimitPullbackCone ↑(unop V).1 ↑(unop V).2)
@@ -320,6 +336,8 @@ def CategoryTheory.Limits.ConeMorphism.iso_of_iso_hom {C D : Type*} [Category C]
 
 namespace TopCat.Sheaf
 
+variable [LocallyCompactSpace X]
+
 open TopCat.Presheaf
 
 attribute [local simp] union
@@ -339,7 +357,7 @@ def toSheaf [AB5OfSize.{w, w, v, u} A]: Sheaf A (of X) ⥤ KSheaf A (of X) := by
     apply @asIso _ _ _ _ (((forget A (of X)).obj F).ιToKPresheafFunctorObjObj (⊥ : (⊥ : Compacts X).openNhds )) (by
       apply isIso_ι_of_isTerminal _ _
       apply IsInitial.op
-      exact instIsInitialElemOpensOpenNhdsBot)
+      exact isInitialElemOpensOpenNhdsBot)
   · intro K1 K2 K3 K4 h
     simp
     set F2 := (forget A (of X)).obj F
@@ -366,21 +384,56 @@ def toSheaf [AB5OfSize.{w, w, v, u} A]: Sheaf A (of X) ⥤ KSheaf A (of X) := by
               · exact op ( homOfLE ( Subtype.mk_le_mk.2 inf_right_le_sup_right))
               · rw [← F2.map_comp]; rfl
             |.left =>
-              simp
-              unfold ιToKPresheafFunctorObjObj
-              forceColimW
-              exact op ( homOfLE ( Subtype.mk_le_mk.2 le_sup_left))
+              simpa using (Presheaf.toKPresheafFunctorObjObj_w  F2 (op ( homOfLE ( Subtype.mk_le_mk.2 le_sup_left)))).symm
             |.right =>
-              simp
-              unfold ιToKPresheafFunctorObjObj
-              forceColimW
-              exact op ( homOfLE ( Subtype.mk_le_mk.2 le_sup_right))
+              simpa using (Presheaf.toKPresheafFunctorObjObj_w  F2 (op ( homOfLE ( Subtype.mk_le_mk.2 le_sup_right)))).symm
           constructor
-          aesop ⟩
+          rw [← toKPresheafFunctorObjMap_comp, ← toKPresheafFunctorObjMap_comp]
+          rfl⟩
       · use 𝟙 _
         aesop_cat
   · intro K
     apply Nonempty.intro
-    sorry
+    set F2 := (forget A (of X) ).obj F
+    set G := (Subtype.mono_coe K.compactNhds ).functor.op ⋙ (forget A (of X) ⋙ toKPresheafFunctor).obj F
+
+
+
+    refine (IsColimit.extendIso ((cEx K).colimOfColim_iso_colim (G) ((Subtype.mono_coe _).functor.op  ⋙ F2) ?_ ?_).hom ( colimit.isColimit _)).ofIsoColimit ?_
+    · intro L
+      refine ⟨_,isColimitToKPresheafFunctorObjObjCocone _ L.unop.val⟩
+    · apply eqToIso
+      apply CategoryTheory.Functor.ext
+      · intro L M f
+        apply toKPresheafFunctorObjObj_hom_ext
+        intro U
+        simp
+        erw [F2.map_id, Category.id_comp]
+        simp [G]
+        rfl
+
+      · intro L
+        rfl
+
+    · refine Cocone.ext ?_ ?_
+      · simp
+        exact IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) (isColimitToKPresheafFunctorObjObjCocone _ K)
+      · intro L
+        apply toKPresheafFunctorObjObj_hom_ext
+        intro U
+
+        simp [ιToKPresheafFunctorObjObj,G]
+
+        simp [G,F2]
+        simp [UnionCat.CoconeF.colimOfColim_iso_colim, UnionCat.CoconeF.colim2]
+
+
+
+        simp [UnionCat.CoconeF.colimOfColim_iso_colim, cEx, IEx,iEx ]
+
+
+
+        sorry
+
 
 #min_imports

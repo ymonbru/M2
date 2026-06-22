@@ -11,9 +11,7 @@ def CategoryTheory.Functor.ofCatHom {C D : Cat} : (C ⟶ D) ⥤ (C.1 ⥤ D.1) wh
   obj F := F.toFunctor
   map {F G} τ := τ.toNatTrans
 
-#check ofCatHom.mapIso
-
-namespace CategoryTheory.Bicategory
+/-namespace CategoryTheory.Bicategory
 variable {B C : Type*} [Bicategory B] [Bicategory C]
 variable {F : B ⥤ᵖ C}
 
@@ -212,9 +210,9 @@ variable [HasColimitsOfSize.{max v2 v1, max u2 u1} (c.extend F).pt]
 
 noncomputable def cool := truc (c.extend F) ≪≫ Limits.HasColimit.isoOfNatIso (eqToIso (hey c F)) ≪≫ Functor.Final.colimitIso c.fromGrothendieck F.toFunctor
 
-end CategoryTheory.Bicategory
+end CategoryTheory.Bicategory-/
 
-noncomputable section
+/-noncomputable section
 
 variable {X : Type u1} [TopologicalSpace X] [T2Space X] [LocallyCompactSpace X](K : Compacts X)
 variable {D : Type u1} [Category.{u1, u1} D] (F : (Opens X)ᵒᵖ ⥤ D)
@@ -271,7 +269,7 @@ example : 1 = 1 := by
   let h := Bicategory.cool (cEx K) (D := Cat.of D) ⟨(Subtype.mono_coe _).functor.op ⋙ F⟩
   simp at h
   sorry
-end
+end-/
 
 namespace CategoryTheory.Limits.UnionCat
 open Bicategory
@@ -297,9 +295,10 @@ structure CoconeF where
 variable {C : Type u4} [Category.{v4, u4} C] (sD : CoconeF D I)
 
 set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Build a new CoconeFunctor by whiskering the data to the right-/
 @[simps]
-def  CoconeF.extend (H : D ⥤ C) : CoconeF C I where
+def CoconeF.extend (H : D ⥤ C) : CoconeF C I where
 ι x := sD.ι x ⋙ H
 w f := (I.map ⟨f⟩).toFunctor.associator  (sD.ι _) H ≪≫ (isoWhiskerRight (sD.w f) H)
 wId x := by
@@ -311,7 +310,7 @@ wComp {x y z} f g := by
   simp [sD.wComp f g]
   exact Category.id_comp _
 
-set_option backward.isDefEq.respectTransparency false in
+/-set_option backward.isDefEq.respectTransparency false in
 @[simps]
 noncomputable def CoconeF.colim [HasColimitsOfSize.{v2, u2} D] : A ⥤ D where
   obj x := colimit (sD.ι x)
@@ -323,8 +322,29 @@ noncomputable def CoconeF.colim [HasColimitsOfSize.{v2, u2} D] : A ⥤ D where
   map_comp {a b d} f g := by
     ext x
     simp [sD.wComp]
+    forceColimW-/
+
+variable (colimSDι : ∀ a, ColimitCocone (sD.ι a) )
+
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
+@[simps]
+noncomputable def CoconeF.colim2 [HasColimitsOfSize.{v2, u2} D] : A ⥤ D where
+  obj a := (colimSDι a).cocone.pt
+  map {a b} f := (colimSDι a).isColimit.desc ((Cocone.precomposeEquivalence (sD.w f)).functor.obj (Cocone.whisker (I.map ⟨f⟩).toFunctor (colimSDι b).cocone))
+  map_id a := by
+    apply IsColimit.hom_ext ((colimSDι a).isColimit)
+    intro
+    simp [sD.wId]
+    forceColimW
+  map_comp {a b c} f g := by
+    apply IsColimit.hom_ext ((colimSDι a).isColimit)
+    intro
+    simp [sD.wComp]
     forceColimW
 
+--variable [HasColimitsOfSize.{v2, u2} D] (F: A ⥤ D) ( h : F = sD.colim2 colimSDι)
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def CoconeF.fromGrothendieck : I.Grothendieck ⥤ D where
@@ -341,11 +361,184 @@ def CoconeF.fromGrothendieck : I.Grothendieck ⥤ D where
       simp
     simp [sD.wComp];rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-lemma hey (H : D ⥤ C) : (sD.extend H).fromGrothendieck = sD.fromGrothendieck ⋙ H := Functor.ext (by simp) (by simp)
+lemma CoconeF.extend_fromGrothendieck_eq (H : D ⥤ C) : (sD.extend H).fromGrothendieck = sD.fromGrothendieck ⋙ H := Functor.ext (by simp) (by simp)
+
+variable [HasColimitsOfSize.{v2, u2, v3, u3} D] [HasColimitsOfSize.{v1, u1, v3, u3} D]
+
+/-set_option backward.isDefEq.respectTransparency false in
+@[simps]
+noncomputable def CoconeF.colim_to_fGCocone : Cocone sD.fromGrothendieck where
+  pt := colimit (sD.colim)
+  ι.app x := colimit.ι (sD.ι x.1) x.2 ≫ colimit.ι sD.colim x.1
+  ι.naturality {x y } f := by
+    rw [← colimit.w sD.colim f.1]
+    simp-/
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+@[simps]
+noncomputable def CoconeF.colim2_to_fGCocone : Cocone sD.fromGrothendieck where
+  pt := colimit (sD.colim2 colimSDι)
+  ι.app x := ((colimSDι x.1).cocone.ι).app x.2 ≫ colimit.ι (sD.colim2 colimSDι) _
+  ι.naturality {x y } f := by
+    rw [← colimit.w (sD.colim2 colimSDι) f.1]
+    simp
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+@[simps]
+def machin (s : Limits.Cocone sD.fromGrothendieck) (a : A) : Cocone (sD.ι a) where
+  pt := s.pt
+  ι.app x := s.ι.app ⟨a,x⟩
+  ι.naturality x y f:= by
+
+    have : ?_ = s.ι.app { base := a, fiber := x } := by simpa using s.ι.naturality (⟨𝟙 _, ((I.mapId ⟨a⟩).hom).toNatTrans.app x ≫ f⟩ : (⟨a,x⟩ : I.Grothendieck) ⟶ ⟨a,y⟩)
+    rw [← this]
+
+    simp [funext_iff.1 (NatTrans.ext_iff.1  ((Iso.inv_eq_inv _ _).2 (Iso.ext_iff.1 (sD.wId a)))) x]
+    /- faire un lemme ext_iff.1 mais pour iso.inv?-/
+    rw [← Category.assoc, ← (sD.ι a).map_comp]
+    simp
+
+/-set_option backward.isDefEq.respectTransparency false in
+@[simps]
+noncomputable def machin2 (s : Limits.Cocone sD.fromGrothendieck) : Limits.Cocone sD.colim where
+  pt := s.pt
+  ι.app a := colimit.desc _ (machin sD s a)
+  ι.naturality {a b} f := by
+    apply colimit.hom_ext
+    intro x
+
+    suffices s.ι.app { base := b, fiber := (I.map { as := f }).toFunctor.obj x } = (sD.w f).hom.app x ≫ s.ι.app { base := a, fiber := x } by aesop_cat
+
+    rw [← (s.w (⟨f, eqToHom rfl⟩ : (⟨a, x⟩ : I.Grothendieck) ⟶ ⟨b, (I.map { as := f }).toFunctor.obj x ⟩))]
+
+    suffices (sD.ι b).map (𝟙 ((I.map f.toLoc).toFunctor.obj x)) = 𝟙 _ by
+      simp [this]
+      exact (Category.id_comp _ ).symm
+    simp-/
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+@[simps]
+noncomputable def machin22 (s : Limits.Cocone sD.fromGrothendieck) : Limits.Cocone (sD.colim2 colimSDι) where
+  pt := s.pt
+  ι.app a := (colimSDι a).isColimit.desc (machin sD s a)
+  ι.naturality {a b} f := by
+    apply IsColimit.hom_ext (colimSDι a).isColimit
+    intro x
+    suffices s.ι.app { base := b, fiber := (I.map { as := f }).toFunctor.obj x } = (sD.w f).hom.app x ≫ s.ι.app { base := a, fiber := x } by aesop_cat
+    rw [← (s.w (⟨f, eqToHom rfl⟩ : (⟨a, x⟩ : I.Grothendieck) ⟶ ⟨b, (I.map { as := f }).toFunctor.obj x ⟩))]
+    suffices (sD.ι b).map (𝟙 ((I.map f.toLoc).toFunctor.obj x)) = 𝟙 _ by
+      simp [this]
+      exact (Category.id_comp _ ).symm
+    simp
+
+/-set_option backward.isDefEq.respectTransparency false in
+noncomputable def IsColimitColim_to_fGCocone : IsColimit sD.colim_to_fGCocone where
+  desc s := colimit.desc _ (machin2 sD s)
+  uniq s m hm := by
+    apply colimit.hom_ext (F := sD.colim)
+    intro b
+    apply colimit.hom_ext
+    intro x
+    simpa using hm ⟨b,x⟩-/
+
+set_option backward.isDefEq.respectTransparency false in
+noncomputable def IsColimitColim2_to_fGCocone : IsColimit (sD.colim2_to_fGCocone colimSDι) where
+  desc s := colimit.desc _ (machin22 sD colimSDι s)
+  uniq s m hm := by
+    apply colimit.hom_ext (F := sD.colim2 colimSDι)
+    intro a
+    apply IsColimit.hom_ext (colimSDι a).isColimit
+    intro x
+    simpa using hm ⟨a,x⟩
+
+variable [ HasColimitsOfSize.{max v1 v2, max u1 u2, v3, u3} D]
+
+--noncomputable def CoconeF.colimColim_iso_colimFromGrothendieck : colimit sD.colim ≅ colimit sD.fromGrothendieck := IsColimit.coconePointUniqueUpToIso (IsColimitColim_to_fGCocone sD) (colimit.isColimit _)
+
+noncomputable def CoconeF.colimColim2_iso_colimFromGrothendieck : colimit (sD.colim2 colimSDι) ≅ colimit sD.fromGrothendieck := IsColimit.coconePointUniqueUpToIso (IsColimitColim2_to_fGCocone sD colimSDι) (colimit.isColimit _)
+
+variable [ HasColimitsOfSize.{v2, u2, v4, u4} C]
+variable [ HasColimitsOfSize.{v1, u1, v4, u4} C]
+variable [ HasColimitsOfSize.{v3, u3, v4, u4} C]
+variable [ HasColimitsOfSize.{max v1 v2, max u1 u2, v4, u4} C]
+variable [sD.fromGrothendieck.Final]
+
+/-noncomputable def CoconeF.colimOfColim_iso_colim (H : D ⥤ C) : colimit (sD.extend H).colim ≅ colimit H := (sD.extend H).colimColim_iso_colimFromGrothendieck ≪≫ Limits.HasColimit.isoOfNatIso (eqToIso (sD.extend_fromGrothendieck_eq H)) ≪≫ Functor.Final.colimitIso sD.fromGrothendieck H-/
+
+variable (F: A ⥤ C) (H : D ⥤ C) (colimSDeHι : (a : A) → ColimitCocone.{v2, u2, v4, u4} ((sD.extend H).ι a)) (h : F ≅ (sD.extend H).colim2 colimSDeHι)
+
+noncomputable def CoconeF.colimOfColim_iso_colim : colimit F ≅ colimit H := HasColimit.isoOfNatIso h ≪≫ (sD.extend H).colimColim2_iso_colimFromGrothendieck colimSDeHι ≪≫ HasColimit.isoOfNatIso (eqToIso (sD.extend_fromGrothendieck_eq H)) ≪≫ Functor.Final.colimitIso sD.fromGrothendieck H
+
+#check IsColimit.extendIso (sD.colimOfColim_iso_colim F H colimSDeHι h).hom ( colimit.isColimit _)
+
+#check IsColimit.extendIso (sD.colimOfColim_iso_colim F H colimSDeHι h).inv ( colimit.isColimit _)
+
+/-variable (H : D ⥤ C)
+#check IsColimit.extendIso (F := (sD.extend H).colim) (s := colimit.cocone _) (sD.colimOfColim_iso_colim H).hom ( colimit.isColimit _)
+
+#check IsColimit.extendIso (sD.colimOfColim_iso_colim H).inv ( colimit.isColimit _)-/
+
+end UnionCat
+
+noncomputable section
+
+open UnionCat
+
+variable {X : Type u1} [TopologicalSpace X] [T2Space X] [LocallyCompactSpace X](K : Compacts X)
+variable {D : Type u2} [Category.{v2, u2} D] (F : (Opens X)ᵒᵖ ⥤ D)
+
+variable [HasColimitsOfSize.{u1, u1} D]
+
+def iEx : (K.compactNhds )ᵒᵖ ⥤ Cat where
+  obj L := Cat.of (L.unop.val.openNhds)ᵒᵖ
+  map {L M} i := ⟨(monoBaseChangeOpenNhds i.1).functor.op⟩
+
+#check iEx K
+
+def IEx := (iEx K ).toPseudofunctor'
+
+@[simps]
+def cEx : CoconeF (K.openNhds)ᵒᵖ (IEx K) where
+  ι L := (monoBaseChangeOpenNhds (homOfLE (subset_of_mem_compactNhds ( Subtype.coe_prop L.unop)))).functor.op
+  w _ := eqToIso rfl
+  wId _ := rfl
+  wComp _ _ := rfl
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+instance : IsFilteredOrEmpty (IEx K).Grothendieck where
+  cocone_objs d1 d2 := by
+    use ⟨op (d1.1.unop ⊓ d2.1.unop), op ⟨d1.2.unop ⊓ d2.2.unop,by dsimp [openNhds]; exact inf_le_inf d1.2.unop.2 d2.2.unop.2⟩⟩
+    use ⟨op (homOfLE inf_le_left), op (homOfLE (by simp [IEx, iEx, baseChangeOpenNhds]; exact inf_le_left))⟩
+    use ⟨op (homOfLE inf_le_right), op (homOfLE (by simp [IEx,iEx,baseChangeOpenNhds]; exact inf_le_right))⟩
+  cocone_maps _ x _ _ := by
+    use x
+    use 𝟙 _
+    rfl
+
+instance : (cEx K).fromGrothendieck.Final := by
+  rw [Functor.final_iff_of_isFiltered]
+  constructor
+  · intro d
+    obtain ⟨L,hL⟩ := exists_compact_between  K.isCompact' (Opens.isOpen _) (d.unop.2)
+    use ⟨ op (compactNhds_of_existsOpenSubsetBetween ⟨L,hL.1⟩ ⟨interior L,isOpen_interior⟩ hL.2.1 interior_subset), op ⟨d.unop.1, hL.2.2⟩⟩
+    apply Nonempty.intro
+    exact op (homOfLE (by simp [baseChangeOpenNhds]))
+  · intro _ x _ _
+    use x
+    use 𝟙 _
+    rfl
+
+--#check CoconeF.colimOfColim_iso_colim (cEx K) ((Subtype.mono_coe _).functor.op  ⋙ F)
+end
 
 
---variable {I} in
+
+/-variable {I} in
 /- The cocone induced by applying FcupIa to the diagram i. It's not a @[simp] so that simp try to find solution without unfolding it (for exemple in the def colimFia)-/
 --def F : CoconeFunctor C I := s.extend FcupIa
 
@@ -413,3 +606,4 @@ structure unionCat where
   repO : (x : D) → repObj sD x
   repH : {x y : D} → ( f: x ⟶ y) → repHom sD f
   repLifting : {x : D} → (r s : repObj sD x) → (t : repObj sD x) × (lifting r t) × (lifting s t)
+-/

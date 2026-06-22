@@ -47,7 +47,7 @@ instance [T2Space X] (K : Compacts X) : SemilatticeInf (K.compactNhds) where
 /-- The set of opens neighbourhood of a compact subset.-/
 def openNhds (K : Compacts X) : Set (Opens X) := setOf (fun U ↦ K.carrier ⊆ U.carrier)
 
-instance (K : Compacts X): IsCodirectedOrder  K.openNhds where
+instance (K : Compacts X): IsCodirectedOrder K.openNhds where
   directed U1 U2 := ⟨⟨U1.val ⊓ U2.val, Set.subset_inter U1.property U2.property⟩,⟨Subtype.mk_le_mk.2 inf_le_left,Subtype.mk_le_mk.2 inf_le_right⟩⟩
 
 instance (K : Compacts X) : Top K.openNhds := ⟨⊤, Set.subset_univ _⟩
@@ -55,7 +55,7 @@ instance (K : Compacts X) : Top K.openNhds := ⟨⊤, Set.subset_univ _⟩
 
 instance : Bot (⊥ : Compacts X).openNhds := ⟨⊥, fun _ h => h⟩
 
-instance : IsInitial (⊥ : (⊥ : Compacts X).openNhds) := by
+def isInitialElemOpensOpenNhdsBot: IsInitial (⊥ : (⊥ : Compacts X).openNhds) := by
   apply IsInitial.ofUniqueHom
   · intro _ _
     apply eq_of_comp_right_eq
@@ -92,8 +92,7 @@ def oRcNhds_to_compactNhds (K : Compacts X) : K.openRcNhds → K.compactNhds := 
 
 lemma mono_oRcNhds_to_compactNhds (K : Compacts X) : Monotone K.oRcNhds_to_compactNhds := fun _ _ h => closure_mono h
 
-variable [T2Space X] in
-instance (K : Compacts X): IsCodirectedOrder  K.openRcNhds where
+instance [T2Space X] (K : Compacts X): IsCodirectedOrder  K.openRcNhds where
   directed U1 U2 := by
     use ⟨U1 ⊓ U2, by
       constructor
