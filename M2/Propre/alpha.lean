@@ -51,7 +51,6 @@ lemma toKPresheafFunctorObjObjRc_w {U V : (K.openRcNhds)} (i : op U ⟶ op V) : 
 
 variable (K) in
 set_option backward.defeqAttrib.useBackward true in
---set_option backward.isDefEq.respectTransparency false in
 /-- The cocone structure of `F.toKPresheafFunctorObjObj K` over all values of opens subset relatively compact that contains `K`.-/
 @[simps]
 def toKPresheafFunctorObjObjRcCocone : Cocone ((Subtype.mono_coe K.openRcNhds).functor.op ⋙ F) where
@@ -187,6 +186,7 @@ variable {F : Presheaf A (of X)} {G : KPresheaf A X} (τ : (toKPresheafFunctor).
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
+/-- The Cone to buid `KPresheaf.adjunction.homEquivToFunhomEquivToFun`-/
 @[simps]
 def homEquivToFunCone : Cone <| (Subtype.mono_coe U.compactInsd).functor.op ⋙ G where
   pt := F.obj (op U)
@@ -197,6 +197,7 @@ def homEquivToFunCone : Cone <| (Subtype.mono_coe U.compactInsd).functor.op ⋙ 
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
+/-- The function from hom(F.toKPresheafFunctorObj, G) to hom(F,G.toPresheafFunctorObj) -/
 @[simps]
 def homEquivToFun : F ⟶ toPresheafFunctor.obj G where
  app U := (G.isLimitToPresheafFunctorObjObjCone U.unop).lift (homEquivToFunCone τ U.unop)
@@ -207,6 +208,7 @@ def homEquivToFun : F ⟶ toPresheafFunctor.obj G where
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
+/-- The Cocone to buid `KPresheaf.adjunction.homEquivInvFunhomEquivToFun`-/
 @[simps]
 def homEquivInvFunCocone : Cocone <| (Subtype.mono_coe K.openNhds).functor.op ⋙ F where
   pt := G.obj (op K)
@@ -214,13 +216,14 @@ def homEquivInvFunCocone : Cocone <| (Subtype.mono_coe K.openNhds).functor.op �
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
+/-- The function from hom(F,G.toPresheafFunctorObj) to hom(F.toKPresheafFunctorObj, G) -/
 @[simps]
 def homEquivInvFun : toKPresheafFunctor.obj F ⟶ G where
  app K := (F.isColimitToKPresheafFunctorObjObjCocone K.unop).desc (homEquivInvFunCocone σ _)
  naturality {K L} i := by
   apply toKPresheafFunctorObjObj_hom_ext
   intro U
-  simpa [baseChangeOpenNhds] using whisker_eq _ (toPresheafFunctorObjObj_w G  (show op (toCompactInsd U) ⟶ op (toCompactInsd (baseChangeOpenNhds i.unop U)) from i)).symm
+  simpa [baseChangeOpenNhds] using whisker_eq _ (toPresheafFunctorObjObj_w G (show op (toCompactInsd U) ⟶ op (toCompactInsd (baseChangeOpenNhds i.unop U)) from i)).symm
 
 variable (F) in
 set_option backward.defeqAttrib.useBackward true in

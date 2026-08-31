@@ -16,7 +16,7 @@ variable [PreservesLimitsOfShape J (colim : (K ⥤ C) ⥤ _)]
 
 variable {F : J ⥤ K ⥤ C}
 
-variable (limF : Cone F) (colimF : Cocone F.flip) (colimLimF : Cocone limF.pt) (limColimF : Cone colimF.pt)
+/-variable (limF : Cone F) (colimF : Cocone F.flip) (colimLimF : Cocone limF.pt) (limColimF : Cone colimF.pt)
 
 variable (hLimF : IsLimit limF) (hColimF : IsColimit colimF) (hColimLimF : IsColimit colimLimF) (hLimColimF : IsLimit limColimF)
 
@@ -26,7 +26,20 @@ noncomputable def limColimFPtIsoColimLimFPt : limColimF.pt ≅ colimLimF.pt := (
 
 noncomputable def IsLimitConeOfColimF : IsLimit (Cone.extend _ (limColimFPtIsoColimLimFPt limF colimF colimLimF limColimF hLimF hColimF hColimLimF hLimColimF).inv) := IsLimit.extendIso _ hLimColimF
 
-noncomputable def IsColimitCoconeOfLimF : IsColimit (Cocone.extend _ (limColimFPtIsoColimLimFPt limF colimF colimLimF limColimF hLimF hColimF hColimLimF hLimColimF).inv) := IsColimit.extendIso _ hColimLimF
+noncomputable def IsColimitCoconeOfLimF : IsColimit (Cocone.extend _ (limColimFPtIsoColimLimFPt limF colimF colimLimF limColimF hLimF hColimF hColimLimF hLimColimF).inv) := IsColimit.extendIso _ hColimLimF-/
+
+
+
+variable (limF : LimitCone F) (colimF : ColimitCocone F.flip) (colimLimF : ColimitCocone limF.cone.pt) (limColimF : LimitCone colimF.cocone.pt)
+
+/-- The isomorphism between limcolim F and colimLim F for any cone and cocones.
+It's composition of (colimitLimitIso F) and the canonicals isomorphisms-/
+@[simps!]
+noncomputable def limColimFPtIsoColimLimFPt : limColimF.cone.pt ≅ colimLimF.cocone.pt := (IsLimit.conePointUniqueUpToIso limColimF.isLimit (limit.isLimit colimF.cocone.pt)) ≪≫ HasLimit.isoOfNatIso (IsColimit.coconePointUniqueUpToIso colimF.isColimit (colimit.isColimit F.flip)) ≪≫ (colimitLimitIso F).symm ≪≫ HasColimit.isoOfNatIso (IsLimit.conePointUniqueUpToIso limF.isLimit (limit.isLimit F)).symm ≪≫ (IsColimit.coconePointUniqueUpToIso colimLimF.isColimit (colimit.isColimit limF.cone.pt)).symm
+
+noncomputable def IsLimitConeOfColimF : IsLimit (Cone.extend _ (limColimFPtIsoColimLimFPt limF colimF colimLimF limColimF).inv) := IsLimit.extendIso _ limColimF.isLimit
+
+noncomputable def IsColimitCoconeOfLimF : IsColimit (Cocone.extend _ (limColimFPtIsoColimLimFPt limF colimF colimLimF limColimF).inv) := IsColimit.extendIso _ colimLimF.isColimit
 
 end CategoryTheory.Limits
 

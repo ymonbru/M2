@@ -46,17 +46,21 @@ def coconeOfCompacts (P : KPresheaf A X) (K : Compacts X) :
     dsimp
     rw [← P.map_comp, Category.comp_id]
     rfl
-/-- If P is a KPresheaf, and K a compact subset then P(K) is equiped with a structure of cocone over the diagramm defined by the P(closure U) for U an open neighbourhood of K-/
+/-- For P a KPresheaf, and K a compact subset then P(K) is equiped with a structure of cocone over the diagramm defined by the P(closure U) for U an open neighbourhood of K-/
 def coconeOfClosureOfOpens (P : KPresheaf A X) (K : Compacts X) := Cocone.whisker K.mono_oRcNhds_to_compactNhds.functor.op <| P.coconeOfCompacts K
 
 variable [T2Space X]
 
+
 set_option backward.isDefEq.respectTransparency false in
+/--
+For`K`a compact and `P`a KPresheaf verifying the third axiom of KSheaves, this is a recipi to build maps from `P.obj(op K)` by only using the open relatively comapct neighbourhoods and not all the compacts neighbourhoods.
+I-/
 noncomputable def mapOfOpenClosure (P : KPresheaf A X) (K : Compacts X) (h : (IsColimit (P.coconeOfCompacts K))) {G : (K.openRcNhds)ᵒᵖ ⥤ A} (t : Cocone G) (α : (K.mono_oRcNhds_to_compactNhds.functor.op ⋙ (Subtype.mono_coe K.compactNhds).functor.op ⋙ P) ⟶ G) : P.obj (op K) ⟶ t.pt := ((Functor.Final.isColimitWhiskerEquiv _ _).invFun h ).map t α
 
 set_option backward.isDefEq.respectTransparency false in
 @[ext]
-noncomputable def hom_K_ext (P : KPresheaf A X) {K : Compacts X} (h : (IsColimit (P.coconeOfCompacts K))) {W : A} {f f' : P.obj (op K) ⟶ W} (w : ∀ V, (P.coconeOfClosureOfOpens K).ι.app V ≫ f = (P.coconeOfClosureOfOpens K).ι.app V ≫ f' ): f = f' := ((Functor.Final.isColimitWhiskerEquiv _ _).invFun h ).hom_ext w
+lemma hom_K_ext (P : KPresheaf A X) {K : Compacts X} (h : (IsColimit (P.coconeOfCompacts K))) {W : A} {f f' : P.obj (op K) ⟶ W} (w : ∀ V, (P.coconeOfClosureOfOpens K).ι.app V ≫ f = (P.coconeOfClosureOfOpens K).ι.app V ≫ f' ): f = f' := ((Functor.Final.isColimitWhiskerEquiv _ _).invFun h ).hom_ext w
 
 /-- The Ksheaf condition. It's a generalisation of the one of J.Pardon that corespond to the one of J.Lurie in the case of usual categories.
 
@@ -80,11 +84,14 @@ abbrev KSheaf := ObjectProperty.FullSubcategory (KPresheaf.IsKSheaf (X := X) (A 
 namespace KSheaf
 
 set_option backward.isDefEq.respectTransparency false in
+/--
+For`K`a compact and `P`a KSheaf, this is a recipi to build maps from `P.obj(op K)` by only using the open relatively comapct neighbourhoods and not all the compacts neighbourhoods.
+I-/
 noncomputable def mapOfOpenClosure (P : KSheaf A X) (K : Compacts X) {G : (K.openRcNhds)ᵒᵖ ⥤ A} (t : Cocone G) (α : (K.mono_oRcNhds_to_compactNhds.functor.op ⋙ (Subtype.mono_coe K.compactNhds).functor.op ⋙ P.obj) ⟶ G) : P.obj.obj (op K) ⟶ t.pt := ((Functor.Final.isColimitWhiskerEquiv _ _).invFun (Classical.choice <| P.property.nonempty_isColimit_coconeOfCompacts K) ).map t α
 
 set_option backward.isDefEq.respectTransparency false in
 @[ext]
-noncomputable def hom_K_ext (P : KSheaf A X) {K : Compacts X} {W : A} {f f' : P.obj.obj (op K) ⟶ W} (w : ∀ V, (P.obj.coconeOfClosureOfOpens K).ι.app V ≫ f = (P.obj.coconeOfClosureOfOpens K).ι.app V ≫ f' ): f = f' := ((Functor.Final.isColimitWhiskerEquiv _ _).invFun (Classical.choice <| P.property.nonempty_isColimit_coconeOfCompacts K)).hom_ext w
+lemma hom_K_ext (P : KSheaf A X) {K : Compacts X} {W : A} {f f' : P.obj.obj (op K) ⟶ W} (w : ∀ V, (P.obj.coconeOfClosureOfOpens K).ι.app V ≫ f = (P.obj.coconeOfClosureOfOpens K).ι.app V ≫ f' ): f = f' := ((Functor.Final.isColimitWhiskerEquiv _ _).invFun (Classical.choice <| P.property.nonempty_isColimit_coconeOfCompacts K)).hom_ext w
 
 end KSheaf
 

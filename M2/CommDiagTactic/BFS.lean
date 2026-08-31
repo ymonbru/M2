@@ -47,7 +47,7 @@ variable (α : Type) [BEq α] [Hashable α]
 open Std trg
 /-- the state of exploration is before ++ head ++ after = oldState, check if the triangle t can be expande from this position, and if it's the case add the path (if the new position is no new to the explored positions)
 
-if a new state is found thenit's added to the queue in ordr to explore it later
+if a new state is found then it's added to the queue in order to explore it later
 
 if the state endState is found then an error containing the current explored states is raised
 -/

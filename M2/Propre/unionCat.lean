@@ -513,8 +513,8 @@ set_option backward.isDefEq.respectTransparency false in
 instance : IsFilteredOrEmpty (IEx K).Grothendieck where
   cocone_objs d1 d2 := by
     use ⟨op (d1.1.unop ⊓ d2.1.unop), op ⟨d1.2.unop ⊓ d2.2.unop,by dsimp [openNhds]; exact inf_le_inf d1.2.unop.2 d2.2.unop.2⟩⟩
-    use ⟨op (homOfLE inf_le_left), op (homOfLE (by simp [IEx, iEx, baseChangeOpenNhds]; exact inf_le_left))⟩
-    use ⟨op (homOfLE inf_le_right), op (homOfLE (by simp [IEx,iEx,baseChangeOpenNhds]; exact inf_le_right))⟩
+    use ⟨opHomOfLE inf_le_left, opHomOfLE ( Subtype.mk_le_mk.2 inf_le_left)⟩
+    use ⟨op (homOfLE inf_le_right), opHomOfLE ( Subtype.mk_le_mk.2 inf_le_right)⟩
   cocone_maps _ x _ _ := by
     use x
     use 𝟙 _
